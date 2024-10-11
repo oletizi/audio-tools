@@ -2,13 +2,19 @@
   "name": "akai-sampler",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "main": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "riff-parser": "^1.0.1"
+  }
 }
