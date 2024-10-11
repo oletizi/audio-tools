@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import * as riff from 'riff-parser'
-import {writeHeader} from "./lib.js";
+import {writeHeader, writeManifest} from "./lib.js";
 
 const kb = 2 * 1024
 const buf = Buffer.alloc(kb)
@@ -15,6 +15,7 @@ try {
 
 // const ws = fs.createWriteStream('data/prog.akp')
 writeHeader(buf)
+writeManifest(buf, 0, 1)
 await fs.writeFile('build/program.akp', buf)
 
 riff.parseRiffFile('test/data/BASS.AKP', (err, chunk) => {
