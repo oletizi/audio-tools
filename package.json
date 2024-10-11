@@ -1,23 +1,29 @@
 {
   "name": "akai-sampler",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "type": "module",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "main": "node index.js",
-    "test": "c8 mocha 'test/**/*.test.{js,ts,tsx}'"
+    "main": "tsx index.ts",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "lodash": "^4.17.21",
-    "riff-parser": "^1.0.1"
+    "riff-parser": "^1.0.1",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
+    "@tsconfig/recommended": "^1.0.7",
+    "@types/chai": "^5.0.0",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^22.7.5",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
     "mocha": "^10.7.3"
