@@ -299,3 +299,82 @@ export function newModsChunk(): ModsChunk {
         'filterModInput3'
     ]) as ModsChunk
 }
+
+
+export interface KeygroupChunk extends Chunk {
+    kloc: KlocChunk
+    ampEnvelope: EnvelopeChunk
+    filterEnvelope: EnvelopeChunk
+    auxEnvelope: AuxEnvelopeChunk
+    filter: FilterChunk
+    zone1: ZoneChunk
+    zone2: ZoneChunk
+    zone3: ZoneChunk
+    zone4: ZoneChunk
+}
+export interface KlocChunk extends Chunk {
+    lowNote: number
+    highNote: number
+    semiToneTune: number
+    fineTune: number
+    overrideFx: number
+    fxSendLevel: number
+    pitchMod1: number
+    pitchMod2: number
+    ampMod: number
+    zoneXFade: number
+    muteGroup: number
+}
+
+export interface EnvelopeChunk extends Chunk {
+    attack: number
+    decay: number
+    release: number
+    sustain: number
+    velocity2Attack: number
+    keyscale: number
+    onVelocity2Release: number
+    offVelocity2Release: number
+}
+
+export interface AuxEnvelopeChunk extends Chunk {
+    rate1: number
+    rate2: number
+    rate3: number
+    rate4: number
+    level1: number
+    level2: number
+    level3: number
+    level4: number
+    velocity2Rate1: number
+    keyboard2Rate2and4: number
+    velocity2Rate4: number
+    offVelocity2Rate4: number
+    velocity2OutLevel: number
+}
+
+export interface FilterChunk extends Chunk {
+    mode: number
+    cutoff: number
+    resonance: number
+    modInput1: number
+    modInput2: number
+    modInput3: number
+    headroom: number
+}
+export interface ZoneChunk extends Chunk {
+    sampleNameLength: number
+    sampleName: number
+    lowVelocity: number
+    highVelocity: number
+    fineTune: number
+    semiToneTune: number
+    filter: number
+    panBalance: number
+    playback: number
+    output: number
+    level: number
+    keyboardTrack: number
+    velocity2StartLsb: number
+    velocity2startMsb: number
+}
