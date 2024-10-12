@@ -24,6 +24,7 @@ function readByte(buf, offset): number {
     return buf.readInt8(offset)
 }
 
+
 /**
  * Validates the buffer from offset matches the expected data array. Returns the number of bytes read
  * @param buf
@@ -69,9 +70,15 @@ export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): num
     return 8
 }
 
-export interface HeaderChunk extends Chunk {
+function readFromSpec(buf, obj: any, spec: string[], offset): number {
+    for (let i = 0; i < spec.length; i++, offset++) {
+        obj[spec[i]] = readByte(buf, offset)
+    }
+    return spec.length
 }
 
+export interface HeaderChunk extends Chunk {
+}
 
 export function newHeaderChunk(): HeaderChunk {
     const riff = [0x52, 0x49, 0x46, 0x46] // 'RIFF'
@@ -102,30 +109,25 @@ export interface ProgramChunk extends Chunk {
     programNumber: number
     keygroupCount: number
 }
+
+const programSpec = ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"]
+
 export function newProgramChunk(): ProgramChunk {
     const chunkName = [0x70, 0x72, 0x67, 0x20] // 'prg '
     const chunkLength = [0x6, 0, 0, 0]         //  6
-    // const chunkName = 'prg '
-    // const chunkLength = 6
-    const pad = 3//[0x00, 0x02, 0x01]
     return {
         name: '',
-        length: -1,
+        length: 6,
         programNumber: 0,
         keygroupCount: 0,
         read(buf, offset) {
-            const checkpoint = offset
             checkOrThrow(buf, chunkName, offset)
-            // offset = checkOrThrow(buf, chunkLength, offset)
             offset += parseChunkHeader(buf, this, offset)
-            offset++ // unused byte after chunk length
-            this.programNumber = readByte(buf, offset++)
-            this.keygroupCount = readByte(buf, offset++)
+            readFromSpec(buf, this, programSpec, offset)
             return this.length + 8
         },
 
         write(buf, offset) {
-            const checkpoint = offset
             offset += write(buf, chunkName, offset)
             offset += write(buf, chunkLength, offset)
             offset++ // unused byte after chunk length
@@ -146,6 +148,8 @@ export interface OutputChunk extends Chunk {
     velocitySensitivity: number
 }
 
+const outputSpec = ['pad1', 'loudness', 'ampMod1', 'ampMod2', 'panMod1', 'panMod2', 'panMod3', 'velocitySensitivity']
+
 export function newOutputChunk(): OutputChunk {
     const chunkName = [0x6f, 0x75, 0x74, 0x20]   // 'out '
     const pad = 0
@@ -160,17 +164,9 @@ export function newOutputChunk(): OutputChunk {
         panMod3: 0,
         velocitySensitivity: 24,
         read(buf: Buffer, offset: number): number {
-            const checkpoint = offset
             checkOrThrow(buf, chunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
-            offset++ // unused byte after chunk length
-            this.loudness = readByte(buf, offset++)
-            this.ampMod1 = readByte(buf, offset++)
-            this.ampMod2 = readByte(buf, offset++)
-            this.panMod1 = readByte(buf, offset++)
-            this.panMod2 = readByte(buf, offset++)
-            this.panMod3 = readByte(buf, offset++)
-            this.velocitySensitivity = readByte(buf, offset++)
+            readFromSpec(buf, this, outputSpec, offset)
             return this.length + 8
         },
         write(buf: Buffer, offset: number): number {
@@ -200,59 +196,45 @@ export interface TuneChunk extends Chunk {
     aftertouch: number
 }
 
-export function newTuneChunk(): TuneChunk {
-    const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
-    const pad = 3
+const tuneSpec = [
+    'pad1',
+    'semiToneTune', 'fineTune',
+    'detuneC', 'detuneCSharp', 'detuneD', 'detuneEFlat', 'detuneE', 'detuneF', 'detuneFSharp', 'detuneG', 'detuneGSharp',
+    'detuneA', 'detuneBFlat', 'detuneB',
+    'pitchBendUp',
+    'pitchBendDown',
+    'bendMode',
+    'aftertouch'
+]
+
+function newChunkFromSpec(chunkName:number[], spec:string[]) {
     return {
-        name: '',
-        length: -1,
-        aftertouch: 0,
-        bendMode: 0,
-        detuneA: 0,
-        detuneB: 0,
-        detuneBFlat: 0,
-        detuneC: 0,
-        detuneCSharp: 0,
-        detuneD: 0,
-        detuneE: 0,
-        detuneEFlat: 0,
-        detuneF: 0,
-        detuneFSharp: 0,
-        detuneG: 0,
-        detuneGSharp: 0,
-        pitchBendDown: 0,
-        pitchBendUp: 0,
-        fineTune: 0,
-        semiToneTune: 0,
         read(buf: Buffer, offset: number): number {
-            const checkpoint = offset
             checkOrThrow(buf, chunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
-            offset++ // unused byte after chunk size
-            this.aftertouch = readByte(buf, offset++)
-            this.bendMode = readByte(buf, offset++)
-            this.detuneC = readByte(buf, offset++)
-            this.detuneCSharp = readByte(buf, offset++)
-            this.detuneD = readByte(buf, offset++)
-            this.detuneEFlat = readByte(buf, offset++)
-            this.detuneE = readByte(buf, offset++)
-            this.detuneF = readByte(buf, offset++)
-            this.detuneFSharp = readByte(buf, offset++)
-            this.detuneG = readByte(buf, offset++)
-            this.detuneGSharp = readByte(buf, offset++)
-            this.detuneA = readByte(buf, offset++)
-            this.detuneBFlat = readByte(buf, offset++)
-            this.detuneB = readByte(buf, offset++)
-            this.pitchBendUp = readByte(buf, offset++)
-            this.pitchBendDown = readByte(buf, offset++)
-            this.bendMode = readByte(buf, offset++)
-            this.aftertouch = readByte(buf, offset++)
+            readFromSpec(buf, this, spec, offset)
             return this.length + 8
         },
-        write(buf: Buffer, offset: number): number {
-            return 0;
+        write(buf:Buffer, offset: number): number {
+            return 0
         }
     }
+}
+
+export function newTuneChunk(): any {
+    const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
+    return newChunkFromSpec(chunkName, tuneSpec)
+    // return {
+    //     read(buf: Buffer, offset: number): number {
+    //         checkOrThrow(buf, chunkName, offset)
+    //         offset += parseChunkHeader(buf, this, offset)
+    //         readFromSpec(buf, this, tuneSpec, offset)
+    //         return this.length + 8
+    //     },
+    //     write(buf: Buffer, offset: number): number {
+    //         return 0;
+    //     }
+    // }
 }
 
 export interface Lfo1Chunk extends Chunk {
@@ -284,7 +266,6 @@ export function newLfo1Chunk(): Lfo1Chunk {
         delayMod: 0,
         depthMod: 0,
         read(buf: Buffer, offset: number): number {
-            const checkpoint = offset
             checkOrThrow(buf, chunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
             offset++ // unused byte
@@ -304,5 +285,51 @@ export function newLfo1Chunk(): Lfo1Chunk {
         write(buf: Buffer, offset: number): number {
             return 0;
         }
+    }
+}
+
+
+export interface Lfo2Chunk extends Chunk {
+    waveform: number
+    rate: number
+    delay: number
+    depth: number
+    retrigger: number
+    rateMod: number
+    delayMod: number
+    depthMod: number
+}
+
+export function newLfo2Chunk(): Lfo2Chunk {
+    const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
+    return {
+        name: '',
+        length: -1,
+        waveform: 0,
+        rate: 0,
+        delay: 0,
+        depth: 0,
+        retrigger: 0,
+        rateMod: 0,
+        delayMod: 0,
+        depthMod: 0,
+        read(buf: Buffer, offset: number): number {
+            checkOrThrow(buf, chunkName, offset)
+            offset += parseChunkHeader(buf, this, offset)
+            offset++ // unused byte
+            this.waveform = readByte(buf, offset++)
+            this.rate = readByte(buf, offset++)
+            this.delay = readByte(buf, offset++)
+            this.depth = readByte(buf, offset++)
+            offset++ // unused byte
+            this.retrigger = readByte(buf, offset++)
+            offset++ // unused byte
+            offset++ // unused byte
+            this.rateMod
+            return this.length + 8;
+        },
+        write(buf: Buffer, offset: number): number {
+            return 0;
+        },
     }
 }

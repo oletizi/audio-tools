@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import {
     bytes2Number,
     newHeaderChunk,
-    newLfo1Chunk,
+    newLfo1Chunk, newLfo2Chunk,
     newOutputChunk,
     newProgramChunk,
     newTuneChunk,
@@ -90,5 +90,7 @@ describe('Basics...', async () => {
         expect(lfo1.rateMod).to.eq(0)
         expect(lfo1.delayMod).to.eq(0)
         expect(lfo1.depthMod).to.eq(0)
+
+        const lfo2 = newLfo2Chunk()
     })
 })
