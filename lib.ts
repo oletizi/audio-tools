@@ -127,7 +127,7 @@ export function newOutputChunk(): OutputChunk {
             this.panMod2 = readByte(buf, offset++)
             this.panMod3 = readByte(buf, offset++)
             this.velocitySensitivity = readByte(buf, offset++)
-            return 0;
+            return offset;
         },
         write(buf: Buffer, offset: number): number {
             return 0;
@@ -135,3 +135,78 @@ export function newOutputChunk(): OutputChunk {
     }
 }
 
+export interface TuneChunk extends Chunk {
+    semiToneTune: number
+    fineTune: number
+    detuneC: number
+    detuneCSharp: number
+    detuneD: number
+    detuneEFlat: number
+    detuneE: number
+    detuneF: number
+    detuneFSharp: number
+    detuneG: number
+    detuneGSharp: number
+    detuneA: number
+    detuneBFlat: number
+    detuneB: number
+    pitchBendUp: number
+    pitchBendDown: number
+    bendMode: number
+    aftertouch: number
+}
+
+export function newTuneChunk(): TuneChunk {
+    const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
+    const chunkSize = [0x18, 0x00, 0x00, 0x00] //  24
+    return {
+        aftertouch: 0,
+        bendMode: 0,
+        detuneA: 0,
+        detuneB: 0,
+        detuneBFlat: 0,
+        detuneC: 0,
+        detuneCSharp: 0,
+        detuneD: 0,
+        detuneE: 0,
+        detuneEFlat: 0,
+        detuneF: 0,
+        detuneFSharp: 0,
+        detuneG: 0,
+        detuneGSharp: 0,
+        pitchBendDown: 0,
+        pitchBendUp: 0,
+        fineTune: 0, semiToneTune: 0,
+        length: 0,
+        read(buf: Buffer, offset: number): number {
+            offset = checkOrThrow(buf, chunkName, offset)
+            offset = checkOrThrow(buf, chunkSize, offset)
+            offset++ // unused byte after chunk size
+            this.aftertouch = readByte(buf, offset++)
+            this.bendMode = readByte(buf, offset++)
+            this.detuneC = readByte(buf, offset++)
+            this.detuneCSharp = readByte(buf, offset++)
+            this.detuneD = readByte(buf, offset++)
+            this.detuneEFlat = readByte(buf, offset++)
+            this.detuneE = readByte(buf, offset++)
+            this.detuneF = readByte(buf, offset++)
+            this.detuneFSharp = readByte(buf, offset++)
+            this.detuneG = readByte(buf, offset++)
+            this.detuneGSharp = readByte(buf, offset++)
+            this.detuneA = readByte(buf, offset++)
+            this.detuneBFlat = readByte(buf, offset++)
+            this.detuneB = readByte(buf, offset++)
+            this.pitchBendUp = readByte(buf, offset++)
+            this.pitchBendDown = readByte(buf, offset++)
+            this.bendMode = readByte(buf, offset++)
+            this.aftertouch = readByte(buf, offset++)
+            offset++ // unused bytes
+            offset++
+            offset++
+            return offset
+        },
+        write(buf: Buffer, offset: number): number {
+            return 0;
+        }
+    }
+}

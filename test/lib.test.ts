@@ -1,6 +1,6 @@
 import {assert, expect} from 'chai'
 import fs from "fs/promises";
-import {newHeaderChunk, newOutputChunk, newProgramChunk} from "../lib";
+import {newHeaderChunk, newOutputChunk, newProgramChunk, newTuneChunk} from "../lib";
 
 describe('Basics...', async () => {
     it('Does the basics...', async () => {
@@ -33,5 +33,25 @@ describe('Basics...', async () => {
         expect(output.panMod2).to.equal(0)
         expect(output.panMod3).to.equal(0)
         expect(output.velocitySensitivity).to.equal(0)
+
+        const tune = newTuneChunk()
+        offset = tune.read(buf, offset)
+        expect(tune.semiToneTune).to.equal(0)
+        expect(tune.fineTune).to.equal(0)
+        expect(tune.detuneA).to.equal(0)
+        expect(tune.detuneBFlat).to.equal(0)
+        expect(tune.detuneB).to.equal(0)
+        expect(tune.detuneC).to.equal(0)
+        expect(tune.detuneCSharp).to.equal(0)
+        expect(tune.detuneD).to.equal(0)
+        expect(tune.detuneEFlat).to.equal(0)
+        expect(tune.detuneE).to.equal(0)
+        expect(tune.detuneF).to.equal(0)
+        expect(tune.detuneFSharp).to.equal(0)
+        expect(tune.detuneG).to.equal(0)
+        expect(tune.pitchBendUp).to.equal(2)
+        expect(tune.pitchBendDown).to.equal(2)
+        expect(tune.bendMode).to.equal(0)
+        expect(tune.aftertouch).to.equal(0)
     })
 })
