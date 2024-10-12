@@ -162,5 +162,22 @@ describe('Basics...', async () => {
         expect(filtenv.keyscale).to.eq(0)
         expect(filtenv.onVelocity2Release).to.eq(0)
         expect(filtenv.offVelocity2Release).to.eq(0)
+
+        expect(keygroup.auxEnvelope).to.exist
+        const auxenv = keygroup.auxEnvelope
+        expect(auxenv.name).to.eq('env ')
+        expect(auxenv.rate1).to.eq(0)
+        expect(auxenv.rate2).to.eq(50)
+        expect(auxenv.rate3).to.eq(50)
+        expect(auxenv.rate4).to.eq(15)
+        expect(auxenv.level1).to.eq(100)
+        expect(auxenv.level2).to.eq(100)
+        expect(auxenv.level3).to.eq(100)
+        expect(auxenv.level4).to.eq(0)
+        expect(auxenv.velocity2Rate1).to.eq(0)
+        expect(auxenv.keyboard2Rate2and4).to.eq(0)
+        expect(auxenv.velocity2Rate4).to.eq(0)
+        expect(auxenv.offVelocity2Rate4).to.eq(0)
+        expect(auxenv.velocity2OutLevel).to.eq(0)
     })
 })

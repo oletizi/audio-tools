@@ -44,6 +44,14 @@ export function bytes2Number(bytes: number[]): number {
     return Buffer.from(bytes).readInt32LE()
 }
 
+
+class Pad {
+    padCount = 0
+
+    padField(): string {
+        return 'pad' + this.padCount++
+    }
+}
 export interface Chunk {
     length: number
     name: string
@@ -326,14 +334,29 @@ export interface KlocChunk extends Chunk {
     zoneXFade: number
     muteGroup: number
 }
-
-class Pad {
-    padCount = 0
-
-    padField(): string {
-        return 'pad' + this.padCount++
-    }
+export interface AmpEnvelopeChunk extends Chunk {
+    attack: number
+    decay: number
+    release: number
+    sustain: number
+    velocity2Attack: number
+    keyscale: number
+    onVelocity2Release: number
+    offVelocity2Release: number
 }
+
+export interface FilterEnvelopeChunk extends Chunk {
+    attack: number
+    decay: number
+    release: number
+    sustain: number
+    depth: number
+    velocity2Attack: number
+    keyscale: number
+    onVelocity2Release: number
+    offVelocity2Release: number
+}
+
 
 export function newKeygroupChunk() {
     const chunkName = [0x6b, 0x67, 0x72, 0x70]
@@ -406,32 +429,31 @@ export function newKeygroupChunk() {
                 pad.padField()
             ])
             offset += this.filterEnvelope.parse(buf, offset)
+
+            this.auxEnvelope = newChunkFromSpec(envChunkName, [
+                pad.padField(),
+                'rate1',
+                'rate2',
+                'rate3',
+                'rate4',
+                'level1',
+                'level2',
+                'level3',
+                'level4',
+                pad.padField(),
+                'velocity2Rate1',
+                pad.padField(),
+                'keyboard2Rate2and4',
+                pad.padField(),
+                'velocity2Rate4',
+                'offVelocity2Rate4',
+                'velocity2OutLevel',
+                pad.padField()
+            ])
+            offset += this.auxEnvelope.parse(buf, offset)
             return this.length
         }
     } as KeygroupChunk
-}
-
-export interface AmpEnvelopeChunk extends Chunk {
-    attack: number
-    decay: number
-    release: number
-    sustain: number
-    velocity2Attack: number
-    keyscale: number
-    onVelocity2Release: number
-    offVelocity2Release: number
-}
-
-export interface FilterEnvelopeChunk extends Chunk {
-    attack: number
-    decay: number
-    release: number
-    sustain: number
-    depth: number
-    velocity2Attack: number
-    keyscale: number
-    onVelocity2Release: number
-    offVelocity2Release: number
 }
 
 export interface AuxEnvelopeChunk extends Chunk {
