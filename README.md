@@ -4,6 +4,8 @@
 
 Rudimentary file parser for Akai S5000/S6000 (and possibly earlier) samplers.
 
+Based on [file format spec reverse engineerd by Seb Francis](https://burnit.co.uk/AKPspec/)
+
 TODO:
 
 - [X] Parse each chunk type
