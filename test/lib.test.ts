@@ -179,5 +179,17 @@ describe('Basics...', async () => {
         expect(auxenv.velocity2Rate4).to.eq(0)
         expect(auxenv.offVelocity2Rate4).to.eq(0)
         expect(auxenv.velocity2OutLevel).to.eq(0)
+
+        expect(keygroup.filter).to.exist
+        const filt = keygroup.filter
+        expect(filt.name).to.eq('filt')
+        expect(filt.mode).to.eq(0)
+        expect(filt.cutoff).to.eq(53)
+        expect(filt.resonance).to.eq(7)
+        expect(filt.keyboardTrack).to.eq(6)
+        expect(filt.modInput1).to.eq(0)
+        expect(filt.modInput2).to.eq(0)
+        expect(filt.modInput3).to.eq(0)
+        expect(filt.headroom).to.eq(0)
     })
 })

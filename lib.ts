@@ -357,6 +357,21 @@ export interface FilterEnvelopeChunk extends Chunk {
     offVelocity2Release: number
 }
 
+export interface AuxEnvelopeChunk extends Chunk {
+    rate1: number
+    rate2: number
+    rate3: number
+    rate4: number
+    level1: number
+    level2: number
+    level3: number
+    level4: number
+    velocity2Rate1: number
+    keyboard2Rate2and4: number
+    velocity2Rate4: number
+    offVelocity2Rate4: number
+    velocity2OutLevel: number
+}
 
 export function newKeygroupChunk() {
     const chunkName = [0x6b, 0x67, 0x72, 0x70]
@@ -451,31 +466,31 @@ export function newKeygroupChunk() {
                 pad.padField()
             ])
             offset += this.auxEnvelope.parse(buf, offset)
+
+            this.filter = newChunkFromSpec([0x66, 0x69, 0x6c, 0x74],[
+                pad.padField(),
+                'mode',
+                'cutoff',
+                'resonance',
+                'keyboardTrack',
+                'modInput1',
+                'modInput2',
+                'modInput3',
+                'headroom',
+                pad.padField()
+            ])
+            offset += this.filter.parse(buf, offset)
             return this.length
         }
     } as KeygroupChunk
 }
 
-export interface AuxEnvelopeChunk extends Chunk {
-    rate1: number
-    rate2: number
-    rate3: number
-    rate4: number
-    level1: number
-    level2: number
-    level3: number
-    level4: number
-    velocity2Rate1: number
-    keyboard2Rate2and4: number
-    velocity2Rate4: number
-    offVelocity2Rate4: number
-    velocity2OutLevel: number
-}
 
 export interface FilterChunk extends Chunk {
     mode: number
     cutoff: number
     resonance: number
+    keyboardTrack: number
     modInput1: number
     modInput2: number
     modInput3: number
