@@ -231,3 +231,71 @@ export function newLfo2Chunk(): Lfo2Chunk {
         'depthMod'
     ]) as Lfo2Chunk
 }
+
+export interface ModsChunk extends Chunk {
+    ampMod1Source: number
+    ampMod2Source: number
+
+    panMod1Source: number
+    panMod2Source: number
+    panMod3Source: number
+
+    lfo1RateModSource: number
+    lfo1DelayModSource: number
+    lfo1DepthModSource: number
+
+    lfo2RateModSource: number
+    lfo2DelayModSource: number
+    lfo2DepthModSource: number
+
+    pitchMod1Source: number
+    pitchMod2Source: number
+    ampModSource: number
+    filterModInput1: number
+    filterModInput2: number
+    filterModInput3: number
+}
+
+export function newModsChunk(): ModsChunk {
+    const chunkName = [0x6d, 0x6f, 0x64, 0x73] // 'lfo '
+    return newChunkFromSpec(chunkName, [
+        'pad1',
+        'pad2',
+        'pad3',
+        'pad4',
+        'pad5',
+        'ampMod1Source',
+        'pad6',
+        'ampMod2Source',
+        'pad7',
+        'panMod1Source',
+        'pad8',
+        'panMod2Source',
+        'pad9',
+        'panMod3Source',
+        'pad10',
+        'lfo1RateModSource',
+        'pad11',
+        'lfo1DelayModSource',
+        'pad12',
+        'lfo1DepthModSource',
+        'pad13',
+        'lfo2RateModSource',
+        'pad14',
+        'lfo2DelayModSource',
+        'pad15',
+        'lfo2DepthModSource',
+        'pad15',
+        'pitchMod1Source',
+        'pad16',
+        'pitchMod2Source',
+        'pad17',
+        'ampModSource',
+        'pad19',
+        'filterModInput1',
+        'pad19',
+        'filterModInput2',
+        'pad20',
+        'filterModInput3'
+    ]) as ModsChunk
+}

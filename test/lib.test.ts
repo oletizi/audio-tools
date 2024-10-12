@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import {
     bytes2Number,
     newHeaderChunk,
-    newLfo1Chunk, newLfo2Chunk,
+    newLfo1Chunk, newLfo2Chunk, newModsChunk,
     newOutputChunk,
     newProgramChunk,
     newTuneChunk, OutputChunk,
@@ -101,5 +101,26 @@ describe('Basics...', async () => {
         expect(lfo2.retrigger).to.eq(0)
         expect(lfo2.rateMod).to.eq(0)
         expect(lfo2.depthMod).to.eq(0)
+
+        const mods = newModsChunk()
+        offset += mods.read(buf, offset)
+        expect(mods.name).to.eq('mods')
+        expect(mods.ampMod1Source).to.eq(6)
+        expect(mods.ampMod2Source).to.eq(3)
+        expect(mods.panMod1Source).to.eq(8)
+        expect(mods.panMod2Source).to.eq(6)
+        expect(mods.panMod3Source).to.eq(1)
+        expect(mods.lfo1RateModSource).to.eq(6)
+        expect(mods.lfo1DelayModSource).to.eq(6)
+        expect(mods.lfo1DepthModSource).to.eq(6)
+        expect(mods.lfo2RateModSource).to.eq(0)
+        expect(mods.lfo2DelayModSource).to.eq(0)
+        expect(mods.lfo2DepthModSource).to.eq(0)
+        expect(mods.pitchMod1Source).to.eq(7)
+        expect(mods.pitchMod2Source).to.eq(11)
+        expect(mods.ampModSource).to.eq(5)
+        expect(mods.filterModInput1).to.eq(5)
+        expect(mods.filterModInput2).to.eq(8)
+        expect(mods.filterModInput3).to.eq(9)
     })
 })
