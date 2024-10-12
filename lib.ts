@@ -50,7 +50,7 @@ export interface Chunk {
 
     write(buf: Buffer, offset: number): number
 
-    read(buf: Buffer, offset: number): number
+    parse(buf: Buffer, offset: number): number
 }
 
 /**
@@ -80,7 +80,7 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
 
 function newChunkFromSpec(chunkName: number[], spec: string[]) {
     return {
-        read(buf: Buffer, offset: number): number {
+        parse(buf: Buffer, offset: number): number {
             checkOrThrow(buf, chunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
             readFromSpec(buf, this, spec, offset)
@@ -102,7 +102,7 @@ export function newHeaderChunk(): HeaderChunk {
     return {
         length: bytes2Number(chunkLength),
         name: '',
-        read(buf: Buffer, offset: number): number {
+        parse(buf: Buffer, offset: number): number {
             const checkpoint = offset
             offset += checkOrThrow(buf, riff, offset)
             offset += checkOrThrow(buf, chunkLength, offset)
@@ -303,8 +303,8 @@ export function newModsChunk(): ModsChunk {
 
 export interface KeygroupChunk extends Chunk {
     kloc: KlocChunk
-    ampEnvelope: EnvelopeChunk
-    filterEnvelope: EnvelopeChunk
+    ampEnvelope: AmpEnvelopeChunk
+    filterEnvelope: FilterEnvelopeChunk
     auxEnvelope: AuxEnvelopeChunk
     filter: FilterChunk
     zone1: ZoneChunk
@@ -312,6 +312,7 @@ export interface KeygroupChunk extends Chunk {
     zone3: ZoneChunk
     zone4: ZoneChunk
 }
+
 export interface KlocChunk extends Chunk {
     lowNote: number
     highNote: number
@@ -326,7 +327,68 @@ export interface KlocChunk extends Chunk {
     muteGroup: number
 }
 
-export interface EnvelopeChunk extends Chunk {
+class Pad {
+    padCount = 0
+
+    padField(): string {
+        return 'pad' + this.padCount++
+    }
+}
+export function newKeygroupChunk() {
+    const chunkName = [0x6b, 0x67, 0x72, 0x70]
+    return {
+        parse(buf, offset): number {
+            const pad = new Pad()
+            checkOrThrow(buf, chunkName, offset)
+            offset += parseChunkHeader(buf, this, offset)
+            this.kloc = newChunkFromSpec([0x6b, 0x6c, 0x6f, 0x63], [
+                pad.padField(),
+                pad.padField(),
+                pad.padField(),
+                pad.padField(),
+                'lowNote',
+                'highNote',
+                'semiToneTune',
+                'fineTune',
+                'overrideFx',
+                'fxSendLevel',
+                'pitchMod1',
+                'pitchMod2',
+                'ampMod',
+                'zoneXFade',
+                'muteGroup',
+                pad.padField()
+            ])
+            offset += this.kloc.parse(buf, offset)
+
+            this.ampEnvelope = newChunkFromSpec([0x65, 0x6e, 0x76, 0x20], [
+                pad.padField(),
+                'attack',
+                pad.padField(),
+                'decay',
+                'release',
+                pad.padField(),
+                pad.padField(),
+                'sustain',
+                pad.padField(),
+                pad.padField(),
+                'velocity2Attack',
+                pad.padField(),
+                'keyscale',
+                pad.padField(),
+                'onVelocity2Release',
+                pad.padField(),
+                'offVelocity2Release',
+                pad.padField(),
+                pad.padField()
+            ])
+            offset += this.ampEnvelope.parse(buf, offset)
+            return this.length
+        }
+    } as KeygroupChunk
+}
+
+export interface AmpEnvelopeChunk extends Chunk {
     attack: number
     decay: number
     release: number
@@ -335,6 +397,10 @@ export interface EnvelopeChunk extends Chunk {
     keyscale: number
     onVelocity2Release: number
     offVelocity2Release: number
+}
+
+export interface FilterEnvelopeChunk extends Chunk {
+
 }
 
 export interface AuxEnvelopeChunk extends Chunk {
@@ -362,6 +428,7 @@ export interface FilterChunk extends Chunk {
     modInput3: number
     headroom: number
 }
+
 export interface ZoneChunk extends Chunk {
     sampleNameLength: number
     sampleName: number

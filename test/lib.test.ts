@@ -2,14 +2,13 @@ import {assert, expect} from 'chai'
 import fs from "fs/promises";
 import {
     bytes2Number,
-    newHeaderChunk,
+    newHeaderChunk, newKeygroupChunk,
     newLfo1Chunk, newLfo2Chunk, newModsChunk,
     newOutputChunk,
     newProgramChunk,
     newTuneChunk, OutputChunk,
     parseChunkHeader, ProgramChunk
 } from "../lib";
-
 describe('Basics...', async () => {
     it('Does the basics...', () => {
         assert.equal(0, 0)
@@ -38,17 +37,17 @@ describe('Basics...', async () => {
 
         // Parse header
         const header = newHeaderChunk()
-        offset += header.read(buf, offset)
+        offset += header.parse(buf, offset)
         expect(offset).to.be.greaterThan(0)
 
         // Parse program chunk
         const program: ProgramChunk = newProgramChunk()
-        offset += program.read(buf, offset)
+        offset += program.parse(buf, offset)
         expect(program.programNumber).to.equal(0)
         expect(program.keygroupCount).to.equal(1)
 
         const output: OutputChunk = newOutputChunk()
-        offset += output.read(buf, offset)
+        offset += output.parse(buf, offset)
         expect(output.loudness).to.equal(80)
         expect(output.ampMod1).to.equal(0)
         expect(output.ampMod2).to.equal(0)
@@ -58,7 +57,7 @@ describe('Basics...', async () => {
         expect(output.velocitySensitivity).to.equal(0)
 
         const tune = newTuneChunk()
-        offset += tune.read(buf, offset)
+        offset += tune.parse(buf, offset)
         expect(tune.semiToneTune).to.equal(0)
         expect(tune.fineTune).to.equal(0)
         expect(tune.detuneA).to.equal(0)
@@ -78,7 +77,7 @@ describe('Basics...', async () => {
         expect(tune.aftertouch).to.equal(0)
 
         const lfo1 = newLfo1Chunk()
-        offset += lfo1.read(buf, offset)
+        offset += lfo1.parse(buf, offset)
         expect(lfo1.name).to.eq('lfo ')
         expect(lfo1.waveform).to.eq(1)
         expect(lfo1.rate).to.eq(43)
@@ -92,7 +91,7 @@ describe('Basics...', async () => {
         expect(lfo1.depthMod).to.eq(0)
 
         const lfo2 = newLfo2Chunk()
-        offset += lfo2.read(buf, offset)
+        offset += lfo2.parse(buf, offset)
         expect(lfo2.name).to.eq('lfo ')
         expect(lfo2.waveform).to.eq(0)
         expect(lfo2.rate).to.eq(0)
@@ -103,7 +102,7 @@ describe('Basics...', async () => {
         expect(lfo2.depthMod).to.eq(0)
 
         const mods = newModsChunk()
-        offset += mods.read(buf, offset)
+        offset += mods.parse(buf, offset)
         expect(mods.name).to.eq('mods')
         expect(mods.ampMod1Source).to.eq(6)
         expect(mods.ampMod2Source).to.eq(3)
@@ -122,5 +121,33 @@ describe('Basics...', async () => {
         expect(mods.filterModInput1).to.eq(5)
         expect(mods.filterModInput2).to.eq(8)
         expect(mods.filterModInput3).to.eq(9)
+
+        const keygroup = newKeygroupChunk()
+        offset += keygroup.parse(buf, offset)
+        expect(keygroup.name).to.eq('kgrp')
+        expect(keygroup.kloc).to.exist
+
+        const kloc = keygroup.kloc
+        expect(kloc.name).to.eq('kloc')
+        expect(kloc.lowNote).to.eq(21)
+        expect(kloc.highNote).to.eq(127)
+        expect(kloc.semiToneTune).to.eq(0)
+        expect(kloc.fineTune).to.eq(0)
+        expect(kloc.overrideFx).to.eq(0)
+        expect(kloc.pitchMod1).to.eq(100)
+        expect(kloc.pitchMod2).to.eq(0)
+        expect(kloc.ampMod).to.eq(0)
+        expect(kloc.zoneXFade).to.eq(0)
+        expect(kloc.muteGroup).to.eq(0)
+
+        expect(keygroup.ampEnvelope).to.exist
+        const ampEnv = keygroup.ampEnvelope
+        expect(ampEnv.name).to.eq('env ')
+        expect(ampEnv.attack).to.eq(1)
+        expect(ampEnv.decay).to.eq(50)
+        expect(ampEnv.sustain).to.eq(100)
+        expect(ampEnv.velocity2Attack).to.eq(0)
+        expect(ampEnv.onVelocity2Release).to.eq(0)
+        expect(ampEnv.offVelocity2Release).to.eq(0)
     })
 })
