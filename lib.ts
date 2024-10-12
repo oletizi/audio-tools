@@ -63,6 +63,7 @@ export interface Chunk {
  * @param offset
  */
 export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): number {
+    chunk.name = ''
     for (let i = 0; i < 4; i++, offset++) {
         chunk.name += String.fromCharCode(readByte(buf, offset))
     }
@@ -207,7 +208,7 @@ const tuneSpec = [
     'aftertouch'
 ]
 
-function newChunkFromSpec(chunkName:number[], spec:string[]) {
+function newChunkFromSpec(chunkName: number[], spec: string[]) {
     return {
         read(buf: Buffer, offset: number): number {
             checkOrThrow(buf, chunkName, offset)
@@ -215,7 +216,7 @@ function newChunkFromSpec(chunkName:number[], spec:string[]) {
             readFromSpec(buf, this, spec, offset)
             return this.length + 8
         },
-        write(buf:Buffer, offset: number): number {
+        write(buf: Buffer, offset: number): number {
             return 0
         }
     }
@@ -224,68 +225,61 @@ function newChunkFromSpec(chunkName:number[], spec:string[]) {
 export function newTuneChunk(): any {
     const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
     return newChunkFromSpec(chunkName, tuneSpec)
+}
+
+// export interface Lfo1Chunk extends Chunk {
+//     waveform: number
+//     rate: number
+//     delay: number
+//     depth: number
+//     sync: number
+//     modwheel: number
+//     aftertouch: number
+//     rateMod: number
+//     delayMod: number
+//     depthMod: number
+// }
+
+const lfo1Spec = ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
+    'rateMod', 'delayMod', 'depthMod']
+
+export function newLfo1Chunk(): any {
+    const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
+    return newChunkFromSpec(chunkName, lfo1Spec)
     // return {
+    //     name: '',
+    //     length: -1,
+    //     waveform: 0,
+    //     rate: 0,
+    //     delay: 0,
+    //     depth: 0,
+    //     sync: 0,
+    //     modwheel: 0,
+    //     aftertouch: 0,
+    //     rateMod: 0,
+    //     delayMod: 0,
+    //     depthMod: 0,
     //     read(buf: Buffer, offset: number): number {
     //         checkOrThrow(buf, chunkName, offset)
     //         offset += parseChunkHeader(buf, this, offset)
-    //         readFromSpec(buf, this, tuneSpec, offset)
+    //         offset++ // unused byte
+    //         this.waveform = readByte(buf, offset++)
+    //         this.rate = readByte(buf, offset++)
+    //         this.delay = readByte(buf, offset++)
+    //         this.depth = readByte(buf, offset++)
+    //         this.lfoSync = readByte(buf, offset++)
+    //         offset++ // unused byte
+    //         this.modwheel = readByte(buf, offset++)
+    //         this.aftertouch = readByte(buf, offset++)
+    //         this.rateMod = readByte(buf, offset++)
+    //         this.delayMod = readByte(buf, offset++)
+    //         this.depthMod = readByte(buf, offset++)
     //         return this.length + 8
     //     },
     //     write(buf: Buffer, offset: number): number {
     //         return 0;
     //     }
     // }
-}
-
-export interface Lfo1Chunk extends Chunk {
-    waveform: number
-    rate: number
-    delay: number
-    depth: number
-    sync: number
-    modwheel: number
-    aftertouch: number
-    rateMod: number
-    delayMod: number
-    depthMod: number
-}
-
-export function newLfo1Chunk(): Lfo1Chunk {
-    const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    return {
-        name: '',
-        length: -1,
-        waveform: 0,
-        rate: 0,
-        delay: 0,
-        depth: 0,
-        sync: 0,
-        modwheel: 0,
-        aftertouch: 0,
-        rateMod: 0,
-        delayMod: 0,
-        depthMod: 0,
-        read(buf: Buffer, offset: number): number {
-            checkOrThrow(buf, chunkName, offset)
-            offset += parseChunkHeader(buf, this, offset)
-            offset++ // unused byte
-            this.waveform = readByte(buf, offset++)
-            this.rate = readByte(buf, offset++)
-            this.delay = readByte(buf, offset++)
-            this.depth = readByte(buf, offset++)
-            this.lfoSync = readByte(buf, offset++)
-            offset++ // unused byte
-            this.modwheel = readByte(buf, offset++)
-            this.aftertouch = readByte(buf, offset++)
-            this.rateMod = readByte(buf, offset++)
-            this.delayMod = readByte(buf, offset++)
-            this.depthMod = readByte(buf, offset++)
-            return this.length + 8
-        },
-        write(buf: Buffer, offset: number): number {
-            return 0;
-        }
-    }
 }
 
 
