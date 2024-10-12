@@ -196,10 +196,10 @@ export interface Lfo1Chunk extends Chunk {
     depthMod: number
 }
 
-export function newLfo1Chunk(): any {
+export function newLfo1Chunk(): Lfo1Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
     return newChunkFromSpec(chunkName, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
-        'rateMod', 'delayMod', 'depthMod'])
+        'rateMod', 'delayMod', 'depthMod']) as Lfo1Chunk
 }
 
 
@@ -216,34 +216,18 @@ export interface Lfo2Chunk extends Chunk {
 
 export function newLfo2Chunk(): Lfo2Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    return {
-        name: '',
-        length: -1,
-        waveform: 0,
-        rate: 0,
-        delay: 0,
-        depth: 0,
-        retrigger: 0,
-        rateMod: 0,
-        delayMod: 0,
-        depthMod: 0,
-        read(buf: Buffer, offset: number): number {
-            checkOrThrow(buf, chunkName, offset)
-            offset += parseChunkHeader(buf, this, offset)
-            offset++ // unused byte
-            this.waveform = readByte(buf, offset++)
-            this.rate = readByte(buf, offset++)
-            this.delay = readByte(buf, offset++)
-            this.depth = readByte(buf, offset++)
-            offset++ // unused byte
-            this.retrigger = readByte(buf, offset++)
-            offset++ // unused byte
-            offset++ // unused byte
-            this.rateMod
-            return this.length + 8;
-        },
-        write(buf: Buffer, offset: number): number {
-            return 0;
-        },
-    }
+    return newChunkFromSpec(chunkName, [
+        'pad1',
+        'waveform',
+        'rate',
+        'delay',
+        'depth',
+        'pad2',
+        'retrigger',
+        'pad3',
+        'pad4',
+        'rateMod',
+        'delayMod',
+        'depthMod'
+    ]) as Lfo2Chunk
 }
