@@ -52,6 +52,7 @@ class Pad {
         return 'pad' + this.padCount++
     }
 }
+
 export interface Chunk {
     length: number
     name: string
@@ -81,7 +82,13 @@ export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): num
 
 function readFromSpec(buf, obj: any, spec: string[], offset): number {
     for (let i = 0; i < spec.length; i++, offset++) {
-        obj[spec[i]] = readByte(buf, offset)
+        try {
+            obj[spec[i]] = readByte(buf, offset)
+        } catch (err) {
+            console.log(`Error: i: ${i}; spec[${i}]: ${spec[i]}; offset: ${offset}`)
+            console.log(`spec: ${spec}`)
+            throw err
+        }
     }
     return spec.length
 }
@@ -334,6 +341,7 @@ export interface KlocChunk extends Chunk {
     zoneXFade: number
     muteGroup: number
 }
+
 export interface AmpEnvelopeChunk extends Chunk {
     attack: number
     decay: number
@@ -371,6 +379,17 @@ export interface AuxEnvelopeChunk extends Chunk {
     velocity2Rate4: number
     offVelocity2Rate4: number
     velocity2OutLevel: number
+}
+
+export interface FilterChunk extends Chunk {
+    mode: number
+    cutoff: number
+    resonance: number
+    keyboardTrack: number
+    modInput1: number
+    modInput2: number
+    modInput3: number
+    headroom: number
 }
 
 export function newKeygroupChunk() {
@@ -467,7 +486,7 @@ export function newKeygroupChunk() {
             ])
             offset += this.auxEnvelope.parse(buf, offset)
 
-            this.filter = newChunkFromSpec([0x66, 0x69, 0x6c, 0x74],[
+            this.filter = newChunkFromSpec([0x66, 0x69, 0x6c, 0x74], [
                 pad.padField(),
                 'mode',
                 'cutoff',
@@ -480,22 +499,45 @@ export function newKeygroupChunk() {
                 pad.padField()
             ])
             offset += this.filter.parse(buf, offset)
+
+            // 20 character sample name
+            const sampleNameSpec = []
+            for (let i = 0; i < 20; i++) {
+                sampleNameSpec.push('c'+ i)
+            }
+            // 12 unused fields after the sample name
+            const zonePadSpec = []
+            for (let i=0; i< 12; i++) {
+                zonePadSpec.push(pad.padField())
+            }
+            for (let i = 0; i < 4; i++) {
+                let zoneFieldName = `zone${i + 1}`;
+                this[zoneFieldName] = newChunkFromSpec([0x7a, 0x6f, 0x6e, 0x65],
+                    [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
+                        'lowVelocity',
+                        'highVelocity',
+                        'fineTune',
+                        'semiToneTune',
+                        'filter',
+                        'panBalance',
+                        'playback',
+                        'output',
+                        'level',
+                        'keyboardTrack',
+                        'velocity2StartLsb',
+                        'velocity2startMsb'
+                    ]))
+                // offset += this[zoneFieldName].parse(buf, offset)
+            }
+            offset += this.zone1.parse(buf, offset)
+            offset += this.zone2.parse(buf, offset)
+            offset += this.zone3.parse(buf, offset)
+            offset += this.zone4.parse(buf, offset)
             return this.length
         }
     } as KeygroupChunk
 }
 
-
-export interface FilterChunk extends Chunk {
-    mode: number
-    cutoff: number
-    resonance: number
-    keyboardTrack: number
-    modInput1: number
-    modInput2: number
-    modInput3: number
-    headroom: number
-}
 
 export interface ZoneChunk extends Chunk {
     sampleNameLength: number

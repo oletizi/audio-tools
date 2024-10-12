@@ -9,6 +9,7 @@ import {
     newTuneChunk, OutputChunk,
     parseChunkHeader, ProgramChunk
 } from "../lib";
+
 describe('Basics...', async () => {
     it('Does the basics...', () => {
         assert.equal(0, 0)
@@ -191,5 +192,35 @@ describe('Basics...', async () => {
         expect(filt.modInput2).to.eq(0)
         expect(filt.modInput3).to.eq(0)
         expect(filt.headroom).to.eq(0)
+
+        expect(keygroup.zone1).to.exist
+        const zone1 = keygroup.zone1
+        expect(zone1.name).to.eq('zone')
+        expect(zone1.lowVelocity).to.eq(0)
+        expect(zone1.highVelocity).to.eq(127)
+        expect(zone1.fineTune).to.eq(0)
+        expect(zone1.filter).to.eq(0)
+        expect(zone1.panBalance).to.eq(0)
+        expect(zone1.playback).to.eq(6)
+        expect(zone1.output).to.eq(0)
+        expect(zone1.level).to.eq(-20)
+        expect(zone1.keyboardTrack).to.eq(1)
+        expect(zone1.velocity2StartLsb).to.eq(0)
+        expect(zone1.velocity2startMsb).to.eq(0)
+
+        expect(keygroup.zone2).to.exist
+        const zone2 = keygroup.zone2
+        expect(zone2.name).to.eq('zone')
+        expect(zone2.fineTune).to.eq(-10)
+        expect(zone2.level).to.eq(-20)
+
+
+        expect(keygroup.zone3).to.exist
+        const zone3 = keygroup.zone3
+        expect(zone3.name).to.eq('zone')
+
+        expect(keygroup.zone4).to.exist
+        const zone4 = keygroup.zone4
+        expect(zone4.name).to.eq('zone')
     })
 })
