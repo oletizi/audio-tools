@@ -1,14 +1,20 @@
 import {assert, expect} from 'chai'
 import fs from "fs/promises";
 import {
-    bytes2Number,
+    bytes2Number, Keygroup, Lfo1, Lfo2, Mods,
     newHeaderChunk, newKeygroupChunk,
     newLfo1Chunk, newLfo2Chunk, newModsChunk,
     newOutputChunk,
     newProgramChunk,
-    newTuneChunk, OutputChunk,
-    parseChunkHeader, ProgramChunk
+    newTuneChunk, Output, OutputChunk,
+    parseChunkHeader, Program, ProgramChunk, Tune
 } from "../lib";
+
+async function loadTestFile() {
+    const testFile = 'test/data/BASS.AKP'
+    const buf = await fs.readFile(testFile)
+    return buf;
+}
 
 describe('Basics...', async () => {
     it('Does the basics...', () => {
@@ -32,8 +38,7 @@ describe('Basics...', async () => {
     })
 
     it('Parses a program file', async () => {
-        const testFile = 'test/data/BASS.AKP'
-        const buf = await fs.readFile(testFile)
+        const buf = await loadTestFile();
         let offset = 0
 
         // Parse header
@@ -222,5 +227,65 @@ describe('Basics...', async () => {
         expect(keygroup.zone4).to.exist
         const zone4 = keygroup.zone4
         expect(zone4.name).to.eq('zone')
+    })
+
+    it('Writes a program file', async () => {
+        let inset = 0
+        let outset = 0
+        let checkpoint = 0
+        const buf = await loadTestFile();
+        const out = Buffer.alloc(buf.length, 0)
+
+        const header = newHeaderChunk()
+        const checkHeader = newHeaderChunk()
+        inset += header.parse(buf, inset)
+        outset += header.write(out, outset)
+        checkpoint += checkHeader.parse(out, checkpoint)
+        expect(checkHeader.name).to.eq(header.name)
+        expect(checkHeader.length).to.eq(header.length)
+
+        const program = newProgramChunk()
+        const checkProgram = newProgramChunk()
+
+        inset += program.parse(buf, inset)
+        outset += program.write(out, outset)
+        checkpoint += checkProgram.parse(out, checkpoint)
+        expect(checkProgram.name).to.eq(program.name)
+        expect(checkProgram.length).to.eq(program.length)
+        expect(checkProgram.programNumber).to.eq(program.programNumber)
+        expect(checkProgram.keygroupCount).to.eq(program.keygroupCount)
+    })
+})
+
+describe('Program', async () => {
+    it('Parses a program file...', async () => {
+        let offset = 0
+        const buf = await loadTestFile();
+        const program = new Program()
+
+        program.parse(buf, offset)
+        expect(program.getProgramNumber()).to.eq(0)
+        expect(program.getKeygroupCount()) .to.eq(1)
+
+        const output: Output = program.getOutput()
+        expect(output.loudness).to.eq(80)
+
+        const tune: Tune = program.getTune()
+        expect(tune.pitchBendUp).to.eq(2)
+        expect(tune.pitchBendDown).to.eq(2)
+
+        const lfo1: Lfo1 = program.getLfo1()
+        expect(lfo1.rate).to.eq(43)
+
+        const lfo2: Lfo2 = program.getLfo2()
+        expect(lfo2.rate).to.eq(0)
+
+        const mods: Mods = program.getMods()
+        expect(mods.panMod1Source).to.equal(8)
+
+        const keygroups: Keygroup[] = program.getKeygroups()
+        expect(keygroups.length).to.eq(program.getKeygroupCount())
+        const keygroup1 = keygroups[0]
+        expect(keygroup1.kloc).to.exist
     })
 })

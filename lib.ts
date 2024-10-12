@@ -25,6 +25,14 @@ function readByte(buf, offset): number {
 }
 
 
+function string2Bytes(str: string) {
+    const rv: number[] = []
+    for (let i = 0; i < str.length; i++) {
+        rv.push(str.charCodeAt(i))
+    }
+    return rv
+}
+
 /**
  * Validates the buffer from offset matches the expected data array. Returns the number of bytes read
  * @param buf
@@ -93,6 +101,21 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
     return spec.length
 }
 
+
+function writeFromSpec(buf, obj, spec, offset) {
+    const name = string2Bytes(obj.name)
+
+    for (let i = 0; i < name.length; i++, offset++) {
+        writeByte(buf, name[i], offset)
+    }
+    // !!!: This is weird. Buffer returns the offset + the bytes written, not the bytes written.
+    offset = buf.writeInt32LE(obj.length, offset)
+
+    for (let i = 0; i < spec.length; i++, offset++) {
+        writeByte(buf, obj[spec[i]], offset)
+    }
+}
+
 function newChunkFromSpec(chunkName: number[], spec: string[]) {
     return {
         parse(buf: Buffer, offset: number): number {
@@ -102,7 +125,8 @@ function newChunkFromSpec(chunkName: number[], spec: string[]) {
             return this.length + 8
         },
         write(buf: Buffer, offset: number): number {
-            return 0
+            writeFromSpec(buf, this, spec, offset)
+            return this.length + 8
         }
     }
 }
@@ -134,7 +158,6 @@ export function newHeaderChunk(): HeaderChunk {
     }
 }
 
-
 export interface ProgramChunk extends Chunk {
     programNumber: number
     keygroupCount: number
@@ -146,7 +169,7 @@ export function newProgramChunk(): ProgramChunk {
     return newChunkFromSpec(chunkName, ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"]) as ProgramChunk
 }
 
-export interface OutputChunk extends Chunk {
+export interface Output {
     loudness: number
     ampMod1: number
     panMod3: number
@@ -156,6 +179,9 @@ export interface OutputChunk extends Chunk {
     velocitySensitivity: number
 }
 
+export interface OutputChunk extends Output, Chunk {
+}
+
 const outputSpec = ['pad1', 'loudness', 'ampMod1', 'ampMod2', 'panMod1', 'panMod2', 'panMod3', 'velocitySensitivity']
 
 export function newOutputChunk(): OutputChunk {
@@ -163,7 +189,7 @@ export function newOutputChunk(): OutputChunk {
     return newChunkFromSpec(chunkName, outputSpec) as OutputChunk
 }
 
-export interface TuneChunk extends Chunk {
+export interface Tune {
     semiToneTune: number
     fineTune: number
     detuneC: number
@@ -184,6 +210,9 @@ export interface TuneChunk extends Chunk {
     aftertouch: number
 }
 
+export interface TuneChunk extends Chunk, Tune {
+}
+
 export function newTuneChunk(): TuneChunk {
     const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
     return newChunkFromSpec(chunkName, [
@@ -198,7 +227,7 @@ export function newTuneChunk(): TuneChunk {
     ]) as TuneChunk
 }
 
-export interface Lfo1Chunk extends Chunk {
+export interface Lfo1 {
     waveform: number
     rate: number
     delay: number
@@ -211,6 +240,9 @@ export interface Lfo1Chunk extends Chunk {
     depthMod: number
 }
 
+export interface Lfo1Chunk extends Chunk, Lfo1 {
+}
+
 export function newLfo1Chunk(): Lfo1Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
     return newChunkFromSpec(chunkName, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
@@ -218,7 +250,7 @@ export function newLfo1Chunk(): Lfo1Chunk {
 }
 
 
-export interface Lfo2Chunk extends Chunk {
+export interface Lfo2 {
     waveform: number
     rate: number
     delay: number
@@ -227,6 +259,9 @@ export interface Lfo2Chunk extends Chunk {
     rateMod: number
     delayMod: number
     depthMod: number
+}
+
+export interface Lfo2Chunk extends Chunk, Lfo2 {
 }
 
 export function newLfo2Chunk(): Lfo2Chunk {
@@ -247,7 +282,7 @@ export function newLfo2Chunk(): Lfo2Chunk {
     ]) as Lfo2Chunk
 }
 
-export interface ModsChunk extends Chunk {
+export interface Mods {
     ampMod1Source: number
     ampMod2Source: number
 
@@ -270,6 +305,8 @@ export interface ModsChunk extends Chunk {
     filterModInput2: number
     filterModInput3: number
 }
+
+export interface ModsChunk extends Chunk, Mods {}
 
 export function newModsChunk(): ModsChunk {
     const chunkName = [0x6d, 0x6f, 0x64, 0x73] // 'lfo '
@@ -316,7 +353,7 @@ export function newModsChunk(): ModsChunk {
 }
 
 
-export interface KeygroupChunk extends Chunk {
+export interface Keygroup {
     kloc: KlocChunk
     ampEnvelope: AmpEnvelopeChunk
     filterEnvelope: FilterEnvelopeChunk
@@ -327,6 +364,8 @@ export interface KeygroupChunk extends Chunk {
     zone3: ZoneChunk
     zone4: ZoneChunk
 }
+
+export interface KeygroupChunk extends Chunk, Keygroup {}
 
 export interface KlocChunk extends Chunk {
     lowNote: number
@@ -390,6 +429,23 @@ export interface FilterChunk extends Chunk {
     modInput2: number
     modInput3: number
     headroom: number
+}
+
+export interface ZoneChunk extends Chunk {
+    sampleNameLength: number
+    sampleName: number
+    lowVelocity: number
+    highVelocity: number
+    fineTune: number
+    semiToneTune: number
+    filter: number
+    panBalance: number
+    playback: number
+    output: number
+    level: number
+    keyboardTrack: number
+    velocity2StartLsb: number
+    velocity2startMsb: number
 }
 
 export function newKeygroupChunk() {
@@ -503,11 +559,11 @@ export function newKeygroupChunk() {
             // 20 character sample name
             const sampleNameSpec = []
             for (let i = 0; i < 20; i++) {
-                sampleNameSpec.push('c'+ i)
+                sampleNameSpec.push('c' + i)
             }
             // 12 unused fields after the sample name
             const zonePadSpec = []
-            for (let i=0; i< 12; i++) {
+            for (let i = 0; i < 12; i++) {
                 zonePadSpec.push(pad.padField())
             }
             for (let i = 0; i < 4; i++) {
@@ -539,19 +595,69 @@ export function newKeygroupChunk() {
 }
 
 
-export interface ZoneChunk extends Chunk {
-    sampleNameLength: number
-    sampleName: number
-    lowVelocity: number
-    highVelocity: number
-    fineTune: number
-    semiToneTune: number
-    filter: number
-    panBalance: number
-    playback: number
-    output: number
-    level: number
-    keyboardTrack: number
-    velocity2StartLsb: number
-    velocity2startMsb: number
+export class Program {
+    private readonly programChunk: ProgramChunk
+    private readonly headerChunk: HeaderChunk
+    private readonly outputChunk: OutputChunk
+    private readonly tuneChunk: TuneChunk
+    private readonly lfo1Chunk: Lfo1Chunk
+    private readonly lfo2Chunk: Lfo2Chunk
+    private readonly modsChunk: ModsChunk
+    private readonly keygroups : KeygroupChunk[] = []
+    constructor() {
+        this.headerChunk = newHeaderChunk()
+        this.programChunk = newProgramChunk()
+        this.outputChunk = newOutputChunk()
+        this.tuneChunk = newTuneChunk()
+        this.lfo1Chunk = newLfo1Chunk()
+        this.lfo2Chunk = newLfo2Chunk()
+        this.modsChunk = newModsChunk()
+    }
+
+    parse(buf: Buffer, offset: number) {
+        offset += this.headerChunk.parse(buf, offset)
+        offset += this.programChunk.parse(buf, offset)
+        offset += this.outputChunk.parse(buf, offset)
+        offset += this.tuneChunk.parse(buf, offset)
+        offset += this.lfo1Chunk.parse(buf, offset)
+        offset += this.lfo2Chunk.parse(buf, offset)
+        offset += this.modsChunk.parse(buf, offset)
+        for (let i=0; i<this.getKeygroupCount(); i++) {
+            const keygroup = newKeygroupChunk()
+            this.keygroups.push(keygroup)
+            offset += keygroup.parse(buf, offset)
+        }
+    }
+
+    getKeygroupCount() {
+        return this.programChunk.keygroupCount
+    }
+
+    getProgramNumber() {
+        return this.programChunk.programNumber
+    }
+
+    getOutput(): Output {
+        return this.outputChunk
+    }
+
+    getTune(): Tune {
+        return this.tuneChunk
+    }
+
+    getLfo1(): Lfo1 {
+        return this.lfo1Chunk
+    }
+
+    getLfo2(): Lfo2 {
+        return this.lfo2Chunk
+    }
+
+    getMods() : Mods {
+        return this.modsChunk;
+    }
+
+    getKeygroups() : Keygroup[] {
+        return Array.from(this.keygroups)
+    }
 }

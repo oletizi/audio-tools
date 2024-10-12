@@ -10,7 +10,7 @@ TODO:
 
 - [X] Parse each chunk type
 - [ ] Parse sample name in zones
-- [ ] Create a parser class that knows how to read parse the entire file, including iterating over the keygroups
+- [ ] Create a parser class that knows how to parse the entire file, including iterating over the keygroups
 - [ ] Implement chunk write methods
 - [ ] Create a writer class that knows how to take a Program abstraction and write it to a valid .AKP file
 - [ ] Create a text-based program format for an editable Program abstraction
