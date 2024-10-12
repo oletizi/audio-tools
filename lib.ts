@@ -334,6 +334,7 @@ class Pad {
         return 'pad' + this.padCount++
     }
 }
+
 export function newKeygroupChunk() {
     const chunkName = [0x6b, 0x67, 0x72, 0x70]
     return {
@@ -360,8 +361,8 @@ export function newKeygroupChunk() {
                 pad.padField()
             ])
             offset += this.kloc.parse(buf, offset)
-
-            this.ampEnvelope = newChunkFromSpec([0x65, 0x6e, 0x76, 0x20], [
+            const envChunkName = [0x65, 0x6e, 0x76, 0x20]
+            this.ampEnvelope = newChunkFromSpec(envChunkName, [
                 pad.padField(),
                 'attack',
                 pad.padField(),
@@ -383,6 +384,28 @@ export function newKeygroupChunk() {
                 pad.padField()
             ])
             offset += this.ampEnvelope.parse(buf, offset)
+
+            this.filterEnvelope = newChunkFromSpec(envChunkName, [
+                pad.padField(),
+                'attack',
+                pad.padField(),
+                'decay',
+                'release',
+                pad.padField(),
+                pad.padField(),
+                'sustain',
+                pad.padField(),
+                'depth',
+                'velocity2Attack',
+                pad.padField(),
+                'keyscale',
+                pad.padField(),
+                'onVelocity2Release',
+                'offVelocity2Release',
+                pad.padField(),
+                pad.padField()
+            ])
+            offset += this.filterEnvelope.parse(buf, offset)
             return this.length
         }
     } as KeygroupChunk
@@ -400,7 +423,15 @@ export interface AmpEnvelopeChunk extends Chunk {
 }
 
 export interface FilterEnvelopeChunk extends Chunk {
-
+    attack: number
+    decay: number
+    release: number
+    sustain: number
+    depth: number
+    velocity2Attack: number
+    keyscale: number
+    onVelocity2Release: number
+    offVelocity2Release: number
 }
 
 export interface AuxEnvelopeChunk extends Chunk {

@@ -141,13 +141,26 @@ describe('Basics...', async () => {
         expect(kloc.muteGroup).to.eq(0)
 
         expect(keygroup.ampEnvelope).to.exist
-        const ampEnv = keygroup.ampEnvelope
-        expect(ampEnv.name).to.eq('env ')
-        expect(ampEnv.attack).to.eq(1)
-        expect(ampEnv.decay).to.eq(50)
-        expect(ampEnv.sustain).to.eq(100)
-        expect(ampEnv.velocity2Attack).to.eq(0)
-        expect(ampEnv.onVelocity2Release).to.eq(0)
-        expect(ampEnv.offVelocity2Release).to.eq(0)
+        const ampenv = keygroup.ampEnvelope
+        expect(ampenv.name).to.eq('env ')
+        expect(ampenv.attack).to.eq(1)
+        expect(ampenv.decay).to.eq(50)
+        expect(ampenv.sustain).to.eq(100)
+        expect(ampenv.velocity2Attack).to.eq(0)
+        expect(ampenv.onVelocity2Release).to.eq(0)
+        expect(ampenv.offVelocity2Release).to.eq(0)
+
+        expect(keygroup.filterEnvelope).to.exist
+        const filtenv = keygroup.filterEnvelope
+        expect(filtenv.name).to.eq('env ')
+        expect(filtenv.attack).to.eq(3)
+        expect(filtenv.decay).to.eq(74)
+        expect(filtenv.sustain).to.eq(68)
+        expect(filtenv.release).to.eq(0)
+        expect(filtenv.depth).to.eq(7)
+        expect(filtenv.velocity2Attack).to.eq(0)
+        expect(filtenv.keyscale).to.eq(0)
+        expect(filtenv.onVelocity2Release).to.eq(0)
+        expect(filtenv.offVelocity2Release).to.eq(0)
     })
 })
