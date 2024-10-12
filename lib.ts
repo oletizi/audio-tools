@@ -78,6 +78,20 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
     return spec.length
 }
 
+function newChunkFromSpec(chunkName: number[], spec: string[]) {
+    return {
+        read(buf: Buffer, offset: number): number {
+            checkOrThrow(buf, chunkName, offset)
+            offset += parseChunkHeader(buf, this, offset)
+            readFromSpec(buf, this, spec, offset)
+            return this.length + 8
+        },
+        write(buf: Buffer, offset: number): number {
+            return 0
+        }
+    }
+}
+
 export interface HeaderChunk extends Chunk {
 }
 
@@ -111,32 +125,10 @@ export interface ProgramChunk extends Chunk {
     keygroupCount: number
 }
 
-const programSpec = ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"]
 
 export function newProgramChunk(): ProgramChunk {
     const chunkName = [0x70, 0x72, 0x67, 0x20] // 'prg '
-    const chunkLength = [0x6, 0, 0, 0]         //  6
-    return {
-        name: '',
-        length: 6,
-        programNumber: 0,
-        keygroupCount: 0,
-        read(buf, offset) {
-            checkOrThrow(buf, chunkName, offset)
-            offset += parseChunkHeader(buf, this, offset)
-            readFromSpec(buf, this, programSpec, offset)
-            return this.length + 8
-        },
-
-        write(buf, offset) {
-            offset += write(buf, chunkName, offset)
-            offset += write(buf, chunkLength, offset)
-            offset++ // unused byte after chunk length
-            offset += writeByte(buf, this.programNumber, offset)
-            offset += writeByte(buf, this.keygroupCount, offset)
-            return this.length + 8
-        }
-    }
+    return newChunkFromSpec(chunkName, ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"]) as ProgramChunk
 }
 
 export interface OutputChunk extends Chunk {
@@ -197,89 +189,37 @@ export interface TuneChunk extends Chunk {
     aftertouch: number
 }
 
-const tuneSpec = [
-    'pad1',
-    'semiToneTune', 'fineTune',
-    'detuneC', 'detuneCSharp', 'detuneD', 'detuneEFlat', 'detuneE', 'detuneF', 'detuneFSharp', 'detuneG', 'detuneGSharp',
-    'detuneA', 'detuneBFlat', 'detuneB',
-    'pitchBendUp',
-    'pitchBendDown',
-    'bendMode',
-    'aftertouch'
-]
-
-function newChunkFromSpec(chunkName: number[], spec: string[]) {
-    return {
-        read(buf: Buffer, offset: number): number {
-            checkOrThrow(buf, chunkName, offset)
-            offset += parseChunkHeader(buf, this, offset)
-            readFromSpec(buf, this, spec, offset)
-            return this.length + 8
-        },
-        write(buf: Buffer, offset: number): number {
-            return 0
-        }
-    }
-}
-
-export function newTuneChunk(): any {
+export function newTuneChunk(): TuneChunk {
     const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
-    return newChunkFromSpec(chunkName, tuneSpec)
+    return newChunkFromSpec(chunkName, [
+        'pad1',
+        'semiToneTune', 'fineTune',
+        'detuneC', 'detuneCSharp', 'detuneD', 'detuneEFlat', 'detuneE', 'detuneF', 'detuneFSharp', 'detuneG', 'detuneGSharp',
+        'detuneA', 'detuneBFlat', 'detuneB',
+        'pitchBendUp',
+        'pitchBendDown',
+        'bendMode',
+        'aftertouch'
+    ]) as TuneChunk
 }
 
-// export interface Lfo1Chunk extends Chunk {
-//     waveform: number
-//     rate: number
-//     delay: number
-//     depth: number
-//     sync: number
-//     modwheel: number
-//     aftertouch: number
-//     rateMod: number
-//     delayMod: number
-//     depthMod: number
-// }
-
-const lfo1Spec = ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
-    'rateMod', 'delayMod', 'depthMod']
+export interface Lfo1Chunk extends Chunk {
+    waveform: number
+    rate: number
+    delay: number
+    depth: number
+    sync: number
+    modwheel: number
+    aftertouch: number
+    rateMod: number
+    delayMod: number
+    depthMod: number
+}
 
 export function newLfo1Chunk(): any {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    return newChunkFromSpec(chunkName, lfo1Spec)
-    // return {
-    //     name: '',
-    //     length: -1,
-    //     waveform: 0,
-    //     rate: 0,
-    //     delay: 0,
-    //     depth: 0,
-    //     sync: 0,
-    //     modwheel: 0,
-    //     aftertouch: 0,
-    //     rateMod: 0,
-    //     delayMod: 0,
-    //     depthMod: 0,
-    //     read(buf: Buffer, offset: number): number {
-    //         checkOrThrow(buf, chunkName, offset)
-    //         offset += parseChunkHeader(buf, this, offset)
-    //         offset++ // unused byte
-    //         this.waveform = readByte(buf, offset++)
-    //         this.rate = readByte(buf, offset++)
-    //         this.delay = readByte(buf, offset++)
-    //         this.depth = readByte(buf, offset++)
-    //         this.lfoSync = readByte(buf, offset++)
-    //         offset++ // unused byte
-    //         this.modwheel = readByte(buf, offset++)
-    //         this.aftertouch = readByte(buf, offset++)
-    //         this.rateMod = readByte(buf, offset++)
-    //         this.delayMod = readByte(buf, offset++)
-    //         this.depthMod = readByte(buf, offset++)
-    //         return this.length + 8
-    //     },
-    //     write(buf: Buffer, offset: number): number {
-    //         return 0;
-    //     }
-    // }
+    return newChunkFromSpec(chunkName, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
+        'rateMod', 'delayMod', 'depthMod'])
 }
 
 

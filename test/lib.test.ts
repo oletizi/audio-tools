@@ -6,8 +6,8 @@ import {
     newLfo1Chunk, newLfo2Chunk,
     newOutputChunk,
     newProgramChunk,
-    newTuneChunk,
-    parseChunkHeader
+    newTuneChunk, OutputChunk,
+    parseChunkHeader, ProgramChunk
 } from "../lib";
 
 describe('Basics...', async () => {
@@ -19,9 +19,9 @@ describe('Basics...', async () => {
         assert.equal(bytes2Number(bytes), 6)
     })
 
-    it ('Parses a chunk header...', () => {
-        const buf = Buffer.from( [
-            0x6f, 0x75, 0x74,  0x20, // 'out '
+    it('Parses a chunk header...', () => {
+        const buf = Buffer.from([
+            0x6f, 0x75, 0x74, 0x20, // 'out '
             0x08, 0x00, 0x00, 0x00   //  8
         ])
         const chunk = newOutputChunk()
@@ -42,12 +42,12 @@ describe('Basics...', async () => {
         expect(offset).to.be.greaterThan(0)
 
         // Parse program chunk
-        const program = newProgramChunk()
+        const program: ProgramChunk = newProgramChunk()
         offset += program.read(buf, offset)
         expect(program.programNumber).to.equal(0)
         expect(program.keygroupCount).to.equal(1)
 
-        const output = newOutputChunk()
+        const output: OutputChunk = newOutputChunk()
         offset += output.read(buf, offset)
         expect(output.loudness).to.equal(80)
         expect(output.ampMod1).to.equal(0)
