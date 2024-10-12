@@ -145,27 +145,7 @@ const outputSpec = ['pad1', 'loudness', 'ampMod1', 'ampMod2', 'panMod1', 'panMod
 
 export function newOutputChunk(): OutputChunk {
     const chunkName = [0x6f, 0x75, 0x74, 0x20]   // 'out '
-    const pad = 0
-    return {
-        name: '',
-        length: -1,
-        loudness: 84,
-        ampMod1: 0,
-        ampMod2: 0,
-        panMod1: 0,
-        panMod2: 0,
-        panMod3: 0,
-        velocitySensitivity: 24,
-        read(buf: Buffer, offset: number): number {
-            checkOrThrow(buf, chunkName, offset)
-            offset += parseChunkHeader(buf, this, offset)
-            readFromSpec(buf, this, outputSpec, offset)
-            return this.length + 8
-        },
-        write(buf: Buffer, offset: number): number {
-            return 0;
-        }
-    }
+    return newChunkFromSpec(chunkName, outputSpec) as OutputChunk
 }
 
 export interface TuneChunk extends Chunk {
