@@ -7,7 +7,7 @@ import {
     newOutputChunk,
     newProgramChunk, newProgramFromBuffer, newProgramFromJson,
     newTuneChunk, Output, OutputChunk,
-    parseChunkHeader, Program, ProgramChunk, Tune
+    parseChunkHeader, Program, ProgramChunk, Tune, Zone
 } from "../lib";
 
 async function loadTestFile() {
@@ -339,7 +339,7 @@ describe('JSON Program', async () => {
         const json = await fs.readFile('default-program.json')
         const program = newProgramFromJson(json.toString())
         expect(program.getProgramNumber()).to.eq(0)
-        expect(program.getKeygroupCount()).to.eq(0)
+        expect(program.getKeygroupCount()).to.eq(1)
         expect(program.getOutput()).to.exist
         const output = program.getOutput()
         expect(output.loudness).to.eq(85)
@@ -460,5 +460,21 @@ describe('JSON Program', async () => {
         expect(filter.modInput2).to.eq(0)
         expect(filter.modInput3).to.eq(0)
         expect(filter.headroom).to.eq(0)
+        expect(keygroup.zone1.sampleName).to.eq('smp1')
+        expect(keygroup.zone1.sampleNameLength).to.eq(4)
+        for (const zone:Zone of [keygroup.zone1, keygroup.zone2, keygroup.zone3, keygroup.zone4]) {
+            expect(zone.lowVelocity).to.eq(21)
+            expect(zone.highVelocity).to.eq(127)
+            expect(zone.fineTune).to.eq(0)
+            expect(zone.semiToneTune).to.eq(0)
+            expect(zone.filter).to.eq(0)
+            expect(zone.panBalance).to.eq(0)
+            expect(zone.playback).to.eq(4)
+            expect(zone.output).to.eq(0)
+            expect(zone.level).to.eq(0)
+            expect(zone.keyboardTrack).to.eq(1)
+            expect(zone.velocity2StartLsb).to.eq(0)
+            expect(zone.velocity2StartMsb).to.eq(0)
+        }
     })
 })

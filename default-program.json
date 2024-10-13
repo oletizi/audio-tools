@@ -1,6 +1,6 @@
 {
   "programNumber": 0,
-  "keygroupCount": 0,
+  "keygroupCount": 1,
   "output": {
     "loudness": 85,
     "ampMod1": 0,
@@ -131,6 +131,66 @@
         "modInput2": 0,
         "modInput3": 0,
         "headroom": 0
+      },
+      "zone1": {
+        "sampleName": "smp1",
+        "lowVelocity": 21,
+        "highVelocity": 127,
+        "fineTune": 0,
+        "semiToneTune": 0,
+        "filter": 0,
+        "panBalance": 0,
+        "playback": 4,
+        "output": 0,
+        "level": 0,
+        "keyboardTrack": 1,
+        "velocity2StartLsb": 0,
+        "velocity2StartMsb": 0
+      },
+      "zone2": {
+        "sampleName": "",
+        "lowVelocity": 21,
+        "highVelocity": 127,
+        "fineTune": 0,
+        "semiToneTune": 0,
+        "filter": 0,
+        "panBalance": 0,
+        "playback": 4,
+        "output": 0,
+        "level": 0,
+        "keyboardTrack": 1,
+        "velocity2StartLsb": 0,
+        "velocity2StartMsb": 0
+      },
+      "zone3": {
+        "sampleName": "",
+        "lowVelocity": 21,
+        "highVelocity": 127,
+        "fineTune": 0,
+        "semiToneTune": 0,
+        "filter": 0,
+        "panBalance": 0,
+        "playback": 4,
+        "output": 0,
+        "level": 0,
+        "keyboardTrack": 1,
+        "velocity2StartLsb": 0,
+        "velocity2StartMsb": 0
+      },
+      "zone4": {
+        "sampleName": "",
+        "lowVelocity": 21,
+        "highVelocity": 127,
+        "fineTune": 0,
+        "semiToneTune": 0,
+        "filter": 0,
+        "panBalance": 0,
+        "playback": 4,
+        "output": 0,
+        "level": 0,
+        "keyboardTrack": 1,
+        "velocity2StartLsb": 0,
+        "velocity2StartMsb": 0
       }
     }
   ]

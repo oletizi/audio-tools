@@ -464,7 +464,7 @@ export interface Zone {
     level: number
     keyboardTrack: number
     velocity2StartLsb: number
-    velocity2startMsb: number
+    velocity2StartMsb: number
 }
 
 export interface ZoneChunk extends Chunk, Zone {
@@ -591,19 +591,24 @@ export function newKeygroupChunk() {
         'level',
         'keyboardTrack',
         'velocity2StartLsb',
-        'velocity2startMsb'
+        'velocity2StartMsb'
     ]);
 
+    // XXX: Ugly
+    const zones = []
+    for (let i=0; i<4; i++) {
+        zones[i]  = newChunkFromSpec(zoneChunkName, zoneChunkSpec)
+    }
     return {
         kloc: newChunkFromSpec(klocChunkName, klocChunkSpec),
         ampEnvelope: newChunkFromSpec(envChunkName, ampEnvelopeChunkSpec),
         filterEnvelope: newChunkFromSpec(envChunkName, filterEnvelopeChunkName),
         auxEnvelope: newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec),
         filter: newChunkFromSpec(filterChunkName, filterChunkSpec),
-        zone1: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
-        zone2: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
-        zone3: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
-        zone4: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
+        zone1: zones[0],
+        zone2: zones[1],
+        zone3: zones[2],
+        zone4: zones[3],
         parse(buf, offset): number {
 
             checkOrThrow(buf, keygroupChunkName, offset)
@@ -874,6 +879,26 @@ class BasicProgram implements Program {
             destFilt.modInput2 = srcFilt.modInput2
             destFilt.modInput3 = srcFilt.modInput3
             destFilt.headroom = srcFilt.headroom
+
+            for (let j=1; j<=4; j++) {
+                let zoneName = `zone${j}`;
+                const srcZone = obj.keygroups[i][zoneName]
+                const destZone = keygroup[zoneName]
+                destZone.sampleName = srcZone.sampleName
+                destZone.sampleNameLength = destZone.sampleName.length
+                destZone.lowVelocity = srcZone.lowVelocity
+                destZone.highVelocity = srcZone.highVelocity
+                destZone.fineTune = srcZone.fineTune
+                destZone.semiToneTune = srcZone.semiToneTune
+                destZone.filter = srcZone.filter
+                destZone.panBalance = srcZone.panBalance
+                destZone.playback = srcZone.playback
+                destZone.output = srcZone.output
+                destZone.level = srcZone.level
+                destZone.keyboardTrack = srcZone.keyboardTrack
+                destZone.velocity2StartLsb = srcZone.velocity2StartLsb
+                destZone.velocity2StartMsb = srcZone.velocity2StartMsb
+            }
         }
     }
 
