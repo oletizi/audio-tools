@@ -51,5 +51,24 @@
     "rateMod": 0,
     "delayMod": 0,
     "depthMod": 0
+  },
+  "mods": {
+    "ampMod1Source": 6,
+    "ampMod2Source": 3,
+    "panMod1Source": 8,
+    "panMod2Source": 6,
+    "panMod3Source": 1,
+    "lfo1RateModSource": 6,
+    "lfo1DelayModSource": 6,
+    "lfo1DepthModSource": 6,
+    "lfo2RateModSource": 0,
+    "lfo2DelayModSource": 0,
+    "lfo2DepthModSource": 0,
+    "pitchMod1Source": 7,
+    "pitchMod2Source": 11,
+    "ampModSource": 5,
+    "filterModInput1": 5,
+    "filterModInput2": 8,
+    "filterModInput3": 9
   }
 }

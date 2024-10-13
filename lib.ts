@@ -795,6 +795,24 @@ class BasicProgram implements Program {
         this.lfo2Chunk.rateMod = obj.lfo2.rateMod
         this.lfo2Chunk.delayMod = obj.lfo2.delayMod
         this.lfo2Chunk.depthMod = obj.lfo2.depthMod
+
+        this.modsChunk.ampMod1Source = obj.mods.ampMod1Source
+        this.modsChunk.ampMod2Source = obj.mods.ampMod2Source
+        this.modsChunk.panMod1Source = obj.mods.panMod1Source
+        this.modsChunk.panMod2Source = obj.mods.panMod2Source
+        this.modsChunk.panMod3Source = obj.mods.panMod3Source
+        this.modsChunk.lfo1RateModSource = obj.mods.lfo1RateModSource
+        this.modsChunk.lfo1DelayModSource = obj.mods.lfo1DelayModSource
+        this.modsChunk.lfo1DepthModSource = obj.mods.lfo1DepthModSource
+        this.modsChunk.lfo2RateModSource = obj.mods.lfo2RateModSource
+        this.modsChunk.lfo2DelayModSource = obj.mods.lfo2DelayModSource
+        this.modsChunk.lfo2DepthModSource = obj.mods.lfo2DepthModSource
+        this.modsChunk.pitchMod1Source = obj.mods.pitchMod1Source
+        this.modsChunk.pitchMod2Source = obj.mods.pitchMod2Source
+        this.modsChunk.ampModSource = obj.mods.ampModSource
+        this.modsChunk.filterModInput1 = obj.mods.filterModInput1
+        this.modsChunk.filterModInput2 = obj.mods.filterModInput2
+        this.modsChunk.filterModInput3 = obj.mods.filterModInput3
     }
 
     getKeygroupCount() {
