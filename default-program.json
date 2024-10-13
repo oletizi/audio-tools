@@ -106,6 +106,31 @@
         "keyscale": 0,
         "onVelocity2Release": 0,
         "offVelocity2Release": 0
+      },
+      "auxEnvelope": {
+        "rate1": 0,
+        "rate2": 50,
+        "rate3": 50,
+        "rate4": 15,
+        "level1": 100,
+        "level2": 100,
+        "level3": 100,
+        "level4": 0,
+        "velocity2Rate1": 0,
+        "keyboard2Rate2and4": 0,
+        "velocity2Rate4": 0,
+        "offVelocity2Rate4": 0,
+        "velocity2OutLevel": 0
+      },
+      "filter": {
+        "mode": 0,
+        "cutoff": 100,
+        "resonance": 0,
+        "keyboardTrack": 0,
+        "modInput1": 0,
+        "modInput2": 0,
+        "modInput3": 0,
+        "headroom": 0
       }
     }
   ]

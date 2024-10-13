@@ -601,7 +601,7 @@ export function newKeygroupChunk() {
         auxEnvelope: newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec),
         filter: newChunkFromSpec(filterChunkName, filterChunkSpec),
         zone1: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
-        zone2: newChunkFromSpec(zoneChunkName,zoneChunkSpec),
+        zone2: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
         zone3: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
         zone4: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
         parse(buf, offset): number {
@@ -852,6 +852,28 @@ class BasicProgram implements Program {
             destFiltEnv.keyscale = srcFiltEnv.keyscale
             destFiltEnv.onVelocity2Release = srcFiltEnv.onVelocity2Release
             destFiltEnv.offVelocity2Release = srcFiltEnv.offVelocity2Release
+
+            const srcAuxEnv = obj.keygroups[i].auxEnvelope
+            const destAuxEnv = keygroup.auxEnvelope
+            destAuxEnv.rate1 = srcAuxEnv.rate1
+            destAuxEnv.rate2 = srcAuxEnv.rate2
+            destAuxEnv.rate3 = srcAuxEnv.rate3
+            destAuxEnv.rate4 = srcAuxEnv.rate4
+            destAuxEnv.level1 = srcAuxEnv.level1
+            destAuxEnv.level2 = srcAuxEnv.level2
+            destAuxEnv.level3 = srcAuxEnv.level3
+            destAuxEnv.level4 = srcAuxEnv.level4
+
+            const srcFilt = obj.keygroups[i].filter
+            const destFilt = keygroup.filter
+            destFilt.mode = srcFilt.mode
+            destFilt.cutoff = srcFilt.cutoff
+            destFilt.resonance = srcFilt.resonance
+            destFilt.keyboardTrack = srcFilt.keyboardTrack
+            destFilt.modInput1 = srcFilt.modInput1
+            destFilt.modInput2 = srcFilt.modInput2
+            destFilt.modInput3 = srcFilt.modInput3
+            destFilt.headroom = srcFilt.headroom
         }
     }
 

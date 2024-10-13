@@ -440,5 +440,25 @@ describe('JSON Program', async () => {
         expect(filterEnvelope.keyscale).to.eq(0)
         expect(filterEnvelope.onVelocity2Release).to.eq(0)
         expect(filterEnvelope.offVelocity2Release).to.eq(0)
+
+        const auxEnvelope = keygroup.auxEnvelope
+        expect(auxEnvelope.rate1).to.eq(0)
+        expect(auxEnvelope.rate2).to.eq(50)
+        expect(auxEnvelope.rate3).to.eq(50)
+        expect(auxEnvelope.rate4).to.eq(15)
+        expect(auxEnvelope.level1).to.eq(100)
+        expect(auxEnvelope.level2).to.eq(100)
+        expect(auxEnvelope.level3).to.eq(100)
+        expect(auxEnvelope.level4).to.eq(0)
+
+        const filter = keygroup.filter
+        expect(filter.mode).to.eq(0)
+        expect(filter.cutoff).to.eq(100)
+        expect(filter.resonance).to.eq(0)
+        expect(filter.keyboardTrack).to.eq(0)
+        expect(filter.modInput1).to.eq(0)
+        expect(filter.modInput2).to.eq(0)
+        expect(filter.modInput3).to.eq(0)
+        expect(filter.headroom).to.eq(0)
     })
 })
