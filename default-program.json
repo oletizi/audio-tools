@@ -70,5 +70,22 @@
     "filterModInput1": 5,
     "filterModInput2": 8,
     "filterModInput3": 9
-  }
+  },
+  "keygroups": [
+    {
+      "kloc": {
+        "lowNote": 21,
+        "highNote": 127,
+        "semiToneTune": 0,
+        "fineTune": 0,
+        "overrideFx": 0,
+        "fxSendLevel": 0,
+        "pitchMod1": 0,
+        "pitchMod2": 0,
+        "ampMod": 0,
+        "zoneXFade": 0,
+        "muteGroup": 0
+      }
+    }
+  ]
 }

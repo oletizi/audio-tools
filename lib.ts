@@ -595,31 +595,27 @@ export function newKeygroupChunk() {
     ]);
 
     return {
+        kloc: newChunkFromSpec(klocChunkName, klocChunkSpec),
+        ampEnvelope: newChunkFromSpec(envChunkName, ampEnvelopeChunkSpec),
+        filterEnvelope: newChunkFromSpec(envChunkName, filterEnvelopeChunkName),
+        auxEnvelope: newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec),
+        filter: newChunkFromSpec(filterChunkName, filterChunkSpec),
+        zone1: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
+        zone2: newChunkFromSpec(zoneChunkName,zoneChunkSpec),
+        zone3: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
+        zone4: newChunkFromSpec(zoneChunkName, zoneChunkSpec),
         parse(buf, offset): number {
 
             checkOrThrow(buf, keygroupChunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
 
-            this.kloc = newChunkFromSpec(klocChunkName, klocChunkSpec)
             offset += this.kloc.parse(buf, offset)
-
-            this.ampEnvelope = newChunkFromSpec(envChunkName, ampEnvelopeChunkSpec)
             offset += this.ampEnvelope.parse(buf, offset)
 
-            this.filterEnvelope = newChunkFromSpec(envChunkName, filterEnvelopeChunkName)
             offset += this.filterEnvelope.parse(buf, offset)
-
-            this.auxEnvelope = newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec)
             offset += this.auxEnvelope.parse(buf, offset)
-
-            this.filter = newChunkFromSpec(filterChunkName, filterChunkSpec)
             offset += this.filter.parse(buf, offset)
 
-            for (let i = 0; i < 4; i++) {
-                let zoneFieldName = `zone${i + 1}`;
-                this[zoneFieldName] = newChunkFromSpec(zoneChunkName, zoneChunkSpec)
-                // offset += this[zoneFieldName].parse(buf, offset)
-            }
             offset += this.zone1.parse(buf, offset)
             parseSampleName(this.zone1)
 
@@ -813,6 +809,27 @@ class BasicProgram implements Program {
         this.modsChunk.filterModInput1 = obj.mods.filterModInput1
         this.modsChunk.filterModInput2 = obj.mods.filterModInput2
         this.modsChunk.filterModInput3 = obj.mods.filterModInput3
+
+        this.keygroups.length = 0
+        for (let i = 0; i < obj.keygroups.length; i++) {
+            const keygroup = newKeygroupChunk()
+            this.keygroups.push(keygroup)
+
+            const srcKloc = obj.keygroups[i].kloc
+            const destKloc = keygroup.kloc
+
+            destKloc.lowNote = srcKloc.lowNote
+            destKloc.highNote = srcKloc.highNote
+            destKloc.semiToneTune = srcKloc.semiToneTune
+            destKloc.fineTune = srcKloc.fineTune
+            destKloc.overrideFx = srcKloc.overrideFx
+            destKloc.fxSendLevel = srcKloc.fxSendLevel
+            destKloc.pitchMod1 = srcKloc.pitchMod1
+            destKloc.pitchMod2 = srcKloc.pitchMod2
+            destKloc.ampMod = srcKloc.ampMod
+            destKloc.zoneXFade = srcKloc.zoneXFade
+            destKloc.muteGroup = srcKloc.muteGroup
+        }
     }
 
     getKeygroupCount() {

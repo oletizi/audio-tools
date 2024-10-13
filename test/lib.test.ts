@@ -404,5 +404,19 @@ describe('JSON Program', async () => {
         expect(mods.filterModInput1).to.eq(5)
         expect(mods.filterModInput2).to.eq(8)
         expect(mods.filterModInput3).to.eq(9)
+
+        const keygroup = program.getKeygroups()[0]
+        const kloc = keygroup.kloc
+        expect(kloc.lowNote).to.eq(21)
+        expect(kloc.highNote).to.eq(127)
+        expect(kloc.semiToneTune).to.eq(0)
+        expect(kloc.fineTune).to.eq(0)
+        expect(kloc.overrideFx).to.eq(0)
+        expect(kloc.fxSendLevel).to.eq(0)
+        expect(kloc.pitchMod1).to.eq(0)
+        expect(kloc.pitchMod2).to.eq(0)
+        expect(kloc.ampMod).to.eq(0)
+        expect(kloc.zoneXFade).to.eq(0)
+        expect(kloc.muteGroup).to.eq(0)
     })
 })
