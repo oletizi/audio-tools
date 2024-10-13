@@ -1,0 +1,13 @@
+{
+  "programNumber": 0,
+  "keygroupCount": 0,
+  "output": {
+    "loudness": 85,
+    "ampMod1": 0,
+    "ampMod2": 0,
+    "panMod1": 0,
+    "panMod2": 0,
+    "panMod3": 0,
+    "velocitySensitivity": 25
+  }
+}

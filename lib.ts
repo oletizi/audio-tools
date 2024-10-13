@@ -80,6 +80,7 @@ export interface Chunk {
  * @param offset
  */
 export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): number {
+
     chunk.name = ''
     for (let i = 0; i < 4; i++, offset++) {
         chunk.name += String.fromCharCode(readByte(buf, offset))
@@ -470,140 +471,153 @@ export interface ZoneChunk extends Chunk, Zone {
 }
 
 export function newKeygroupChunk() {
-    const chunkName = [0x6b, 0x67, 0x72, 0x70]
+    const pad = new Pad()
+    const keygroupChunkName = [0x6b, 0x67, 0x72, 0x70]
+    const klocChunkName = [0x6b, 0x6c, 0x6f, 0x63];
+    const klocChunkSpec = [
+        pad.padField(),
+        pad.padField(),
+        pad.padField(),
+        pad.padField(),
+        'lowNote',
+        'highNote',
+        'semiToneTune',
+        'fineTune',
+        'overrideFx',
+        'fxSendLevel',
+        'pitchMod1',
+        'pitchMod2',
+        'ampMod',
+        'zoneXFade',
+        'muteGroup',
+        pad.padField()
+    ]
+    const envChunkName = [0x65, 0x6e, 0x76, 0x20]
+    const ampEnvelopeChunkSpec = [
+        pad.padField(),
+        'attack',
+        pad.padField(),
+        'decay',
+        'release',
+        pad.padField(),
+        pad.padField(),
+        'sustain',
+        pad.padField(),
+        pad.padField(),
+        'velocity2Attack',
+        pad.padField(),
+        'keyscale',
+        pad.padField(),
+        'onVelocity2Release',
+        pad.padField(),
+        'offVelocity2Release',
+        pad.padField(),
+        pad.padField()
+    ];
+    const filterEnvelopeChunkName = [
+        pad.padField(),
+        'attack',
+        pad.padField(),
+        'decay',
+        'release',
+        pad.padField(),
+        pad.padField(),
+        'sustain',
+        pad.padField(),
+        'depth',
+        'velocity2Attack',
+        pad.padField(),
+        'keyscale',
+        pad.padField(),
+        'onVelocity2Release',
+        'offVelocity2Release',
+        pad.padField(),
+        pad.padField()
+    ];
+    const auxEnvelopeChunkSpec = [
+        pad.padField(),
+        'rate1',
+        'rate2',
+        'rate3',
+        'rate4',
+        'level1',
+        'level2',
+        'level3',
+        'level4',
+        pad.padField(),
+        'velocity2Rate1',
+        pad.padField(),
+        'keyboard2Rate2and4',
+        pad.padField(),
+        'velocity2Rate4',
+        'offVelocity2Rate4',
+        'velocity2OutLevel',
+        pad.padField()
+    ];
+    const filterChunkName = [0x66, 0x69, 0x6c, 0x74];
+    const filterChunkSpec = [
+        pad.padField(),
+        'mode',
+        'cutoff',
+        'resonance',
+        'keyboardTrack',
+        'modInput1',
+        'modInput2',
+        'modInput3',
+        'headroom',
+        pad.padField()
+    ];
+    // 20 character sample name
+    const sampleNameSpec = []
+    for (let i = 0; i < 20; i++) {
+        sampleNameSpec.push('c' + i)
+    }
+    // 12 unused fields after the sample name
+    const zonePadSpec = []
+    for (let i = 0; i < 12; i++) {
+        zonePadSpec.push(pad.padField())
+    }
+
+    const zoneChunkName = [0x7a, 0x6f, 0x6e, 0x65];
+    const zoneChunkSpec = [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
+        'lowVelocity',
+        'highVelocity',
+        'fineTune',
+        'semiToneTune',
+        'filter',
+        'panBalance',
+        'playback',
+        'output',
+        'level',
+        'keyboardTrack',
+        'velocity2StartLsb',
+        'velocity2startMsb'
+    ]);
+
     return {
         parse(buf, offset): number {
-            const pad = new Pad()
-            checkOrThrow(buf, chunkName, offset)
+
+            checkOrThrow(buf, keygroupChunkName, offset)
             offset += parseChunkHeader(buf, this, offset)
-            this.kloc = newChunkFromSpec([0x6b, 0x6c, 0x6f, 0x63], [
-                pad.padField(),
-                pad.padField(),
-                pad.padField(),
-                pad.padField(),
-                'lowNote',
-                'highNote',
-                'semiToneTune',
-                'fineTune',
-                'overrideFx',
-                'fxSendLevel',
-                'pitchMod1',
-                'pitchMod2',
-                'ampMod',
-                'zoneXFade',
-                'muteGroup',
-                pad.padField()
-            ])
+
+            this.kloc = newChunkFromSpec(klocChunkName, klocChunkSpec)
             offset += this.kloc.parse(buf, offset)
-            const envChunkName = [0x65, 0x6e, 0x76, 0x20]
-            this.ampEnvelope = newChunkFromSpec(envChunkName, [
-                pad.padField(),
-                'attack',
-                pad.padField(),
-                'decay',
-                'release',
-                pad.padField(),
-                pad.padField(),
-                'sustain',
-                pad.padField(),
-                pad.padField(),
-                'velocity2Attack',
-                pad.padField(),
-                'keyscale',
-                pad.padField(),
-                'onVelocity2Release',
-                pad.padField(),
-                'offVelocity2Release',
-                pad.padField(),
-                pad.padField()
-            ])
+
+            this.ampEnvelope = newChunkFromSpec(envChunkName, ampEnvelopeChunkSpec)
             offset += this.ampEnvelope.parse(buf, offset)
 
-            this.filterEnvelope = newChunkFromSpec(envChunkName, [
-                pad.padField(),
-                'attack',
-                pad.padField(),
-                'decay',
-                'release',
-                pad.padField(),
-                pad.padField(),
-                'sustain',
-                pad.padField(),
-                'depth',
-                'velocity2Attack',
-                pad.padField(),
-                'keyscale',
-                pad.padField(),
-                'onVelocity2Release',
-                'offVelocity2Release',
-                pad.padField(),
-                pad.padField()
-            ])
+            this.filterEnvelope = newChunkFromSpec(envChunkName, filterEnvelopeChunkName)
             offset += this.filterEnvelope.parse(buf, offset)
 
-            this.auxEnvelope = newChunkFromSpec(envChunkName, [
-                pad.padField(),
-                'rate1',
-                'rate2',
-                'rate3',
-                'rate4',
-                'level1',
-                'level2',
-                'level3',
-                'level4',
-                pad.padField(),
-                'velocity2Rate1',
-                pad.padField(),
-                'keyboard2Rate2and4',
-                pad.padField(),
-                'velocity2Rate4',
-                'offVelocity2Rate4',
-                'velocity2OutLevel',
-                pad.padField()
-            ])
+            this.auxEnvelope = newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec)
             offset += this.auxEnvelope.parse(buf, offset)
 
-            this.filter = newChunkFromSpec([0x66, 0x69, 0x6c, 0x74], [
-                pad.padField(),
-                'mode',
-                'cutoff',
-                'resonance',
-                'keyboardTrack',
-                'modInput1',
-                'modInput2',
-                'modInput3',
-                'headroom',
-                pad.padField()
-            ])
+            this.filter = newChunkFromSpec(filterChunkName, filterChunkSpec)
             offset += this.filter.parse(buf, offset)
 
-            // 20 character sample name
-            const sampleNameSpec = []
-            for (let i = 0; i < 20; i++) {
-                sampleNameSpec.push('c' + i)
-            }
-            // 12 unused fields after the sample name
-            const zonePadSpec = []
-            for (let i = 0; i < 12; i++) {
-                zonePadSpec.push(pad.padField())
-            }
             for (let i = 0; i < 4; i++) {
                 let zoneFieldName = `zone${i + 1}`;
-                this[zoneFieldName] = newChunkFromSpec([0x7a, 0x6f, 0x6e, 0x65],
-                    [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
-                        'lowVelocity',
-                        'highVelocity',
-                        'fineTune',
-                        'semiToneTune',
-                        'filter',
-                        'panBalance',
-                        'playback',
-                        'output',
-                        'level',
-                        'keyboardTrack',
-                        'velocity2StartLsb',
-                        'velocity2startMsb'
-                    ]))
+                this[zoneFieldName] = newChunkFromSpec(zoneChunkName, zoneChunkSpec)
                 // offset += this[zoneFieldName].parse(buf, offset)
             }
             offset += this.zone1.parse(buf, offset)
@@ -619,19 +633,69 @@ export function newKeygroupChunk() {
             parseSampleName(this.zone4)
 
             return this.length
+        },
+        write(buf: Buffer, offset: number): number {
+            // offset += this.headerChunk.write(buf, offset)
+            for (let i = 0; i < keygroupChunkName.length; i++) {
+                offset += writeByte(buf, keygroupChunkName[i], offset)
+            }
+            // offset += writeByte(buf, this.chunkSize, offset)
+            buf.writeInt32LE(this.length, offset)
+            offset += 4
+
+            offset += this.kloc.write(buf, offset)
+            offset += this.ampEnvelope.write(buf, offset)
+            offset += this.filterEnvelope.write(buf, offset)
+            offset += this.auxEnvelope.write(buf, offset)
+            offset += this.filter.write(buf, offset)
+            offset += this.zone1.write(buf, offset)
+            offset += this.zone2.write(buf, offset)
+            offset += this.zone3.write(buf, offset)
+            offset += this.zone4.write(buf, offset)
+            return this.length + 8
         }
+
     } as KeygroupChunk
+
 }
 
 // XXX: Pretty crappy way to do this
-function parseSampleName(zone:ZoneChunk) {
+function parseSampleName(zone: ZoneChunk) {
     zone.sampleName = ''
-    for (let i=0; i<zone.sampleNameLength; i++) {
+    for (let i = 0; i < zone.sampleNameLength; i++) {
         zone.sampleName += String.fromCharCode(zone[`c${i}`])
     }
 }
 
-export class Program {
+
+export interface Program {
+    getKeygroupCount(): number;
+
+    getProgramNumber(): number;
+
+    getOutput(): Output;
+
+    getTune(): Tune;
+
+    getLfo1(): Lfo1;
+
+    getLfo2(): Lfo2;
+
+    getMods(): Mods;
+
+    getKeygroups(): Keygroup[];
+
+    writeToBuffer(buf:Buffer, offset:number)
+
+}
+
+export function newProgramFromBuffer(buf) : Program {
+    const program = new BinaryProgram()
+    program.parse(buf)
+    return program
+}
+
+class BinaryProgram implements Program {
     private readonly programChunk: ProgramChunk
     private readonly headerChunk: HeaderChunk
     private readonly outputChunk: OutputChunk
@@ -651,7 +715,7 @@ export class Program {
         this.modsChunk = newModsChunk()
     }
 
-    parse(buf: Buffer, offset: number) {
+    parse(buf: Buffer, offset: number = 0) {
         offset += this.headerChunk.parse(buf, offset)
         offset += this.programChunk.parse(buf, offset)
         offset += this.outputChunk.parse(buf, offset)
@@ -663,6 +727,20 @@ export class Program {
             const keygroup = newKeygroupChunk()
             this.keygroups.push(keygroup)
             offset += keygroup.parse(buf, offset)
+        }
+    }
+
+    writeToBuffer(buf: Buffer, offset: number = 0) {
+        offset += this.headerChunk.write(buf, offset)
+        offset += this.programChunk.write(buf, offset)
+        offset += this.outputChunk.write(buf, offset)
+        offset += this.tuneChunk.write(buf, offset)
+        offset += this.lfo1Chunk.write(buf, offset)
+        offset += this.lfo2Chunk.write(buf, offset)
+        offset += this.modsChunk.write(buf, offset)
+        for (let i = 0; i < this.keygroups.length; i++) {
+            const keygroup = this.keygroups[i]
+            offset += keygroup.write(buf, offset)
         }
     }
 
@@ -698,3 +776,4 @@ export class Program {
         return Array.from(this.keygroups)
     }
 }
+
