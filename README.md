@@ -9,9 +9,9 @@ Based on [file format spec reverse engineerd by Seb Francis](https://burnit.co.u
 TODO:
 
 - [X] Parse each chunk type
-- [ ] Parse sample name in zones
-- [ ] Create a parser class that knows how to parse the entire file, including iterating over the keygroups
-- [ ] Implement chunk write methods
+- [X] Parse sample name in zones
+- [X] Create a parser class that knows how to parse the entire file, including iterating over the keygroups
+- [X] Implement chunk write methods
 - [ ] Create a writer class that knows how to take a Program abstraction and write it to a valid .AKP file
 - [ ] Create a text-based program format for an editable Program abstraction
 - [ ] Createa a program editor
