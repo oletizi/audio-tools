@@ -836,6 +836,22 @@ class BasicProgram implements Program {
             destAmpEnv.decay = srcAmpEnv.decay
             destAmpEnv.sustain = srcAmpEnv.sustain
             destAmpEnv.release = srcAmpEnv.release
+            destAmpEnv.velocity2Attack = srcAmpEnv.velocity2Attack
+            destAmpEnv.keyscale = srcAmpEnv.keyscale
+            destAmpEnv.onVelocity2Release = srcAmpEnv.onVelocity2Release
+            destAmpEnv.offVelocity2Release = srcAmpEnv.offVelocity2Release
+
+            const srcFiltEnv = obj.keygroups[i].filterEnvelope
+            const destFiltEnv = keygroup.filterEnvelope
+            destFiltEnv.attack = srcFiltEnv.attack
+            destFiltEnv.decay = srcFiltEnv.decay
+            destFiltEnv.sustain = srcFiltEnv.sustain
+            destFiltEnv.release = srcFiltEnv.release
+            destFiltEnv.depth = srcFiltEnv.depth
+            destFiltEnv.velocity2Attack = srcFiltEnv.velocity2Attack
+            destFiltEnv.keyscale = srcFiltEnv.keyscale
+            destFiltEnv.onVelocity2Release = srcFiltEnv.onVelocity2Release
+            destFiltEnv.offVelocity2Release = srcFiltEnv.offVelocity2Release
         }
     }
 

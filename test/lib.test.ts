@@ -424,5 +424,21 @@ describe('JSON Program', async () => {
         expect(ampEnvelope.decay).to.eq(50)
         expect(ampEnvelope.sustain).to.eq(100)
         expect(ampEnvelope.release).to.eq(15)
+        expect(ampEnvelope.velocity2Attack).to.eq(0)
+        expect(ampEnvelope.keyscale).to.eq(0)
+        expect(ampEnvelope.onVelocity2Release).to.eq(0)
+        expect(ampEnvelope.offVelocity2Release).to.eq(0)
+
+
+        const filterEnvelope = keygroup.filterEnvelope
+        expect(filterEnvelope.attack).to.eq(0)
+        expect(filterEnvelope.decay).to.eq(50)
+        expect(filterEnvelope.sustain).to.eq(100)
+        expect(filterEnvelope.release).to.eq(15)
+        expect(filterEnvelope.depth).to.eq(0)
+        expect(filterEnvelope.velocity2Attack).to.eq(0)
+        expect(filterEnvelope.keyscale).to.eq(0)
+        expect(filterEnvelope.onVelocity2Release).to.eq(0)
+        expect(filterEnvelope.offVelocity2Release).to.eq(0)
     })
 })

@@ -95,6 +95,17 @@
         "keyscale": 0,
         "onVelocity2Release": 0,
         "offVelocity2Release": 0
+      },
+      "filterEnvelope": {
+        "attack": 0,
+        "decay": 50,
+        "release": 15,
+        "sustain": 100,
+        "depth": 0,
+        "velocity2Attack": 0,
+        "keyscale": 0,
+        "onVelocity2Release": 0,
+        "offVelocity2Release": 0
       }
     }
   ]
