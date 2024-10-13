@@ -62,6 +62,7 @@ class Pad {
 }
 
 export interface Chunk {
+    chunkName: number[]
     length: number
     name: string
 
@@ -103,24 +104,33 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
 }
 
 
-function writeFromSpec(buf, obj, spec, offset) {
-    const name = string2Bytes(obj.name)
-
-    for (let i = 0; i < name.length; i++, offset++) {
-        writeByte(buf, name[i], offset)
+function writeFromSpec(buf, chunk, spec, offset) {
+    for (let i = 0; i < chunk.chunkName.length; i++, offset++) {
+        writeByte(buf, chunk.chunkName[i], offset)
     }
     // !!!: This is weird. Buffer returns the offset + the bytes written, not the bytes written.
-    offset = buf.writeInt32LE(obj.length, offset)
+    offset = buf.writeInt32LE(chunk.length, offset)
 
     for (let i = 0; i < spec.length; i++, offset++) {
-        writeByte(buf, obj[spec[i]], offset)
+        writeByte(buf, chunk[spec[i]], offset)
     }
 }
 
-function newChunkFromSpec(chunkName: number[], spec: string[]) {
+function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string[]) {
     return {
+        chunkName: chunkName,
+        length: chunkLength,
         parse(buf: Buffer, offset: number): number {
-            checkOrThrow(buf, chunkName, offset)
+            try {
+                checkOrThrow(buf, chunkName, offset)
+            } catch (err) {
+                let cn = ''
+                for (let i=0;i<chunkName.length; i++) {
+                    cn += String.fromCharCode(chunkName[i])
+                }
+                console.error(`Chunk name: ${chunkName} ("${cn}"), chunkLength: ${chunkLength}, spec: ${spec}`)
+                throw err
+            }
             offset += parseChunkHeader(buf, this, offset)
             readFromSpec(buf, this, spec, offset)
             return this.length + 8
@@ -140,6 +150,7 @@ export function newHeaderChunk(): HeaderChunk {
     const chunkLength = [0x00, 0x00, 0x00, 0x00] //  Chunk length: 0 (not correct, but that's what Akai does)
     const aprg = [0x41, 0x50, 0x52, 0x47] // 'APRG'
     return {
+        chunkName: riff,
         length: bytes2Number(chunkLength),
         name: '',
         parse(buf: Buffer, offset: number): number {
@@ -167,7 +178,8 @@ export interface ProgramChunk extends Chunk {
 
 export function newProgramChunk(): ProgramChunk {
     const chunkName = [0x70, 0x72, 0x67, 0x20] // 'prg '
-    return newChunkFromSpec(chunkName, ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"]) as ProgramChunk
+    const chunk = newChunkFromSpec(chunkName, 6, ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"])
+    return chunk as ProgramChunk
 }
 
 export interface Output {
@@ -187,7 +199,8 @@ const outputSpec = ['pad1', 'loudness', 'ampMod1', 'ampMod2', 'panMod1', 'panMod
 
 export function newOutputChunk(): OutputChunk {
     const chunkName = [0x6f, 0x75, 0x74, 0x20]   // 'out '
-    return newChunkFromSpec(chunkName, outputSpec) as OutputChunk
+    const chunk = newChunkFromSpec(chunkName, 8, outputSpec)
+    return chunk as OutputChunk
 }
 
 export interface Tune {
@@ -216,7 +229,7 @@ export interface TuneChunk extends Chunk, Tune {
 
 export function newTuneChunk(): TuneChunk {
     const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
-    return newChunkFromSpec(chunkName, [
+    const chunk = newChunkFromSpec(chunkName, 22, [
         'pad1',
         'semiToneTune', 'fineTune',
         'detuneC', 'detuneCSharp', 'detuneD', 'detuneEFlat', 'detuneE', 'detuneF', 'detuneFSharp', 'detuneG', 'detuneGSharp',
@@ -225,7 +238,9 @@ export function newTuneChunk(): TuneChunk {
         'pitchBendDown',
         'bendMode',
         'aftertouch'
-    ]) as TuneChunk
+    ])
+
+    return chunk as TuneChunk
 }
 
 export interface Lfo1 {
@@ -246,8 +261,9 @@ export interface Lfo1Chunk extends Chunk, Lfo1 {
 
 export function newLfo1Chunk(): Lfo1Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    return newChunkFromSpec(chunkName, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
-        'rateMod', 'delayMod', 'depthMod']) as Lfo1Chunk
+    const chunk = newChunkFromSpec(chunkName, 12, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
+        'rateMod', 'delayMod', 'depthMod'])
+    return chunk as Lfo1Chunk
 }
 
 
@@ -267,7 +283,7 @@ export interface Lfo2Chunk extends Chunk, Lfo2 {
 
 export function newLfo2Chunk(): Lfo2Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    return newChunkFromSpec(chunkName, [
+    const chunk = newChunkFromSpec(chunkName, 12,[
         'pad1',
         'waveform',
         'rate',
@@ -280,7 +296,8 @@ export function newLfo2Chunk(): Lfo2Chunk {
         'rateMod',
         'delayMod',
         'depthMod'
-    ]) as Lfo2Chunk
+    ])
+    return chunk as Lfo2Chunk
 }
 
 export interface Mods {
@@ -312,7 +329,7 @@ export interface ModsChunk extends Chunk, Mods {
 
 export function newModsChunk(): ModsChunk {
     const chunkName = [0x6d, 0x6f, 0x64, 0x73] // 'lfo '
-    return newChunkFromSpec(chunkName, [
+    const chunk = newChunkFromSpec(chunkName, 38,[
         'pad1',
         'pad2',
         'pad3',
@@ -351,7 +368,8 @@ export function newModsChunk(): ModsChunk {
         'filterModInput2',
         'pad20',
         'filterModInput3'
-    ]) as ModsChunk
+    ])
+    return chunk as ModsChunk
 }
 
 
@@ -596,15 +614,16 @@ export function newKeygroupChunk() {
 
     // XXX: Ugly
     const zones = []
-    for (let i=0; i<4; i++) {
-        zones[i]  = newChunkFromSpec(zoneChunkName, zoneChunkSpec)
+    for (let i = 0; i < 4; i++) {
+        zones[i] = newChunkFromSpec(zoneChunkName, 46, zoneChunkSpec)
     }
     return {
-        kloc: newChunkFromSpec(klocChunkName, klocChunkSpec),
-        ampEnvelope: newChunkFromSpec(envChunkName, ampEnvelopeChunkSpec),
-        filterEnvelope: newChunkFromSpec(envChunkName, filterEnvelopeChunkName),
-        auxEnvelope: newChunkFromSpec(envChunkName, auxEnvelopeChunkSpec),
-        filter: newChunkFromSpec(filterChunkName, filterChunkSpec),
+        length: 336,
+        kloc: newChunkFromSpec(klocChunkName, 16,klocChunkSpec),
+        ampEnvelope: newChunkFromSpec(envChunkName, 18, ampEnvelopeChunkSpec),
+        filterEnvelope: newChunkFromSpec(envChunkName, 18, filterEnvelopeChunkName),
+        auxEnvelope: newChunkFromSpec(envChunkName, 18, auxEnvelopeChunkSpec),
+        filter: newChunkFromSpec(filterChunkName, 10, filterChunkSpec),
         zone1: zones[0],
         zone2: zones[1],
         zone3: zones[2],
@@ -686,7 +705,7 @@ export interface Program {
 
     getKeygroups(): Keygroup[];
 
-    writeToBuffer(buf: Buffer, offset: number)
+    writeToBuffer(buf: Buffer, offset: number): number
 
 }
 
@@ -749,6 +768,7 @@ class BasicProgram implements Program {
             const keygroup = this.keygroups[i]
             offset += keygroup.write(buf, offset)
         }
+        return offset
     }
 
     copyFromJson(json: string) {
@@ -880,7 +900,7 @@ class BasicProgram implements Program {
             destFilt.modInput3 = srcFilt.modInput3
             destFilt.headroom = srcFilt.headroom
 
-            for (let j=1; j<=4; j++) {
+            for (let j = 1; j <= 4; j++) {
                 let zoneName = `zone${j}`;
                 const srcZone = obj.keygroups[i][zoneName]
                 const destZone = keygroup[zoneName]

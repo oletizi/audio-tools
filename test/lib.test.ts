@@ -211,7 +211,7 @@ describe('Basics...', async () => {
         expect(zone1.level).to.eq(-20)
         expect(zone1.keyboardTrack).to.eq(1)
         expect(zone1.velocity2StartLsb).to.eq(0)
-        expect(zone1.velocity2startMsb).to.eq(0)
+        expect(zone1.velocity2StartMsb).to.eq(0)
 
         expect(keygroup.zone2).to.exist
         const zone2 = keygroup.zone2
@@ -249,7 +249,9 @@ describe('Basics...', async () => {
 
         inset += program.parse(buf, inset)
         outset += program.write(out, outset)
+
         checkpoint += checkProgram.parse(out, checkpoint)
+
         expect(checkProgram.name).to.eq(program.name)
         expect(checkProgram.length).to.eq(program.length)
         expect(checkProgram.programNumber).to.eq(program.programNumber)
@@ -309,8 +311,8 @@ describe('BinaryProgram', async () => {
 
         const checkProgram = newProgramFromBuffer(out)
 
-        // await fs.writeFile('build/testProgram.akp', buf)
-        // await fs.writeFile('build/checkProgram.akp', out)
+        await fs.writeFile('build/testProgram.akp', buf)
+        await fs.writeFile('build/checkProgram.akp', out)
 
         // expect(out).to.eq(buf)
 
@@ -462,7 +464,7 @@ describe('JSON Program', async () => {
         expect(filter.headroom).to.eq(0)
         expect(keygroup.zone1.sampleName).to.eq('smp1')
         expect(keygroup.zone1.sampleNameLength).to.eq(4)
-        for (const zone:Zone of [keygroup.zone1, keygroup.zone2, keygroup.zone3, keygroup.zone4]) {
+        for (const zone: Zone of [keygroup.zone1, keygroup.zone2, keygroup.zone3, keygroup.zone4]) {
             expect(zone.lowVelocity).to.eq(21)
             expect(zone.highVelocity).to.eq(127)
             expect(zone.fineTune).to.eq(0)
@@ -476,5 +478,17 @@ describe('JSON Program', async () => {
             expect(zone.velocity2StartLsb).to.eq(0)
             expect(zone.velocity2StartMsb).to.eq(0)
         }
+    })
+    it('Reads a json file and writes a valid binary file', async () => {
+        const json = (await fs.readFile('default-program.json')).toString()
+        const program = newProgramFromJson(json)
+        const buf = Buffer.alloc(1024 * 2)
+        const written = program.writeToBuffer(buf, 0)
+        console.log(`written: ${written}`)
+        await fs.writeFile('build/default-program.akp',  Buffer.copyBytesFrom(buf, 0, written))
+        const inbuf = await fs.readFile('build/default-program.akp')
+        const checkProgram = newProgramFromBuffer(inbuf)
+
+        expect(checkProgram.getKeygroupCount()).to.eq(1)
     })
 })
