@@ -685,17 +685,23 @@ export interface Program {
 
     getKeygroups(): Keygroup[];
 
-    writeToBuffer(buf:Buffer, offset:number)
+    writeToBuffer(buf: Buffer, offset: number)
 
 }
 
-export function newProgramFromBuffer(buf) : Program {
-    const program = new BinaryProgram()
+export function newProgramFromBuffer(buf): Program {
+    const program = new BasicProgram()
     program.parse(buf)
     return program
 }
 
-class BinaryProgram implements Program {
+export function newProgramFromJson(json: string): Program {
+    const program = new BasicProgram()
+    program.copyFromJson(json)
+    return program
+}
+
+class BasicProgram implements Program {
     private readonly programChunk: ProgramChunk
     private readonly headerChunk: HeaderChunk
     private readonly outputChunk: OutputChunk
@@ -742,6 +748,53 @@ class BinaryProgram implements Program {
             const keygroup = this.keygroups[i]
             offset += keygroup.write(buf, offset)
         }
+    }
+
+    copyFromJson(json: string) {
+        const obj = JSON.parse(json)
+        this.programChunk.programNumber = obj.programNumber
+        this.programChunk.keygroupCount = obj.keygroupCount
+        this.outputChunk.loudness = obj.output.loudness
+        this.outputChunk.ampMod1 = obj.output.ampMod1
+        this.outputChunk.ampMod2 = obj.output.ampMod2
+        this.outputChunk.panMod1 = obj.output.panMod1
+        this.outputChunk.panMod2 = obj.output.panMod2
+        this.outputChunk.panMod3 = obj.output.panMod3
+        this.outputChunk.velocitySensitivity = obj.output.velocitySensitivity
+        this.tuneChunk.semiToneTune = obj.tune.semiToneTune
+        this.tuneChunk.fineTune = obj.tune.fineTune
+        this.tuneChunk.detuneC = obj.tune.detuneC
+        this.tuneChunk.detuneCSharp = obj.tune.detuneCSharp
+        this.tuneChunk.detuneD = obj.tune.detuneD
+        this.tuneChunk.detuneEFlat = obj.tune.detuneEFlat
+        this.tuneChunk.detuneE = obj.tune.detuneE
+        this.tuneChunk.detuneF = obj.tune.detuneF
+        this.tuneChunk.detuneFSharp = obj.tune.detuneFSharp
+        this.tuneChunk.detuneG = obj.tune.detuneG
+        this.tuneChunk.detuneGSharp = obj.tune.detuneGSharp
+        this.tuneChunk.detuneA = obj.tune.detuneA
+        this.tuneChunk.detuneBFlat = obj.tune.detuneBFlat
+        this.tuneChunk.detuneB = obj.tune.detuneB
+
+        this.lfo1Chunk.waveform = obj.lfo1.waveform
+        this.lfo1Chunk.rate = obj.lfo1.rate
+        this.lfo1Chunk.delay = obj.lfo1.delay
+        this.lfo1Chunk.depth = obj.lfo1.depth
+        this.lfo1Chunk.sync = obj.lfo1.sync
+        this.lfo1Chunk.modwheel = obj.lfo1.modwheel
+        this.lfo1Chunk.aftertouch = obj.lfo1.aftertouch
+        this.lfo1Chunk.rateMod = obj.lfo1.rateMod
+        this.lfo1Chunk.delayMod = obj.lfo1.delayMod
+        this.lfo1Chunk.depthMod = obj.lfo1.depthMod
+
+        this.lfo2Chunk.waveform = obj.lfo2.waveform
+        this.lfo2Chunk.rate = obj.lfo2.rate
+        this.lfo2Chunk.delay = obj.lfo2.delay
+        this.lfo2Chunk.depth = obj.lfo2.depth
+        this.lfo2Chunk.retrigger = obj.lfo2.retrigger
+        this.lfo2Chunk.rateMod = obj.lfo2.rateMod
+        this.lfo2Chunk.delayMod = obj.lfo2.delayMod
+        this.lfo2Chunk.depthMod = obj.lfo2.depthMod
     }
 
     getKeygroupCount() {

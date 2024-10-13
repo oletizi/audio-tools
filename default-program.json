@@ -9,5 +9,47 @@
     "panMod2": 0,
     "panMod3": 0,
     "velocitySensitivity": 25
+  },
+  "tune": {
+    "semiToneTune": 0,
+    "fineTune": 0,
+    "detuneC": 0,
+    "detuneCSharp": 0,
+    "detuneD": 0,
+    "detuneEFlat": 0,
+    "detuneE": 0,
+    "detuneF": 0,
+    "detuneFSharp": 0,
+    "detuneG": 0,
+    "detuneGSharp": 0,
+    "detuneA": 0,
+    "detuneBFlat": 0,
+    "detuneB": 0,
+    "pitchbendUp": 2,
+    "pitchbendDown": 2,
+    "bendMode": 0,
+    "aftertouch": 0
+  },
+  "lfo1": {
+    "waveform": 1,
+    "rate": 43,
+    "delay": 0,
+    "depth": 0,
+    "sync": 0,
+    "modwheel": 15,
+    "aftertouch": 0,
+    "rateMod": 0,
+    "delayMod": 0,
+    "depthMod": 0
+  },
+  "lfo2": {
+    "waveform": 0,
+    "rate": 0,
+    "delay": 0,
+    "depth": 0,
+    "retrigger": 0,
+    "rateMod": 0,
+    "delayMod": 0,
+    "depthMod": 0
   }
 }

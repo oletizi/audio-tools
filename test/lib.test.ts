@@ -5,7 +5,7 @@ import {
     newHeaderChunk, newKeygroupChunk,
     newLfo1Chunk, newLfo2Chunk, newModsChunk,
     newOutputChunk,
-    newProgramChunk, newProgramFromBuffer,
+    newProgramChunk, newProgramFromBuffer, newProgramFromJson,
     newTuneChunk, Output, OutputChunk,
     parseChunkHeader, Program, ProgramChunk, Tune
 } from "../lib";
@@ -257,7 +257,7 @@ describe('Basics...', async () => {
     })
 })
 
-describe('Program', async () => {
+describe('BinaryProgram', async () => {
     it('Parses a program file...', async () => {
         let offset = 0
         const buf = await loadTestFile();
@@ -331,7 +331,59 @@ describe('Program', async () => {
         const checkAmpEnvelope = checkKeygroup.ampEnvelope
         expect(ampEnvelope.attack).to.eq(checkAmpEnvelope.attack)
         expect(ampEnvelope.sustain).to.eq(checkAmpEnvelope.sustain)
+    })
+})
 
+describe('JSON Program', async () => {
+    it('reads the default json', async () => {
+        const json = await fs.readFile('default-program.json')
+        const program = newProgramFromJson(json.toString())
+        expect(program.getProgramNumber()).to.eq(0)
+        expect(program.getKeygroupCount()).to.eq(0)
+        expect(program.getOutput()).to.exist
+        const output = program.getOutput()
+        expect(output.loudness).to.eq(85)
+        expect(output.ampMod1).to.eq(0)
+        expect(output.ampMod2).to.eq(0)
+        expect(output.panMod1).to.eq(0)
+        expect(output.panMod2).to.eq(0)
+        expect(output.panMod3).to.eq(0)
+        expect(output.velocitySensitivity).to.eq(25)
+        const tune = program.getTune()
+        expect(tune.semiToneTune).to.eq(0)
+        expect(tune.detuneC).to.eq(0)
+        expect(tune.detuneCSharp).to.eq(0)
+        expect(tune.detuneD).to.eq(0)
+        expect(tune.detuneEFlat).to.eq(0)
+        expect(tune.detuneE).to.eq(0)
+        expect(tune.detuneF).to.eq(0)
+        expect(tune.detuneFSharp).to.eq(0)
+        expect(tune.detuneG).to.eq(0)
+        expect(tune.detuneGSharp).to.eq(0)
+        expect(tune.detuneA).to.eq(0)
+        expect(tune.detuneBFlat).to.eq(0)
+        expect(tune.detuneB).to.eq(0)
 
+        const lfo1 = program.getLfo1()
+        expect(lfo1.waveform).to.eq(1)
+        expect(lfo1.rate).to.eq(43)
+        expect(lfo1.delay).to.eq(0)
+        expect(lfo1.depth).to.eq(0)
+        expect(lfo1.sync).to.eq(0)
+        expect(lfo1.modwheel).to.eq(15)
+        expect(lfo1.aftertouch).to.eq(0)
+        expect(lfo1.rateMod).to.eq(0)
+        expect(lfo1.delayMod).to.eq(0)
+        expect(lfo1.depthMod).to.eq(0)
+
+        const lfo2 = program.getLfo2()
+        expect(lfo2.waveform).to.eq(0)
+        expect(lfo2.rate).to.eq(0)
+        expect(lfo2.delay).to.eq(0)
+        expect(lfo2.depth).to.eq(0)
+        expect(lfo2.retrigger).to.eq(0)
+        expect(lfo2.rateMod).to.eq(0)
+        expect(lfo2.delayMod).to.eq(0)
+        expect(lfo2.depthMod).to.eq(0)
     })
 })
