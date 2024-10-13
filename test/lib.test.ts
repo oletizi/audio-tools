@@ -285,7 +285,20 @@ describe('Program', async () => {
 
         const keygroups: Keygroup[] = program.getKeygroups()
         expect(keygroups.length).to.eq(program.getKeygroupCount())
-        const keygroup1 = keygroups[0]
-        expect(keygroup1.kloc).to.exist
+        const kgrp = keygroups[0]
+        expect(kgrp.kloc).to.exist
+        const kloc = kgrp.kloc
+        expect(kloc.name).to.eq('kloc')
+
+        expect(kgrp.ampEnvelope).to.exist
+        expect(kgrp.filterEnvelope).to.exist
+        expect(kgrp.auxEnvelope).to.exist
+        expect(kgrp.filter).to.exist
+        expect(kgrp.zone1).to.exist
+        expect(kgrp.zone2).to.exist
+        expect(kgrp.zone3).to.exist
+        expect(kgrp.zone4).to.exist
+
+
     })
 })
