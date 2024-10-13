@@ -85,6 +85,16 @@
         "ampMod": 0,
         "zoneXFade": 0,
         "muteGroup": 0
+      },
+      "ampEnvelope": {
+        "attack": 0,
+        "decay": 50,
+        "release": 15,
+        "sustain": 100,
+        "velocity2Attack": 0,
+        "keyscale": 0,
+        "onVelocity2Release": 0,
+        "offVelocity2Release": 0
       }
     }
   ]

@@ -418,5 +418,11 @@ describe('JSON Program', async () => {
         expect(kloc.ampMod).to.eq(0)
         expect(kloc.zoneXFade).to.eq(0)
         expect(kloc.muteGroup).to.eq(0)
+
+        const ampEnvelope = keygroup.ampEnvelope
+        expect(ampEnvelope.attack).to.eq(0)
+        expect(ampEnvelope.decay).to.eq(50)
+        expect(ampEnvelope.sustain).to.eq(100)
+        expect(ampEnvelope.release).to.eq(15)
     })
 })

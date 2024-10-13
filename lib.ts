@@ -829,6 +829,13 @@ class BasicProgram implements Program {
             destKloc.ampMod = srcKloc.ampMod
             destKloc.zoneXFade = srcKloc.zoneXFade
             destKloc.muteGroup = srcKloc.muteGroup
+
+            const srcAmpEnv = obj.keygroups[i].ampEnvelope
+            const destAmpEnv = keygroup.ampEnvelope
+            destAmpEnv.attack = srcAmpEnv.attack
+            destAmpEnv.decay = srcAmpEnv.decay
+            destAmpEnv.sustain = srcAmpEnv.sustain
+            destAmpEnv.release = srcAmpEnv.release
         }
     }
 
