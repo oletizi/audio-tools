@@ -306,7 +306,8 @@ export interface Mods {
     filterModInput3: number
 }
 
-export interface ModsChunk extends Chunk, Mods {}
+export interface ModsChunk extends Chunk, Mods {
+}
 
 export function newModsChunk(): ModsChunk {
     const chunkName = [0x6d, 0x6f, 0x64, 0x73] // 'lfo '
@@ -354,20 +355,21 @@ export function newModsChunk(): ModsChunk {
 
 
 export interface Keygroup {
-    kloc: KlocChunk
-    ampEnvelope: AmpEnvelopeChunk
-    filterEnvelope: FilterEnvelopeChunk
-    auxEnvelope: AuxEnvelopeChunk
-    filter: FilterChunk
-    zone1: ZoneChunk
-    zone2: ZoneChunk
-    zone3: ZoneChunk
-    zone4: ZoneChunk
+    kloc: Kloc
+    ampEnvelope: AmpEnvelope
+    filterEnvelope: FilterEnvelope
+    auxEnvelope: AuxEnvelope
+    filter: Filter
+    zone1: Zone
+    zone2: Zone
+    zone3: Zone
+    zone4: Zone
 }
 
-export interface KeygroupChunk extends Chunk, Keygroup {}
+export interface KeygroupChunk extends Chunk, Keygroup {
+}
 
-export interface KlocChunk extends Chunk {
+export interface Kloc {
     lowNote: number
     highNote: number
     semiToneTune: number
@@ -381,7 +383,11 @@ export interface KlocChunk extends Chunk {
     muteGroup: number
 }
 
-export interface AmpEnvelopeChunk extends Chunk {
+export interface KlocChunk extends Chunk, Kloc {
+
+}
+
+export interface AmpEnvelope {
     attack: number
     decay: number
     release: number
@@ -392,7 +398,10 @@ export interface AmpEnvelopeChunk extends Chunk {
     offVelocity2Release: number
 }
 
-export interface FilterEnvelopeChunk extends Chunk {
+export interface AmpEnvelopeChunk extends Chunk, AmpEnvelope {
+}
+
+export interface FilterEnvelope {
     attack: number
     decay: number
     release: number
@@ -404,7 +413,10 @@ export interface FilterEnvelopeChunk extends Chunk {
     offVelocity2Release: number
 }
 
-export interface AuxEnvelopeChunk extends Chunk {
+export interface FilterEnvelopeChunk extends Chunk, FilterEnvelope {
+}
+
+export interface AuxEnvelope {
     rate1: number
     rate2: number
     rate3: number
@@ -420,7 +432,10 @@ export interface AuxEnvelopeChunk extends Chunk {
     velocity2OutLevel: number
 }
 
-export interface FilterChunk extends Chunk {
+export interface AuxEnvelopeChunk extends Chunk, AuxEnvelope {
+}
+
+export interface Filter {
     mode: number
     cutoff: number
     resonance: number
@@ -431,9 +446,12 @@ export interface FilterChunk extends Chunk {
     headroom: number
 }
 
-export interface ZoneChunk extends Chunk {
+export interface FilterChunk extends Chunk, Filter {
+}
+
+export interface Zone {
     sampleNameLength: number
-    sampleName: number
+    sampleName: string
     lowVelocity: number
     highVelocity: number
     fineTune: number
@@ -446,6 +464,9 @@ export interface ZoneChunk extends Chunk {
     keyboardTrack: number
     velocity2StartLsb: number
     velocity2startMsb: number
+}
+
+export interface ZoneChunk extends Chunk, Zone {
 }
 
 export function newKeygroupChunk() {
@@ -586,14 +607,29 @@ export function newKeygroupChunk() {
                 // offset += this[zoneFieldName].parse(buf, offset)
             }
             offset += this.zone1.parse(buf, offset)
+            parseSampleName(this.zone1)
+
             offset += this.zone2.parse(buf, offset)
+            parseSampleName(this.zone2)
+
             offset += this.zone3.parse(buf, offset)
+            parseSampleName(this.zone3)
+
             offset += this.zone4.parse(buf, offset)
+            parseSampleName(this.zone4)
+
             return this.length
         }
     } as KeygroupChunk
 }
 
+// XXX: Pretty crappy way to do this
+function parseSampleName(zone:ZoneChunk) {
+    zone.sampleName = ''
+    for (let i=0; i<zone.sampleNameLength; i++) {
+        zone.sampleName += String.fromCharCode(zone[`c${i}`])
+    }
+}
 
 export class Program {
     private readonly programChunk: ProgramChunk
@@ -603,7 +639,8 @@ export class Program {
     private readonly lfo1Chunk: Lfo1Chunk
     private readonly lfo2Chunk: Lfo2Chunk
     private readonly modsChunk: ModsChunk
-    private readonly keygroups : KeygroupChunk[] = []
+    private readonly keygroups: KeygroupChunk[] = []
+
     constructor() {
         this.headerChunk = newHeaderChunk()
         this.programChunk = newProgramChunk()
@@ -622,7 +659,7 @@ export class Program {
         offset += this.lfo1Chunk.parse(buf, offset)
         offset += this.lfo2Chunk.parse(buf, offset)
         offset += this.modsChunk.parse(buf, offset)
-        for (let i=0; i<this.getKeygroupCount(); i++) {
+        for (let i = 0; i < this.getKeygroupCount(); i++) {
             const keygroup = newKeygroupChunk()
             this.keygroups.push(keygroup)
             offset += keygroup.parse(buf, offset)
@@ -653,11 +690,11 @@ export class Program {
         return this.lfo2Chunk
     }
 
-    getMods() : Mods {
+    getMods(): Mods {
         return this.modsChunk;
     }
 
-    getKeygroups() : Keygroup[] {
+    getKeygroups(): Keygroup[] {
         return Array.from(this.keygroups)
     }
 }

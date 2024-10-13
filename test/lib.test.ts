@@ -288,13 +288,13 @@ describe('Program', async () => {
         const kgrp = keygroups[0]
         expect(kgrp.kloc).to.exist
         const kloc = kgrp.kloc
-        expect(kloc.name).to.eq('kloc')
 
         expect(kgrp.ampEnvelope).to.exist
         expect(kgrp.filterEnvelope).to.exist
         expect(kgrp.auxEnvelope).to.exist
         expect(kgrp.filter).to.exist
         expect(kgrp.zone1).to.exist
+        expect(kgrp.zone1.sampleName).to.eq('WV 2')
         expect(kgrp.zone2).to.exist
         expect(kgrp.zone3).to.exist
         expect(kgrp.zone4).to.exist
