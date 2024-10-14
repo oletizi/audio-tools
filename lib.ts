@@ -42,7 +42,7 @@ function string2Bytes(str: string) {
 function checkOrThrow(buf, data, offset) {
     for (let i = 0; i < data.length; i++, offset++) {
         if (data[i] != buf.readInt8(offset)) {
-            throw new Error(`Bad vibes at: ${offset}. Expected ${data[i]} but found ${buf.readInt8(offset)}`)
+            throw new Error(`Bad vibes at: i: ${i}, offset: ${offset}. Expected ${data[i]} but found ${buf.readInt8(offset)}`)
         }
     }
     return data.length
@@ -63,7 +63,7 @@ class Pad {
 
 export interface Chunk {
     chunkName: number[]
-    length: number
+    lengthInBytes: number
     name: string
 
     write(buf: Buffer, offset: number): number
@@ -86,7 +86,7 @@ export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): num
     for (let i = 0; i < 4; i++, offset++) {
         chunk.name += String.fromCharCode(readByte(buf, offset))
     }
-    chunk.length = buf.readInt32LE(offset)
+    chunk.lengthInBytes = buf.readInt32LE(offset)
     return 8
 }
 
@@ -151,7 +151,7 @@ export function newHeaderChunk(): HeaderChunk {
     const aprg = [0x41, 0x50, 0x52, 0x47] // 'APRG'
     return {
         chunkName: riff,
-        length: bytes2Number(chunkLength),
+        lengthInBytes: bytes2Number(chunkLength),
         name: '',
         parse(buf: Buffer, offset: number): number {
             const checkpoint = offset
@@ -635,8 +635,10 @@ export function newKeygroupChunk() {
     for (let i = 0; i < 4; i++) {
         zones[i] = newChunkFromSpec(zoneChunkName, 48, zoneChunkSpec)
     }
+    // const keygroupLength = 344
+    const keygroupLength = 352
     return {
-        length: 344,
+        lengthInBytes: keygroupLength,
         kloc: newChunkFromSpec(klocChunkName, 16, klocChunkSpec),
         ampEnvelope: newChunkFromSpec(envChunkName, 18, ampEnvelopeChunkSpec),
         filterEnvelope: newChunkFromSpec(envChunkName, 18, filterEnvelopeChunkName),
@@ -670,7 +672,7 @@ export function newKeygroupChunk() {
             offset += this.zone4.parse(buf, offset)
             parseSampleName(this.zone4)
 
-            return this.length
+            return keygroupLength
         },
         write(buf: Buffer, offset: number): number {
             // offset += this.headerChunk.write(buf, offset)
@@ -698,7 +700,7 @@ export function newKeygroupChunk() {
 
             writeSampleName(this.zone4)
             offset += this.zone4.write(buf, offset)
-            return this.length + 8
+            return keygroupLength
         }
 
     } as KeygroupChunk
@@ -715,7 +717,7 @@ function parseSampleName(zone: ZoneChunk) {
 
 function writeSampleName(zone: ZoneChunk) {
     zone.sampleNameLength = zone.sampleName.length
-    for (let i=0; i<zone.sampleNameLength; i++) {
+    for (let i = 0; i < zone.sampleNameLength; i++) {
         zone[`c${i}`] = zone.sampleName.charCodeAt(i)
     }
 }
@@ -767,6 +769,8 @@ class BasicProgram implements Program {
     private readonly lfo2: Lfo2Chunk
     private readonly mods: ModsChunk
     private readonly keygroups: KeygroupChunk[] = []
+    private originalBuffer: Buffer;
+    private firstKeygroupOffset: number;
 
     constructor() {
         this.header = newHeaderChunk()
@@ -793,11 +797,28 @@ class BasicProgram implements Program {
             }
         }
 
+        // XXX: This is also gross; there should be a more well-though-out way to CRUD keygroups
+        if (mods.keygroupCount != this.getKeygroupCount()) {
+            // the number of keygroups has changed. Make them the same
+            if (mods.keygroupCount < this.getKeygroupCount()) {
+                this.keygroups.length = mods.keygroupCount
+            } else {
+                for (let i = 0; i < mods.keygroupCount; i++) {
+                    if (i >= this.keygroups.length) {
+                        // add a new keygroup
+                        const keygroup = newKeygroupChunk()
+                        this.keygroups.push(keygroup)
+                        keygroup.parse(this.originalBuffer, this.firstKeygroupOffset)
+                    }
+                }
+            }
+        }
         recursiveApply(mods, this)
         recursiveApply(mods, this.program)
     }
 
     parse(buf: Buffer, offset: number = 0) {
+        this.originalBuffer = buf
         offset += this.header.parse(buf, offset)
         offset += this.program.parse(buf, offset)
         offset += this.output.parse(buf, offset)
@@ -805,10 +826,17 @@ class BasicProgram implements Program {
         offset += this.lfo1.parse(buf, offset)
         offset += this.lfo2.parse(buf, offset)
         offset += this.mods.parse(buf, offset)
+        this.firstKeygroupOffset = offset
         for (let i = 0; i < this.getKeygroupCount(); i++) {
             const keygroup = newKeygroupChunk()
             this.keygroups.push(keygroup)
-            offset += keygroup.parse(buf, offset)
+            try {
+                offset += keygroup.parse(buf, offset)
+            } catch (err) {
+                console.error(`Barf parsing keygroup; i: ${i}, offset: ${offset}, this.keygroupCount: ${this.getKeygroupCount()}`)
+                console.error(`  this.keygroups.length: ${this.keygroups.length}`)
+                throw err
+            }
         }
     }
 

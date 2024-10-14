@@ -34,7 +34,7 @@ describe('Basics...', async () => {
         const bytesRead = parseChunkHeader(buf, chunk, 0)
         expect(bytesRead).to.eq(8)
         expect(chunk.name).to.eq('out ')
-        expect(chunk.length).to.eq(8)
+        expect(chunk.lengthInBytes).to.eq(8)
     })
 
     it('Parses a program file', async () => {
@@ -242,7 +242,7 @@ describe('Basics...', async () => {
         outset += header.write(out, outset)
         checkpoint += checkHeader.parse(out, checkpoint)
         expect(checkHeader.name).to.eq(header.name)
-        expect(checkHeader.length).to.eq(header.length)
+        expect(checkHeader.lengthInBytes).to.eq(header.lengthInBytes)
 
         const program = newProgramChunk()
         const checkProgram = newProgramChunk()
@@ -253,7 +253,7 @@ describe('Basics...', async () => {
         checkpoint += checkProgram.parse(out, checkpoint)
 
         expect(checkProgram.name).to.eq(program.name)
-        expect(checkProgram.length).to.eq(program.length)
+        expect(checkProgram.lengthInBytes).to.eq(program.lengthInBytes)
         expect(checkProgram.programNumber).to.eq(program.programNumber)
         expect(checkProgram.keygroupCount).to.eq(program.keygroupCount)
     })
@@ -518,10 +518,16 @@ describe('JSON Program', async () => {
         let originalName = 'Kick 1';
         const newName = "New Name"
         const mods = {
+            keygroupCount: 2,
             output: {
-                loudness: 22
+                loudness: 75
             },
             keygroups: [
+                {
+                    zone1: {
+                        sampleName: newName
+                    }
+                },
                 {
                     zone1: {
                         sampleName: newName
@@ -537,12 +543,14 @@ describe('JSON Program', async () => {
         expect(program.getKeygroups()[0].zone1.sampleName).to.eq(originalName)
         program.apply(mods)
         expect(program.getOutput().loudness).to.eq(mods.output.loudness)
+        expect(program.getKeygroups().length).to.eq(2)
+        expect(program.getKeygroupCount()).to.eq(2)
         expect(program.getKeygroups()[0].zone1.sampleName).to.eq(newName)
 
         const outFile = 'build/MOD4.AKP'
-        const output = Buffer.alloc(input.length)
-        program.writeToBuffer(output, 0)
-        await fs.writeFile(outFile, output)
+        const output = Buffer.alloc(1024 * 2)
+        const bufferSize = program.writeToBuffer(output, 0)
+        await fs.writeFile(outFile, Buffer.copyBytesFrom(output, 0, bufferSize))
 
         const originalSample = await fs.readFile(`data/${originalName}.WAV`)
         await fs.writeFile(`build/${newName}.WAV`, originalSample)
@@ -550,8 +558,8 @@ describe('JSON Program', async () => {
         const mod4Buffer = await fs.readFile(outFile)
         const mod4Program = newProgramFromBuffer(mod4Buffer)
         expect(mod4Program.getKeygroups()).to.exist
-        expect(mod4Program.getKeygroups().length).to.eq(1)
-        expect(mod4Program.getKeygroupCount()).to.eq(1)
+        expect(mod4Program.getKeygroups().length).to.eq(2)
+        expect(mod4Program.getKeygroupCount()).to.eq(2)
         expect(mod4Program.getKeygroups()[0].zone1.sampleName).to.eq(newName)
     })
 
