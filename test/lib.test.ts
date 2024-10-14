@@ -310,9 +310,10 @@ describe('BinaryProgram', async () => {
         program.writeToBuffer(out, 0)
 
         const checkProgram = newProgramFromBuffer(out)
+        const modProgram = newProgramFromBuffer(out)
 
-        await fs.writeFile('build/testProgram.akp', buf)
-        await fs.writeFile('build/checkProgram.akp', out)
+        await fs.writeFile('build/TEST.AKP', buf)
+        await fs.writeFile('build/CHECK.AKP', out)
 
         // expect(out).to.eq(buf)
 
@@ -333,6 +334,12 @@ describe('BinaryProgram', async () => {
         const checkAmpEnvelope = checkKeygroup.ampEnvelope
         expect(ampEnvelope.attack).to.eq(checkAmpEnvelope.attack)
         expect(ampEnvelope.sustain).to.eq(checkAmpEnvelope.sustain)
+
+        // modify the test program to see if modified program will load in sampler
+        modProgram.getOutput().loudness = 70
+        const mod = Buffer.alloc(out.length)
+        modProgram.writeToBuffer(mod,0)
+        await fs.writeFile( 'build/MOD.AKP', mod)
     })
 })
 
@@ -482,6 +489,11 @@ describe('JSON Program', async () => {
     it('Reads a json file and writes a valid binary file', async () => {
         const json = (await fs.readFile('default-program.json')).toString()
         const program = newProgramFromJson(json)
+        const output = program.getOutput()
+        output.loudness = 95
+        const keygroup = program.getKeygroups()[0]
+        keygroup.filter.cutoff = 3
+        keygroup.filter.resonance = 5
         const buf = Buffer.alloc(1024 * 2)
         const written = program.writeToBuffer(buf, 0)
         console.log(`written: ${written}`)
@@ -489,6 +501,14 @@ describe('JSON Program', async () => {
         const inbuf = await fs.readFile('build/default-program.akp')
         const checkProgram = newProgramFromBuffer(inbuf)
 
+        console.log(`CHECK PROGRAM\n${JSON.stringify(checkProgram, null, 2)}`)
+
         expect(checkProgram.getKeygroupCount()).to.eq(1)
+        expect(checkProgram.getOutput().loudness).to.eq(95)
+        const kg = checkProgram.getKeygroups()[0]
+        expect(kg.filter.cutoff).to.eq(3)
+        expect(kg.filter.resonance).to.eq(5)
+
+
     })
 })

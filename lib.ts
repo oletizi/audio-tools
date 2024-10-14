@@ -125,7 +125,7 @@ function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string
                 checkOrThrow(buf, chunkName, offset)
             } catch (err) {
                 let cn = ''
-                for (let i=0;i<chunkName.length; i++) {
+                for (let i = 0; i < chunkName.length; i++) {
                     cn += String.fromCharCode(chunkName[i])
                 }
                 console.error(`Chunk name: ${chunkName} ("${cn}"), chunkLength: ${chunkLength}, spec: ${spec}`)
@@ -176,9 +176,12 @@ export interface ProgramChunk extends Chunk {
 }
 
 
+// const programSpec = ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"];
+const programSpec = ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"];
+
 export function newProgramChunk(): ProgramChunk {
     const chunkName = [0x70, 0x72, 0x67, 0x20] // 'prg '
-    const chunk = newChunkFromSpec(chunkName, 6, ["pad1", "programNumber", "keygroupCount", "pad2", "pad3", "pad4"])
+    const chunk = newChunkFromSpec(chunkName, 6, programSpec)
     return chunk as ProgramChunk
 }
 
@@ -229,15 +232,29 @@ export interface TuneChunk extends Chunk, Tune {
 
 export function newTuneChunk(): TuneChunk {
     const chunkName = [0x74, 0x75, 0x6e, 0x65] // 'tune'
-    const chunk = newChunkFromSpec(chunkName, 22, [
+    const chunk = newChunkFromSpec(chunkName, 24, [
         'pad1',
-        'semiToneTune', 'fineTune',
-        'detuneC', 'detuneCSharp', 'detuneD', 'detuneEFlat', 'detuneE', 'detuneF', 'detuneFSharp', 'detuneG', 'detuneGSharp',
-        'detuneA', 'detuneBFlat', 'detuneB',
+        'semiToneTune',
+        'fineTune',
+        'detuneC',
+        'detuneCSharp',
+        'detuneD',
+        'detuneEFlat',
+        'detuneE',
+        'detuneF',
+        'detuneFSharp',
+        'detuneG',
+        'detuneGSharp',
+        'detuneA',
+        'detuneBFlat',
+        'detuneB',
         'pitchBendUp',
         'pitchBendDown',
         'bendMode',
-        'aftertouch'
+        'aftertouch',
+        'pad2',
+        'pad3',
+        'pad4'
     ])
 
     return chunk as TuneChunk
@@ -261,7 +278,7 @@ export interface Lfo1Chunk extends Chunk, Lfo1 {
 
 export function newLfo1Chunk(): Lfo1Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    const chunk = newChunkFromSpec(chunkName, 12, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
+    const chunk = newChunkFromSpec(chunkName, 14, ['pad1', 'waveform', 'rate', 'delay', 'depth', 'sync', 'pad2', 'modwheel', 'aftertouch',
         'rateMod', 'delayMod', 'depthMod'])
     return chunk as Lfo1Chunk
 }
@@ -283,7 +300,7 @@ export interface Lfo2Chunk extends Chunk, Lfo2 {
 
 export function newLfo2Chunk(): Lfo2Chunk {
     const chunkName = [0x6c, 0x66, 0x6f, 0x20] // 'lfo '
-    const chunk = newChunkFromSpec(chunkName, 12,[
+    const chunk = newChunkFromSpec(chunkName, 14, [
         'pad1',
         'waveform',
         'rate',
@@ -329,7 +346,7 @@ export interface ModsChunk extends Chunk, Mods {
 
 export function newModsChunk(): ModsChunk {
     const chunkName = [0x6d, 0x6f, 0x64, 0x73] // 'lfo '
-    const chunk = newChunkFromSpec(chunkName, 38,[
+    const chunk = newChunkFromSpec(chunkName, 38, [
         'pad1',
         'pad2',
         'pad3',
@@ -597,7 +614,8 @@ export function newKeygroupChunk() {
     }
 
     const zoneChunkName = [0x7a, 0x6f, 0x6e, 0x65];
-    const zoneChunkSpec = [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
+    // const zoneChunkSpec = [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
+    const zoneChunkSpec = ['sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
         'lowVelocity',
         'highVelocity',
         'fineTune',
@@ -615,11 +633,11 @@ export function newKeygroupChunk() {
     // XXX: Ugly
     const zones = []
     for (let i = 0; i < 4; i++) {
-        zones[i] = newChunkFromSpec(zoneChunkName, 46, zoneChunkSpec)
+        zones[i] = newChunkFromSpec(zoneChunkName, 48, zoneChunkSpec)
     }
     return {
-        length: 336,
-        kloc: newChunkFromSpec(klocChunkName, 16,klocChunkSpec),
+        length: 344,
+        kloc: newChunkFromSpec(klocChunkName, 16, klocChunkSpec),
         ampEnvelope: newChunkFromSpec(envChunkName, 18, ampEnvelopeChunkSpec),
         filterEnvelope: newChunkFromSpec(envChunkName, 18, filterEnvelopeChunkName),
         auxEnvelope: newChunkFromSpec(envChunkName, 18, auxEnvelopeChunkSpec),
