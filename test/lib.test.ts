@@ -515,6 +515,8 @@ describe('JSON Program', async () => {
     })
 
     it('Reads a default binary file, applies changes from json, and writes a valid binary file', async () => {
+        let originalName = 'Kick 1';
+        const newName = "New Name"
         const mods = {
             output: {
                 loudness: 22
@@ -522,7 +524,7 @@ describe('JSON Program', async () => {
             keygroups: [
                 {
                     zone1: {
-                        sampleName: "KICK 2"
+                        sampleName: newName
                     }
                 }
             ]
@@ -532,21 +534,25 @@ describe('JSON Program', async () => {
         expect(program.getOutput().loudness).to.eq(85)
         expect(program.getKeygroups()).to.exist
         expect(program.getKeygroups().length).to.eq(1)
-        expect(program.getKeygroups()[0].zone1.sampleName).to.eq('Kick 1')
+        expect(program.getKeygroups()[0].zone1.sampleName).to.eq(originalName)
         program.apply(mods)
         expect(program.getOutput().loudness).to.eq(mods.output.loudness)
+        expect(program.getKeygroups()[0].zone1.sampleName).to.eq(newName)
 
         const outFile = 'build/MOD4.AKP'
         const output = Buffer.alloc(input.length)
         program.writeToBuffer(output, 0)
         await fs.writeFile(outFile, output)
 
+        const originalSample = await fs.readFile(`data/${originalName}.WAV`)
+        await fs.writeFile(`build/${newName}.WAV`, originalSample)
+
         const mod4Buffer = await fs.readFile(outFile)
         const mod4Program = newProgramFromBuffer(mod4Buffer)
         expect(mod4Program.getKeygroups()).to.exist
         expect(mod4Program.getKeygroups().length).to.eq(1)
         expect(mod4Program.getKeygroupCount()).to.eq(1)
-
+        expect(mod4Program.getKeygroups()[0].zone1.sampleName).to.eq(newName)
     })
 
 })

@@ -686,9 +686,17 @@ export function newKeygroupChunk() {
             offset += this.filterEnvelope.write(buf, offset)
             offset += this.auxEnvelope.write(buf, offset)
             offset += this.filter.write(buf, offset)
+
+            writeSampleName(this.zone1)
             offset += this.zone1.write(buf, offset)
+
+            writeSampleName(this.zone2)
             offset += this.zone2.write(buf, offset)
+
+            writeSampleName(this.zone3)
             offset += this.zone3.write(buf, offset)
+
+            writeSampleName(this.zone4)
             offset += this.zone4.write(buf, offset)
             return this.length + 8
         }
@@ -705,6 +713,12 @@ function parseSampleName(zone: ZoneChunk) {
     }
 }
 
+function writeSampleName(zone: ZoneChunk) {
+    zone.sampleNameLength = zone.sampleName.length
+    for (let i=0; i<zone.sampleNameLength; i++) {
+        zone[`c${i}`] = zone.sampleName.charCodeAt(i)
+    }
+}
 
 export interface Program {
     getKeygroupCount(): number;
