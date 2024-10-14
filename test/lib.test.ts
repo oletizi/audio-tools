@@ -486,6 +486,8 @@ describe('JSON Program', async () => {
             expect(zone.velocity2StartMsb).to.eq(0)
         }
     })
+
+
     it('Reads a json file and writes a valid binary file', async () => {
         const json = (await fs.readFile('default-program.json')).toString()
         const program = newProgramFromJson(json)
@@ -511,4 +513,31 @@ describe('JSON Program', async () => {
 
 
     })
+
+    it('Reads a default binary file, applies changes from json, and writes a valid binary file', async () => {
+        const mods = {
+            output: {
+                loudness: 22
+            }
+        }
+        const input = await fs.readFile('data/DEFAULT.AKP')
+        const program = newProgramFromBuffer(input)
+        expect(program.getOutput().loudness).to.eq(85)
+        expect(program.getKeygroups()).to.exist
+        expect(program.getKeygroups().length).to.eq(1)
+        program.apply(mods)
+        expect(program.getOutput().loudness).to.eq(mods.output.loudness)
+
+        const outFile = 'build/MOD4.AKP'
+        const output = Buffer.alloc(input.length)
+        program.writeToBuffer(output, 0)
+        await fs.writeFile(outFile, output)
+
+        const mod4Buffer = await fs.readFile(outFile)
+        const mod4Program = newProgramFromBuffer(mod4Buffer)
+        expect(mod4Program.getKeygroups()).to.exist
+        expect(mod4Program.getKeygroups().length).to.eq(1)
+        expect(mod4Program.getKeygroupCount()).to.eq(1)
+    })
+
 })

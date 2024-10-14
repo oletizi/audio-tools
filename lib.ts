@@ -725,6 +725,7 @@ export interface Program {
 
     writeToBuffer(buf: Buffer, offset: number): number
 
+    apply(mods: any): void;
 }
 
 export function newProgramFromBuffer(buf): Program {
@@ -739,34 +740,57 @@ export function newProgramFromJson(json: string): Program {
     return program
 }
 
+function apply(fieldMap: Object, source: any, dest: any) {
+
+}
+
 class BasicProgram implements Program {
-    private readonly programChunk: ProgramChunk
-    private readonly headerChunk: HeaderChunk
-    private readonly outputChunk: OutputChunk
-    private readonly tuneChunk: TuneChunk
-    private readonly lfo1Chunk: Lfo1Chunk
-    private readonly lfo2Chunk: Lfo2Chunk
-    private readonly modsChunk: ModsChunk
+    private readonly program: ProgramChunk
+    private readonly header: HeaderChunk
+    private readonly output: OutputChunk
+    private readonly tune: TuneChunk
+    private readonly lfo1: Lfo1Chunk
+    private readonly lfo2: Lfo2Chunk
+    private readonly mods: ModsChunk
     private readonly keygroups: KeygroupChunk[] = []
 
     constructor() {
-        this.headerChunk = newHeaderChunk()
-        this.programChunk = newProgramChunk()
-        this.outputChunk = newOutputChunk()
-        this.tuneChunk = newTuneChunk()
-        this.lfo1Chunk = newLfo1Chunk()
-        this.lfo2Chunk = newLfo2Chunk()
-        this.modsChunk = newModsChunk()
+        this.header = newHeaderChunk()
+        this.program = newProgramChunk()
+        this.output = newOutputChunk()
+        this.tune = newTuneChunk()
+        this.lfo1 = newLfo1Chunk()
+        this.lfo2 = newLfo2Chunk()
+        this.mods = newModsChunk()
+    }
+
+    apply(mods: any) {
+        // XXX: Recursion is probably ok here, since the graphs aren't deep or recursive; but, it's a stack error
+        // waiting to happen
+        function recursiveApply(source: any, dest: any) {
+            for (const field of Object.getOwnPropertyNames(dest)) {
+                if (source.hasOwnProperty(field) && dest.hasOwnProperty(field) && typeof source[field] === typeof dest[field]) {
+                    if (typeof source[field] === 'object') {
+                        recursiveApply(source[field], dest[field])
+                    } else {
+                        dest[field] = source[field]
+                    }
+                }
+            }
+        }
+
+        recursiveApply(mods, this)
+        recursiveApply(mods, this.program)
     }
 
     parse(buf: Buffer, offset: number = 0) {
-        offset += this.headerChunk.parse(buf, offset)
-        offset += this.programChunk.parse(buf, offset)
-        offset += this.outputChunk.parse(buf, offset)
-        offset += this.tuneChunk.parse(buf, offset)
-        offset += this.lfo1Chunk.parse(buf, offset)
-        offset += this.lfo2Chunk.parse(buf, offset)
-        offset += this.modsChunk.parse(buf, offset)
+        offset += this.header.parse(buf, offset)
+        offset += this.program.parse(buf, offset)
+        offset += this.output.parse(buf, offset)
+        offset += this.tune.parse(buf, offset)
+        offset += this.lfo1.parse(buf, offset)
+        offset += this.lfo2.parse(buf, offset)
+        offset += this.mods.parse(buf, offset)
         for (let i = 0; i < this.getKeygroupCount(); i++) {
             const keygroup = newKeygroupChunk()
             this.keygroups.push(keygroup)
@@ -775,13 +799,13 @@ class BasicProgram implements Program {
     }
 
     writeToBuffer(buf: Buffer, offset: number = 0) {
-        offset += this.headerChunk.write(buf, offset)
-        offset += this.programChunk.write(buf, offset)
-        offset += this.outputChunk.write(buf, offset)
-        offset += this.tuneChunk.write(buf, offset)
-        offset += this.lfo1Chunk.write(buf, offset)
-        offset += this.lfo2Chunk.write(buf, offset)
-        offset += this.modsChunk.write(buf, offset)
+        offset += this.header.write(buf, offset)
+        offset += this.program.write(buf, offset)
+        offset += this.output.write(buf, offset)
+        offset += this.tune.write(buf, offset)
+        offset += this.lfo1.write(buf, offset)
+        offset += this.lfo2.write(buf, offset)
+        offset += this.mods.write(buf, offset)
         for (let i = 0; i < this.keygroups.length; i++) {
             const keygroup = this.keygroups[i]
             offset += keygroup.write(buf, offset)
@@ -791,67 +815,67 @@ class BasicProgram implements Program {
 
     copyFromJson(json: string) {
         const obj = JSON.parse(json)
-        this.programChunk.programNumber = obj.programNumber
-        this.programChunk.keygroupCount = obj.keygroupCount
-        this.outputChunk.loudness = obj.output.loudness
-        this.outputChunk.ampMod1 = obj.output.ampMod1
-        this.outputChunk.ampMod2 = obj.output.ampMod2
-        this.outputChunk.panMod1 = obj.output.panMod1
-        this.outputChunk.panMod2 = obj.output.panMod2
-        this.outputChunk.panMod3 = obj.output.panMod3
-        this.outputChunk.velocitySensitivity = obj.output.velocitySensitivity
-        this.tuneChunk.semiToneTune = obj.tune.semiToneTune
-        this.tuneChunk.fineTune = obj.tune.fineTune
-        this.tuneChunk.detuneC = obj.tune.detuneC
-        this.tuneChunk.detuneCSharp = obj.tune.detuneCSharp
-        this.tuneChunk.detuneD = obj.tune.detuneD
-        this.tuneChunk.detuneEFlat = obj.tune.detuneEFlat
-        this.tuneChunk.detuneE = obj.tune.detuneE
-        this.tuneChunk.detuneF = obj.tune.detuneF
-        this.tuneChunk.detuneFSharp = obj.tune.detuneFSharp
-        this.tuneChunk.detuneG = obj.tune.detuneG
-        this.tuneChunk.detuneGSharp = obj.tune.detuneGSharp
-        this.tuneChunk.detuneA = obj.tune.detuneA
-        this.tuneChunk.detuneBFlat = obj.tune.detuneBFlat
-        this.tuneChunk.detuneB = obj.tune.detuneB
+        this.program.programNumber = obj.programNumber
+        this.program.keygroupCount = obj.keygroupCount
+        this.output.loudness = obj.output.loudness
+        this.output.ampMod1 = obj.output.ampMod1
+        this.output.ampMod2 = obj.output.ampMod2
+        this.output.panMod1 = obj.output.panMod1
+        this.output.panMod2 = obj.output.panMod2
+        this.output.panMod3 = obj.output.panMod3
+        this.output.velocitySensitivity = obj.output.velocitySensitivity
+        this.tune.semiToneTune = obj.tune.semiToneTune
+        this.tune.fineTune = obj.tune.fineTune
+        this.tune.detuneC = obj.tune.detuneC
+        this.tune.detuneCSharp = obj.tune.detuneCSharp
+        this.tune.detuneD = obj.tune.detuneD
+        this.tune.detuneEFlat = obj.tune.detuneEFlat
+        this.tune.detuneE = obj.tune.detuneE
+        this.tune.detuneF = obj.tune.detuneF
+        this.tune.detuneFSharp = obj.tune.detuneFSharp
+        this.tune.detuneG = obj.tune.detuneG
+        this.tune.detuneGSharp = obj.tune.detuneGSharp
+        this.tune.detuneA = obj.tune.detuneA
+        this.tune.detuneBFlat = obj.tune.detuneBFlat
+        this.tune.detuneB = obj.tune.detuneB
 
-        this.lfo1Chunk.waveform = obj.lfo1.waveform
-        this.lfo1Chunk.rate = obj.lfo1.rate
-        this.lfo1Chunk.delay = obj.lfo1.delay
-        this.lfo1Chunk.depth = obj.lfo1.depth
-        this.lfo1Chunk.sync = obj.lfo1.sync
-        this.lfo1Chunk.modwheel = obj.lfo1.modwheel
-        this.lfo1Chunk.aftertouch = obj.lfo1.aftertouch
-        this.lfo1Chunk.rateMod = obj.lfo1.rateMod
-        this.lfo1Chunk.delayMod = obj.lfo1.delayMod
-        this.lfo1Chunk.depthMod = obj.lfo1.depthMod
+        this.lfo1.waveform = obj.lfo1.waveform
+        this.lfo1.rate = obj.lfo1.rate
+        this.lfo1.delay = obj.lfo1.delay
+        this.lfo1.depth = obj.lfo1.depth
+        this.lfo1.sync = obj.lfo1.sync
+        this.lfo1.modwheel = obj.lfo1.modwheel
+        this.lfo1.aftertouch = obj.lfo1.aftertouch
+        this.lfo1.rateMod = obj.lfo1.rateMod
+        this.lfo1.delayMod = obj.lfo1.delayMod
+        this.lfo1.depthMod = obj.lfo1.depthMod
 
-        this.lfo2Chunk.waveform = obj.lfo2.waveform
-        this.lfo2Chunk.rate = obj.lfo2.rate
-        this.lfo2Chunk.delay = obj.lfo2.delay
-        this.lfo2Chunk.depth = obj.lfo2.depth
-        this.lfo2Chunk.retrigger = obj.lfo2.retrigger
-        this.lfo2Chunk.rateMod = obj.lfo2.rateMod
-        this.lfo2Chunk.delayMod = obj.lfo2.delayMod
-        this.lfo2Chunk.depthMod = obj.lfo2.depthMod
+        this.lfo2.waveform = obj.lfo2.waveform
+        this.lfo2.rate = obj.lfo2.rate
+        this.lfo2.delay = obj.lfo2.delay
+        this.lfo2.depth = obj.lfo2.depth
+        this.lfo2.retrigger = obj.lfo2.retrigger
+        this.lfo2.rateMod = obj.lfo2.rateMod
+        this.lfo2.delayMod = obj.lfo2.delayMod
+        this.lfo2.depthMod = obj.lfo2.depthMod
 
-        this.modsChunk.ampMod1Source = obj.mods.ampMod1Source
-        this.modsChunk.ampMod2Source = obj.mods.ampMod2Source
-        this.modsChunk.panMod1Source = obj.mods.panMod1Source
-        this.modsChunk.panMod2Source = obj.mods.panMod2Source
-        this.modsChunk.panMod3Source = obj.mods.panMod3Source
-        this.modsChunk.lfo1RateModSource = obj.mods.lfo1RateModSource
-        this.modsChunk.lfo1DelayModSource = obj.mods.lfo1DelayModSource
-        this.modsChunk.lfo1DepthModSource = obj.mods.lfo1DepthModSource
-        this.modsChunk.lfo2RateModSource = obj.mods.lfo2RateModSource
-        this.modsChunk.lfo2DelayModSource = obj.mods.lfo2DelayModSource
-        this.modsChunk.lfo2DepthModSource = obj.mods.lfo2DepthModSource
-        this.modsChunk.pitchMod1Source = obj.mods.pitchMod1Source
-        this.modsChunk.pitchMod2Source = obj.mods.pitchMod2Source
-        this.modsChunk.ampModSource = obj.mods.ampModSource
-        this.modsChunk.filterModInput1 = obj.mods.filterModInput1
-        this.modsChunk.filterModInput2 = obj.mods.filterModInput2
-        this.modsChunk.filterModInput3 = obj.mods.filterModInput3
+        this.mods.ampMod1Source = obj.mods.ampMod1Source
+        this.mods.ampMod2Source = obj.mods.ampMod2Source
+        this.mods.panMod1Source = obj.mods.panMod1Source
+        this.mods.panMod2Source = obj.mods.panMod2Source
+        this.mods.panMod3Source = obj.mods.panMod3Source
+        this.mods.lfo1RateModSource = obj.mods.lfo1RateModSource
+        this.mods.lfo1DelayModSource = obj.mods.lfo1DelayModSource
+        this.mods.lfo1DepthModSource = obj.mods.lfo1DepthModSource
+        this.mods.lfo2RateModSource = obj.mods.lfo2RateModSource
+        this.mods.lfo2DelayModSource = obj.mods.lfo2DelayModSource
+        this.mods.lfo2DepthModSource = obj.mods.lfo2DepthModSource
+        this.mods.pitchMod1Source = obj.mods.pitchMod1Source
+        this.mods.pitchMod2Source = obj.mods.pitchMod2Source
+        this.mods.ampModSource = obj.mods.ampModSource
+        this.mods.filterModInput1 = obj.mods.filterModInput1
+        this.mods.filterModInput2 = obj.mods.filterModInput2
+        this.mods.filterModInput3 = obj.mods.filterModInput3
 
         this.keygroups.length = 0
         for (let i = 0; i < obj.keygroups.length; i++) {
@@ -941,31 +965,31 @@ class BasicProgram implements Program {
     }
 
     getKeygroupCount() {
-        return this.programChunk.keygroupCount
+        return this.program.keygroupCount
     }
 
     getProgramNumber() {
-        return this.programChunk.programNumber
+        return this.program.programNumber
     }
 
     getOutput(): Output {
-        return this.outputChunk
+        return this.output
     }
 
     getTune(): Tune {
-        return this.tuneChunk
+        return this.tune
     }
 
     getLfo1(): Lfo1 {
-        return this.lfo1Chunk
+        return this.lfo1
     }
 
     getLfo2(): Lfo2 {
-        return this.lfo2Chunk
+        return this.lfo2
     }
 
     getMods(): Mods {
-        return this.modsChunk;
+        return this.mods;
     }
 
     getKeygroups(): Keygroup[] {
