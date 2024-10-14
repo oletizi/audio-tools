@@ -615,7 +615,7 @@ export function newKeygroupChunk() {
 
     const zoneChunkName = [0x7a, 0x6f, 0x6e, 0x65];
     // const zoneChunkSpec = [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
-    const zoneChunkSpec = ['sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
+    const zoneChunkSpec = [pad.padField(), 'sampleNameLength'].concat(sampleNameSpec).concat(zonePadSpec).concat([
         'lowVelocity',
         'highVelocity',
         'fineTune',

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "main": "tsx index.ts",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'"
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
+    "info": "tsx info.ts"
   },
   "author": "",
   "license": "ISC",

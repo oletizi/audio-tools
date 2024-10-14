@@ -518,13 +518,21 @@ describe('JSON Program', async () => {
         const mods = {
             output: {
                 loudness: 22
-            }
+            },
+            keygroups: [
+                {
+                    zone1: {
+                        sampleName: "KICK 2"
+                    }
+                }
+            ]
         }
         const input = await fs.readFile('data/DEFAULT.AKP')
         const program = newProgramFromBuffer(input)
         expect(program.getOutput().loudness).to.eq(85)
         expect(program.getKeygroups()).to.exist
         expect(program.getKeygroups().length).to.eq(1)
+        expect(program.getKeygroups()[0].zone1.sampleName).to.eq('Kick 1')
         program.apply(mods)
         expect(program.getOutput().loudness).to.eq(mods.output.loudness)
 
@@ -538,6 +546,7 @@ describe('JSON Program', async () => {
         expect(mod4Program.getKeygroups()).to.exist
         expect(mod4Program.getKeygroups().length).to.eq(1)
         expect(mod4Program.getKeygroupCount()).to.eq(1)
+
     })
 
 })
