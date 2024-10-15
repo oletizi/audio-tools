@@ -15,6 +15,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "antlr4": "^4.13.2",
+    "cheerio": "^1.0.0",
     "lodash": "^4.17.21",
     "riff-parser": "^1.0.1",
     "tsx": "^4.19.1",

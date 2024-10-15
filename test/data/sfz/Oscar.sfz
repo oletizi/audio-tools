@@ -1,0 +1,153 @@
+/////////////////////////////////////////////////////////////////////////////
+////
+//// Category: Drums
+
+<global>
+global_label=Oscar
+
+<group>
+group_label=Layer 1
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=36
+offset=0 end=133300
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=37
+offset=133300 end=153700
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=38
+offset=153700 end=171900
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=39
+offset=171900 end=194700
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=40
+offset=194700 end=219400
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=41
+offset=219400 end=239800
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=42
+offset=239800 end=253000
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=43
+offset=253000 end=327000
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=44
+offset=327000 end=348300
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=45
+offset=348300 end=368268
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=46
+offset=368268 end=386900
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=47
+offset=386900 end=409356
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=48
+offset=409356 end=428364
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=49
+offset=428364 end=442100
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=50
+offset=442100 end=459300
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
+
+<region>
+sample=Oscar Samples/Oscar.wav
+key=51
+offset=459300 end=556991
+volume=6.00
+ampeg_attack=0.0010948887666178619 ampeg_hold=0.001 ampeg_decay=0.0017227410407101016 ampeg_release=0.001 ampeg_sustain=100.0 ampeg_attack_shape=-2.5 ampeg_decay_shape=-2.5 ampeg_release_shape=-2.5
+loop_mode=no_loop 
+fil_type=lpf_4p cutoff=20000.00 resonance=0.00
