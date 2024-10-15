@@ -8,7 +8,7 @@ import {
     newProgramChunk, newProgramFromBuffer, newProgramFromJson,
     newTuneChunk, Output, OutputChunk,
     parseChunkHeader, Program, ProgramChunk, Tune, Zone
-} from "../lib";
+} from "../src/ts/lib";
 
 async function loadTestFile() {
     const testFile = 'test/data/BASS.AKP'
@@ -345,7 +345,7 @@ describe('BinaryProgram', async () => {
 
 describe('JSON Program', async () => {
     it('reads the default json', async () => {
-        const json = await fs.readFile('default-program.json')
+        const json = await fs.readFile('data/default-program.json')
         const program = newProgramFromJson(json.toString())
         expect(program.getProgramNumber()).to.eq(0)
         expect(program.getKeygroupCount()).to.eq(1)
@@ -489,7 +489,7 @@ describe('JSON Program', async () => {
 
 
     it('Reads a json file and writes a valid binary file', async () => {
-        const json = (await fs.readFile('default-program.json')).toString()
+        const json = (await fs.readFile('data/default-program.json')).toString()
         const program = newProgramFromJson(json)
         const output = program.getOutput()
         output.loudness = 95

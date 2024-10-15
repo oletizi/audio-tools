@@ -1,15 +1,15 @@
 {
   "name": "akai-sampler",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "src/ts/main.ts",
   "type": "module",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "main": "tsx index.ts",
+    "main": "tsx src/ts/main.ts",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
-    "info": "tsx info.ts"
+    "info": "tsx src/ts/info.ts"
   },
   "author": "",
   "license": "ISC",
