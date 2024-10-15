@@ -8,7 +8,7 @@ import {
     newProgramChunk, newProgramFromBuffer, newProgramFromJson,
     newTuneChunk, Output, OutputChunk,
     parseChunkHeader, Program, ProgramChunk, Tune, Zone
-} from "../src/ts/lib";
+} from "../src/ts/akai-lib";
 
 async function loadTestFile() {
     const testFile = 'test/data/BASS.AKP'
