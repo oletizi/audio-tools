@@ -21,7 +21,9 @@
     "lodash": "^4.17.21",
     "riff-parser": "^1.0.1",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "wavefile": "^11.0.0",
+    "wavefile-parser": "^1.0.1"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.7",

@@ -1,3 +1,6 @@
+import {Sample} from "./sample";
+import {PathLike} from "fs";
+
 /**
  * Writes the data into the buffer; returns the number of bytes written
  * @param buf
@@ -51,6 +54,7 @@ function checkOrThrow(buf, data, offset) {
 export function bytes2Number(bytes: number[]): number {
     return Buffer.from(bytes).readInt32LE()
 }
+
 
 
 class Pad {
@@ -639,11 +643,11 @@ export function newKeygroupChunk() {
     const keygroupLength = 352
     return {
         lengthInBytes: keygroupLength,
-        kloc: newChunkFromSpec(klocChunkName, 16, klocChunkSpec),
-        ampEnvelope: newChunkFromSpec(envChunkName, 18, ampEnvelopeChunkSpec),
-        filterEnvelope: newChunkFromSpec(envChunkName, 18, filterEnvelopeChunkName),
-        auxEnvelope: newChunkFromSpec(envChunkName, 18, auxEnvelopeChunkSpec),
-        filter: newChunkFromSpec(filterChunkName, 10, filterChunkSpec),
+        kloc: newChunkFromSpec(klocChunkName, 16, klocChunkSpec) as KlocChunk,
+        ampEnvelope: newChunkFromSpec(envChunkName, 18, ampEnvelopeChunkSpec) as AmpEnvelopeChunk,
+        filterEnvelope: newChunkFromSpec(envChunkName, 18, filterEnvelopeChunkName) as FilterEnvelopeChunk,
+        auxEnvelope: newChunkFromSpec(envChunkName, 18, auxEnvelopeChunkSpec) as AuxEnvelopeChunk,
+        filter: newChunkFromSpec(filterChunkName, 10, filterChunkSpec) as FilterChunk,
         zone1: zones[0],
         zone2: zones[1],
         zone3: zones[2],
