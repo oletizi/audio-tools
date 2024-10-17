@@ -6,20 +6,25 @@ export namespace mpc {
         let inLayer = false
         let layer = {}
         let inSampleName = false
+        let inSliceStart = false
+        let inSliceEnd = false
         const parser = new htmlparser2.Parser({
             onopentag(name: string, attribs: { [p: string]: string }, isImplied: boolean) {
                 switch (name) {
                     case "instrument" :
-                        // console.log(`Instrument! ${attribs['number']}`)
                         break
                     case "layer":
-                        // console.log(`Layer: ${attribs['number']}`)
                         inLayer = true
-                        layer['number'] = attribs['number']
+                        layer['number'] = Number.parseInt(attribs['number'])
                         break
                     case "samplename":
-                        // console.log(`entering sample file`)
                         inSampleName = true
+                        break
+                    case "slicestart":
+                        inSliceStart = true
+                        break
+                    case "sliceend":
+                        inSliceEnd = true
                         break
                     default:
                         break
@@ -28,22 +33,29 @@ export namespace mpc {
             },
             ontext(data: string) {
                 if (inSampleName) {
-                    // console.log(`sample name: ${data}`)
                     layer['sampleName'] = data
                     // this layer has a sample name, so we care about it
                     layers.push(layer)
+                } else if (inSliceStart) {
+                    layer['sliceStart'] = Number.parseInt(data)
+                } else if (inSliceEnd) {
+                    layer['sliceEnd'] = Number.parseInt(data)
                 }
             },
             onclosetag(name: string, isImplied: boolean) {
                 switch (name) {
                     case "layer":
-                        // console.log(`layer: ${JSON.stringify(layer, null, 2)}`)
                         inLayer = false
                         layer = {}
                         break
                     case "samplename":
-                        // console.log(`close sample file`)
                         inSampleName = false
+                        break
+                    case "slicestart":
+                        inSliceStart = false
+                        break
+                    case "sliceend":
+                        inSliceEnd = false
                         break
                     default:
                         break
@@ -51,9 +63,15 @@ export namespace mpc {
             }
         })
         parser.write(buf.toString())
-        return { layers: layers} as MpcProgram
+        return {layers: layers} as MpcProgram
     }
 
+    export interface Layer {
+        number: number
+        sampleName: string
+        sliceStart: number
+        sliceEnd: number
+    }
     export interface MpcProgram {
         layers: []
     }
