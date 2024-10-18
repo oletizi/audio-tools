@@ -1,51 +1,36 @@
 import {PathLike} from "fs";
+import wavefile from "wavefile";
 
-export interface Sample {
-    attack: number
-    attackcurve: number
-    decay: number
-    decaycurve: number
-    end: number
-    hinote: number
-    hivel: number
-    lonote: number
-    lovel: number
-    pan: number
-    path: string
-    pitchkeytrack: number
-    release: number
-    releasecurve: number
-    rootnote: number
-    start: number
-    sustain: number
-    volume: number
+export function newSampleFromBuffer(buf: Uint8Array): Sample {
+    const wav = new wavefile.WaveFile()
+    wav.fromBuffer(buf)
+    return new WavSample(wav)
 }
 
+export interface Sample {
+    trim(start, end): Sample
 
-/**
- * Trims sample to start and end length. Writes a new sample to the output path.
- * @param outputPath
- * @param sample
- */
-export function trimSample(outputPath: PathLike, sample: Sample): Sample {
-    return {
-        attack: 0,
-        attackcurve: 0,
-        decay: 0,
-        decaycurve: 0,
-        end: 0,
-        hinote: 0,
-        hivel: 0,
-        lonote: 0,
-        lovel: 0,
-        pan: 0,
-        path: "",
-        pitchkeytrack: 0,
-        release: 0,
-        releasecurve: 0,
-        rootnote: 0,
-        start: 0,
-        sustain: 0,
-        volume: 0
+    write(buf: Buffer, offset: number)
+}
+
+class WavSample implements Sample {
+    private readonly wav: wavefile.WaveFile;
+
+    constructor(wav: wavefile.WaveFile) {
+        this.wav = wav
+    }
+
+    trim(start, end): Sample {
+        const channelCount = this.wav.fmt.numChannels
+        const trimmedSamples = this.wav.getSamples(true).slice(start * channelCount, end * channelCount)
+        const trimmed = new wavefile.WaveFile()
+        trimmed.fromScratch(channelCount, this.wav.fmt.sampleRate, this.wav.bitDepth, trimmedSamples)
+        return newSampleFromBuffer(trimmed.toBuffer())
+    }
+
+    write(buf: Buffer, offset: number) {
+        const wavBuffer = Buffer.from(this.wav.toBuffer())
+        wavBuffer.copy(buf, offset, 0, wavBuffer.length)
+        return wavBuffer.length
     }
 }
