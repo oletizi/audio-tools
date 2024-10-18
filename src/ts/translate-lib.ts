@@ -1,0 +1,60 @@
+import fs from "fs/promises";
+import path from "path";
+import {mpc} from "./akai-mpc";
+import {newProgramFromBuffer} from "./akai-lib";
+import {newSampleFromBuffer} from "./sample";
+
+export namespace translate {
+    export async function mpc2Sxk(infile, outdir) {
+        const mpcbuf = await fs.readFile(infile)
+        const mpcdir = path.dirname(infile)
+        const mpcProgram = mpc.newProgramFromBuffer(mpcbuf)
+
+        const sxkbuf = await fs.readFile('data/DEFAULT.AKP')
+        const sxkProgram = newProgramFromBuffer(sxkbuf)
+        const snapshot = new Date().getMilliseconds()
+
+
+        const mods = {
+            keygroupCount: mpcProgram.layers.length,
+            keygroups: []
+        }
+        const inbuf = Buffer.alloc(1024 * 10000)
+        const outbuf = Buffer.alloc(inbuf.length)
+        let sliceCounter = 1
+        let midiNote = 60
+        let detune = 0
+        for (const layer of mpcProgram.layers) {
+            // chop & copy sample
+            const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
+            const sliceName = `${layer.sampleName}-${sliceCounter++}-${snapshot}`
+
+            try {
+                const sample = newSampleFromBuffer(await fs.readFile(samplePath))
+                const trimmed = sample.trim(layer.sliceStart, layer.sliceEnd)
+                const bytesWritten = trimmed.write(outbuf, 0)
+                let outpath = path.join(outdir, sliceName + '.WAV');
+                console.log(`writing trimmed sample to: ${outpath}`)
+                await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))
+            } catch (err) {
+                // no joy
+                console.error(err)
+            }
+
+            mods.keygroups.push({
+                kloc: {
+                    lowNote: midiNote,
+                    highNote: midiNote++,
+                    semiToneTune: detune--
+                },
+                zone1: {
+                    sampleName: sliceName
+                }
+            })
+        }
+
+        sxkProgram.apply(mods)
+        const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
+        await fs.writeFile(path.join(outdir, mpcProgram.programName + '.AKP'), Buffer.copyBytesFrom(outbuf, 0, bufferSize))
+    }
+}
