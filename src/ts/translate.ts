@@ -29,7 +29,7 @@ async function mpc2Sxk(infile, outdir) {
 
     const sxkbuf = await fs.readFile('data/DEFAULT.AKP')
     const sxkProgram = newProgramFromBuffer(sxkbuf)
-    const snapshot = new Date().getTime()
+    const snapshot = new Date().getMilliseconds()
 
 
     const mods = {
@@ -42,7 +42,7 @@ async function mpc2Sxk(infile, outdir) {
     for (const layer of mpcProgram.layers) {
         // chop & copy sample
         const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
-        const sliceName = `${layer.sampleName}-${snapshot}-${sliceCounter++}`
+        const sliceName = `${layer.sampleName}-${sliceCounter++}-${snapshot}`
 
         try {
             const sample = newSampleFromBuffer(await fs.readFile(samplePath))
