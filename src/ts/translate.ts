@@ -39,6 +39,8 @@ async function mpc2Sxk(infile, outdir) {
     const inbuf = Buffer.alloc(1024 * 10000)
     const outbuf = Buffer.alloc(inbuf.length)
     let sliceCounter = 1
+    let midiNote = 60
+    let detune = 0
     for (const layer of mpcProgram.layers) {
         // chop & copy sample
         const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
@@ -57,6 +59,11 @@ async function mpc2Sxk(infile, outdir) {
         }
 
         mods.keygroups.push({
+            kloc: {
+                lowNote: midiNote,
+                highNote: midiNote++,
+                semiToneTune: detune--
+            },
             zone1: {
                 sampleName: sliceName
             }
