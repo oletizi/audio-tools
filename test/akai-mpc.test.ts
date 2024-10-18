@@ -9,6 +9,7 @@ describe('MPC', async () => {
         const buf = await fs.readFile('test/data/akai/Oscar/Oscar.xpm')
         const program = mpc.newProgramFromBuffer(buf)
         expect(program).to.exist
+        expect(program.programName).to.eq('Oscar')
         expect(program.layers).to.exist
         expect(program.layers.length).to.eq(16)
         const layer: Layer = program.layers[0]

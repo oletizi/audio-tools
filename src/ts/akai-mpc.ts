@@ -3,6 +3,10 @@ import * as htmlparser2 from "htmlparser2"
 export namespace mpc {
     export function newProgramFromBuffer(buf) {
         const layers = []
+        const program = {
+            layers: layers
+        }
+        let inProgramName = false
         let inLayer = false
         let layer = {}
         let inSampleName = false
@@ -11,6 +15,9 @@ export namespace mpc {
         const parser = new htmlparser2.Parser({
             onopentag(name: string, attribs: { [p: string]: string }, isImplied: boolean) {
                 switch (name) {
+                    case "programname":
+                        inProgramName = true
+                        break
                     case "instrument" :
                         break
                     case "layer":
@@ -32,7 +39,9 @@ export namespace mpc {
 
             },
             ontext(data: string) {
-                if (inSampleName) {
+                if (inProgramName) {
+                    program['programName'] = data
+                } else if (inSampleName) {
                     layer['sampleName'] = data
                     // this layer has a sample name, so we care about it
                     layers.push(layer)
@@ -44,6 +53,9 @@ export namespace mpc {
             },
             onclosetag(name: string, isImplied: boolean) {
                 switch (name) {
+                    case "programname":
+                        inProgramName = false
+                        break
                     case "layer":
                         inLayer = false
                         layer = {}
@@ -63,7 +75,7 @@ export namespace mpc {
             }
         })
         parser.write(buf.toString())
-        return {layers: layers} as MpcProgram
+        return program as MpcProgram
     }
 
     export interface Layer {
@@ -72,7 +84,9 @@ export namespace mpc {
         sliceStart: number
         sliceEnd: number
     }
+
     export interface MpcProgram {
+        programName: string
         layers: []
     }
 }
