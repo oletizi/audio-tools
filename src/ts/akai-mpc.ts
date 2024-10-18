@@ -87,6 +87,6 @@ export namespace mpc {
 
     export interface MpcProgram {
         programName: string
-        layers: []
+        layers: Layer[]
     }
 }

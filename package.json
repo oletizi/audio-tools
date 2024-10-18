@@ -9,6 +9,7 @@
   "scripts": {
     "main": "tsx src/ts/main.ts",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
+    "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts"
   },
   "author": "",
@@ -18,6 +19,7 @@
     "@types/cheerio": "^0.22.35",
     "antlr4": "^4.13.2",
     "cheerio": "^1.0.0",
+    "commander": "^12.1.0",
     "lodash": "^4.17.21",
     "riff-parser": "^1.0.1",
     "tsx": "^4.19.1",

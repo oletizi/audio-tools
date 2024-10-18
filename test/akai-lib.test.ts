@@ -498,12 +498,9 @@ describe('JSON Program', async () => {
         keygroup.filter.resonance = 5
         const buf = Buffer.alloc(1024 * 2)
         const written = program.writeToBuffer(buf, 0)
-        console.log(`written: ${written}`)
         await fs.writeFile('build/default-program.akp',  Buffer.copyBytesFrom(buf, 0, written))
         const inbuf = await fs.readFile('build/default-program.akp')
         const checkProgram = newProgramFromBuffer(inbuf)
-
-        console.log(`CHECK PROGRAM\n${JSON.stringify(checkProgram, null, 2)}`)
 
         expect(checkProgram.getKeygroupCount()).to.eq(1)
         expect(checkProgram.getOutput().loudness).to.eq(95)
