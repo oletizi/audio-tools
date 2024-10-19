@@ -1,17 +1,18 @@
 {
   "name": "akai-sampler",
   "version": "1.0.0",
-  "main": "src/ts/app/main.ts",
+  "main": "src/ts/app/server.ts",
   "type": "module",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "watch:build": "nodemon --watch 'src/*' -e scss -e html -x \"npm run build\"",
+    "watch:build": "nodemon --watch 'src/*' -e scss -e html -e ts -x \"npm run build\"",
     "watch:main": "nodemon --watch 'src/*' -e ts -x \"npm run main\"",
     "sass-build": "npx sass src/scss/styles.scss build/site/styles.css",
-    "build": "tsx build.ts && npm run sass-build",
-    "main": "npm run build && tsx src/ts/app/main.ts",
+    "bundler-build": "npx esbuild src/ts/app/client.ts --bundle --outfile=build/site/client.js",
+    "build": "tsx build.ts && npm run sass-build && npm run bundler-build",
+    "main": "npm run build && tsx src/ts/app/server.ts",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
     "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts"
@@ -29,7 +30,6 @@
     "lodash": "^4.17.21",
     "riff-parser": "^1.0.1",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3",
     "wavefile": "^11.0.0",
     "wavefile-parser": "^1.0.1"
   },
@@ -39,9 +39,18 @@
     "@types/express": "^5.0.0",
     "@types/mocha": "^10.0.9",
     "@types/node": "^22.7.5",
+    "@webpack-cli/generators": "^3.0.7",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
+    "css-loader": "^7.1.2",
     "electron": "^33.0.1",
-    "mocha": "^10.7.3"
+    "esbuild": "0.24.0",
+    "mocha": "^10.7.3",
+    "prettier": "^3.3.3",
+    "sass": "^1.79.1",
+    "sass-loader": "^16.0.2",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3"
   }
 }
