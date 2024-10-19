@@ -31,7 +31,9 @@ export namespace translate {
 
             try {
                 const sample = newSampleFromBuffer(await fs.readFile(samplePath))
-                const trimmed = sample.trim(layer.sliceStart, layer.sliceEnd)
+                let trimmed = sample.trim(layer.sliceStart, layer.sliceEnd)
+                trimmed = trimmed.to16Bit()
+
                 const bytesWritten = trimmed.write(outbuf, 0)
                 let outpath = path.join(outdir, sliceName + '.WAV');
                 console.log(`writing trimmed sample to: ${outpath}`)

@@ -1,4 +1,3 @@
-import {PathLike} from "fs";
 import wavefile from "wavefile";
 
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
@@ -9,7 +8,7 @@ export function newSampleFromBuffer(buf: Uint8Array): Sample {
 
 export interface Sample {
     trim(start, end): Sample
-
+    to16Bit() : Sample
     write(buf: Buffer, offset: number)
 }
 
@@ -18,6 +17,10 @@ class WavSample implements Sample {
 
     constructor(wav: wavefile.WaveFile) {
         this.wav = wav
+    }
+    to16Bit(): Sample {
+        this.wav.toBitDepth("16")
+        return this
     }
 
     trim(start, end): Sample {
