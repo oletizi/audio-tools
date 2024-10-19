@@ -6,7 +6,7 @@ import Layer = mpc.Layer;
 
 describe('MPC', async () => {
     it('Parses an MPC program', async () => {
-        const buf = await fs.readFile('test/data/akai/Oscar/Oscar.xpm')
+        const buf = await fs.readFile('test/data/mpc/Oscar/Oscar.xpm')
         const program = mpc.newProgramFromBuffer(buf)
         expect(program).to.exist
         expect(program.programName).to.eq('Oscar')

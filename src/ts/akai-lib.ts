@@ -36,6 +36,14 @@ function string2Bytes(str: string) {
     return rv
 }
 
+function bytes2String(bytes: number[]) {
+    let rv = ''
+    for (const b of bytes) {
+        rv += String.fromCharCode(b)
+    }
+    return rv
+}
+
 /**
  * Validates the buffer from offset matches the expected data array. Returns the number of bytes read
  * @param buf
@@ -54,7 +62,6 @@ function checkOrThrow(buf, data, offset) {
 export function bytes2Number(bytes: number[]): number {
     return Buffer.from(bytes).readInt32LE()
 }
-
 
 
 class Pad {
@@ -95,8 +102,17 @@ export function parseChunkHeader(buf: Buffer, chunk: Chunk, offset: number): num
 }
 
 function readFromSpec(buf, obj: any, spec: string[], offset): number {
+    const chunkNameString = bytes2String(obj.chunkName)
+    const checkpoint = offset
+    const verbose = chunkNameString === 'zone'
+    if (verbose) {
+        console.log(`START READING ${chunkNameString} @ offset ${offset}`)
+    }
     for (let i = 0; i < spec.length; i++, offset++) {
         try {
+            if (verbose) {
+                console.log(`  reading at offset: ${offset}: spec[${spec[i]}]: ${readByte(buf, offset)}`)
+            }
             obj[spec[i]] = readByte(buf, offset)
         } catch (err) {
             console.log(`Error: i: ${i}; spec[${i}]: ${spec[i]}; offset: ${offset}`)
@@ -104,23 +120,53 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
             throw err
         }
     }
+    const bytesRead = offset - checkpoint
+    if (verbose) {
+        console.log(`END READING ${chunkNameString} @ offset ${offset}; bytes read: ${bytesRead}; reporting bytes read: ${spec.length}`)
+    }
+    // XXX: This should probably report the actual bytes read
     return spec.length
 }
 
 
-function writeFromSpec(buf, chunk, spec, offset) {
+function writeFromSpec(buf, chunk, spec, offset): number {
+    const chunkNameString = bytes2String(chunk.chunkName)
+    const checkpoint = offset
+    const verbose = chunkNameString === 'zone'
+    const zeroPad = chunkNameString === 'zone'
+    if (verbose) {
+        console.log(`START WRITING ${chunkNameString} @ offset ${offset}`)
+    }
     for (let i = 0; i < chunk.chunkName.length; i++, offset++) {
+        if (verbose) {
+            console.log(`  writing at offset: ${offset}: chunk.chunkName[${i}]: ${chunk.chunkName[i]}`)
+        }
         writeByte(buf, chunk.chunkName[i], offset)
     }
+    if (verbose) {
+        console.log(`  writing at offset ${offset}: chunk.length: ${chunk.length}`)
+    }
+
     // !!!: This is weird. Buffer returns the offset + the bytes written, not the bytes written.
     offset = buf.writeInt32LE(chunk.length, offset)
-
     for (let i = 0; i < spec.length; i++, offset++) {
+        // XXX: Clumsy way to zero out padded bytes
+        if (zeroPad && spec[i].startsWith('pad')) {
+            chunk[spec[i]] = 0
+        }
+        if (verbose) {
+            console.log(`  writing at offset ${offset}: chunk[${spec[i]}] = ${chunk[spec[i]]}`)
+        }
         writeByte(buf, chunk[spec[i]], offset)
     }
+    if (verbose) {
+        console.log(`END WRITING ${chunkNameString} @ offset ${offset}; Returning ${offset - checkpoint} bytes written`)
+    }
+    return offset - checkpoint
 }
 
 function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string[]) {
+    const chunkNameString = bytes2String(chunkName)
     return {
         chunkName: chunkName,
         length: chunkLength,
@@ -128,11 +174,7 @@ function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string
             try {
                 checkOrThrow(buf, chunkName, offset)
             } catch (err) {
-                let cn = ''
-                for (let i = 0; i < chunkName.length; i++) {
-                    cn += String.fromCharCode(chunkName[i])
-                }
-                console.error(`Chunk name: ${chunkName} ("${cn}"), chunkLength: ${chunkLength}, spec: ${spec}`)
+                console.error(`Chunk name: ${chunkName} ("${chunkNameString}"), chunkLength: ${chunkLength}, spec: ${spec}`)
                 throw err
             }
             offset += parseChunkHeader(buf, this, offset)
@@ -140,8 +182,13 @@ function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string
             return this.length + 8
         },
         write(buf: Buffer, offset: number): number {
-            writeFromSpec(buf, this, spec, offset)
-            return this.length + 8
+            const bytesReported = this.length + 8
+            const bytesWritten = writeFromSpec(buf, this, spec, offset)
+            if (bytesReported < bytesWritten) {
+                // barf if we've written more bytes than we report
+                throw new Error(`Bytes written != bytes reported: ${bytes2String(chunkName)}; written: ${bytesWritten}, reported: ${bytesReported}`)
+            }
+            return bytesReported
         }
     }
 }
@@ -551,7 +598,7 @@ export function newKeygroupChunk() {
         pad.padField(),
         'offVelocity2Release',
         pad.padField(),
-        pad.padField()
+        // pad.padField()
     ];
     const filterEnvelopeChunkName = [
         pad.padField(),

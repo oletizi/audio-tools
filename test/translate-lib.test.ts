@@ -4,8 +4,9 @@ import fs from "fs/promises";
 import {expect} from "chai";
 
 describe(`Translate`, async () => {
+    let cleanup = false
     it('Converts MPC drum program to Akai Sx000 program.', async () => {
-        const infile = 'test/data/akai/Oscar/Oscar.xpm'
+        const infile = 'test/data/mpc/Oscar/Oscar.xpm'
         const outdir = 'build'
         await translate.mpc2Sxk(infile, outdir)
         const buf = await fs.readFile('build/Oscar.AKP')
@@ -23,9 +24,15 @@ describe(`Translate`, async () => {
             console.log(`hi note : ${keygroup.kloc.highNote}`)
             console.log(`detune  : ${keygroup.kloc.semiToneTune}`)
             console.log(`Cleanup: ${cleanupPath}`)
-            await fs.rm(cleanupPath)
+            if (cleanup) {
+                await fs.rm(cleanupPath)
+            }
             midiNote++
             detune--
         }
+    })
+    it('Checks itself', async () => {
+        const buf = await fs.readFile('test/data/Sx000/Oscar/Oscar-unmuted.AKP')
+        const program = newProgramFromBuffer(buf)
     })
 })
