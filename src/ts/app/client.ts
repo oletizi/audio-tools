@@ -1,5 +1,4 @@
-import {brain} from "./brain";
-import FromList = brain.FromList;
+import {FromList} from "./api";
 
 doIt().then(()=>{console.log('done!')})
 async function doIt() {
@@ -12,7 +11,10 @@ async function doIt() {
         const a = document.createElement('a')
         a.classList.add('list-group-item')
         a.classList.add('list-group-item-action')
-        a.innerText = e
+        if (e.directory) {
+            a.classList.add('fw-bold')
+        }
+        a.innerText = e.name
         fromList.appendChild(a)
     }
 }
