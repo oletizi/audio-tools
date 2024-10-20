@@ -5,7 +5,7 @@ doIt().then(() => {
 })
 
 async function doIt() {
-    const newdirButton = document.getElementById('newdir')
+    const newdirButton = document.getElementById('newdir-submit')
     newdirButton.onclick = async () => {
         await newDir()
     }
@@ -77,30 +77,35 @@ function writeFromList(theList: DirList) {
     const widget = document.getElementById('from-list')
     widget.innerText = ""
     for (const e of theList.entries) {
-        const a = document.createElement('a')
-        a.classList.add('list-group-item')
-        a.classList.add('list-group-item-action')
-        a.innerText = e.name + ` `
+        const item = document.createElement('li')
+        item.classList.add('list-group-item')
+        item.classList.add('list-group-item-action')
+        item.classList.add('justify-content-between')
+        item.classList.add('align-items-center')
+        item.classList.add('d-flex')
+        item.innerText = e.name + ` `
         if (e.directory) {
-            a.classList.add('fw-bold')
-            a.onclick = async () => {
+            item.classList.add('fw-bold')
+            item.onclick = async () => {
                 await cdFromList(e.name)
             }
         } else if (e.name.endsWith('.xpm')) {
-            a.classList.add('mpc-program')
-            const span = document.createElement('span')
-            span.classList.add('badge')
-            span.classList.add('bg-secondary')
-            span.innerText = '›'
-            a.appendChild(span)
-            a.onclick = async () => {
+            item.classList.add('mpc-program')
+            const badge = document.createElement('i')
+            badge.classList.add('material-icons')
+            // badge.classList.add('badge')
+            // badge.classList.add('bg-secondary')
+            // badge.classList.add('rounded-pill')
+            badge.innerText = 'arrow_forward'
+            item.appendChild(badge)
+            item.onclick = async () => {
                 await transformProgram(e.name)
             }
         } else {
-            a.classList.add('disabled')
-            a.ariaDisabled = "true"
+            item.classList.add('disabled')
+            item.ariaDisabled = "true"
         }
-        widget.appendChild(a)
+        widget.appendChild(item)
     }
 }
 

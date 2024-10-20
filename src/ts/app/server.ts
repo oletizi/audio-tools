@@ -4,8 +4,8 @@ import {brain} from "./brain.ts"
 
 const app = express()
 const port = 3000
-// const homeDir = path.join(process.env.HOME, 'Music')
-const homeDir = path.join(process.cwd(), 'test', 'data')
+
+const homeDir = path.join(process.env.HOME, 'Dropbox', 'Music', 'Sampler Programs', 'MPC')
 const targetDir = path.join(process.env.HOME, 'tmp')
 const theBrain = new brain.Brain(homeDir, targetDir)
 

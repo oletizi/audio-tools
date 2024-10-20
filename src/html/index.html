@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"-->
     <link href="/styles.css" rel="stylesheet">
     <title>Hello!</title>
 </head>
@@ -22,15 +22,17 @@
         </div>
         <div class="col">
             <p>To</p>
-            <input id="newdir-name" placeholder="Folder name..." type="text">
-            <button id="newdir" type="button" class="btn btn-primary btn-sm">Add Folder</button>
+            <form id="newdir-form">
+                <input id="newdir-name" placeholder="Folder name..." type="text">
+                <button id="newdir-submit" type="button" class="btn btn-primary btn-sm">Add Folder</button>
+            </form>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <div id="from-list" class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">..</a>
-            </div>
+            <ul id="from-list" class="list-group">
+                <li class="list-group-item list-group-item-action">..</li>
+            </ul>
         </div>
         <div class="col">
             <div id="to-list" class="list-group">
