@@ -9,35 +9,41 @@
 <body>
 
 <div class="container">
-    <div class="row">
+    <div class="row mb-sm">
         <div class="col-12">
             <h1>Hi</h1>
             <p>Convert Akai MPC Drum Programs to Akai S5000/6000 Programs</p>
         </div>
     </div>
-
-    <div class="row">
+    <div class="row mb-2">
+        <div class="col">From</div>
+        <div class="col">To</div>
+    </div>
+    <div class="row mb-2">
         <div class="col">
-            <p>From</p>
+            <div class="card">
+                <ul id="from-list" class="list-group list-group-flush as-list-view overflow-scroll">
+                    <li class="list-group-item list-group-item-action">..</li>
+                </ul>
+            </div>
         </div>
         <div class="col">
-            <p>To</p>
-            <form id="newdir-form">
-                <input id="newdir-name" placeholder="Folder name..." type="text">
-                <button id="newdir-submit" type="button" class="btn btn-primary btn-sm">Add Folder</button>
-            </form>
+            <div class="vstack gap-3">
+                <div class="card">
+                    <div id="to-list" class="list-group list-group-flush as-list-view overflow-scroll">
+                        <a href="#" class="list-group-item list-group-item-action">..</a>
+                    </div>
+                </div>
+                <form id="newdir-form" class="hstack gap-3">
+                    <input id="newdir-name" placeholder="Folder name..." type="text">
+                    <button id="newdir-submit" type="button" class="btn btn-primary btn-sm">Add Folder</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-2">
+        <div class="col"></div>
         <div class="col">
-            <ul id="from-list" class="list-group">
-                <li class="list-group-item list-group-item-action">..</li>
-            </ul>
-        </div>
-        <div class="col">
-            <div id="to-list" class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">..</a>
-            </div>
         </div>
     </div>
 </div>
