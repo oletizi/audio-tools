@@ -3,9 +3,10 @@ import {Entry, FromList} from "./api.ts"
 import path from "path";
 
 export namespace brain {
-    function exclude(entry:string) {
+    function exclude(entry: string) {
         return entry.startsWith('.') || entry.startsWith('$') || entry.startsWith('#')
     }
+
     export class Brain {
         private home: string;
         private cwd: string;
@@ -17,14 +18,23 @@ export namespace brain {
 
         async getFromList(): Promise<FromList> {
             const dirlist = await fs.readdir(this.cwd);
-            const entries: Entry[] = []
+            const entries: Entry[] = [
+                {
+                    directory: true,
+                    name: '..'
+                }
+            ]
             for (const l of dirlist) {
-                let stats = await fs.stat(path.join(this.cwd.toString(), l));
-                if (!exclude(l)) {
-                    entries.push({
-                        directory: stats.isDirectory(),
-                        name: l
-                    })
+                try {
+                    let stats = await fs.stat(path.join(this.cwd.toString(), l));
+                    if (!exclude(l)) {
+                        entries.push({
+                            directory: stats.isDirectory(),
+                            name: l
+                        })
+                    }
+                } catch (e) {
+                    console.error(e)
                 }
             }
             return {
@@ -32,8 +42,23 @@ export namespace brain {
             } as FromList
         }
 
-        cd(newdir: string) {
-            this.cwd = path.join(this.cwd, newdir)
+        async cd(newdir: string) {
+            console.log(`cd: newdir: ${newdir}`)
+            const newpath = path.resolve(path.join(this.cwd, newdir))
+            // this.cwd = path.resolve(path.join(this.cwd, newdir))
+
+            try {
+                const stats = await fs.stat(newpath)
+                if (newpath.startsWith(this.home)) {
+                    console.log(`Changing cwd to ${newpath}`)
+                    this.cwd = newpath
+                } else {
+                    console.log(`Won't change directories outside home dir.`)
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return await this.getFromList()
         }
     }
 }

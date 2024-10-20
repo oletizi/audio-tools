@@ -24,6 +24,10 @@ app.get('/from-list', async (req, res) => {
     res.send(fromList)
 })
 
+app.post('/cd', async (req, res) => {
+    res.send(await theBrain.cd(req.query.dir))
+})
+
 app.listen(port, () => {
     console.log(`Converter app listening on port ${port}`)
 })
