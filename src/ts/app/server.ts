@@ -4,7 +4,9 @@ import {brain} from "./brain.ts"
 
 const app = express()
 const port = 3000
-const theBrain = new brain.Brain(path.join(process.env.HOME, 'Music'))
+// const homeDir = path.join(process.env.HOME, 'Music')
+const homeDir = path.join(process.cwd(), 'test', 'data')
+const theBrain = new brain.Brain(homeDir)
 
 app.get('/', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'index.html'))

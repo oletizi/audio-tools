@@ -38,6 +38,11 @@ function writeFromList(theList: FromList) {
             a.onclick = async () => {
                 await cdFromList(e.name)
             }
+        } else if (e.name.endsWith('.xpm')) {
+            a.classList.add('mpc-program')
+        } else {
+            a.classList.add('disabled')
+            a.ariaDisabled = "true"
         }
         a.innerText = e.name
         widget.appendChild(a)

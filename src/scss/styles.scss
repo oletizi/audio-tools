@@ -1,4 +1,22 @@
-@import "../../node_modules/bootstrap/scss/bootstrap"
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+$cream: #F1DAC4;
+$orange: #F55436;
+$green: #606C38;
+$light-gray: #A69CAC;
+$dark-gray: #292F36;
+$highlight: $orange;
+
+$primary: $dark-gray;
+$danger: $orange;
 
 
+$theme-colors: (
+        "primary": $primary,
+        "danger": $danger,
+);
 
+.mpc-program {
+  background-color: $green;
+  color: $cream;
+}
