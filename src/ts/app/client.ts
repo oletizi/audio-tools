@@ -105,7 +105,10 @@ function writeFromList(theList: DirList) {
 }
 
 async function transformProgram(programName) {
-    const res = await fetch(`/transform/?name=${encodeURI(programName)}`)
+    const res = await fetch(`/program/translate?name=${encodeURI(programName)}`, {
+        method: "POST"
+    })
+    console.log(`Transform complete.`)
     const lists = await res.json()
     writeToList(lists[1])
 }

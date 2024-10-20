@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import {Entry, DirList} from "./api.ts"
 import path from "path";
+import {translate} from "../translate-lib";
 
 export namespace brain {
     function exclude(entry: string) {
@@ -96,8 +97,13 @@ export namespace brain {
             }
         }
 
-        async transform(name) {
-
+        async translate(name) {
+            console.log(`translate: ${name}`)
+            const srcpath = path.resolve(path.join(this.source, name))
+            if (srcpath.startsWith(this.source)) {
+                await fs.stat(srcpath)
+            }
+            await translate.mpc2Sxk(srcpath, this.target)
         }
     }
 }

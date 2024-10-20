@@ -42,8 +42,8 @@ app.post(`/mkdir`, async (req, res) => {
     res.send(await theBrain.list())
 })
 
-app.post(`/transform`, async (req, res) => {
-    await theBrain.transform(req.query.name)
+app.post(`/program/translate`, async (req, res) => {
+    await theBrain.translate(req.query.name)
     res.send(await theBrain.list())
 })
 app.listen(port, () => {
