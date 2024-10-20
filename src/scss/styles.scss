@@ -1,22 +1,40 @@
-@import "../../node_modules/bootstrap/scss/bootstrap";
-
 $cream: #F1DAC4;
 $orange: #F55436;
 $green: #606C38;
+
 $light-gray: #A69CAC;
 $dark-gray: #292F36;
 $highlight: $orange;
 
 $primary: $dark-gray;
+
+$success: $green;
 $danger: $orange;
+$dark: $dark-gray;
+$light: $light-gray;
 
+// MPC colors
+$cream: #E9E9DD;
+$light-gray: #c3c5b2;
+$dark-gray: #5a5f5c;
+$light-green: #7a7f6b;
+$red: #cf2a25;
+$blue: #387589;
+$light-blue: lighten($blue, 25);
+$yellow: #E3D26F;
 
-$theme-colors: (
-        "primary": $primary,
-        "danger": $danger,
-);
+$primary: $blue;
+$secondary: $light-green;
+$success: $green;
+$danger: $red;
+$warning: $yellow;
+$light: $light-gray;
+$info: $light-blue;
+$dark: $dark-gray;
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
 
 .mpc-program {
-  background-color: $green;
-  color: $cream;
+  //color: $white;
+  //background-color: $light-green;
 }

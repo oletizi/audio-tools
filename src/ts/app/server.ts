@@ -6,7 +6,8 @@ const app = express()
 const port = 3000
 // const homeDir = path.join(process.env.HOME, 'Music')
 const homeDir = path.join(process.cwd(), 'test', 'data')
-const theBrain = new brain.Brain(homeDir)
+const targetDir = path.join(process.env.HOME, 'tmp')
+const theBrain = new brain.Brain(homeDir, targetDir)
 
 app.get('/', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'index.html'))
@@ -20,14 +21,20 @@ app.get('/client.js', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'client.js'))
 })
 
-app.get('/from-list', async (req, res) => {
-    let fromList = await theBrain.getFromList();
-    console.log(`Sending from list: ${fromList}`)
-    res.send(fromList)
+app.get('/list', async (req, res) => {
+    let list = await theBrain.list();
+    console.log(`Sending from list: ${list}`)
+    res.send(list)
 })
 
-app.post('/cd', async (req, res) => {
-    res.send(await theBrain.cd(req.query.dir))
+app.post('/cd/from', async (req, res) => {
+    await theBrain.cdFromDir(req.query.dir)
+    res.send(await theBrain.list())
+})
+
+app.post('/cd/to', async (req, res) => {
+    await theBrain.cdToDir(req.query.dir)
+    res.send(await theBrain.list())
 })
 
 app.listen(port, () => {

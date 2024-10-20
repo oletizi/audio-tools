@@ -3,7 +3,7 @@ export interface Entry {
     directory: boolean
 }
 
-export interface FromList {
+export interface DirList {
     entries: Entry[]
 }
 

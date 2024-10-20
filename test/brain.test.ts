@@ -5,7 +5,7 @@ import {expect} from "chai";
 describe('Brain', async () => {
     it('Constructs a from list', async () =>{
         const theBrain = new brain.Brain(path.join('test', 'data', 'mpc'))
-        let fromList = await theBrain.getFromList();
+        let fromList = await theBrain.getFromToLists();
         expect(fromList).to.exist
         expect(fromList.entries.length).to.eq(1)
 
@@ -14,7 +14,7 @@ describe('Brain', async () => {
         expect(entry.directory).to.be.true
 
         theBrain.cd('Oscar')
-        fromList = await theBrain.getFromList()
+        fromList = await theBrain.getFromToLists()
         expect(fromList).to.exist
         expect(fromList.entries.length).to.eq(4)
         entry = fromList.entries[0]
