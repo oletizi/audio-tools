@@ -5,7 +5,22 @@ doIt().then(() => {
 })
 
 async function doIt() {
+    const newdirButton = document.getElementById('newdir')
+    newdirButton.onclick = async () => {
+        await newDir()
+    }
     await updateLists()
+}
+
+async function newDir() {
+    const nameField = document.getElementById('newdir-name')
+    const dirname = nameField.value
+    console.log(`New directory name: ${dirname}`)
+    let res = await fetch(`/mkdir/?dir=${encodeURI(dirname)}`, {
+        method: "POST",
+    })
+    let lists: DirList[] = await res.json()
+    writeToList(lists[1])
 }
 
 // XXX: This is a bad name
@@ -65,6 +80,7 @@ function writeFromList(theList: DirList) {
         const a = document.createElement('a')
         a.classList.add('list-group-item')
         a.classList.add('list-group-item-action')
+        a.innerText = e.name + ` `
         if (e.directory) {
             a.classList.add('fw-bold')
             a.onclick = async () => {
@@ -72,11 +88,24 @@ function writeFromList(theList: DirList) {
             }
         } else if (e.name.endsWith('.xpm')) {
             a.classList.add('mpc-program')
+            const span = document.createElement('span')
+            span.classList.add('badge')
+            span.classList.add('bg-secondary')
+            span.innerText = '›'
+            a.appendChild(span)
+            a.onclick = async () => {
+                await transformProgram(e.name)
+            }
         } else {
             a.classList.add('disabled')
             a.ariaDisabled = "true"
         }
-        a.innerText = e.name
         widget.appendChild(a)
     }
+}
+
+async function transformProgram(programName) {
+    const res = await fetch(`/transform/?name=${encodeURI(programName)}`)
+    const lists = await res.json()
+    writeToList(lists[1])
 }

@@ -37,6 +37,15 @@ app.post('/cd/to', async (req, res) => {
     res.send(await theBrain.list())
 })
 
+app.post(`/mkdir`, async (req, res) => {
+    await theBrain.newTargetDir(req.query.dir)
+    res.send(await theBrain.list())
+})
+
+app.post(`/transform`, async (req, res) => {
+    await theBrain.transform(req.query.name)
+    res.send(await theBrain.list())
+})
 app.listen(port, () => {
     console.log(`Converter app listening on port ${port}`)
 })

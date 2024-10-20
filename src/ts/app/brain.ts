@@ -71,7 +71,7 @@ export namespace brain {
             }
         }
 
-        private async cd(olddir, newdir: string) {
+        private async cd(olddir:string, newdir: string) {
             console.log(`cd: newdir: ${newdir}`)
             const newpath = path.resolve(path.join(olddir, newdir))
 
@@ -82,6 +82,22 @@ export namespace brain {
                 console.log(`Won't change directories outside home dir.`)
             }
             return newpath
+        }
+
+        async newTargetDir(newdir:string) {
+            await this.mkdir(newdir)
+        }
+
+        private async mkdir(newdir:string) {
+            const newpath = path.resolve(path.join(this.target, newdir))
+            if (newpath.startsWith(this.target)) {
+                console.log(`mkdir: ${newpath}`)
+                await fs.mkdir(newpath)
+            }
+        }
+
+        async transform(name) {
+
         }
     }
 }
