@@ -4,6 +4,11 @@ import path from "path";
 import {translate} from "../translate-lib";
 
 export namespace brain {
+
+    export function getBreadCrumb(root: string, leaf: string) {
+        return ""
+    }
+
     function exclude(entry: string) {
         return entry.startsWith('.') || entry.startsWith('$') || entry.startsWith('#')
     }
@@ -15,9 +20,9 @@ export namespace brain {
         private target: string;
 
         constructor(home: string, target: string) {
-            this.sourceHome = home
+            this.sourceHome = path.resolve(home)
             this.source = this.sourceHome
-            this.targetHome = target
+            this.targetHome = path.resolve(target)
             this.target = this.targetHome
         }
 
@@ -72,7 +77,7 @@ export namespace brain {
             }
         }
 
-        private async cd(olddir:string, newdir: string) {
+        private async cd(olddir: string, newdir: string) {
             console.log(`cd: newdir: ${newdir}`)
             const newpath = path.resolve(path.join(olddir, newdir))
 
@@ -85,15 +90,18 @@ export namespace brain {
             return newpath
         }
 
-        async newTargetDir(newdir:string) {
+        async newTargetDir(newdir: string) {
             await this.mkdir(newdir)
         }
 
-        private async mkdir(newdir:string) {
-            const newpath = path.resolve(path.join(this.target, newdir))
-            if (newpath.startsWith(this.target)) {
-                console.log(`mkdir: ${newpath}`)
-                await fs.mkdir(newpath)
+        // XXX: This is super dangerous. Need to aggresively check this input
+        private async mkdir(newdir: string) {
+            if (newdir !== '') {
+                const newpath = path.resolve(path.join(this.target, newdir))
+                if (newpath.startsWith(this.target)) {
+                    console.log(`mkdir: ${newpath}`)
+                    await fs.mkdir(newpath)
+                }
             }
         }
 

@@ -4,6 +4,7 @@ export interface Entry {
 }
 
 export interface DirList {
+    breadcrumb: string
     entries: Entry[]
 }
 
