@@ -102,7 +102,11 @@ export namespace brain {
                 const newpath = path.resolve(path.join(this.target, newdir))
                 if (newpath.startsWith(this.target)) {
                     console.log(`mkdir: ${newpath}`)
-                    await fs.mkdir(newpath)
+                    try {
+                        await fs.mkdir(newpath)
+                    } catch (e) {
+                        console.error(e)
+                    }
                 }
             }
         }

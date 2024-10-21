@@ -5,9 +5,17 @@ doIt().then(() => {
 })
 
 async function doIt() {
+    const newdirNameField = document.getElementById('newdir-name')
     const newdirButton = document.getElementById('newdir-submit')
     newdirButton.onclick = async () => {
         await newDir()
+        newdirNameField.value = ''
+    }
+    newdirNameField.onkeydown = async (event) => {
+        if (event.key === 'Enter') {
+            await newDir()
+            newdirNameField.value = ''
+        }
     }
     await updateLists()
 }
