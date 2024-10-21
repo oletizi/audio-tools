@@ -45,8 +45,13 @@ h1 {
   color: $red;
 }
 
+.as-list-col label {
+  color: $light-gray;
+}
+
 .as-breadcrumb {
   font-family: Inconsolata, monospace;
+  color: $light-gray;
 }
 
 .as-list-container {
@@ -56,7 +61,7 @@ h1 {
 
 .as-from-list-col, .as-to-list-col {
   background-color: $dark-gray;
-  min-height: 37rem;
+  min-height: 40rem;
 }
 
 

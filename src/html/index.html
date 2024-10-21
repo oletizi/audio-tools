@@ -17,26 +17,30 @@
 
     <div class="row">
         <div class="col">
-            <p><strong>From:</strong> <span id="from-list-breadcrumb" class="as-breadcrumb"></span></p>
+
         </div>
         <div class="col">
-            <p><strong>To:</strong> <span id="to-list-breadcrumb" class="as-breadcrumb"></span></p>
+
         </div>
     </div>
-    <div class="container as-list-container p-3">
+    <div class="container as-list-container  pt-5 pe-4 pb-4 ps-4">
         <div class="row">
             <div class="col">
-                <div class="as-from-list-col rounded-3 p-5">
+                <div class="as-from-list-col as-list-col rounded-3 p-5">
+                    <div class="vstack gap-3">
+                    <label><strong>From:</strong> <span id="from-list-breadcrumb" class="as-breadcrumb"></span></label>
                     <div class="card">
                         <ul id="from-list" class="list-group list-group-flush as-list-view overflow-scroll">
                             <li class="list-group-item list-group-item-action">..</li>
                         </ul>
                     </div>
+                    </div>
                 </div>
             </div>
             <div class="col">
-                <div class="as-to-list-col rounded-3 p-5">
+                <div class="as-to-list-col as-list-col rounded-3 p-5">
                     <div class="vstack gap-3">
+                        <label><strong>To:</strong> <span id="to-list-breadcrumb" class="as-breadcrumb"></span></label>
                         <div class="card">
                             <div id="to-list" class="list-group list-group-flush as-list-view overflow-scroll">
                                 <a href="#" class="list-group-item list-group-item-action">..</a>
