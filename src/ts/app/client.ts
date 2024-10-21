@@ -53,6 +53,9 @@ async function updateLists() {
 }
 
 function writeToList(theList: DirList) {
+    const breadcrumb = document.getElementById('to-list-breadcrumb')
+    breadcrumb.innerText = theList.breadcrumb
+
     const widget = document.getElementById('to-list')
     widget.innerText = ""
     for (const e of theList.entries) {
@@ -74,6 +77,9 @@ function writeToList(theList: DirList) {
 }
 
 function writeFromList(theList: DirList) {
+    const breadcrumb = document.getElementById('from-list-breadcrumb')
+    breadcrumb.innerText = theList.breadcrumb
+
     const widget = document.getElementById('from-list')
     widget.innerText = ""
     for (const e of theList.entries) {

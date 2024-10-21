@@ -35,5 +35,16 @@ describe('Brain', async () => {
         expect(entry.directory).to.be.false
     })
 
+    it('Calculates breadcrumbs', async ()=> {
+        const theBrain = new brain.Brain(path.join('test', 'data', 'mpc'), '/tmp')
 
+        let lists = await theBrain.list()
+        let fromList = lists[0]
+        expect(fromList.breadcrumb).to.exist
+        expect(fromList.breadcrumb).to.eq('')
+
+        await theBrain.cdFromDir('Oscar')
+        fromList = (await theBrain.list())[0]
+        expect(fromList.breadcrumb).to.eq('/Oscar')
+    })
 })

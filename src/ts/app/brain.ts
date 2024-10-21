@@ -5,8 +5,8 @@ import {translate} from "../translate-lib";
 
 export namespace brain {
 
-    export function getBreadCrumb(root: string, leaf: string) {
-        return ""
+    export function makeBreadCrumb(root: string, leaf: string) {
+        return leaf.substring(root.length, leaf.length)
     }
 
     function exclude(entry: string) {
@@ -14,26 +14,26 @@ export namespace brain {
     }
 
     export class Brain {
-        private sourceHome: string;
+        private sourceRoot: string;
         private source: string;
-        private targetHome: string
+        private targetRoot: string
         private target: string;
 
         constructor(home: string, target: string) {
-            this.sourceHome = path.resolve(home)
-            this.source = this.sourceHome
-            this.targetHome = path.resolve(target)
-            this.target = this.targetHome
+            this.sourceRoot = path.resolve(home)
+            this.source = this.sourceRoot
+            this.targetRoot = path.resolve(target)
+            this.target = this.targetRoot
         }
 
         async list(): Promise<DirList[]> {
             return [
-                await this.getDirList(this.source),
-                await this.getDirList(this.target)
+                await this.getDirList(this.sourceRoot, this.source),
+                await this.getDirList(this.targetRoot, this.target)
             ]
         }
 
-        async getDirList(dirpath): Promise<DirList> {
+        async getDirList(root, dirpath): Promise<DirList> {
             const dirlist = await fs.readdir(dirpath);
             const entries: Entry[] = [
                 {
@@ -55,13 +55,14 @@ export namespace brain {
                 }
             }
             return {
+                breadcrumb: makeBreadCrumb(root, dirpath),
                 entries: entries
             } as DirList
         }
 
         async cdFromDir(newdir: string) {
             const newpath = await this.cd(this.source, newdir)
-            if (newpath.startsWith(this.sourceHome)) {
+            if (newpath.startsWith(this.sourceRoot)) {
                 this.source = newpath
             }
         }
@@ -69,11 +70,11 @@ export namespace brain {
         async cdToDir(newdir: string) {
             const newpath = await this.cd(this.target, newdir)
             console.log(`attempt to change target dir: ${newpath}`)
-            if (newpath.startsWith(this.targetHome)) {
+            if (newpath.startsWith(this.targetRoot)) {
                 this.target = newpath
                 console.log(`New target dir: ${this.target}`)
             } else {
-                console.log(`New target dir not a subdir of target home: ${this.targetHome}. Ignoring.`)
+                console.log(`New target dir not a subdir of target home: ${this.targetRoot}. Ignoring.`)
             }
         }
 
@@ -82,7 +83,7 @@ export namespace brain {
             const newpath = path.resolve(path.join(olddir, newdir))
 
             const stats = await fs.stat(newpath)
-            if (newpath.startsWith(this.sourceHome)) {
+            if (newpath.startsWith(this.sourceRoot)) {
                 console.log(`Changing cwd to ${newpath}`)
             } else {
                 console.log(`Won't change directories outside home dir.`)
