@@ -58,10 +58,23 @@ $dark: $dark-gray;
   }
 
   .as-list-view-program {
-    color: $primary
+    color: $green;
   }
 
   .disabled {
     color: $light-gray
   }
+
 }
+
+#as-list-view-controls {
+  font-weight: normal;
+  font-family: sans-serif;
+  font-style: italic;
+
+  .as-list-view-control-active {
+    color: $primary;
+    font-weight: bold;
+  }
+}
+

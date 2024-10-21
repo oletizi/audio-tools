@@ -58,29 +58,75 @@ function writeToList(theList: DirList) {
 
     const widget = document.getElementById('to-list')
     widget.innerText = ""
-    for (const e of sortEntries(theList.entries)) {
-        const a = document.createElement('a')
-        a.classList.add('list-group-item')
-        if (e.directory) {
-            a.classList.add('list-group-item-action')
-            a.classList.add('as-list-view-dir')
-            a.onclick = async () => {
-                await cdToList(e.name)
-            }
-        } else if (e.name.endsWith('.AKP')) {
-            a.classList.add('list-group-item-action')
-            a.classList.add('as-list-view-program')
-        } else {
-            a.classList.add('disabled')
-            a.ariaDisabled = "true"
+    for (const entry of sortEntries(theList.entries)) {
+        const item = document.createElement('a')
+        item.classList.add('list-group-item')
+        item.classList.add('list-group-item-action')
+        item.classList.add('justify-content-between')
+        item.classList.add('align-items-center')
+        item.classList.add('d-flex')
+        item.onmouseenter = async () => {
+            await onToListEntryFocus(entry, item)
         }
-        a.innerText = e.name
-        widget.appendChild(a)
+        item.onmouseleave = async () => {
+            await onToListEntryBlur(entry, item)
+        }
+
+        if (entry.directory) {
+            item.classList.add('list-group-item-action')
+            item.classList.add('as-list-view-dir')
+            item.onclick = async () => {
+                await cdToList(entry.name)
+            }
+        } else if (entry.name.endsWith('.AKP')) {
+            item.classList.add('list-group-item-action')
+            item.classList.add('as-list-view-program')
+        } else {
+            item.classList.add('disabled')
+            item.ariaDisabled = "true"
+        }
+        item.innerText = entry.name
+        widget.appendChild(item)
     }
 }
 
-// XXX: Big dumb kluge
+/**
+ * Adorn focused/hovered element with appropriate controls.
+ * @param entry Directory entry to take action on
+ * @param element Element to adorn
+ */
+async function onToListEntryFocus(entry: Entry, element: HTMLElement) {
+    if (entry.name !== '..' && (entry.directory || entry.name.endsWith('.AKP'))) {
+        const controlsId = 'as-list-view-controls'
+        const controls = document.createElement('span')
+        controls.id = controlsId
+        controls.classList.add('justify-content-between')
+        controls.classList.add('align-items-center')
+        controls.classList.add('d-flex')
 
+        const del = document.createElement('span')
+
+        del.onmouseenter = () => {
+            del.classList.add('as-list-view-control-active')
+        }
+        del.onmouseleave = () => {
+            del.classList.remove('as-list-view-control-active')
+        }
+
+        controls.appendChild(del)
+
+        del.innerText = 'delete'
+        del.id = 'as-list-view-delete'
+        element.appendChild(controls)
+    }
+}
+
+async function onToListEntryBlur(entry, element) {
+    const controls = document.getElementById('as-list-view-controls')
+    if (controls) {
+        controls.remove()
+    }
+}
 
 function writeFromList(theList: DirList) {
     const breadcrumb = document.getElementById('from-list-breadcrumb')
@@ -128,6 +174,7 @@ async function transformProgram(programName) {
     writeToList(lists[1])
 }
 
+// XXX: Big dumb kluge
 function sortEntries(entries: Entry[]) {
     let rv = []
     for (const e of entries) {
