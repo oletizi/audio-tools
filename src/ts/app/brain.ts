@@ -126,6 +126,8 @@ export namespace brain {
                     console.log(`DELETE: ${rmpath}`)
                     if (rmpath.endsWith('.AKP')) {
                         await rmAkp(rmpath)
+                    } else if ((await fs.stat(rmpath)).isDirectory()) {
+                        await fs.rm(rmpath, {recursive: true, force: true})
                     }
                 }
             }

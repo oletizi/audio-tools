@@ -112,7 +112,8 @@ async function onToListEntryFocus(entry: Entry, element: HTMLElement) {
         del.onmouseleave = () => {
             del.classList.remove('as-list-view-control-active')
         }
-        del.onclick = async () => {
+        del.onclick = async (event) => {
+            event.stopPropagation()
             const res = await fetch(`/rm/to/?name=${entry.name}`, {method: 'POST'})
             writeToList((await res.json())[1])
         }
