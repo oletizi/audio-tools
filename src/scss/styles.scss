@@ -36,6 +36,30 @@ $dark: $dark-gray;
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
+body {
+  background-color: $cream;
+}
+
+h1 {
+  margin-top: 1rem;
+  color: $red;
+}
+
+.as-breadcrumb {
+  font-family: Inconsolata, monospace;
+}
+
+.as-list-container {
+  background-color: $light-gray;
+}
+
+
+.as-from-list-col, .as-to-list-col {
+  background-color: $dark-gray;
+  min-height: 37rem;
+}
+
+
 .mpc-program {
   //color: $white;
   //background-color: $light-green;
