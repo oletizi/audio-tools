@@ -1,4 +1,4 @@
-import {DirList} from "./api";
+import {DirList, Entry} from "./api";
 
 doIt().then(() => {
     console.log('done!')
@@ -58,15 +58,18 @@ function writeToList(theList: DirList) {
 
     const widget = document.getElementById('to-list')
     widget.innerText = ""
-    for (const e of theList.entries) {
+    for (const e of sortEntries(theList.entries)) {
         const a = document.createElement('a')
         a.classList.add('list-group-item')
         if (e.directory) {
             a.classList.add('list-group-item-action')
-            a.classList.add('fw-bold')
+            a.classList.add('as-list-view-dir')
             a.onclick = async () => {
                 await cdToList(e.name)
             }
+        } else if (e.name.endsWith('.AKP')) {
+            a.classList.add('list-group-item-action')
+            a.classList.add('as-list-view-program')
         } else {
             a.classList.add('disabled')
             a.ariaDisabled = "true"
@@ -76,13 +79,16 @@ function writeToList(theList: DirList) {
     }
 }
 
+// XXX: Big dumb kluge
+
+
 function writeFromList(theList: DirList) {
     const breadcrumb = document.getElementById('from-list-breadcrumb')
     breadcrumb.innerText = theList.breadcrumb
 
     const widget = document.getElementById('from-list')
     widget.innerText = ""
-    for (const e of theList.entries) {
+    for (const e of sortEntries(theList.entries)) {
         const item = document.createElement('li')
         item.classList.add('list-group-item')
         item.classList.add('list-group-item-action')
@@ -91,17 +97,15 @@ function writeFromList(theList: DirList) {
         item.classList.add('d-flex')
         item.innerText = e.name + ` `
         if (e.directory) {
-            item.classList.add('fw-bold')
+            item.classList.add('as-list-view-dir')
             item.onclick = async () => {
                 await cdFromList(e.name)
             }
         } else if (e.name.endsWith('.xpm')) {
             item.classList.add('mpc-program')
+            item.classList.add('as-list-view-program')
             const badge = document.createElement('i')
             badge.classList.add('material-icons')
-            // badge.classList.add('badge')
-            // badge.classList.add('bg-secondary')
-            // badge.classList.add('rounded-pill')
             badge.innerText = 'arrow_forward'
             item.appendChild(badge)
             item.onclick = async () => {
@@ -122,4 +126,44 @@ async function transformProgram(programName) {
     console.log(`Transform complete.`)
     const lists = await res.json()
     writeToList(lists[1])
+}
+
+function sortEntries(entries: Entry[]) {
+    let rv = []
+    for (const e of entries) {
+        rv.push(e)
+    }
+
+    rv = rv.sort((a, b) => {
+            const aName = a.name
+            const bName = b.name
+            if (aName === '..') {
+                return -1
+            } else if (bName === '..') {
+                return 1
+            } else if (a.directory && b.directory) {
+                return aName - bName
+            } else if (a.directory) {
+                return -1
+            } else if (b.directory) {
+                return 1
+            } else if (aName.endsWith('.xpm') && bName.endsWith('.xpm')) {
+                return aName - bName
+            } else if (aName.endsWith('.xpm')) {
+                return -1
+            } else if (bName.endsWith('.xpm')) {
+                return 1
+            } else if (aName.endsWith('.AKP') && bName.endsWith('.AKP')) {
+                return aName - bName
+            } else if (aName.endsWith('.AKP')) {
+                return -1
+            } else if (bName.endsWith('.AKP')) {
+                return 1
+            } else {
+                return aName - bName
+            }
+        }
+    )
+
+    return rv
 }

@@ -44,4 +44,24 @@ $dark: $dark-gray;
 .as-list-view {
   max-height: 28rem;
   //box-shadow: $box-shadow-sm;
+  .list-view-item {
+
+  }
+
+  li, a {
+    font-family: Inconsolata, monospace;
+    font-size: .9rem;
+  }
+
+  .as-list-view-dir {
+    font-weight: bold;
+  }
+
+  .as-list-view-program {
+    color: $primary
+  }
+
+  .disabled {
+    color: $light-gray
+  }
 }
