@@ -109,10 +109,13 @@ export namespace brain {
         async translate(name) {
             console.log(`translate: ${name}`)
             const srcpath = path.resolve(path.join(this.source, name))
-            if (srcpath.startsWith(this.source)) {
+            const targetpath = path.resolve(path.join(this.target), path.parse(name).name)
+            if (srcpath.startsWith(this.source) && targetpath.startsWith(this.target)) {
                 await fs.stat(srcpath)
+                await fs.mkdir(targetpath)
             }
-            await translate.mpc2Sxk(srcpath, this.target)
+            await translate.mpc2Sxk(srcpath, targetpath)
+            this.target = targetpath
         }
     }
 }
