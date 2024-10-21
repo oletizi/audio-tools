@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import {Entry, DirList} from "./api.ts"
 import path from "path";
 import {translate} from "../translate-lib";
+import {newProgramFromBuffer} from "../akai-lib";
 
 export namespace brain {
 
@@ -117,5 +118,50 @@ export namespace brain {
             await translate.mpc2Sxk(srcpath, targetpath)
             this.target = targetpath
         }
+
+        async rmTo(name: string) {
+            if (name !== '') {
+                const rmpath = path.resolve(path.join(this.target, name))
+                if (rmpath.startsWith(this.target) && rmpath !== this.target) {
+                    console.log(`DELETE: ${rmpath}`)
+                    if (rmpath.endsWith('.AKP')) {
+                        await rmAkp(rmpath)
+                    }
+                }
+            }
+        }
+    }
+
+    async function rmAkp(programPath: string) {
+        try {
+            await fs.stat(programPath)
+        } catch (e) {
+            console.error(e)
+            return
+        }
+        const sampleDir = path.parse(programPath).dir
+        const buf = await fs.readFile(programPath)
+        const program = newProgramFromBuffer(buf)
+
+        for (const keygroup of program.getKeygroups()) {
+            for (const zone of [keygroup.zone1, keygroup.zone2, keygroup.zone3, keygroup.zone4]) {
+                const sampleName = zone.sampleName
+                if (sampleName !== '') {
+                    const samplePath = path.join(sampleDir, sampleName + '.WAV')
+                    try {
+                        await fs.rm(samplePath)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                }
+            }
+        }
+
+        try {
+            await fs.rm(programPath)
+        } catch (e) {
+            console.error(e)
+        }
+
     }
 }

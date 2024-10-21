@@ -46,6 +46,12 @@ app.post(`/program/translate`, async (req, res) => {
     await theBrain.translate(req.query.name)
     res.send(await theBrain.list())
 })
+
+app.post('/rm/to', async (req, res) => {
+    await theBrain.rmTo(req.query.name)
+    res.send(await theBrain.list())
+})
+
 app.listen(port, () => {
     console.log(`Converter app listening on port ${port}`)
 })
