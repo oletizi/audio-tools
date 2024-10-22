@@ -2,8 +2,8 @@ import express from "express"
 import path from "path"
 import {brain} from "./brain.ts"
 import Queue from "queue";
-import fs from "fs";
 import {PassThrough} from "stream";
+import {newProgress} from "../progress";
 
 const app = express()
 const port = 3000
@@ -12,8 +12,9 @@ const homeDir = path.join(process.env.HOME, 'Dropbox', 'Music', 'Sampler Program
 const targetDir = path.join(process.env.HOME, 'tmp')
 const theBrain = new brain.Brain(homeDir, targetDir)
 const workqueue = new Queue({results: [], autostart: true, concurrency: 1})
-const monitorqueue = new Queue({results: [], autostart: true, concurrency: 1})
+const progressqueue = new Queue({results: [], autostart: true, concurrency: 1})
 const iostream = new PassThrough()
+const progress = newProgress()
 iostream.pipe(process.stdout)
 
 app.get('/', async (req, res) => {
@@ -52,8 +53,11 @@ app.post(`/mkdir`, async (req, res) => {
 })
 
 app.post(`/program/translate`, async (req, res) => {
-    await theBrain.translate(req.query.name, iostream)
-    res.send(await theBrain.list())
+    workqueue.push(async () => {
+        await theBrain.translate(req.query.name, iostream, progress)
+        res.send(await theBrain.list())
+        progress.reset()
+    })
 })
 
 app.post('/rm/to', async (req, res) => {
@@ -63,29 +67,28 @@ app.post('/rm/to', async (req, res) => {
 
 app.get('/job/stream', async (req, res) => {
 
-    console.log(`/job/stream.`)
-    console.log(`  creating readsteam`)
-
-    console.log(`  writing response head`)
     res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Transfer-Encoding': 'chunked'
     })
-
-    // console.log(`  reading from readstream and sending to response...`)
-    // for await (const chunk of readStream ) {
-    //     res.write(chunk)
-    // }
-    // console.log(`  done reading from readstream.`)
-    // res.end()
-
-    // workqueue.push(async () => {
     for await (const chunk of iostream) {
         res.write(chunk)
     }
     res.end()
-    // })
+})
 
+app.get('/job/progress', async (req, res) => {
+
+    res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Transfer-Encoding': 'chunked'
+    })
+    progress.addListener((currentProgress: number) => {
+        progressqueue.push(async () => {
+            iostream.write(`Progress: ${currentProgress}\n`)
+            res.write(currentProgress.toString() + '\n')
+        })
+    })
 })
 
 app.listen(port, () => {

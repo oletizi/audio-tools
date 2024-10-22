@@ -3,13 +3,13 @@ import Queue from "queue";
 
 const workqueue = new Queue({results: [], autostart: true})
 const term = document.getElementById('terminal')
+const progress = document.getElementById('progress')
 doIt().then(() => {
     console.log('done!')
 })
 
 async function doIt() {
     const decoder = new TextDecoder()
-    const streamButton = document.getElementById('as-stream')
     const newdirNameField = document.getElementById('newdir-name')
     const newdirButton = document.getElementById('newdir-submit')
     newdirButton.onclick = async () => {
@@ -42,6 +42,25 @@ async function doIt() {
         }
     })
 
+    workqueue.push(async () => {
+        console.log(`  progress queue initiating pregress connection...`)
+        const res = await fetch('/job/progress')
+        console.log(`  progress queue getting reader from body...`)
+        const reader = res.body.getReader()
+        console.log(`  progress queue entering read loop...`)
+        while (true) {
+            console.log(`  progress queue reading....`)
+            const {done, value} = await reader.read()
+            console.log(`  progress queue read ${value.length} bytes.`)
+            const decoded = decoder.decode(value)
+            progress.style.width = (Number.parseFloat(decoded) * 100) + '%'
+            console.log(`  progress queue decoded: ${decoded}`)
+            if (done) {
+                console.log(`  progress queue done.`)
+                break
+            }
+        }
+    })
     await updateLists()
 }
 

@@ -111,7 +111,7 @@ export namespace brain {
             }
         }
 
-        async translate(name, outstream) {
+        async translate(name, outstream, progress) {
             console.log(`translate: ${name}`)
             const srcpath = path.resolve(path.join(this.source, name))
             const targetpath = path.resolve(path.join(this.target), path.parse(name).name)
@@ -119,7 +119,7 @@ export namespace brain {
                 await fs.stat(srcpath)
                 await fs.mkdir(targetpath)
             }
-            await translate.mpc2Sxk(srcpath, targetpath, outstream)
+            await translate.mpc2Sxk(srcpath, targetpath, outstream, progress)
             this.target = targetpath
         }
 
