@@ -7,6 +7,7 @@ import {nullProgress, Progress} from "./progress";
 
 export namespace translate {
     export async function mpc2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
+        progress.setCompleted(0)
         const mpcbuf = await fs.readFile(infile)
         const mpcdir = path.dirname(infile)
         const mpcProgram = mpc.newProgramFromBuffer(mpcbuf)
@@ -67,6 +68,5 @@ export namespace translate {
         outstream.write(`Writing program file: ${outfile}\n`)
         await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
         progress.incrementCompleted(1)
-        outstream.write(`Done translating program.`)
     }
 }

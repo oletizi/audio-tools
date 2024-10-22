@@ -13,6 +13,7 @@ const targetDir = path.join(process.env.HOME, 'tmp')
 const theBrain = new brain.Brain(homeDir, targetDir)
 const workqueue = new Queue({results: [], autostart: true, concurrency: 1})
 const progressqueue = new Queue({results: [], autostart: true, concurrency: 1})
+const iostreamqueue = new Queue({results: [], autostart: true, concurrency: 1})
 const iostream = new PassThrough()
 const progress = newProgress()
 iostream.pipe(process.stdout)
@@ -36,45 +37,64 @@ app.get('/list', async (req, res) => {
 })
 
 app.post('/cd/from', async (req, res) => {
-    await theBrain.cdFromDir(req.query.dir)
-    res.send(await theBrain.list())
+    workqueue.push(async () => {
+        iostream.write(`Moving to ${req.query.dir}\n`)
+        await theBrain.cdFromDir(req.query.dir)
+        iostream.write(`Done.\n`)
+        res.send(await theBrain.list())
+    })
 })
 
 app.post('/cd/to', async (req, res) => {
-    await theBrain.cdToDir(req.query.dir)
-    res.send(await theBrain.list())
+    workqueue.push(async () => {
+        iostream.write(`Moving to ${req.query.dir}\n`)
+        await theBrain.cdToDir(req.query.dir)
+        iostream.write(`Done.\n`)
+        res.send(await theBrain.list())
+    })
 })
 
 app.post(`/mkdir`, async (req, res) => {
     workqueue.push(async () => {
+        iostream.write(`New folder: ${req.query.dir}`)
         await theBrain.newTargetDir(req.query.dir)
+        iostream.write(`Done.\n`)
+        res.send(await theBrain.list())
     })
-    res.send(await theBrain.list())
 })
 
 app.post(`/program/translate`, async (req, res) => {
     workqueue.push(async () => {
+        iostream.write(`Initiating translate...\n`)
         await theBrain.translate(req.query.name, iostream, progress)
         res.send(await theBrain.list())
+        iostream.write(`Done translating ${req.query.name}.\n`)
         progress.reset()
     })
 })
 
 app.post('/rm/to', async (req, res) => {
-    await theBrain.rmTo(req.query.name)
-    res.send(await theBrain.list())
+    workqueue.push(async () => {
+            iostream.write(`Removing: ${req.query.name}\n`)
+            await theBrain.rmTo(req.query.name)
+            iostream.write(`Done.\n`)
+            res.send(await theBrain.list())
+        }
+    )
 })
 
 app.get('/job/stream', async (req, res) => {
-
     res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Transfer-Encoding': 'chunked'
     })
-    for await (const chunk of iostream) {
-        res.write(chunk)
-    }
-    res.end()
+    iostreamqueue.shift()
+    iostreamqueue.push(async () => {
+        for await (const chunk of iostream) {
+            res.write(chunk)
+        }
+        res.end()
+    })
 })
 
 app.get('/job/progress', async (req, res) => {
@@ -85,7 +105,6 @@ app.get('/job/progress', async (req, res) => {
     })
     progress.addListener((currentProgress: number) => {
         progressqueue.push(async () => {
-            iostream.write(`Progress: ${currentProgress}\n`)
             res.write(currentProgress.toString() + '\n')
         })
     })

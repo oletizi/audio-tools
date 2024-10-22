@@ -36,7 +36,6 @@ async function doIt() {
             const decoded = decoder.decode(value)
             terminal(decoded)
             if (done) {
-                terminal(`${count}: Done`)
                 break
             }
         }

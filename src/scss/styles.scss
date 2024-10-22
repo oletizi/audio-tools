@@ -71,11 +71,8 @@ h1 {
 }
 
 .as-list-view {
-  max-height: 28rem;
-  //box-shadow: $box-shadow-sm;
-  .list-view-item {
-
-  }
+  //max-height: 28rem;
+  max-height: 20rem;
 
   li, a {
     font-family: Inconsolata, monospace;
@@ -107,3 +104,11 @@ h1 {
   }
 }
 
+#terminal {
+  padding: 1rem;
+  background-color: $black;
+  color: $green;
+  font-family: Inconsolata, monospace;
+  min-height: 5rem;
+  max-height: 5rem;
+}

@@ -112,15 +112,21 @@ export namespace brain {
         }
 
         async translate(name, outstream, progress) {
-            console.log(`translate: ${name}`)
             const srcpath = path.resolve(path.join(this.source, name))
             const targetpath = path.resolve(path.join(this.target), path.parse(name).name)
+            try {
+                await fs.stat(targetpath)
+                // already exists. bail out.
+                outstream.write(`${name} already exists.\n`)
+                return
+            } catch (err) {
+
+            }
             if (srcpath.startsWith(this.source) && targetpath.startsWith(this.target)) {
                 await fs.stat(srcpath)
                 await fs.mkdir(targetpath)
             }
             await translate.mpc2Sxk(srcpath, targetpath, outstream, progress)
-            this.target = targetpath
         }
 
         async rmTo(name: string) {

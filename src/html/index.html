@@ -39,7 +39,7 @@
                              role="progressbar"
                              aria-label="Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="1"
                              style="width: 0"></div>
-                        <div id="terminal">Terminal</div>
+                        <div id="terminal" class="overflow-x-hidden overflow-y-scroll">Terminal</div>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,6 @@
                             </div>
                         </div>
                         <form id="newdir-form" class="hstack gap-3">
-                            <button id="as-stream">Stream</button>
                             <input id="newdir-name" placeholder="Folder name..." type="text">
                             <button id="newdir-submit" type="button" class="btn btn-primary btn-sm">Add Folder</button>
                         </form>
