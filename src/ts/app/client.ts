@@ -1,10 +1,15 @@
 import {DirList, Entry} from "./api";
+import Queue from "queue";
 
+const workqueue = new Queue({results: [], autostart: true})
+const term = document.getElementById('terminal')
 doIt().then(() => {
     console.log('done!')
 })
 
 async function doIt() {
+    const decoder = new TextDecoder()
+    const streamButton = document.getElementById('as-stream')
     const newdirNameField = document.getElementById('newdir-name')
     const newdirButton = document.getElementById('newdir-submit')
     newdirButton.onclick = async () => {
@@ -17,7 +22,34 @@ async function doIt() {
             newdirNameField.value = ''
         }
     }
+
+    workqueue.push(async () => {
+        terminal(`fetching stream...`)
+        const res = await fetch('/job/stream')
+
+        terminal('Getting reader...')
+        const reader = res.body.getReader()
+        terminal('Iterating through reader...')
+        let count = 0;
+        while (true) {
+            const {done, value} = await reader.read()
+            const decoded = decoder.decode(value)
+            terminal(decoded)
+            if (done) {
+                terminal(`${count}: Done`)
+                break
+            }
+        }
+    })
+
     await updateLists()
+}
+
+function terminal(message) {
+    workqueue.push(async () => {
+        term.textContent = message
+        console.log(message)
+    })
 }
 
 async function newDir() {

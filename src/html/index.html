@@ -28,12 +28,14 @@
             <div class="col">
                 <div class="as-from-list-col as-list-col rounded-3 p-5">
                     <div class="vstack gap-3">
-                    <label><strong>From:</strong> <span id="from-list-breadcrumb" class="as-breadcrumb"></span></label>
-                    <div class="card">
-                        <ul id="from-list" class="list-group list-group-flush as-list-view overflow-scroll">
-                            <li class="list-group-item list-group-item-action">..</li>
-                        </ul>
-                    </div>
+                        <label><strong>From:</strong> <span id="from-list-breadcrumb"
+                                                            class="as-breadcrumb"></span></label>
+                        <div class="card">
+                            <ul id="from-list" class="list-group list-group-flush as-list-view overflow-scroll">
+                                <li class="list-group-item list-group-item-action">..</li>
+                            </ul>
+                        </div>
+                        <div id="terminal">Terminal</div>
                     </div>
                 </div>
             </div>
@@ -47,6 +49,7 @@
                             </div>
                         </div>
                         <form id="newdir-form" class="hstack gap-3">
+                            <button id="as-stream">Stream</button>
                             <input id="newdir-name" placeholder="Folder name..." type="text">
                             <button id="newdir-submit" type="button" class="btn btn-primary btn-sm">Add Folder</button>
                         </form>

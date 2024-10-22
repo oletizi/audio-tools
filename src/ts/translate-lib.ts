@@ -5,7 +5,7 @@ import {newProgramFromBuffer} from "./akai-lib";
 import {newSampleFromBuffer} from "./sample";
 
 export namespace translate {
-    export async function mpc2Sxk(infile, outdir) {
+    export async function mpc2Sxk(infile, outdir, outstream = process.stdout) {
         const mpcbuf = await fs.readFile(infile)
         const mpcdir = path.dirname(infile)
         const mpcProgram = mpc.newProgramFromBuffer(mpcbuf)
@@ -36,7 +36,7 @@ export namespace translate {
 
                 const bytesWritten = trimmed.write(outbuf, 0)
                 let outpath = path.join(outdir, sliceName + '.WAV');
-                console.log(`writing trimmed sample to: ${outpath}`)
+                outstream.write(`TRANSLATE: writing trimmed sample to: ${outpath}\n`)
                 await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))
             } catch (err) {
                 // no joy
@@ -57,6 +57,9 @@ export namespace translate {
 
         sxkProgram.apply(mods)
         const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
-        await fs.writeFile(path.join(outdir, mpcProgram.programName + '.AKP'), Buffer.copyBytesFrom(outbuf, 0, bufferSize))
+        let outfile = path.join(outdir, mpcProgram.programName + '.AKP');
+        outstream.write(`Writing program file: ${outfile}\n`)
+        await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
+        outstream.write(`Done translating program.`)
     }
 }
