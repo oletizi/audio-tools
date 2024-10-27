@@ -38,7 +38,7 @@ app.get('/list', async (req, res) => {
 
 app.post('/cd/from', async (req, res) => {
     workqueue.push(async () => {
-        iostream.write(`Moving to ${req.query.dir}\n`)
+        iostream.write(`Moving to: ${req.query.dir}... `)
         await theBrain.cdFromDir(req.query.dir)
         iostream.write(`Done.\n`)
         res.send(await theBrain.list())
@@ -47,7 +47,7 @@ app.post('/cd/from', async (req, res) => {
 
 app.post('/cd/to', async (req, res) => {
     workqueue.push(async () => {
-        iostream.write(`Moving to ${req.query.dir}\n`)
+        iostream.write(`Moving to: ${req.query.dir}... `)
         await theBrain.cdToDir(req.query.dir)
         iostream.write(`Done.\n`)
         res.send(await theBrain.list())
@@ -56,7 +56,7 @@ app.post('/cd/to', async (req, res) => {
 
 app.post(`/mkdir`, async (req, res) => {
     workqueue.push(async () => {
-        iostream.write(`New folder: ${req.query.dir}`)
+        iostream.write(`New folder: ${req.query.dir}... `)
         await theBrain.newTargetDir(req.query.dir)
         iostream.write(`Done.\n`)
         res.send(await theBrain.list())
@@ -65,7 +65,7 @@ app.post(`/mkdir`, async (req, res) => {
 
 app.post(`/program/translate`, async (req, res) => {
     workqueue.push(async () => {
-        iostream.write(`Initiating translate...\n`)
+        iostream.write(`Initiating translate... \n`)
         await theBrain.translate(req.query.name, iostream, progress)
         res.send(await theBrain.list())
         iostream.write(`Done translating ${req.query.name}.\n`)
@@ -75,7 +75,7 @@ app.post(`/program/translate`, async (req, res) => {
 
 app.post('/rm/to', async (req, res) => {
     workqueue.push(async () => {
-            iostream.write(`Removing: ${req.query.name}\n`)
+            iostream.write(`Removing: ${req.query.name}... `)
             await theBrain.rmTo(req.query.name)
             iostream.write(`Done.\n`)
             res.send(await theBrain.list())

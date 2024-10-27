@@ -1,12 +1,25 @@
-import {getSamples} from "../src/ts/decent";
+import {decent} from "../src/ts/decent";
 import {expect} from "chai";
+import fs from "fs/promises";
 
 describe('Decent Sampler parsing', async ()=> {
     it ('Parses a Decent Sampler preset', async () => {
         let presetFile = 'test/data/decent/Oscar.dspreset';
-        const samples = await getSamples(presetFile)
-        expect(samples).to.exist
-        expect(samples.length).to.eq(16)
+        const program = await decent.newProgramFromBuffer(await fs.readFile(presetFile))
+        expect(program).to.exist
+        expect(program.groups).to.exist
+        expect(program.groups.length).to.eq(1)
+
+        const group = program.groups[0]
+        expect(group.samples.length).to.eq(16)
+
+        const sample = group.samples[0]
+        expect(sample.path).to.eq('Samples/Oscar.wav')
+        expect(sample.attack).to.eq(0.001)
+        expect(sample.attackCurve).to.eq(-25.000)
+        expect(sample.decay).to.eq(0.002)
+        expect(sample.decayCurve).to.eq(-25.000)
+
     })
 
 })

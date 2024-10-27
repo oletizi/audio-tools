@@ -65,7 +65,11 @@ async function doIt() {
 
 function terminal(message) {
     workqueue.push(async () => {
-        term.textContent = message
+        if (term.textContent.includes('\n')) {
+            term.textContent = message
+        } else {
+            term.textContent += message
+        }
         console.log(message)
     })
 }
