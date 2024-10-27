@@ -8,7 +8,7 @@ import {newProgress} from "../progress";
 const app = express()
 const port = 3000
 
-const homeDir = path.join(process.env.HOME, 'Dropbox', 'Music', 'Sampler Programs', 'MPC')
+const homeDir = path.join(process.env.HOME, 'Dropbox', 'Music', 'Sampler Programs')
 const targetDir = path.join(process.env.HOME, 'tmp')
 const theBrain = new brain.Brain(homeDir, targetDir)
 const workqueue = new Queue({results: [], autostart: true, concurrency: 1})

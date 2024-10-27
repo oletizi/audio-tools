@@ -128,14 +128,18 @@ export namespace brain {
                 await fs.mkdir(targetpath)
             }
             const p = Path.parse(srcpath)
+            console.log(`Translate: ${JSON.stringify(p, null, 2)}`)
             switch (p.ext) {
-                case 'xpm':
+                case '.xpm':
+                    console.log(`Translate: MPC program: ${srcpath}`)
                     await translate.mpc2Sxk(srcpath, targetpath, outstream, progress)
                     break
-                case 'dspreset':
+                case '.dspreset':
+                    console.log(`Translate: Decent Sampler program: ${srcpath}`)
                     await translate.decent2Sxk(srcpath, targetpath, outstream, progress)
                     break
                 default:
+                    console.log(`Translate: Unknown extension: ${srcpath}`)
                     break
             }
         }

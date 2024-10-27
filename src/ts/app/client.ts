@@ -214,7 +214,7 @@ function writeFromList(theList: DirList) {
             item.onclick = async () => {
                 await cdFromList(e.name)
             }
-        } else if (e.name.endsWith('.xpm')) {
+        } else if (e.name.endsWith('.xpm') || e.name.endsWith('.dspreset')) {
             item.classList.add('mpc-program')
             item.classList.add('as-list-view-program')
             const badge = document.createElement('i')
