@@ -3,6 +3,7 @@ import {Entry, DirList} from "./api.ts"
 import path from "path";
 import {translate} from "../translate-lib";
 import {newProgramFromBuffer} from "../akai-lib";
+import * as Path from "path";
 
 export namespace brain {
 
@@ -126,7 +127,17 @@ export namespace brain {
                 await fs.stat(srcpath)
                 await fs.mkdir(targetpath)
             }
-            await translate.mpc2Sxk(srcpath, targetpath, outstream, progress)
+            const p = Path.parse(srcpath)
+            switch (p.ext) {
+                case 'xpm':
+                    await translate.mpc2Sxk(srcpath, targetpath, outstream, progress)
+                    break
+                case 'dspreset':
+                    await translate.decent2Sxk(srcpath, targetpath, outstream, progress)
+                    break
+                default:
+                    break
+            }
         }
 
         async rmTo(name: string) {

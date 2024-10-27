@@ -1,7 +1,9 @@
 import {translate} from '../src/ts/translate-lib'
-import {newProgramFromBuffer} from "../src/ts/akai-lib";
-import fs from "fs/promises";
-import {expect} from "chai";
+import {newProgramFromBuffer} from "../src/ts/akai-lib"
+import {decent} from '../src/ts/decent'
+import fs from "fs/promises"
+import {expect} from "chai"
+import path from "path"
 
 describe(`Translate`, async () => {
     let cleanup = false
@@ -34,5 +36,15 @@ describe(`Translate`, async () => {
     it('Checks itself', async () => {
         const buf = await fs.readFile('test/data/Sx000/Oscar/Oscar-unmuted.AKP')
         const program = newProgramFromBuffer(buf)
+    })
+    it('Converts decent sampler program to Akai Sx000 program', async () => {
+        const infile = path.join('test', 'data', 'decent', 'Oscar.dspreset')
+        const outdir = path.join('build')
+        const outfile = path.join(outdir, 'Oscar.AKP')
+        // const program = decent.newProgramFromBuffer(await fs.readFile(infile))
+        translate.decent2Sxk(infile, outdir)
+
+        const program = newProgramFromBuffer(await fs.readFile(outfile))
+        expect(program).to.exist
     })
 })
