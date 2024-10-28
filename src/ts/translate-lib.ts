@@ -9,9 +9,20 @@ import * as Path from "path";
 
 
 export namespace translate {
+
+    function hasher(text: string, max: number) {
+        let hash
+        for (let i = 0; i < text.length && i <= max; i++) {
+            let char = text.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return hash
+    }
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
         const ddir = path.dirname(infile)
         const programName = Path.parse(infile).name
+        const hash = hasher(programName, 20)
         const dprogram = await decent.newProgramFromBuffer(await fs.readFile(infile))
 
         const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
@@ -24,17 +35,19 @@ export namespace translate {
         }
         progress.setTotal(keygroupCount + 1) // one progress increment for each keygroup, one for the program file
         keygroupCount = 0
+
         for (const group of dprogram.groups) {
             for (const sample of group.samples) {
                 keygroupCount++
                 const samplePath = path.join(ddir, sample.path)
-                const basename = Path.parse(samplePath).name//path.basename(samplePath)
-                const outpath = path.join(outdir, basename + '-' + keygroupCount + '.WAV');
+                const outname = hash + '-' + keygroupCount + '.WAV'
+                const outpath = path.join(outdir, outname);
                 try {
                     // Chop sample and write to disk
                     const wav = newSampleFromBuffer(await fs.readFile(samplePath))
                     let trimmed = wav.trim(sample.start, sample.end)
                     trimmed = trimmed.to16Bit()
+                    trimmed = trimmed.to441()
                     const bytesWritten = trimmed.write(outbuf, 0)
                     outstream.write(`TRANSLATE: writing trimmed sample to: ${outpath}\n`)
                     await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))
@@ -49,7 +62,7 @@ export namespace translate {
                         highNote: sample.hiNote,
                     },
                     zone1: {
-                        sampleName: basename
+                        sampleName: outname
                     }
                 })
             }

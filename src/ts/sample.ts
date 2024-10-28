@@ -9,6 +9,7 @@ export function newSampleFromBuffer(buf: Uint8Array): Sample {
 export interface Sample {
     trim(start, end): Sample
     to16Bit() : Sample
+    to441() : Sample
     write(buf: Buffer, offset: number)
 }
 
@@ -20,6 +21,11 @@ class WavSample implements Sample {
     }
     to16Bit(): Sample {
         this.wav.toBitDepth("16")
+        return this
+    }
+
+    to441() : Sample {
+        this.wav.toSampleRate(44100)
         return this
     }
 
