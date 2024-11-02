@@ -48,6 +48,7 @@ export namespace translate {
                     let trimmed = wav.trim(sample.start, sample.end)
                     trimmed = trimmed.to16Bit()
                     trimmed = trimmed.to441()
+                    trimmed.cleanup()
                     const bytesWritten = trimmed.write(outbuf, 0)
                     outstream.write(`TRANSLATE: writing trimmed sample to: ${outpath}\n`)
                     await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))

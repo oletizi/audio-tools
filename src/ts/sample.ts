@@ -10,6 +10,7 @@ export interface Sample {
     trim(start, end): Sample
     to16Bit() : Sample
     to441() : Sample
+    cleanup() : Sample
     write(buf: Buffer, offset: number)
 }
 
@@ -41,5 +42,14 @@ class WavSample implements Sample {
         const wavBuffer = Buffer.from(this.wav.toBuffer())
         wavBuffer.copy(buf, offset, 0, wavBuffer.length)
         return wavBuffer.length
+    }
+
+    cleanup(): Sample {
+        this.wav.fact = {
+            chunkId: "fact",
+            chunkSize: 4,
+            dwSampleLength: this.wav.data.chunkSize / this.wav.fmt.numChannels
+        }
+        return this
     }
 }
