@@ -1,9 +1,14 @@
 import {DirList, Entry} from "./api";
 import Queue from "queue";
+import {createRoot} from "react-dom/client";
+import React from 'react';
 
 const workqueue = new Queue({results: [], autostart: true})
 const term = document.getElementById('terminal')
 const progress = document.getElementById('progress')
+
+const fromListRoot = createRoot(document.getElementById('from-list'))
+const termRoot = createRoot(term)
 doIt().then(() => {
     console.log('done!')
 })
@@ -14,12 +19,12 @@ async function doIt() {
     const newdirButton = document.getElementById('newdir-submit')
     newdirButton.onclick = async () => {
         await newDir()
-        newdirNameField.value = ''
+        newdirNameField['value'] = ''
     }
     newdirNameField.onkeydown = async (event) => {
         if (event.key === 'Enter') {
             await newDir()
-            newdirNameField.value = ''
+            newdirNameField['value'] = ''
         }
     }
 
@@ -76,7 +81,7 @@ function terminal(message) {
 
 async function newDir() {
     const nameField = document.getElementById('newdir-name')
-    const dirname = nameField.value
+    const dirname = nameField['value']
     console.log(`New directory name: ${dirname}`)
     let res = await fetch(`/mkdir/?dir=${encodeURI(dirname)}`, {
         method: "POST",
@@ -198,38 +203,59 @@ async function onToListEntryBlur(entry, element) {
 function writeFromList(theList: DirList) {
     const breadcrumb = document.getElementById('from-list-breadcrumb')
     breadcrumb.innerText = theList.breadcrumb
-
-    const widget = document.getElementById('from-list')
-    widget.innerText = ""
+    const rows = []
     for (const e of sortEntries(theList.entries)) {
-        const item = document.createElement('li')
-        item.classList.add('list-group-item')
-        item.classList.add('list-group-item-action')
-        item.classList.add('justify-content-between')
-        item.classList.add('align-items-center')
-        item.classList.add('d-flex')
-        item.innerText = e.name + ` `
+        let className = 'list-group-item list-group-item-action';
+        let onClick = () => {}
+        let badge = <span/>
         if (e.directory) {
-            item.classList.add('as-list-view-dir')
-            item.onclick = async () => {
-                await cdFromList(e.name)
-            }
+            className += ' as-list-view-dir'
+            onClick = async () => await cdFromList(e.name)
         } else if (e.name.endsWith('.xpm') || e.name.endsWith('.dspreset')) {
-            item.classList.add('mpc-program')
-            item.classList.add('as-list-view-program')
-            const badge = document.createElement('i')
-            badge.classList.add('material-icons')
-            badge.innerText = 'arrow_forward'
-            item.appendChild(badge)
-            item.onclick = async () => {
-                await transformProgram(e.name)
-            }
+            className += ' mpc-program as-list-view-program'
+            badge = <i className={'material-icons'}>arrow_forward</i>
+            onClick = async () => await transformProgram(e.name)
         } else {
-            item.classList.add('disabled')
-            item.ariaDisabled = "true"
+            className += ' disabled'
         }
-        widget.appendChild(item)
+
+        let row = <li key={e.name} className={className} onClick={onClick}>
+            <div className={'row'}>
+                <div className={'col'}>{e.name}</div>
+                <div className={'col-2 text-end'}>{badge}</div>
+            </div>
+        </li>
+        rows.push(row)
+        // const item = document.createElement('li')
+        // item.classList.add('list-group-item')
+        // item.classList.add('list-group-item-action')
+        // item.classList.add('justify-content-between')
+        // item.classList.add('align-items-center')
+        // item.classList.add('d-flex')
+        // item.innerText = e.name + ` `
+        // if (e.directory) {
+        //     item.classList.add('as-list-view-dir')
+        //     item.onclick = async () => {
+        //         await cdFromList(e.name)
+        //     }
+        // } else if (e.name.endsWith('.xpm') || e.name.endsWith('.dspreset')) {
+        //     item.classList.add('mpc-program')
+        //     item.classList.add('as-list-view-program')
+        //     const badge = document.createElement('i')
+        //     badge.classList.add('material-icons')
+        //     badge.innerText = 'arrow_forward'
+        //     item.appendChild(badge)
+        //     item.onclick = async () => {
+        //         await transformProgram(e.name)
+        //     }
+        // } else {
+        //     item.classList.add('disabled')
+        //     item.ariaDisabled = "true"
+        // }
+        // widget.appendChild(item)
     }
+    fromListRoot.render(<ul className={'list-group as-list-view overflow-scroll'}>{rows}</ul>)
+
 }
 
 async function transformProgram(programName) {

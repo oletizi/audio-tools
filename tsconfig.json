@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "module": "ES2015",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "jsx": "react"
   },
   "include": ["src/**/*"]
 }
