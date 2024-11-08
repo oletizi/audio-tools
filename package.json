@@ -1,7 +1,7 @@
 {
   "name": "akai-sampler",
   "version": "1.0.0",
-  "main": "src/ts/app/server.ts",
+  "start": "src/ts/app/server.ts",
   "type": "module",
   "directories": {
     "test": "test"
@@ -12,7 +12,7 @@
     "sass-build": "npx sass src/scss/styles.scss build/site/styles.css",
     "bundler-build": "npx esbuild src/ts/app/client.tsx --bundle --outfile=build/site/client.js",
     "build": "tsx build.ts && npm run sass-build && npm run bundler-build",
-    "main": "npm run build && tsx src/ts/app/server.ts",
+    "start": "npm run build && tsx src/ts/app/server.ts",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
     "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts"
@@ -36,7 +36,8 @@
     "riff-parser": "^1.0.1",
     "tsx": "^4.19.1",
     "wavefile": "^11.0.0",
-    "wavefile-parser": "^1.0.1"
+    "wavefile-parser": "^1.0.1",
+    "webmidi": "^3.1.11"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.7",
