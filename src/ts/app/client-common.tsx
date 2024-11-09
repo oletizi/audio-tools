@@ -5,7 +5,7 @@ import {ClientConfig} from "./config-client";
 import React from 'react'
 
 export interface Result {
-    error: string
+    error: string | null
     data: any
 }
 
@@ -55,8 +55,15 @@ class BasicClientCommon implements ClientCommon {
         })
     }
 
-    saveConfig(cfg) {
-        return this.post('/config/save', cfg)
+    async saveConfig(cfg) {
+        const result = await this.post('/config/save', cfg)
+        if (result.error) {
+            this.out.error(result.error)
+            this.status(result.error)
+        } else {
+            this.status(result.data.message)
+        }
+        return result
     }
 
     get(url) {
@@ -67,36 +74,39 @@ class BasicClientCommon implements ClientCommon {
         return this.request(url, 'POST', obj)
     }
 
-    private request(url, method: string = 'GET', body: any = {}): Promise<Result> {
+    private async request(url, method: string = 'GET', body: any = {}): Promise<Result> {
         const options: any = {method: method}
         if (method === 'POST') {
             options.body = JSON.stringify(body)
+            options.headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         }
-        return new Promise<any>((resolve, reject) => {
-            this.out.log(`options.body: ${options.body}`)
-            fetch(url, options)
-                .then((res) => {
-                    let statusMessage = `${res.status}: ${res.statusText}: ${url}`;
+        this.out.log(`options.body: ${options.body}`)
+        let rv: Result = {error: null, data: {}}
+        try {
+            const res = await fetch(url, options)
+            let statusMessage = `${res.status}: ${res.statusText}: ${url}`;
+            if (res.status == 200) {
+                try {
                     this.status(statusMessage)
-                    if (res.status == 200) {
-                        res.json()
-                            .then((body) => {
-                                resolve(body)
-                            })
-                            .catch(err => {
-                                console.error(err)
-                                this.status(err.message)
-                                resolve({error: err})
-                            })
-                    } else {
-                        reject({error: statusMessage})
-                    }
-                })
-                .catch(err => {
-                    console.error(err)
-                    this.status(err.message)
-                    reject({error: err})
-                })
-        })
+                    rv = await res.json()
+                } catch (err) {
+                    this.status(`Error: ${err.message}`)
+                    this.out.error(err)
+                    rv.error = err.message
+                }
+
+            } else {
+                this.status(statusMessage)
+                this.out.error(statusMessage)
+                rv.error = statusMessage
+            }
+        } catch (err) {
+            console.error(err)
+            this.status(err.message)
+        }
+        return rv
     }
 }

@@ -20,9 +20,7 @@ export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR):
 }
 
 export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
-    const rv = {
-        midiOutput: ''
-    } as ClientConfig
+    const rv: ClientConfig = {midiOutput: ''}
     let configPath = path.join(dataDir, 'config.json');
     let storedConfig = null
     try {
@@ -30,7 +28,7 @@ export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<Clien
         storedConfig = JSON.parse((await fs.readFile(configPath)).toString())
         rv.midiOutput = storedConfig.midiOutput
     } catch (err) {
-        console.error(err)
+        out.log(`Error reading config from: ${configPath}: ${err.message}`)
     }
     return rv
 }

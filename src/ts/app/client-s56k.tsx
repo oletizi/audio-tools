@@ -49,10 +49,14 @@ class ClientS56k {
                     this.cfg.midiOutput = out.name
                     try {
                         output.log(`Saving config...`)
-                        await clientCommon.saveConfig(this.cfg)
-                        output.log(`Done saving config.`)
+                        const result = await clientCommon.saveConfig(this.cfg)
+                        if (result.error) {
+                            output.log(`Error saving config: ${result.error}`)
+                        } else {
+                            output.log(`Done saving config.`)
+                        }
                     } catch (err) {
-                        output.log(`Barfed: ${err.message}`)
+                        output.log(`Barfed trying to save config: ${err.message}`)
                         clientCommon.status(err.message)
                     }
                     output.log(`Updating midi output select..`)
