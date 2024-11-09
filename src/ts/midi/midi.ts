@@ -1,14 +1,35 @@
-import {WebMidi} from "webmidi"
+import {Output, WebMidi} from "webmidi"
 
 export class Midi {
     async start(onEnabled = () => {
     }) {
-        await WebMidi.enable()
-        WebMidi.inputs.forEach(input => console.log(input.name))
-        onEnabled()
+        try {
+            await WebMidi.enable()
+
+            await onEnabled()
+        } catch (err) {
+            console.error(err)
+            await WebMidi.disable()
+        }
     }
 
-    async stop() {
+    async getOutputs() {
+        return WebMidi.outputs
+    }
+
+    async stop(onDisabled: () => void = () => {
+    }) {
         await WebMidi.disable()
+        await onDisabled()
+    }
+
+    async getOutput(name: string) {
+        let rv: Output | null = null
+        await (await this.getOutputs()).forEach(output => {
+            if (output.name === name) {
+                rv = output
+            }
+        })
+        return rv
     }
 }

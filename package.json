@@ -8,7 +8,7 @@
   },
   "scripts": {
     "watch:build": "nodemon --watch 'src/*' -e scss,html,ts,tsx -x \"npm run build\"",
-    "watch:main": "nodemon --watch 'src/*' -e ts -x \"npm run main\"",
+    "watch:start": "nodemon --watch 'src/*' -e ts -x \"npm run start\"",
     "sass-build": "npx sass src/scss/styles.scss build/site/styles.css",
     "bundler-build": "npx esbuild src/ts/app/client.tsx --bundle --outfile=build/site/client.js",
     "build": "tsx build.ts && npm run sass-build && npm run bundler-build",
