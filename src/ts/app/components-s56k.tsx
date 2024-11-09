@@ -16,10 +16,9 @@ export function MidiOutputSelect(outs: MidiOutputSpec[]) {
             current = spec.output.name
         }
 
-        return (<li>
-            <a className={classes.join(' ')}
+        return (<li key={spec.output.name}>
+            <a className={'dropdown-item'}
                href={'#'}
-               key={spec.output.name}
                onClick={spec.action}
                data-bs-toggle="dropdown"
                data-bs-target="#midi-output-view">{spec.output.name}</a></li>)
@@ -28,13 +27,6 @@ export function MidiOutputSelect(outs: MidiOutputSpec[]) {
         <button className="btn btn-primary dropdown-toggle" type="button"
                 data-bs-toggle="dropdown"
                 data-bs-target="#midi-output-view"><span className={'fw-bold'}>MIDI Out: </span>{current}</button>
-        <ul className={'dropdown-menu'}>{items}</ul>
+        <ul id="midi-output-view" className={'dropdown-menu'}>{items}</ul>
     </div>)
 }
-
-export function MidiOutputSelectButton(current: string) {
-    return (<button className="btn btn-primary dropdown-toggle" type="button"
-                    data-bs-toggle="dropdown"
-                    data-bs-target="#midi-output-view"><span className={'fw-bold'}>MIDI Out: </span>{current}</button>)
-}
-

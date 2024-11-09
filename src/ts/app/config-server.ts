@@ -1,12 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
-import {newNodeOutput} from "../../../test/data/output";
+import {newServerOutput} from "./output";
+import {ClientConfig} from "./config-client";
 
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
-const out = newNodeOutput()
-export interface ClientConfig {
-    midiOutput: string
-}
+const out = newServerOutput()
 
 export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR): Promise<string> {
     const configPath = path.join(dataDir, 'config.json')
@@ -21,22 +19,20 @@ export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR):
     )
 }
 
-export function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
+export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
     const rv = {
         midiOutput: ''
     } as ClientConfig
     let configPath = path.join(dataDir, 'config.json');
-
-    return new Promise<ClientConfig>((resolve) => {
+    let storedConfig = null
+    try {
         out.log(`Reading config from: ${configPath}`)
-        fs.readFile(configPath)
-            .then(buf => {
-                const storedConfig = JSON.parse(buf.toString())
-                rv.midiOutput = storedConfig.midiOutput
-            })
-            .finally(() => resolve(rv))
-    })
-
+        storedConfig = JSON.parse((await fs.readFile(configPath)).toString())
+        rv.midiOutput = storedConfig.midiOutput
+    } catch (err) {
+        console.error(err)
+    }
+    return rv
 }
 
 function ensureDataDir(dataDir = DEFAULT_DATA_DIR) {

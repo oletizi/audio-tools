@@ -4,10 +4,14 @@ import {brain} from "./brain.ts"
 import Queue from "queue";
 import {PassThrough} from "stream";
 import {newProgress} from "../progress";
+import {newClientConfig, saveClientConfig} from "./config-server";
+import {newServerOutput} from "./output";
+import {ClientConfig} from "./config-client";
+import {Result} from "./client-common";
 
 const app = express()
 const port = 3000
-
+const out = newServerOutput()
 const homeDir = path.join(process.env.HOME, 'Dropbox', 'Music', 'Sampler Programs')
 const targetDir = path.join(process.env.HOME, 'tmp')
 const theBrain = new brain.Brain(homeDir, targetDir)
@@ -18,6 +22,8 @@ const iostream = new PassThrough()
 const progress = newProgress()
 iostream.pipe(process.stdout)
 
+
+app.use(express.json())
 app.get('/', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'index.html'))
 })
@@ -36,6 +42,38 @@ app.get('/client.js', async (req, res) => {
 
 app.get(`/s56k-client.js`, (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 's56k-client.js'))
+})
+
+app.get('/config', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    newClientConfig().then((cfg) => {
+        const result = {data: cfg}
+        const body = JSON.stringify(result)
+        out.log(`body: ${body}`)
+        res.end(body)
+    }).catch(err => {
+        res.end(JSON.stringify({error: err.message}))
+    })
+})
+
+app.post('/config/save', async (req, res) => {
+    res.setHeader('Content-Type', 'application/json')
+    out.log(`Saving config...`)
+    const cfg = req.body as ClientConfig
+    out.log(`Config to save: ${cfg}`)
+    const result = {
+        error: null,
+        data: {}
+    } as Result
+    if (cfg && cfg.midiOutput) {
+        try {
+            const configPath = await saveClientConfig(cfg)
+            out.log(`Write config to: ${configPath}`)
+            result.data.message = `Config saved.`
+        } catch (err) {
+            result.error = err
+        }
+    }
 })
 
 app.get('/list', async (req, res) => {
