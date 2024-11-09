@@ -22,12 +22,20 @@ app.get('/', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'index.html'))
 })
 
+app.get('/s56k', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'build', 'site', 's56k.html'))
+})
+
 app.get('/styles.css', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'styles.css'))
 })
 
 app.get('/client.js', async (req, res) => {
     res.sendFile(path.join(process.cwd(), 'build', 'site', 'client.js'))
+})
+
+app.get(`/s56k-client.js`, (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'build', 'site', 's56k-client.js'))
 })
 
 app.get('/list', async (req, res) => {

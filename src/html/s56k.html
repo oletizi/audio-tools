@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"-->
+    <link href="/styles.css" rel="stylesheet">
+    <title>Akai S5000/S6000 Program Converter</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Akai S5000/S6000 Sysex</h1>
+        </div>
+        <div class="col">
+            <div id="midi-output-select">
+                <button class="btn btn-primary mt-4" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#midi-output-view">Midi Out
+                </button>
+                <div class="collapse" id="midi-output-view">
+                    <ul id="midi-output-list" class="list-group">
+                        <li class="list-group-item list-group-item-action" data-bs-toggle="collapse"
+                            data-bs-target="#midi-output-view">Item 1
+                        </li>
+                        <li class="list-group-item list-group-item-action"> Item 2</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/s56k-client.js"></script>
+</body>

@@ -1,9 +1,7 @@
 import {DirList, Entry} from "./api";
-import {Midi} from '../midi/midi'
 import Queue from "queue";
 import {createRoot} from "react-dom/client";
 import React from 'react';
-import {Output} from "webmidi";
 
 const workqueue = new Queue({results: [], autostart: true})
 const term = document.getElementById('terminal')
@@ -16,11 +14,6 @@ doIt().then(() => {
 })
 
 async function doIt() {
-    const midi = new Midi()
-    await midi.start(() => {
-        console.log(`Midi started!!!!`)
-        midi.getOutputs().then((outs:Output[])=>{outs.forEach(out => console.log(`out: ${out.name}`))})
-    })
     const decoder = new TextDecoder()
     const newdirNameField = document.getElementById('newdir-name')
     const newdirButton = document.getElementById('newdir-submit')
