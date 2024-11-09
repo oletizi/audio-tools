@@ -7,24 +7,34 @@ export interface MidiOutputSpec {
     action: () => void
 }
 
-export function MidiOutputList(outs: MidiOutputSpec[]) {
-
+export function MidiOutputSelect(outs: MidiOutputSpec[]) {
+    let current = ''
     const items = outs.map((spec) => {
-        const classes = ['list-group-item']
-        classes.push(spec.isActive ? 'active' : 'list-group-item-active')
+        const classes = ['dropdown-item']
+        if (spec.isActive) {
+            classes.push('active')
+            current = spec.output.name
+        }
 
-
-        return (<li className={classes.join(' ')}
-                    key={spec.output.name}
-                    onClick={spec.action}
-                    data-bs-toggle="collapse"
-                    data-bs-target="#midi-output-view">{spec.output.name}</li>)
+        return (<li>
+            <a className={classes.join(' ')}
+               href={'#'}
+               key={spec.output.name}
+               onClick={spec.action}
+               data-bs-toggle="dropdown"
+               data-bs-target="#midi-output-view">{spec.output.name}</a></li>)
     })
-    return (<ul className={'list-group'}>{items}</ul>)
+    return (<div>
+        <button className="btn btn-primary dropdown-toggle" type="button"
+                data-bs-toggle="dropdown"
+                data-bs-target="#midi-output-view"><span className={'fw-bold'}>MIDI Out: </span>{current}</button>
+        <ul className={'dropdown-menu'}>{items}</ul>
+    </div>)
 }
 
 export function MidiOutputSelectButton(current: string) {
-    return (<button className="btn btn-primary mt-4" type="button"
-                    data-bs-toggle="collapse"
+    return (<button className="btn btn-primary dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown"
                     data-bs-target="#midi-output-view"><span className={'fw-bold'}>MIDI Out: </span>{current}</button>)
 }
+
