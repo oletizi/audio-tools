@@ -1,16 +1,24 @@
 import {Output, WebMidi} from "webmidi"
 
 export class Midi {
+    private output: Output;
+
     async start(onEnabled = () => {
     }) {
         try {
             await WebMidi.enable()
-
+            if (WebMidi.outputs && WebMidi.outputs.length > 0) {
+                this.output = WebMidi.outputs[0]
+            }
             await onEnabled()
         } catch (err) {
             console.error(err)
             await WebMidi.disable()
         }
+    }
+
+    setOutput(output: Output) {
+        this.output = output
     }
 
     async getOutputs() {
@@ -31,5 +39,9 @@ export class Midi {
             }
         })
         return rv
+    }
+
+    isCurrentOutput(name: string) {
+        return this.output && this.output.name === name
     }
 }
