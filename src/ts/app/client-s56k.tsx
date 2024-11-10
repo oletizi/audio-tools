@@ -1,4 +1,4 @@
-import {MidiOutputSelect, MidiOutputSpec} from "./components-s56k";
+import {MidiDeviceSelect, MidiDeviceSpec} from "./components-s56k";
 import {Midi} from "../midi/midi"
 import 'bootstrap'
 import {createRoot} from "react-dom/client";
@@ -46,17 +46,13 @@ class ClientS56k {
     async updateMidiOutputSelect() {
         const specs = (await midi.getOutputs()).map(out => {
             return {
-                output: out,
+                name: out.name,
                 isActive: midi.isCurrentOutput(out.name),
                 action: async () => {
-                    output.log(`You clicked me: ${out.name}`)
                     clientCommon.status(`You chose ${out.name}`)
-                    output.log(`Setting midi output to ${out.name}`)
                     midi.setOutput(out)
-                    output.log(`Setting cfg.midiOutput to ${out.name}`)
                     this.cfg.midiOutput = out.name
                     try {
-                        output.log(`Saving config...`)
                         const result = await clientCommon.saveConfig(this.cfg)
                         if (result.error) {
                             output.log(`Error saving config: ${result.error}`)
@@ -71,9 +67,9 @@ class ClientS56k {
                     await this.updateMidiOutputSelect()
                     console.log(`Done updating midi output select.`)
                 }
-            } as MidiOutputSpec
+            } as MidiDeviceSpec
         })
-        midiOutputSelectRoot.render(MidiOutputSelect(specs))
+        midiOutputSelectRoot.render(MidiDeviceSelect(specs))
     }
 }
 

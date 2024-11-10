@@ -1,32 +1,39 @@
 import React from "react";
-import {Output} from "webmidi";
+import {Input, Output} from "webmidi";
 
-export interface MidiOutputSpec {
-    output: Output
+let sequence = 0
+
+export interface MidiDeviceSpec {
+    name: string
     isActive: boolean
     action: () => void
 }
 
-export function MidiOutputSelect(outs: MidiOutputSpec[]) {
+function uid() {
+    return sequence++ + '-' + Math.random().toString(16).slice(2)
+}
+
+export function MidiDeviceSelect(specs: MidiDeviceSpec[], label: string = "Midi Output: ") {
     let current = ''
-    const items = outs.map((spec) => {
+    const target = `midi-device-view-${uid()}`
+    const items = specs.map((spec) => {
         const classes = ['dropdown-item']
         if (spec.isActive) {
             classes.push('active')
-            current = spec.output.name
+            current = spec.name
         }
 
-        return (<li key={spec.output.name}>
-            <a className={'dropdown-item'}
+        return (<li key={spec.name}>
+            <a className={classes.join(' ')}
                href={'#'}
                onClick={spec.action}
                data-bs-toggle="dropdown"
-               data-bs-target="#midi-output-view">{spec.output.name}</a></li>)
+               data-bs-target={target}>{spec.name}</a></li>)
     })
     return (<div>
         <button className="btn btn-primary dropdown-toggle" type="button"
                 data-bs-toggle="dropdown"
-                data-bs-target="#midi-output-view"><span className={'fw-bold'}>MIDI Out: </span>{current}</button>
-        <ul id="midi-output-view" className={'dropdown-menu'}>{items}</ul>
+                data-bs-target={'#' + target}><span className={'fw-bold'}>{label}</span>{current}</button>
+        <ul id={target} className={'dropdown-menu'}>{items}</ul>
     </div>)
 }

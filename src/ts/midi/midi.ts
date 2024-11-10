@@ -1,7 +1,8 @@
-import {Output, WebMidi} from "webmidi"
+import {Input, Output, WebMidi} from "webmidi"
 
 export class Midi {
     private output: Output;
+    private input: Input;
 
     async start(onEnabled = () => {
     }) {
@@ -9,6 +10,9 @@ export class Midi {
             await WebMidi.enable()
             if (WebMidi.outputs && WebMidi.outputs.length > 0) {
                 this.output = WebMidi.outputs[0]
+            }
+            if (WebMidi.inputs && WebMidi.inputs.length > 0) {
+                this.input = WebMidi.inputs[0]
             }
             await onEnabled()
         } catch (err) {
@@ -21,12 +25,23 @@ export class Midi {
         this.output = output
     }
 
+    setInput(input: Input) {
+        this.input = input
+    }
+
     async getOutputs() {
         return WebMidi.outputs
     }
 
+    async getInputs() {
+        return WebMidi.inputs
+    }
     async getCurrentOutput() {
         return this.output
+    }
+
+    async getCurrentInput() {
+        return this.input
     }
     async stop(onDisabled: () => void = () => {
     }) {
@@ -46,5 +61,9 @@ export class Midi {
 
     isCurrentOutput(name: string) {
         return this.output && this.output.name === name
+    }
+
+    isCurrentInput(name: string) {
+        return this.input && this.input.name === name
     }
 }
