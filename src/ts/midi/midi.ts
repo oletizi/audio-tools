@@ -6,9 +6,11 @@ export class Midi {
     private input: Input;
     private listeners = []
     private out: ProcessOutput;
-    constructor(out:ProcessOutput = newClientOutput()) {
+
+    constructor(out: ProcessOutput = newClientOutput()) {
         this.out = out
     }
+
     async start(onEnabled = () => {
     }) {
         try {
@@ -40,7 +42,7 @@ export class Midi {
         }
         if (input) {
             // attach listeners to the current input
-            for(const spec of this.listeners) {
+            for (const spec of this.listeners) {
                 input.addListener(spec.eventName, spec.eventListener)
             }
         }
@@ -110,7 +112,19 @@ export class Midi {
     }
 
     addListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
+        this.out.log(`Adding midi listener: ${eventName} to ${this.input.name}`)
         this.listeners.push({eventName: eventName, eventListener: eventListener})
         this.input.addListener(eventName, eventListener)
+    }
+
+    sendSysex(deviceId: number, data: number[]): Midi {
+        this.out.log(`Sending sysex to ${this.output.name}`)
+        this.output.sendSysex(deviceId, data)
+        return this
+    }
+
+    removeListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
+        this.input.removeListener(eventName, eventListener)
+        this.listeners = this.listeners.filter(value => value.eventName !== eventName && value.eventListener !== eventListener)
     }
 }

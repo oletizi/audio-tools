@@ -57,11 +57,17 @@ const USER_REFS = 0x00
 
 export interface S56kDevice {
     init()
+
+    ping(): Promise<any>
+}
+
+export function newS56kDevice(midi, out: ProcessOutput) {
+    return new S56kSysex(midi, out)
 }
 
 class S56kSysex implements S56kDevice {
     private readonly midi: Midi;
-    private out: ProcessOutput;
+    private readonly out: ProcessOutput;
 
     constructor(midi, out: ProcessOutput = newClientOutput()) {
         this.midi = midi
@@ -69,10 +75,31 @@ class S56kSysex implements S56kDevice {
     }
 
     init() {
-        this.midi.addListener("sysex",  (event) => {
-            for (const name of Object.getOwnPropertyNames(event)) {
+    }
 
+    async ping() {
+        const akaiID = 0x47
+        const s56kId = 0x5E
+        const deviceId = 0x00
+        const userRef = 0x00
+        const section = 0x00
+        const item = 0x00
+        const out = this.out
+        const midi = this.midi
+        return new Promise<any>((resolve, reject) => {
+            function listener(event) {
+                out.log(`MIDI MESSAGE IN PING!!!`)
+                for (const name of Object.getOwnPropertyNames(event)) {
+                    out.log(`PING RESPONSE: ${name} = ${event[name]}`)
+                }
+                // const message = event.message
+                midi.removeListener('sysex', listener)
+                resolve()
             }
+
+            this.midi.addListener('sysex', listener)
+            this.midi.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
+            this.out.log(`Done sending sysex.`)
         })
     }
 }

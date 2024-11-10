@@ -3,6 +3,7 @@ import {WebMidi} from 'webmidi'
 import {newServerOutput} from "../src/ts/process-output";
 import {assert, expect} from "chai";
 import {Midi} from "../src/ts/midi/midi";
+import {newS56kDevice} from "../src/ts/midi/device";
 
 const out = newServerOutput()
 
@@ -44,7 +45,9 @@ async function testInitialize() {
 async function testSysex() {
     const midi = new Midi(out)
     if((await midi.setOutputByName('Model 12 MIDI OUT')) && (await midi.setInputByName('Model 12 MIDI IN'))) {
-
+        const d = newS56kDevice(midi, out)
+        d.init()
+        await d.ping()
     } else {
         out.log(`Can't find necessary midi ins and outs.`)
     }

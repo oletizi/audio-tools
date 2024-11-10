@@ -5,6 +5,7 @@ import {Midi} from "../midi/midi"
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
 import {MidiInstrument, newMidiInstrument} from "../midi/instrument";
+import {newS56kDevice, S56kDevice} from "../midi/device";
 
 const clientCommon = newClientCommon('status')
 const output = clientCommon.getOutput()
@@ -14,6 +15,7 @@ const midiInputSelectRoot = createRoot(document.getElementById('midi-input-selec
 
 class ClientS56k {
     private cfg: ClientConfig = newNullClientConfig()
+    private device: S56kDevice
 
     async init() {
         const result = await clientCommon.fetchConfig()
@@ -40,6 +42,8 @@ class ClientS56k {
                     }
                 }
             }
+            this.device = newS56kDevice(midi, output)
+            this.device.init()
             instrument = newMidiInstrument(midi, 1)
             await updateMidiDeviceSelect(
                 midiOutputSelectRoot,
@@ -64,13 +68,13 @@ class ClientS56k {
                 'Midi In: '
             )
 
-            midi.addListener("midimessage", (event) => {
-                output.log(`MESSAGE!!!!`)
-                // output.log(`message: ${JSON.stringify(event)}`)
-                for (const name of Object.getOwnPropertyNames(event)) {
-                    output.log(`event[${name}] = ${event[name]}`)
-                }
-            })
+            // midi.addListener("midimessage", (event) => {
+            //     output.log(`MESSAGE!!!!`)
+            //     // output.log(`message: ${JSON.stringify(event)}`)
+            //     for (const name of Object.getOwnPropertyNames(event)) {
+            //         output.log(`event[${name}] = ${event[name]}`)
+            //     }
+            // })
         })
 
         const playButton = document.getElementById('play-button')
@@ -80,16 +84,17 @@ class ClientS56k {
 
         const sysexButton = document.getElementById('sysex-button')
         sysexButton.onclick = async () => {
-            const midiOutput = await midi.getCurrentOutput()
-            const akaiID = 0x47
-            const s56kId = 0x5E
-            const deviceId = 0x00
-            const userRef = 0x00
-            const section = 0x00
-            const item = 0x00
-            output.log(`Sending sysex...`)
-            midiOutput.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
-            output.log(`Done sending sysex.`)
+            await this.device.ping()
+            // const midiOutput = await midi.getCurrentOutput()
+            // const akaiID = 0x47
+            // const s56kId = 0x5E
+            // const deviceId = 0x00
+            // const userRef = 0x00
+            // const section = 0x00
+            // const item = 0x00
+            // output.log(`Sending sysex...`)
+            // midiOutput.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
+            // output.log(`Done sending sysex.`)
         }
     }
 
