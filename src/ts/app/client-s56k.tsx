@@ -4,6 +4,7 @@ import 'bootstrap'
 import {createRoot} from "react-dom/client";
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
+import {MidiInstrument, newMidiInstrument} from "../midi/instrument";
 
 const clientCommon = newClientCommon('status')
 const output = clientCommon.getOutput()
@@ -16,6 +17,7 @@ class ClientS56k {
 
     async init() {
         const result = await clientCommon.fetchConfig()
+        let instrument: MidiInstrument
         if (result.error) {
             clientCommon.status(result.error)
             output.error(result.error)
@@ -31,8 +33,14 @@ class ClientS56k {
                     }
                 }
             }
+            instrument = newMidiInstrument(midi, 1)
             await this.updateMidiOutputSelect()
         })
+
+        const playButton = document.getElementById('play-button')
+        playButton.onclick = () => {
+            instrument.noteOn(60, 127)
+        }
     }
 
     async updateMidiOutputSelect() {

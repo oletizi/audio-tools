@@ -25,6 +25,9 @@ export class Midi {
         return WebMidi.outputs
     }
 
+    async getCurrentOutput() {
+        return this.output
+    }
     async stop(onDisabled: () => void = () => {
     }) {
         await WebMidi.disable()
