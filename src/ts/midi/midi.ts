@@ -1,13 +1,15 @@
-import {Input, Output, WebMidi} from "webmidi"
+import {Input, InputEventMap, Output, WebMidi} from "webmidi"
 
 export class Midi {
     private output: Output;
     private input: Input;
+    private listeners = []
 
     async start(onEnabled = () => {
     }) {
         try {
-            await WebMidi.enable()
+            await WebMidi.enable({sysex: true})
+
             if (WebMidi.outputs && WebMidi.outputs.length > 0) {
                 this.output = WebMidi.outputs[0]
             }
@@ -26,6 +28,18 @@ export class Midi {
     }
 
     setInput(input: Input) {
+        if (this.input) {
+            // removed listeners from the previous input
+            for (const spec of this.listeners) {
+                this.input.removeListener(spec.eventName, spec.eventListener)
+            }
+        }
+        if (input) {
+            // attach listeners to the current input
+            for(const spec of this.listeners) {
+                input.addListener(spec.eventName, spec.eventListener)
+            }
+        }
         this.input = input
     }
 
@@ -72,8 +86,8 @@ export class Midi {
     async setOutputByName(name) {
         let updated = false
         const selected = (await this.getOutputs()).filter(output => output.name == name)
-        if (selected.length ==1) {
-            this.output = selected[0]
+        if (selected.length == 1) {
+            this.setOutput(selected[0])
             updated = true
         }
         return updated
@@ -84,10 +98,15 @@ export class Midi {
         let updated = false
         const selected = (await this.getInputs()).filter(input => input.name == name)
         if (selected.length == 1) {
-            this.input = selected[0]
+            // this.input = selected[0]
+            this.setInput(selected[0])
             updated = true
         }
         return updated
     }
 
+    addListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
+        this.listeners.push({eventName: eventName, eventListener: eventListener})
+        this.input.addListener(eventName, eventListener)
+    }
 }

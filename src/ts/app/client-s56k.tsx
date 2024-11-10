@@ -63,11 +63,33 @@ class ClientS56k {
                 },
                 'Midi In: '
             )
+
+            midi.addListener("midimessage", (event) => {
+                output.log(`MESSAGE!!!!`)
+                // output.log(`message: ${JSON.stringify(event)}`)
+                for (const name of Object.getOwnPropertyNames(event)) {
+                    output.log(`event[${name}] = ${event[name]}`)
+                }
+            })
         })
 
         const playButton = document.getElementById('play-button')
         playButton.onclick = () => {
             instrument.noteOn(60, 127)
+        }
+
+        const sysexButton = document.getElementById('sysex-button')
+        sysexButton.onclick = async () => {
+            const midiOutput = await midi.getCurrentOutput()
+            const akaiID = 0x47
+            const s56kId = 0x5E
+            const deviceId = 0x00
+            const userRef = 0x00
+            const section = 0x00
+            const item = 0x00
+            output.log(`Sending sysex...`)
+            midiOutput.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
+            output.log(`Done sending sysex.`)
         }
     }
 
