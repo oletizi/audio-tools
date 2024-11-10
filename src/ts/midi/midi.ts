@@ -1,10 +1,14 @@
 import {Input, InputEventMap, Output, WebMidi} from "webmidi"
+import {newClientOutput, ProcessOutput} from "../process-output";
 
 export class Midi {
     private output: Output;
     private input: Input;
     private listeners = []
-
+    private out: ProcessOutput;
+    constructor(out:ProcessOutput = newClientOutput()) {
+        this.out = out
+    }
     async start(onEnabled = () => {
     }) {
         try {

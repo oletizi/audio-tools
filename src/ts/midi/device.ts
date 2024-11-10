@@ -46,8 +46,33 @@
  *  +-----------+---------------+---------------+---------------------------+
  */
 
+import {Midi} from "./midi";
+import {newClientOutput, ProcessOutput} from "../process-output";
+
 const START_OF_SYSEX = 0xF0
 const AKAI_ID = 0x47
 const SAMPLER_ID = 0x5E
 const DEVICE_ID = 0x00
 const USER_REFS = 0x00
+
+export interface S56kDevice {
+    init()
+}
+
+class S56kSysex implements S56kDevice {
+    private readonly midi: Midi;
+    private out: ProcessOutput;
+
+    constructor(midi, out: ProcessOutput = newClientOutput()) {
+        this.midi = midi
+        this.out = out
+    }
+
+    init() {
+        this.midi.addListener("sysex",  (event) => {
+            for (const name of Object.getOwnPropertyNames(event)) {
+
+            }
+        })
+    }
+}

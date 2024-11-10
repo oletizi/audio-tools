@@ -1,6 +1,6 @@
 import {createRoot, Root} from "react-dom/client";
 import {Status} from "./components-common";
-import {newClientOutput, Output} from "./output";
+import {newClientOutput, ProcessOutput} from "../process-output";
 import {ClientConfig} from "./config-client";
 import React from 'react'
 
@@ -14,7 +14,7 @@ export interface ClientCommon {
 
     saveConfig(cfg: ClientConfig): Promise<Result>
 
-    getOutput(): Output
+    getOutput(): ProcessOutput
 
     status(msg: string)
 
@@ -31,7 +31,7 @@ export function newClientCommon(statusId: string) {
 class BasicClientCommon implements ClientCommon {
     private readonly statusRoot: Root;
     private readonly terminalRoot: Root;
-    private readonly out: Output
+    private readonly out: ProcessOutput
 
     constructor(statusId: string = 'status', terminalId: string = 'terminal') {
         this.statusRoot = createRoot(document.getElementById(statusId))
@@ -43,7 +43,7 @@ class BasicClientCommon implements ClientCommon {
         this.statusRoot.render(<Status msg={msg ? msg : 'Unknown'}/>)
     }
 
-    getOutput(): Output {
+    getOutput(): ProcessOutput {
         return this.out
     }
 

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-export interface Output {
+export interface ProcessOutput {
     log(msg: string | Buffer)
 
     error(msg: string | Error)
@@ -8,7 +8,7 @@ export interface Output {
     write(data: string | Buffer)
 }
 
-class BasicOutput implements Output {
+class BasicOutput implements ProcessOutput {
     private readonly debug: boolean;
 
     private readonly writeFunction: Function
@@ -37,11 +37,11 @@ class BasicOutput implements Output {
     }
 }
 
-export function newServerOutput(debug = true) {
+export function newServerOutput(debug = true) : ProcessOutput {
     return new BasicOutput((msg) => process.stdout.write(msg), (msg) => process.stderr.write(msg),'\n', debug)
 }
 
-export function newClientOutput(debug = true) {
+export function newClientOutput(debug = true) : ProcessOutput {
     return new BasicOutput(console.info, console.error, '', debug)
 }
 

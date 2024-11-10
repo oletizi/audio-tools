@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import {newServerOutput} from "./output";
+import {newServerOutput} from "../process-output";
 import {ClientConfig, newNullClientConfig} from "./config-client";
 
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')

@@ -5,7 +5,7 @@ import Queue from "queue";
 import {PassThrough} from "stream";
 import {newProgress} from "../progress";
 import {newClientConfig, saveClientConfig} from "./config-server";
-import {newServerOutput} from "./output";
+import {newServerOutput} from "../process-output";
 import {ClientConfig} from "./config-client";
 import {Result} from "./client-common";
 
