@@ -1,7 +1,7 @@
+import 'bootstrap'
+import {createRoot, Root} from "react-dom/client";
 import {MidiDeviceSelect, MidiDeviceSpec} from "./components-s56k";
 import {Midi} from "../midi/midi"
-import 'bootstrap'
-import {createRoot} from "react-dom/client";
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
 import {MidiInstrument, newMidiInstrument} from "../midi/instrument";
@@ -10,7 +10,7 @@ const clientCommon = newClientCommon('status')
 const output = clientCommon.getOutput()
 const midi = new Midi()
 const midiOutputSelectRoot = createRoot(document.getElementById('midi-output-select'))
-
+const midiInputSelectRoot = createRoot(document.getElementById('midi-input-select'))
 
 class ClientS56k {
     private cfg: ClientConfig = newNullClientConfig()
@@ -33,8 +33,36 @@ class ClientS56k {
                     }
                 }
             }
+            if (this.cfg.midiInput && this.cfg.midiInput !== '') {
+                for (const input of await midi.getInputs()) {
+                    if (input.name === this.cfg.midiInput) {
+                        midi.setInput(input)
+                    }
+                }
+            }
             instrument = newMidiInstrument(midi, 1)
-            await this.updateMidiOutputSelect()
+            await updateMidiDeviceSelect(
+                midiOutputSelectRoot,
+                async () => (await midi.getOutputs()).map((output) => output.name),
+                async (name) => midi.isCurrentOutput(name),
+                async (name) => {
+                    await midi.setOutputByName(name)
+                    this.cfg.midiOutput = name
+                    await saveConfig(this.cfg)
+                },
+                'Midi Out: '
+            )
+            await updateMidiDeviceSelect(
+                midiInputSelectRoot,
+                async () => (await midi.getInputs()).map((input) => input.name),
+                async (name) => midi.isCurrentInput(name),
+                async (name) => {
+                    await midi.setInputByName(name)
+                    this.cfg.midiInput = name
+                    await saveConfig(this.cfg)
+                },
+                'Midi In: '
+            )
         })
 
         const playButton = document.getElementById('play-button')
@@ -43,34 +71,41 @@ class ClientS56k {
         }
     }
 
-    async updateMidiOutputSelect() {
-        const specs = (await midi.getOutputs()).map(out => {
-            return {
-                name: out.name,
-                isActive: midi.isCurrentOutput(out.name),
-                action: async () => {
-                    clientCommon.status(`You chose ${out.name}`)
-                    midi.setOutput(out)
-                    this.cfg.midiOutput = out.name
-                    try {
-                        const result = await clientCommon.saveConfig(this.cfg)
-                        if (result.error) {
-                            output.log(`Error saving config: ${result.error}`)
-                        } else {
-                            output.log(`Done saving config.`)
-                        }
-                    } catch (err) {
-                        output.log(`Barfed trying to save config: ${err.message}`)
-                        clientCommon.status(err.message)
-                    }
-                    output.log(`Updating midi output select..`)
-                    await this.updateMidiOutputSelect()
-                    console.log(`Done updating midi output select.`)
-                }
-            } as MidiDeviceSpec
-        })
-        midiOutputSelectRoot.render(MidiDeviceSelect(specs))
+}
+
+async function saveConfig(cfg) {
+    try {
+        const result = await clientCommon.saveConfig(cfg)
+        if (result.error) {
+            output.log(`Error saving config: ${result.error}`)
+        } else {
+            output.log(`Done saving config.`)
+        }
+    } catch (err) {
+        output.log(`Barfed trying to save config: ${err.message}`)
+        clientCommon.status(err.message)
     }
+}
+
+async function updateMidiDeviceSelect(root: Root, getNames: Function, isCurrent: Function, selected: Function, label: string = 'Midi Out: ') {
+    output.log(`Updating midi device select...`)
+    const specs = []
+    for (const name of (await getNames())) {
+        output.log(`Creating spec for device: ${name}`)
+        specs.push({
+            name: name,
+            isActive: await isCurrent(name),
+            action: async () => {
+                clientCommon.status(`You chose ${name}`)
+                await selected(name)
+                output.log(`Updating midi device select..`)
+                await updateMidiDeviceSelect(root, getNames, isCurrent, selected, label)
+                output.log(`Done updating midi device select.`)
+            }
+        } as MidiDeviceSpec)
+    }
+    output.log(`Specs: ${JSON.stringify(specs)}`)
+    root.render(MidiDeviceSelect(specs, label))
 }
 
 const c56k = new ClientS56k()

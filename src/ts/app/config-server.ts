@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import {newServerOutput} from "./output";
-import {ClientConfig} from "./config-client";
+import {ClientConfig, newNullClientConfig} from "./config-client";
 
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
 const out = newServerOutput()
@@ -20,13 +20,14 @@ export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR):
 }
 
 export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
-    const rv: ClientConfig = {midiOutput: ''}
+    const rv: ClientConfig = newNullClientConfig()
     let configPath = path.join(dataDir, 'config.json');
     let storedConfig = null
     try {
         out.log(`Reading config from: ${configPath}`)
         storedConfig = JSON.parse((await fs.readFile(configPath)).toString())
         rv.midiOutput = storedConfig.midiOutput
+        rv.midiInput = storedConfig.midiInput
     } catch (err) {
         out.log(`Error reading config from: ${configPath}: ${err.message}`)
     }

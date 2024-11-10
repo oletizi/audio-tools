@@ -36,6 +36,7 @@ export class Midi {
     async getInputs() {
         return WebMidi.inputs
     }
+
     async getCurrentOutput() {
         return this.output
     }
@@ -43,6 +44,7 @@ export class Midi {
     async getCurrentInput() {
         return this.input
     }
+
     async stop(onDisabled: () => void = () => {
     }) {
         await WebMidi.disable()
@@ -66,4 +68,26 @@ export class Midi {
     isCurrentInput(name: string) {
         return this.input && this.input.name === name
     }
+
+    async setOutputByName(name) {
+        let updated = false
+        const selected = (await this.getOutputs()).filter(output => output.name == name)
+        if (selected.length ==1) {
+            this.output = selected[0]
+            updated = true
+        }
+        return updated
+    }
+
+    // XXX: Refactor to generalize setting output & input by name in a single function
+    async setInputByName(name) {
+        let updated = false
+        const selected = (await this.getInputs()).filter(input => input.name == name)
+        if (selected.length == 1) {
+            this.input = selected[0]
+            updated = true
+        }
+        return updated
+    }
+
 }

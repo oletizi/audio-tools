@@ -13,7 +13,7 @@ function uid() {
     return sequence++ + '-' + Math.random().toString(16).slice(2)
 }
 
-export function MidiDeviceSelect(specs: MidiDeviceSpec[], label: string = "Midi Output: ") {
+export function MidiDeviceSelect(specs: MidiDeviceSpec[], label: string) {
     let current = ''
     const target = `midi-device-view-${uid()}`
     const items = specs.map((spec) => {
@@ -23,7 +23,7 @@ export function MidiDeviceSelect(specs: MidiDeviceSpec[], label: string = "Midi 
             current = spec.name
         }
 
-        return (<li key={spec.name}>
+        return (<li key={spec.name + '-' + target}>
             <a className={classes.join(' ')}
                href={'#'}
                onClick={spec.action}
