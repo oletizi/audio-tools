@@ -49,8 +49,6 @@
 
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
-import {name} from "mocha";
-import {response} from "express";
 
 const START_OF_SYSEX = 0xF0
 const AKAI_ID = 0x47
@@ -281,6 +279,8 @@ function numberResult(res: SysexResponse, bytes: number) {
             magnitude /= 128
         }
     } else {
+        console.log(`HEREl !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
+        console.log(`response is not a reply`)
         rv.errors.push(new Error(`${res.status}: ${res.message}`))
     }
     return rv
@@ -290,6 +290,7 @@ export interface ProgramInfo {
     programCount: number
     currentProgramId: number
     currentProgramIndex: number
+    keygroupCount: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -312,6 +313,8 @@ export interface S56kDevice {
     getProgramId(): Promise<NumberResult>
 
     getProgramIndex(): Promise<NumberResult>
+
+    keygroupCount(): Promise<NumberResult>
 
 }
 
@@ -344,15 +347,17 @@ class S56kSysex implements S56kDevice {
         const programCount = await this.getProgramCount()
         const programId = await this.getProgramId()
         const programIndex = await this.getProgramIndex()
-
+        const keygroupCount = await this.keygroupCount()
         rv.errors = rv.errors
             .concat(programCount.errors)
             .concat(programId.errors)
             .concat(programIndex.errors)
+            .concat(keygroupCount.errors)
         rv.data = {
             programCount: programCount.data,
             programId: programId.data,
-            programIndex: programIndex.data
+            programIndex: programIndex.data,
+            keygroupCount: keygroupCount.data
         } as ProgramInfo
         return rv
     }
@@ -372,7 +377,20 @@ class S56kSysex implements S56kDevice {
     async getProgramIndex(): Promise<NumberResult> {
         return numberResult(
             await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, [])),
-            2)
+            2
+        )
+    }
+
+    async keygroupCount(): Promise<NumberResult> {
+        this.out.log(`HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
+        this.out.log(`keygroupCount: Sending request...`)
+        let res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_KEYGROUP_COUNT, []));
+        this.out.log(`HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
+        this.out.log(`keygroupCount: status: ${res.status}`)
+        return numberResult(
+            res,
+            1
+        )
     }
 
     async ping(): Promise<SysexResponse> {
