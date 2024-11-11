@@ -26,12 +26,10 @@ export function ProgramInfoView(data: ProgramInfo) {
     }
     return (
         <div className={'card'}>
-            <div className={'card-header'}>Program Info</div>
-            <div className={'card-body'}>
-                <ul className={'list-group'}>
-                    {items}
-                </ul>
-            </div>
+            <div className={'card-header fw-bold'}>Program Info</div>
+            <ul className={'list-group list-group-flush'}>
+                {items}
+            </ul>
         </div>)
 }
 

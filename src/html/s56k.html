@@ -12,20 +12,27 @@
         <div class="col">
             <h1>Akai S5000/S6000</h1>
         </div>
-        <div class="col col-3">
-            <div id="midi-output-select" class="mt-4"></div>
-        </div>
-        <div class="col">
-            <div id="midi-input-select" class="mt-4"></div>
+
+    </div>
+    <div class="row mb-3">
+        <div class="col-5">
+            <div id="program-info"></div>
         </div>
     </div>
-    <div class="row">
-        <div class="col"><button id="play-button" class="btn btn-primary">Play</button></div>
-        <div class="col"><button id="sysex-button" class="btn btn-primary">Sysex</button></div>
-        <div class="col"><button id="program-count-button" class="btn btn-primary">Program Count</button></div>
+    <div class="row mb-3">
+        <div class="col-5 d-flex justify-content-between">
+            <div class="btn-group" role="group">
+                <button id="play-button" class="btn btn-primary">Play</button>
+                <button id="sysex-button" class="btn btn-primary">Sysex</button>
+                <button id="program-count-button" class="btn btn-primary">Program Count</button>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-4"><div id="program-info"></div></div>
+    <div class="row mb-3">
+        <div class="col-5 d-flex justify-content-between">
+            <span id="midi-output-select"></span>
+            <span id="midi-input-select"></span>
+        </div>
     </div>
     <div class="row">
         <div class="col">
