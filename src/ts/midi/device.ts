@@ -320,7 +320,7 @@ function newNumberResult(res: SysexResponse, bytes: number, signed: boolean = fa
         let abs = 0
         // signed numbers use the first data byte for signed, where 0 is positive, 1 is negative
         const offset = signed ? 1 : 0
-        const length = signed ? bytes -1 : bytes
+        const length = signed ? bytes - 1 : bytes
         abs = Buffer.from(res.data).readIntBE(offset, length)
         rv.data = signed ? abs * (res.data[0] ? -1 : 1) : abs
     } else {
@@ -376,12 +376,21 @@ export interface S56kProgramOutput {
 
     getAmpModSource(ampMod: 1 | 2): Promise<NumberResult>
 
-
     getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
 
     getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
 
     getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
+}
+
+export interface S56kProgramMidiTune {
+    getSemitoneTune(): Promise<NumberResult>
+
+    getFineTune(): Promise<NumberResult>
+
+    getTuneTemplate(): Promise<NumberResult>
+
+    getKey(): Promise<NumberResult>
 }
 
 export interface S56kProgram {
@@ -396,6 +405,8 @@ export interface S56kProgram {
     getInfo(): Promise<ProgramInfoResult>
 
     getOutput(): S56kProgramOutput
+
+    getMidiTune(): S56kProgramMidiTune
 }
 
 export interface S56kDevice {
@@ -409,7 +420,7 @@ export interface S56kDevice {
 
 }
 
-class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
+class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMidiTune {
     private sysex: Sysex;
     private out: ProcessOutput;
 
@@ -551,6 +562,41 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_VALUE, [panMod])),
             2,
             true
+        )
+    }
+
+    // MIDI/Tune
+    getMidiTune(): S56kProgramMidiTune {
+        return this
+    }
+
+    async getSemitoneTune(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_SEMITONE_TUNE, [])),
+            2,
+            true
+        )
+    }
+
+    async getFineTune(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_FINE_TUNE, [])),
+            2,
+            true
+        )
+    }
+
+    async getTuneTemplate(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_TUNE_TEMPLATE, [])),
+            1
+        )
+    }
+
+    async getKey(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_KEY, [])),
+            1
         )
     }
 }
