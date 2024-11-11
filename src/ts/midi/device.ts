@@ -61,7 +61,11 @@ export interface S56kDevice {
 
     ping(): Promise<SysexResponse>
 
-    getProgramCount(): Promise<SysexNumberResult>
+    getProgramInfo(): Promise<ProgramInfoResult>
+
+    getProgramCount(): Promise<NumberResult>
+
+    getProgramId(): Promise<NumberResult>
 }
 
 export function newS56kDevice(midi, out: ProcessOutput) {
@@ -269,28 +273,40 @@ function newControlMessage(section: Section, item: number, data: number[]): Syse
 }
 
 interface Result {
-    error: Error | null
+    errors: Error[]
     data: any
 }
 
-interface SysexNumberResult extends Result {
+interface NumberResult extends Result {
     data: number
 }
 
+
 function numberResult(res: SysexResponse, bytes: number) {
-    const rv = {} as SysexNumberResult
+    const rv = {
+        errors: []
+    } as NumberResult
     if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= bytes) {
         rv.data = 0
         // XXD: I'm sure there's a more elegant way to do this, but I can't math.
-        let magnitude = (bytes -1 )  * 128
+        let magnitude = (bytes - 1) * 128
         for (let i = 0; i < bytes; i++) {
             rv.data += res.data[i] * (magnitude)
             magnitude /= 128
         }
     } else {
-        rv.error = new Error(`${res.status}: ${res.message}`)
+        rv.errors.push(new Error(`${res.status}: ${res.message}`))
     }
     return rv
+}
+
+export interface ProgramInfo {
+    programCount: number
+    currentProgramId: number
+}
+
+export interface ProgramInfoResult extends Result {
+    data: ProgramInfo
 }
 
 class S56kSysex implements S56kDevice {
@@ -313,10 +329,31 @@ class S56kSysex implements S56kDevice {
         })
     }
 
+    async getProgramInfo() {
+        const rv = {
+            errors: [],
+            data: null
+        } as ProgramInfoResult
+        const programCount = await this.getProgramCount()
+        const programId = await this.getProgramId()
+
+        rv.errors = rv.errors.concat(programCount.errors).concat(programId.errors)
+        rv.data = {
+            programCount: programCount.data,
+            programId: programId.data
+        } as ProgramInfo
+        return rv
+    }
+
     async getProgramCount() {
         const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
         this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
         this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
+        return numberResult(res, 2)
+    }
+
+    async getProgramId() {
+        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, []))
         return numberResult(res, 2)
     }
 

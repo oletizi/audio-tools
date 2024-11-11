@@ -1,5 +1,6 @@
 import React from "react";
 import {Input, Output} from "webmidi";
+import {ProgramInfo} from "../midi/device";
 
 let sequence = 0
 
@@ -11,6 +12,24 @@ export interface MidiDeviceSpec {
 
 function uid() {
     return sequence++ + '-' + Math.random().toString(16).slice(2)
+}
+
+export function ProgramInfoView(data: ProgramInfo) {
+    const items = []
+    for (const name of Object.getOwnPropertyNames(data).sort()) {
+        items.push(<li className={'list-group-item'} key={name}>
+            <div className={'row'}>
+                <div className={'col'}><span className={'fw-bold'}>{name}</span></div>
+                <div className={'col'}>{data[name]}</div>
+            </div>
+        </li>)
+    }
+    return (
+        <div className={'card'}>
+            <ul className={'list-group'}>
+                {items}
+            </ul>
+        </div>)
 }
 
 export function MidiDeviceSelect(specs: MidiDeviceSpec[], label: string) {
