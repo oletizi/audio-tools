@@ -93,6 +93,8 @@ class ClientS56k {
         } else {
             programInfoRoot.render(ProgramInfoView(r.data))
         }
+
+
     }
 
 }

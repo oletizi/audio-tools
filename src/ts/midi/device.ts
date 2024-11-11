@@ -50,6 +50,7 @@
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
 
+
 const START_OF_SYSEX = 0xF0
 const AKAI_ID = 0x47
 const SAMPLER_ID = 0x5E
@@ -265,8 +266,12 @@ interface NumberResult extends Result {
     data: number
 }
 
+interface StringResult extends Result {
+    data: string
+}
 
-function numberResult(res: SysexResponse, bytes: number) {
+
+function newNumberResult(res: SysexResponse, bytes: number): NumberResult {
     const rv = {
         errors: []
     } as NumberResult
@@ -279,18 +284,32 @@ function numberResult(res: SysexResponse, bytes: number) {
             magnitude /= 128
         }
     } else {
-        console.log(`HEREl !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-        console.log(`response is not a reply`)
-        rv.errors.push(new Error(`${res.status}: ${res.message}`))
+        rv.errors.push(new Error(`Malformed REPLY message for NumberResult: ${res.status}: ${res.message}`))
+    }
+    return rv
+}
+
+function newStringResult(res: SysexResponse): StringResult {
+    const rv = {
+        errors: [],
+        data: '',
+    } as StringResult
+    if (res.status == ResponseStatus.REPLY && res.data && res.data.length > 0) {
+        for (const c of res.data.filter(c => c != 0)) {
+            rv.data += String.fromCharCode(c)
+        }
+    } else {
+        rv.errors.push(new Error(`Malformed REPLY message for StringResult: ${res.status}: ${res.message}`))
     }
     return rv
 }
 
 export interface ProgramInfo {
     programCount: number
+    currentProgramName: string
     currentProgramId: number
     currentProgramIndex: number
-    keygroupCount: number
+    currentProgramKeygroupCount: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -310,11 +329,13 @@ export interface S56kDevice {
 
     getProgramCount(): Promise<NumberResult>
 
+    getProgramName(): Promise<StringResult>
+
     getProgramId(): Promise<NumberResult>
 
     getProgramIndex(): Promise<NumberResult>
 
-    keygroupCount(): Promise<NumberResult>
+    getKeygroupCount(): Promise<NumberResult>
 
 }
 
@@ -347,17 +368,20 @@ class S56kSysex implements S56kDevice {
         const programCount = await this.getProgramCount()
         const programId = await this.getProgramId()
         const programIndex = await this.getProgramIndex()
-        const keygroupCount = await this.keygroupCount()
+        const keygroupCount = await this.getKeygroupCount()
+        const programName = await this.getProgramName()
         rv.errors = rv.errors
             .concat(programCount.errors)
             .concat(programId.errors)
             .concat(programIndex.errors)
             .concat(keygroupCount.errors)
+            .concat(programName.errors)
         rv.data = {
             programCount: programCount.data,
-            programId: programId.data,
-            programIndex: programIndex.data,
-            keygroupCount: keygroupCount.data
+            currentProgramId: programId.data,
+            currentProgramIndex: programIndex.data,
+            currentProgramKeygroupCount: keygroupCount.data,
+            currentProgramName: programName.data
         } as ProgramInfo
         return rv
     }
@@ -366,29 +390,28 @@ class S56kSysex implements S56kDevice {
         const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
         this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
         this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
-        return numberResult(res, 2)
+        return newNumberResult(res, 2)
+    }
+
+    async getProgramName(): Promise<StringResult> {
+        return newStringResult(await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_NAME, [])))
     }
 
     async getProgramId() {
-        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, []))
-        return numberResult(res, 2)
+        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_ID, []))
+        return newNumberResult(res, 2)
     }
 
     async getProgramIndex(): Promise<NumberResult> {
-        return numberResult(
+        return newNumberResult(
             await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, [])),
             2
         )
     }
 
-    async keygroupCount(): Promise<NumberResult> {
-        this.out.log(`HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-        this.out.log(`keygroupCount: Sending request...`)
-        let res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_KEYGROUP_COUNT, []));
-        this.out.log(`HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-        this.out.log(`keygroupCount: status: ${res.status}`)
-        return numberResult(
-            res,
+    async getKeygroupCount(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_KEYGROUP_COUNT, [])),
             1
         )
     }
