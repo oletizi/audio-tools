@@ -355,6 +355,9 @@ export interface ProgramInfo {
     ampMod2Source: number
     ampMod1Value: number
     ampMod2Value: number
+    panMod1Source: number
+    panMod2Source: number
+    panMod3Source: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -430,6 +433,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
         const ampMod2Source = await this.getAmpModSource(2)
         const ampMod1Value = await this.getAmpModValue(1)
         const ampMod2Value = await this.getAmpModValue(2)
+        const panMod1Source = await this.getPanModSource(1)
+        const panMod2Source = await this.getPanModSource(2)
+        const panMod3Source = await this.getPanModSource(3)
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -441,6 +447,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             .concat(ampMod2Source.errors)
             .concat(ampMod1Value.errors)
             .concat(ampMod2Value.errors)
+            .concat(panMod1Source.errors)
+            .concat(panMod2Source.errors)
+            .concat(panMod3Source.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
@@ -452,6 +461,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             ampMod2Source: ampMod2Source.data,
             ampMod1Value: ampMod1Value.data,
             ampMod2Value: ampMod2Value.data,
+            panMod1Source: panMod1Source.data,
+            panMod2Source: panMod2Source.data,
+            panMod3Source: panMod3Source.data,
         } as ProgramInfo
         return rv
     }
