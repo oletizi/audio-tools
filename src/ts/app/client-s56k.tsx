@@ -82,7 +82,7 @@ class ClientS56k {
         const programCountButton = document.getElementById('program-count-button')
         programCountButton.onclick = async () => {
             const response = await this.device.getProgramCount()
-            clientCommon.status(response.error ? response.error.message : `Program count: ${response.data}`)
+            clientCommon.status(response.error ? `Error: ${response.error.message}` : `Program count: ${response.data}`)
         }
     }
 

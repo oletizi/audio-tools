@@ -268,13 +268,29 @@ function newControlMessage(section: Section, item: number, data: number[]): Syse
     } as SysexControlMessage
 }
 
-interface SysexResult {
+interface Result {
     error: Error | null
     data: any
 }
 
-interface SysexNumberResult extends SysexResult {
+interface SysexNumberResult extends Result {
     data: number
+}
+
+function numberResult(res: SysexResponse, bytes: number) {
+    const rv = {} as SysexNumberResult
+    if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= bytes) {
+        rv.data = 0
+        // XXD: I'm sure there's a more elegant way to do this, but I can't math.
+        let magnitude = (bytes -1 )  * 128
+        for (let i = 0; i < bytes; i++) {
+            rv.data += res.data[i] * (magnitude)
+            magnitude /= 128
+        }
+    } else {
+        rv.error = new Error(`${res.status}: ${res.message}`)
+    }
+    return rv
 }
 
 class S56kSysex implements S56kDevice {
@@ -298,19 +314,10 @@ class S56kSysex implements S56kDevice {
     }
 
     async getProgramCount() {
-        const rv = {
-            error: null,
-            data: 0
-        } as SysexNumberResult
         const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
         this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
         this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
-        if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= 1) {
-            rv.data = res.data[0] * 128 + res.data[1]
-        } else {
-            rv.error = new Error(`${res.status}: ${res.message}`)
-        }
-        return rv
+        return numberResult(res, 2)
     }
 
     async ping(): Promise<SysexResponse> {
