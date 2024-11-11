@@ -331,7 +331,7 @@ function newNumberResult(res: SysexResponse, bytes: number, signed: boolean = fa
         const offset = signed ? 1 : 0
         const length = signed ? bytes -1 : bytes
         abs = Buffer.from(res.data).readIntBE(offset, length)
-        rv.data = signed ? abs * (res.data[0] ? 1 : -1) : abs
+        rv.data = signed ? abs * (res.data[0] ? -1 : 1) : abs
     } else {
         rv.errors.push(new Error(`Malformed REPLY message for NumberResult: ${res.status}: ${res.message}`))
     }
@@ -357,8 +357,9 @@ export interface ProgramInfo {
     name: string
     id: number
     index: number
-    keygroupCount: number,
+    keygroupCount: number
     loudness: number
+    velocitySensitivity: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -429,18 +430,21 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
         const keygroupCount = await this.getKeygroupCount()
         const programName = await this.getName()
         const loudness = await this.getLoudness()
+        const velocitySensitivity = await this.getVelocitySensitivity()
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
             .concat(keygroupCount.errors)
             .concat(programName.errors)
             .concat(loudness.errors)
+            .concat(velocitySensitivity.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
             name: programName.data,
             loudness: loudness.data,
+            velocitySensitivity: velocitySensitivity.data
         } as ProgramInfo
         return rv
     }
@@ -553,8 +557,6 @@ class S56kSysex implements S56kDevice {
 
     async getProgramCount() {
         const res = await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
-        this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
-        this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
         return newNumberResult(res, 2)
     }
 
@@ -579,7 +581,6 @@ class Sysex {
         this.midi = midi
         this.out = out
     }
-
 
     async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
         const midi = this.midi
