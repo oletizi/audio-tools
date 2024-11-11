@@ -49,8 +49,7 @@
 
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
-import {name} from "mocha";
-
+import {Buffer} from 'buffer/'
 
 const START_OF_SYSEX = 0xF0
 const AKAI_ID = 0x47
@@ -243,6 +242,36 @@ enum ProgramItem {
     GET_KEYGROUP_COUNT = 0x14,
     GET_KEYGROUP_CROSSFADE = 0x15,
 
+    // OUTPUT
+    GET_LOUDNESS = 0x28,
+    GET_VELOCITY_SENSITIVITY = 0x29,
+    GET_AMP_MOD_SOURCE = 0x2A, // !!! This message requires data to select between amp mod source 1 or 2
+    GET_AMP_MOD_VALUE = 0x2B,  // !!! Ibid.
+    GET_PAN_MOD_SOURCE = 0x2C, // DATA1: 1 | 2 | 3
+    GET_PAN_MOD_VALUE = 0x2D,  // DATA1: 1 | 2 | 3
+
+    // MIDI/TUNE
+    GET_SEMITONE_TUNE = 0x38,
+    GET_FINE_TUNE = 0x39,
+    GET_TUNE_TEMPLATE = 0x3A,
+    GET_USER_TUNE_TEMPLATE = 0x3B,
+    GET_KEY = 0x3C,
+
+    // PITCH BEND
+    GET_PITCH_BEND_UP = 0x48,
+    GET_PITCH_BEND_DOWN = 0x49,
+    GET_PITCH_BEND_MODE = 0x4A,
+    GET_AFTERTOUCH_MOD = 0x4B,
+    GET_AFTERTOUCH_VALUE = 0x4C,
+    GET_PORTAMENTO_ENABLE = 0x4D,
+    GET_PORTAMENTO_MODE = 0x4E,
+    GET_PORTAMENTO_TIME = 0x4F,
+
+    // LFO (DATA1 [1: LFO 1 | 2: LFO 2])
+    GET_LFO_RATE = 0x60,        // DATA1: 1 | 2
+    GET_LFO_DELAY = 0x61,       // DATA1: 1 | 2
+    GET_LFO_DEPTH = 0x62,       // DATA1: 1 | 2
+
 }
 
 interface SysexControlMessage {
@@ -264,6 +293,10 @@ interface Result {
     data: any
 }
 
+interface ByteArrayResult extends Result {
+    data: number[]
+}
+
 interface NumberResult extends Result {
     data: number
 }
@@ -272,19 +305,33 @@ interface StringResult extends Result {
     data: string
 }
 
+function newByteArrayResult(res: SysexResponse, bytes: number): ByteArrayResult {
+    const rv = {
+        errors: [],
+        data: []
+    } as ByteArrayResult
+    if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= bytes) {
+        rv.data = rv.data.concat(res.data.slice(0, bytes))
+    } else {
+        rv.errors.push(new Error(`Malformed REPLY message for ByteArrayResult: ${res.status}: ${res.message}`))
+    }
+    return rv
+}
 
-function newNumberResult(res: SysexResponse, bytes: number): NumberResult {
+function newNumberResult(res: SysexResponse, bytes: number, signed: boolean = false): NumberResult {
     const rv = {
         errors: []
     } as NumberResult
+    if (signed && bytes < 2) {
+        throw new Error("Error parsing SysexResponse for NumberResult. At least two bytes required for signed value.")
+    }
     if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= bytes) {
-        rv.data = 0
-        // XXD: I'm sure there's a more elegant way to do this, but I can't math.
-        let magnitude = (bytes - 1) * 128
-        for (let i = 0; i < bytes; i++) {
-            rv.data += res.data[i] * (magnitude)
-            magnitude /= 128
-        }
+        let abs = 0
+        // signed numbers use the first data byte for signed, where 0 is positive, 1 is negative
+        const offset = signed ? 1 : 0
+        const length = signed ? bytes -1 : bytes
+        abs = Buffer.from(res.data).readIntBE(offset, length)
+        rv.data = signed ? abs * (res.data[0] ? 1 : -1) : abs
     } else {
         rv.errors.push(new Error(`Malformed REPLY message for NumberResult: ${res.status}: ${res.message}`))
     }
@@ -310,7 +357,8 @@ export interface ProgramInfo {
     name: string
     id: number
     index: number
-    keygroupCount: number
+    keygroupCount: number,
+    loudness: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -319,6 +367,36 @@ export interface ProgramInfoResult extends Result {
 
 export function newS56kDevice(midi, out: ProcessOutput) {
     return new S56kSysex(midi, out)
+}
+
+
+export interface S56kProgramOutput {
+    getLoudness(): Promise<NumberResult>
+
+    getVelocitySensitivity(): Promise<NumberResult>
+
+    getAmpModSource(ampMod: 1 | 2): Promise<NumberResult>
+
+
+    getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
+
+    getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
+
+    getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
+}
+
+export interface S56kProgram {
+    getName(): Promise<StringResult>
+
+    getId(): Promise<NumberResult>
+
+    getIndex(): Promise<NumberResult>
+
+    getKeygroupCount(): Promise<NumberResult>
+
+    getInfo(): Promise<ProgramInfoResult>
+
+    getOutput(): S56kProgramOutput
 }
 
 export interface S56kDevice {
@@ -332,20 +410,7 @@ export interface S56kDevice {
 
 }
 
-export interface S56kProgram {
-    getName(): Promise<StringResult>
-
-    getId(): Promise<NumberResult>
-
-    getIndex(): Promise<NumberResult>
-
-    getKeygroupCount(): Promise<NumberResult>
-
-    getInfo(): Promise<ProgramInfoResult>
-}
-
-
-class S56kProgramSysex implements S56kProgram {
+class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
     private sysex: Sysex;
     private out: ProcessOutput;
 
@@ -353,6 +418,33 @@ class S56kProgramSysex implements S56kProgram {
         this.sysex = sysex
         this.out = out
     }
+
+    async getInfo() {
+        const rv = {
+            errors: [],
+            data: null
+        } as ProgramInfoResult
+        const programId = await this.getId()
+        const programIndex = await this.getIndex()
+        const keygroupCount = await this.getKeygroupCount()
+        const programName = await this.getName()
+        const loudness = await this.getLoudness()
+        rv.errors = rv.errors
+            .concat(programId.errors)
+            .concat(programIndex.errors)
+            .concat(keygroupCount.errors)
+            .concat(programName.errors)
+            .concat(loudness.errors)
+        rv.data = {
+            id: programId.data,
+            index: programIndex.data,
+            keygroupCount: keygroupCount.data,
+            name: programName.data,
+            loudness: loudness.data,
+        } as ProgramInfo
+        return rv
+    }
+
     async getName(): Promise<StringResult> {
         return newStringResult(await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_NAME, [])))
     }
@@ -375,29 +467,60 @@ class S56kProgramSysex implements S56kProgram {
             1
         )
     }
-    async getInfo() {
-        const rv = {
-            errors: [],
-            data: null
-        } as ProgramInfoResult
-        const programId = await this.getId()
-        const programIndex = await this.getIndex()
-        const keygroupCount = await this.getKeygroupCount()
-        const programName = await this.getName()
-        rv.errors = rv.errors
-            .concat(programId.errors)
-            .concat(programIndex.errors)
-            .concat(keygroupCount.errors)
-            .concat(programName.errors)
-        rv.data = {
-            id: programId.data,
-            index: programIndex.data,
-            keygroupCount: keygroupCount.data,
-            name: programName.data
-        } as ProgramInfo
-        return rv
+
+    // OUTPUT
+    getOutput(): S56kProgramOutput {
+        return this
     }
 
+    async getLoudness(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LOUDNESS, [])),
+            1
+        )
+    }
+
+    async getVelocitySensitivity(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_VELOCITY_SENSITIVITY, [])),
+            2,
+            true
+        )
+    }
+
+    async getAmpModSource(ampMod: 1 | 2): Promise<NumberResult> {
+        const res = newByteArrayResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_SOURCE, [ampMod])),
+            1
+        )
+        return {
+            errors: res.errors,
+            data: res.data[0]
+        }
+    }
+
+    async getAmpModValue(ampMod: 1 | 2): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_VALUE, [ampMod])),
+            2,
+            true
+        )
+    }
+
+    async getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_SOURCE, [panMod])),
+            1
+        )
+    }
+
+    async getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_VALUE, [panMod])),
+            2,
+            true
+        )
+    }
 }
 
 class S56kSysex implements S56kDevice {
@@ -456,6 +579,7 @@ class Sysex {
         this.midi = midi
         this.out = out
     }
+
 
     async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
         const midi = this.midi
