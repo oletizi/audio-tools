@@ -436,6 +436,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
         const panMod1Source = await this.getPanModSource(1)
         const panMod2Source = await this.getPanModSource(2)
         const panMod3Source = await this.getPanModSource(3)
+        const panMod1Value = await this.getPanModValue(1)
+        const panMod2Value = await this.getPanModValue(2)
+        const panMod3Value = await this.getPanModValue(3)
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -450,6 +453,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             .concat(panMod1Source.errors)
             .concat(panMod2Source.errors)
             .concat(panMod3Source.errors)
+            .concat(panMod1Value.errors)
+            .concat(panMod2Value.errors)
+            .concat(panMod3Value.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
@@ -464,6 +470,9 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             panMod1Source: panMod1Source.data,
             panMod2Source: panMod2Source.data,
             panMod3Source: panMod3Source.data,
+            panMod1Value: panMod1Value.data,
+            panMod2Value: panMod2Value.data,
+            panMod3Value: panMod3Value.data,
         } as ProgramInfo
         return rv
     }
