@@ -363,6 +363,7 @@ export interface ProgramInfo {
     panMod3Value: number
     semitoneTune: number
     fineTune: number
+    tuneTemplate: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -457,6 +458,7 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
         const panMod3Value = await this.getPanModValue(3)
         const semitoneTune = await this.getSemitoneTune()
         const fineTune = await this.getFineTune()
+        const tuneTemplate = await this.getTuneTemplate()
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -476,6 +478,7 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
             .concat(panMod3Value.errors)
             .concat(semitoneTune.errors)
             .concat(fineTune.errors)
+            .concat(tuneTemplate.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
@@ -494,7 +497,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
             panMod2Value: panMod2Value.data,
             panMod3Value: panMod3Value.data,
             semitoneTune: semitoneTune.data,
-            fineTune: fineTune.data
+            fineTune: fineTune.data,
+            tuneTemplate: tuneTemplate.data,
         } as ProgramInfo
         return rv
     }
