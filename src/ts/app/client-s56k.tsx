@@ -84,17 +84,8 @@ class ClientS56k {
 
         const sysexButton = document.getElementById('sysex-button')
         sysexButton.onclick = async () => {
-            await this.device.ping()
-            // const midiOutput = await midi.getCurrentOutput()
-            // const akaiID = 0x47
-            // const s56kId = 0x5E
-            // const deviceId = 0x00
-            // const userRef = 0x00
-            // const section = 0x00
-            // const item = 0x00
-            // output.log(`Sending sysex...`)
-            // midiOutput.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
-            // output.log(`Done sending sysex.`)
+            const response = await this.device.ping()
+            clientCommon.status(response.message)
         }
     }
 

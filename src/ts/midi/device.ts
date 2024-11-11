@@ -58,11 +58,145 @@ const USER_REFS = 0x00
 export interface S56kDevice {
     init()
 
-    ping(): Promise<any>
+    ping(): Promise<ConfirmationMessage>
 }
 
 export function newS56kDevice(midi, out: ProcessOutput) {
     return new S56kSysex(midi, out)
+}
+
+
+enum ConfirmationStatus {
+    OK = 79,
+    DONE = 68,
+    REPLY = 82,
+    ERROR = 69
+}
+
+function getStatusMessage(status: number) {
+    switch (status) {
+        case ConfirmationStatus.OK:
+            return "Ok"
+        case ConfirmationStatus.DONE:
+            return "Done"
+        case ConfirmationStatus.REPLY:
+            return "Reply"
+        case ConfirmationStatus.ERROR:
+            return "Error"
+        default:
+            return "Unknown"
+    }
+}
+
+enum ErrorCode {
+    NOT_SUPPORTED = 0,
+    INVALID_FORMAT,
+    PARAMETER_OUT_OF_RANGE
+}
+
+
+function getErrorMessage(errorCode: number) {
+    switch (errorCode) {
+        case 0:
+            return "Error: Not supported"
+        case 1:
+            return "Error: Invalid message format"
+        case 2:
+            return "Error: Parameter out of range"
+        case 3:
+            return "Error: Device: Unknown error"
+        case 4:
+            return "Error: Not found"
+        case 5:
+            return "Error: Unable to create new element"
+        case 6:
+            return "Error: Unable to delete item"
+        case 129:
+            return "Error: Checksum invalid"
+        case 257:
+            return "Disk error: Selected disk invalid"
+        case 258:
+            return "Disk error: Error during load"
+        case 259:
+            return "Disk error: Item not found"
+        case 260:
+            return "Disk error: Unable to create"
+        case 261:
+            return "Disk error: Folder not empty"
+        case 262:
+            return "Disk error: Unable to delete"
+        case 263:
+            return "Disk error: Unknown error"
+        case 264:
+            return "Disk error: Error during save"
+        case 265:
+            return "Disk error: Insufficient space"
+        case 266:
+            return "Disk error: Media is write protected"
+        case 267:
+            return "Disk error: Name not unique"
+        case 268:
+            return "Disk error: Invalid disk handle"
+        case 269:
+            return "Disk error: Disk is empty"
+        case 270:
+            return "Disk error: Aborted"
+        case 271:
+            return "Disk error: Failed on open"
+        case 272:
+            return "Disk error: Read error"
+        case 273:
+            return "Disk error: Disk not ready"
+        case 274:
+            return "Disk error: SCSI error"
+        case 385:
+            return "Program error: Requested keygroup does not exist"
+        default:
+            return "Error code unknown"
+    }
+}
+
+export interface ConfirmationMessage {
+    // 94 (product id)
+    // 0  (deviceId)
+    // 0  (userRef)
+    // 79 ('O':OK) | 68 ('D':DONE) | 82 ('R':REPLY) | 69 ('E': ERROR)
+    // 0  (Data 1)
+    // 0  (Data 2)
+    productId: number
+    deviceId: number
+    userRef: number
+    status: ConfirmationStatus
+    errorCode: number
+    message: string
+}
+
+function newConfirmationMessage(event) {
+    const data = event['dataBytes']
+    const rv = {} as ConfirmationMessage
+    if (data && data.length >= 6) {
+        rv.productId = data[0]
+        rv.deviceId = data[1]
+        rv.userRef = data[2]
+        rv.status = data[3]
+
+        if (rv.status === ConfirmationStatus.ERROR) {
+            rv.errorCode = data[4] * 128 + data[5]
+            rv.message = getErrorMessage(rv.errorCode)
+        } else {
+            rv.errorCode = -1
+            rv.message = getStatusMessage(rv.status)
+        }
+        rv.message += ` at ${event.timestamp}`
+    } else {
+        rv.productId = -1
+        rv.deviceId = -1
+        rv.userRef = -1
+        rv.status = ConfirmationStatus.ERROR
+        rv.errorCode = -1
+        rv.message = "Unknown"
+    }
+    return rv as ConfirmationMessage
 }
 
 class S56kSysex implements S56kDevice {
@@ -77,7 +211,7 @@ class S56kSysex implements S56kDevice {
     init() {
     }
 
-    async ping() {
+    async ping(): Promise<ConfirmationMessage> {
         const akaiID = 0x47
         const s56kId = 0x5E
         const deviceId = 0x00
@@ -87,14 +221,19 @@ class S56kSysex implements S56kDevice {
         const out = this.out
         const midi = this.midi
         return new Promise<any>((resolve, reject) => {
+            let eventCount = 0
+
             function listener(event) {
-                out.log(`MIDI MESSAGE IN PING!!!`)
+                eventCount++
                 for (const name of Object.getOwnPropertyNames(event)) {
-                    out.log(`PING RESPONSE: ${name} = ${event[name]}`)
+                    out.log(`PING RESPONSE ${eventCount}: ${name} = ${event[name]}`)
                 }
-                // const message = event.message
-                midi.removeListener('sysex', listener)
-                resolve()
+                let response = newConfirmationMessage(event);
+
+                if (response.errorCode < 0 || eventCount >= 1) {
+                    midi.removeListener('sysex', listener)
+                    resolve(response)
+                }
             }
 
             this.midi.addListener('sysex', listener)
