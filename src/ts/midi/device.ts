@@ -46,17 +46,9 @@
  *  +-----------+---------------+---------------+---------------------------+
  */
 
-
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
 import {Buffer} from 'buffer/'
-
-const START_OF_SYSEX = 0xF0
-const AKAI_ID = 0x47
-const SAMPLER_ID = 0x5E
-const DEVICE_ID = 0x00
-const USER_REFS = 0x00
-
 
 enum ResponseStatus {
     OK = 79,
@@ -85,7 +77,6 @@ enum ErrorCode {
     INVALID_FORMAT,
     PARAMETER_OUT_OF_RANGE
 }
-
 
 function getErrorMessage(errorCode: number) {
     switch (errorCode) {
@@ -360,6 +351,8 @@ export interface ProgramInfo {
     keygroupCount: number
     loudness: number
     velocitySensitivity: number
+    ampMod1Source: number
+
 }
 
 export interface ProgramInfoResult extends Result {
@@ -431,6 +424,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
         const programName = await this.getName()
         const loudness = await this.getLoudness()
         const velocitySensitivity = await this.getVelocitySensitivity()
+        const ampMod1Source = await this.getAmpModSource(1)
+        const ampMod2Source = await this.getAmpModSource(2)
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -438,13 +433,17 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             .concat(programName.errors)
             .concat(loudness.errors)
             .concat(velocitySensitivity.errors)
+            .concat(ampMod1Source.errors)
+            .concat(ampMod2Source.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
             name: programName.data,
             loudness: loudness.data,
-            velocitySensitivity: velocitySensitivity.data
+            velocitySensitivity: velocitySensitivity.data,
+            ampMod1Source: ampMod1Source.data,
+            ampMod2Source: ampMod2Source.data,
         } as ProgramInfo
         return rv
     }
