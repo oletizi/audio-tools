@@ -60,6 +60,8 @@ export interface S56kDevice {
     init()
 
     ping(): Promise<SysexResponse>
+
+    getProgramCount(): Promise<SysexNumberResult>
 }
 
 export function newS56kDevice(midi, out: ProcessOutput) {
@@ -67,7 +69,7 @@ export function newS56kDevice(midi, out: ProcessOutput) {
 }
 
 
-enum ConfirmationStatus {
+enum ResponseStatus {
     OK = 79,
     DONE = 68,
     REPLY = 82,
@@ -76,13 +78,13 @@ enum ConfirmationStatus {
 
 function getStatusMessage(status: number) {
     switch (status) {
-        case ConfirmationStatus.OK:
+        case ResponseStatus.OK:
             return "Ok"
-        case ConfirmationStatus.DONE:
+        case ResponseStatus.DONE:
             return "Done"
-        case ConfirmationStatus.REPLY:
+        case ResponseStatus.REPLY:
             return "Reply"
-        case ConfirmationStatus.ERROR:
+        case ResponseStatus.ERROR:
             return "Error"
         default:
             return "Unknown"
@@ -167,21 +169,35 @@ export interface SysexResponse {
     productId: number
     deviceId: number
     userRef: number
-    status: ConfirmationStatus
+    status: ResponseStatus
     errorCode: number
     message: string
+    section: number
+    item: number
+    data: number[]
 }
 
 function newResponse(event) {
     const data = event['dataBytes']
     const rv = {} as SysexResponse
     if (data && data.length >= 6) {
-        rv.productId = data[0]
-        rv.deviceId = data[1]
-        rv.userRef = data[2]
-        rv.status = data[3]
+        let cursor = 0
+        rv.productId = data[cursor++]
+        rv.deviceId = data[cursor++]
+        rv.userRef = data[cursor++]
+        rv.status = data[cursor++]
+        rv.data = []
 
-        if (rv.status === ConfirmationStatus.ERROR) {
+        if (rv.status == ResponseStatus.REPLY) {
+            // Reply messages have a section byte and an item byte before the data byte
+            rv.section = data[cursor++]
+            rv.item = data[cursor++]
+        }
+        for (; cursor < data.length; cursor++) {
+            rv.data.push(data[cursor])
+        }
+
+        if (rv.status === ResponseStatus.ERROR) {
             rv.errorCode = data[4] * 128 + data[5]
             rv.message = getErrorMessage(rv.errorCode)
         } else {
@@ -193,9 +209,10 @@ function newResponse(event) {
         rv.productId = -1
         rv.deviceId = -1
         rv.userRef = -1
-        rv.status = ConfirmationStatus.ERROR
+        rv.status = ResponseStatus.ERROR
         rv.errorCode = -1
         rv.message = "Unknown"
+        rv.data = []
     }
     return rv as SysexResponse
 }
@@ -220,16 +237,8 @@ enum Section {
     ALT_FX = 0x32
 }
 
-class Item {
-    private readonly code: number;
-
-    constructor(code: number) {
-        this.code = code
-    }
-
-    getCode(): number {
-        return this.code
-    }
+interface Item {
+    getCode(): number
 }
 
 enum SysexItem {
@@ -237,12 +246,35 @@ enum SysexItem {
 }
 
 enum ProgramItem {
-
+    GET_PROGRAM_COUNT = 0x10,
+    GET_CURRENT_PROGRAM_ID = 0x11,
+    GET_CURRENT_PROGRAM_INDEX = 0x12,
+    GET_CURRENT_PROGRAM_NAME = 0x13,
+    GET_CURRENT_PROGRAM_KEYGROUP_COUNT = 0x14,
+    GET_CURRENT_PROGRAM_KEYGROUP_CROSSFADE = 0x15,
 }
+
 interface SysexControlMessage {
     section: Section
-    item: Item
+    item: number
     data: number[]
+}
+
+function newControlMessage(section: Section, item: number, data: number[]): SysexControlMessage {
+    return {
+        section: section,
+        item: item,
+        data: data
+    } as SysexControlMessage
+}
+
+interface SysexResult {
+    error: Error | null
+    data: any
+}
+
+interface SysexNumberResult extends SysexResult {
+    data: number
 }
 
 class S56kSysex implements S56kDevice {
@@ -255,40 +287,36 @@ class S56kSysex implements S56kDevice {
     }
 
     init() {
+        const out = this.out
+        let sequence = 0
+        this.midi.addListener('sysex', (event) => {
+            const count = sequence++
+            for (const name of Object.getOwnPropertyNames(event)) {
+                out.log(`MONITOR: ${count}: ${name} = ${event[name]}`)
+            }
+        })
+    }
+
+    async getProgramCount() {
+        const rv = {
+            error: null,
+            data: 0
+        } as SysexNumberResult
+        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
+        this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
+        this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
+        if (res.status == ResponseStatus.REPLY && res.data && res.data.length >= 1) {
+            rv.data = res.data[0] * 128 + res.data[1]
+        } else {
+            rv.error = new Error(`${res.status}: ${res.message}`)
+        }
+        return rv
     }
 
     async ping(): Promise<SysexResponse> {
-        // const akaiID = 0x47
-        // const s56kId = 0x5E
-        // const deviceId = 0x00
-        // const userRef = 0x00
-        // const section = 0x00
-        // const item = 0x00
-        // const out = this.out
-        // const midi = this.midi
-        // return new Promise<any>((resolve, reject) => {
-        //     let eventCount = 0
-        //
-        //     function listener(event) {
-        //         eventCount++
-        //         for (const name of Object.getOwnPropertyNames(event)) {
-        //             out.log(`PING RESPONSE ${eventCount}: ${name} = ${event[name]}`)
-        //         }
-        //         let response = newConfirmationMessage(event);
-        //
-        //         if (response.errorCode < 0 || eventCount >= 1) {
-        //             midi.removeListener('sysex', listener)
-        //             resolve(response)
-        //         }
-        //     }
-        //
-        //     this.midi.addListener('sysex', listener)
-        //     this.midi.sendSysex(akaiID, [s56kId, deviceId, userRef, section, item])
-        //     this.out.log(`Done sending sysex.`)
-        // })
         return this.request({
             section: Section.SYSEX_CONFIG,
-            item: new Item(SysexItem.QUERY),
+            item: SysexItem.QUERY,
             data: []
         } as SysexControlMessage)
     }
@@ -304,20 +332,24 @@ class S56kSysex implements S56kDevice {
             let eventCount = 0
 
             function listener(event) {
-                eventCount++
                 for (const name of Object.getOwnPropertyNames(event)) {
                     out.log(`SYSEX RESPONSE ${eventCount}: ${name} = ${event[name]}`)
                 }
                 let response = newResponse(event);
-
-                if (response.errorCode < 0 || eventCount >= 1) {
+                if (response.status == ResponseStatus.OK) {
+                    out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
+                } else {
+                    out.log(`SYSEX RESPONSE: ${eventCount}: ${response.status}; Resolving.`)
                     midi.removeListener('sysex', listener)
                     resolve(response)
                 }
+                eventCount++
             }
 
             this.midi.addListener('sysex', listener)
-            this.midi.sendSysex(akaiID, [s56kId, deviceId, userRef, message.section, message.item.getCode()].concat(message.data))
+            let data = [s56kId, deviceId, userRef, message.section, message.item].concat(message.data);
+            out.log(`Sending sysex data: ${data}`)
+            this.midi.sendSysex(akaiID, data)
             this.out.log(`Done sending sysex.`)
         })
     }

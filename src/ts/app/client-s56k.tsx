@@ -67,14 +67,6 @@ class ClientS56k {
                 },
                 'Midi In: '
             )
-
-            // midi.addListener("midimessage", (event) => {
-            //     output.log(`MESSAGE!!!!`)
-            //     // output.log(`message: ${JSON.stringify(event)}`)
-            //     for (const name of Object.getOwnPropertyNames(event)) {
-            //         output.log(`event[${name}] = ${event[name]}`)
-            //     }
-            // })
         })
 
         const playButton = document.getElementById('play-button')
@@ -86,6 +78,11 @@ class ClientS56k {
         sysexButton.onclick = async () => {
             const response = await this.device.ping()
             clientCommon.status(response.message)
+        }
+        const programCountButton = document.getElementById('program-count-button')
+        programCountButton.onclick = async () => {
+            const response = await this.device.getProgramCount()
+            clientCommon.status(response.error ? response.error.message : `Program count: ${response.data}`)
         }
     }
 
