@@ -49,6 +49,7 @@
 
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
+import {name} from "mocha";
 
 
 const START_OF_SYSEX = 0xF0
@@ -236,11 +237,12 @@ enum SysexItem {
 
 enum ProgramItem {
     GET_PROGRAM_COUNT = 0x10,
-    GET_CURRENT_PROGRAM_ID = 0x11,
-    GET_CURRENT_PROGRAM_INDEX = 0x12,
-    GET_CURRENT_PROGRAM_NAME = 0x13,
-    GET_CURRENT_PROGRAM_KEYGROUP_COUNT = 0x14,
-    GET_CURRENT_PROGRAM_KEYGROUP_CROSSFADE = 0x15,
+    GET_ID = 0x11,
+    GET_INDEX = 0x12,
+    GET_NAME = 0x13,
+    GET_KEYGROUP_COUNT = 0x14,
+    GET_KEYGROUP_CROSSFADE = 0x15,
+
 }
 
 interface SysexControlMessage {
@@ -305,11 +307,10 @@ function newStringResult(res: SysexResponse): StringResult {
 }
 
 export interface ProgramInfo {
-    programCount: number
-    currentProgramName: string
-    currentProgramId: number
-    currentProgramIndex: number
-    currentProgramKeygroupCount: number
+    name: string
+    id: number
+    index: number
+    keygroupCount: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -325,106 +326,138 @@ export interface S56kDevice {
 
     ping(): Promise<SysexResponse>
 
-    getProgramInfo(): Promise<ProgramInfoResult>
-
     getProgramCount(): Promise<NumberResult>
 
-    getProgramName(): Promise<StringResult>
-
-    getProgramId(): Promise<NumberResult>
-
-    getProgramIndex(): Promise<NumberResult>
-
-    getKeygroupCount(): Promise<NumberResult>
+    getCurrentProgram(): S56kProgram
 
 }
 
+export interface S56kProgram {
+    getName(): Promise<StringResult>
 
-class S56kSysex implements S56kDevice {
-    private readonly midi: Midi;
-    private readonly out: ProcessOutput;
+    getId(): Promise<NumberResult>
 
-    constructor(midi, out: ProcessOutput = newClientOutput()) {
-        this.midi = midi
+    getIndex(): Promise<NumberResult>
+
+    getKeygroupCount(): Promise<NumberResult>
+
+    getInfo(): Promise<ProgramInfoResult>
+}
+
+
+class S56kProgramSysex implements S56kProgram {
+    private sysex: Sysex;
+    private out: ProcessOutput;
+
+    constructor(sysex: Sysex, out: ProcessOutput) {
+        this.sysex = sysex
         this.out = out
     }
-
-    init() {
-        const out = this.out
-        let sequence = 0
-        this.midi.addListener('sysex', (event) => {
-            const count = sequence++
-            for (const name of Object.getOwnPropertyNames(event)) {
-                out.log(`MONITOR: ${count}: ${name} = ${event[name]}`)
-            }
-        })
+    async getName(): Promise<StringResult> {
+        return newStringResult(await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_NAME, [])))
     }
 
-    async getProgramInfo() {
-        const rv = {
-            errors: [],
-            data: null
-        } as ProgramInfoResult
-        const programCount = await this.getProgramCount()
-        const programId = await this.getProgramId()
-        const programIndex = await this.getProgramIndex()
-        const keygroupCount = await this.getKeygroupCount()
-        const programName = await this.getProgramName()
-        rv.errors = rv.errors
-            .concat(programCount.errors)
-            .concat(programId.errors)
-            .concat(programIndex.errors)
-            .concat(keygroupCount.errors)
-            .concat(programName.errors)
-        rv.data = {
-            programCount: programCount.data,
-            currentProgramId: programId.data,
-            currentProgramIndex: programIndex.data,
-            currentProgramKeygroupCount: keygroupCount.data,
-            currentProgramName: programName.data
-        } as ProgramInfo
-        return rv
-    }
-
-    async getProgramCount() {
-        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
-        this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
-        this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
+    async getId() {
+        const res = await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_ID, []))
         return newNumberResult(res, 2)
     }
 
-    async getProgramName(): Promise<StringResult> {
-        return newStringResult(await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_NAME, [])))
-    }
-
-    async getProgramId() {
-        const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_ID, []))
-        return newNumberResult(res, 2)
-    }
-
-    async getProgramIndex(): Promise<NumberResult> {
+    async getIndex(): Promise<NumberResult> {
         return newNumberResult(
-            await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, [])),
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_INDEX, [])),
             2
         )
     }
 
     async getKeygroupCount(): Promise<NumberResult> {
         return newNumberResult(
-            await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_KEYGROUP_COUNT, [])),
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_KEYGROUP_COUNT, [])),
             1
         )
     }
+    async getInfo() {
+        const rv = {
+            errors: [],
+            data: null
+        } as ProgramInfoResult
+        const programId = await this.getId()
+        const programIndex = await this.getIndex()
+        const keygroupCount = await this.getKeygroupCount()
+        const programName = await this.getName()
+        rv.errors = rv.errors
+            .concat(programId.errors)
+            .concat(programIndex.errors)
+            .concat(keygroupCount.errors)
+            .concat(programName.errors)
+        rv.data = {
+            id: programId.data,
+            index: programIndex.data,
+            keygroupCount: keygroupCount.data,
+            name: programName.data
+        } as ProgramInfo
+        return rv
+    }
+
+}
+
+class S56kSysex implements S56kDevice {
+    private readonly monitor: boolean;
+    private readonly sysex: Sysex;
+    private readonly midi: any;
+    private readonly out: ProcessOutput;
+    private readonly program: S56kProgramSysex;
+
+    constructor(midi, out: ProcessOutput = newClientOutput(), monitor: boolean = false) {
+        this.sysex = new Sysex(midi, out)
+        this.program = new S56kProgramSysex(this.sysex, out)
+        this.midi = midi
+        this.out = out
+        this.monitor = monitor
+    }
+
+    init() {
+        if (this.monitor) {
+            const out = this.out
+            let sequence = 0
+            this.midi.addListener('sysex', (event) => {
+                const count = sequence++
+                for (const name of Object.getOwnPropertyNames(event)) {
+                    out.log(`MONITOR: ${count}: ${name} = ${event[name]}`)
+                }
+            })
+        }
+    }
+
+    async getProgramCount() {
+        const res = await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PROGRAM_COUNT, []))
+        this.out.log(`SysexResponse: ${res.status}: ${getStatusMessage(res.status)}`)
+        this.out.log(`SysexResponse: section: ${res.section}; item: ${res.item}`)
+        return newNumberResult(res, 2)
+    }
 
     async ping(): Promise<SysexResponse> {
-        return this.request({
+        return this.sysex.sysexRequest({
             section: Section.SYSEX_CONFIG,
             item: SysexItem.QUERY,
             data: []
         } as SysexControlMessage)
     }
 
-    async request(message: SysexControlMessage): Promise<SysexResponse> {
+    getCurrentProgram(): S56kProgram {
+        return this.program
+    }
+}
+
+class Sysex {
+    protected midi: Midi
+    protected out: ProcessOutput
+
+    constructor(midi: Midi, out: ProcessOutput) {
+        this.midi = midi
+        this.out = out
+    }
+
+    async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
         const midi = this.midi
         const out = this.out
         const akaiID = 0x47
@@ -456,6 +489,5 @@ class S56kSysex implements S56kDevice {
             this.out.log(`Done sending sysex.`)
         })
     }
-
-
 }
+

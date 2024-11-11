@@ -1,12 +1,11 @@
 import 'bootstrap'
 import {createRoot, Root} from "react-dom/client";
-import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfo, ProgramInfoView} from "./components-s56k";
+import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView} from "./components-s56k";
 import {Midi} from "../midi/midi"
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
 import {MidiInstrument, newMidiInstrument} from "../midi/instrument";
 import {newS56kDevice, ProgramInfoResult, S56kDevice} from "../midi/device";
-import React from "react"
 
 const clientCommon = newClientCommon('status')
 const output = clientCommon.getOutput()
@@ -87,14 +86,12 @@ class ClientS56k {
             clientCommon.status(response.errors.length > 0 ? `Error: ${response.errors[0].message}` : `Program count: ${response.data}`)
         }
 
-        const r: ProgramInfoResult = await this.device.getProgramInfo();
+        const r: ProgramInfoResult = await this.device.getCurrentProgram().getInfo();
         if (r.errors.length > 0) {
             programInfoRoot.render(<div>Yikes! Errors: {r.errors.map(e => e.message).join('; ')}</div>)
         } else {
             programInfoRoot.render(ProgramInfoView(r.data))
         }
-
-
     }
 
 }
