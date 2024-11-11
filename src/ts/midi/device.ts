@@ -49,28 +49,14 @@
 
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
+import {name} from "mocha";
+import {response} from "express";
 
 const START_OF_SYSEX = 0xF0
 const AKAI_ID = 0x47
 const SAMPLER_ID = 0x5E
 const DEVICE_ID = 0x00
 const USER_REFS = 0x00
-
-export interface S56kDevice {
-    init()
-
-    ping(): Promise<SysexResponse>
-
-    getProgramInfo(): Promise<ProgramInfoResult>
-
-    getProgramCount(): Promise<NumberResult>
-
-    getProgramId(): Promise<NumberResult>
-}
-
-export function newS56kDevice(midi, out: ProcessOutput) {
-    return new S56kSysex(midi, out)
-}
 
 
 enum ResponseStatus {
@@ -303,11 +289,32 @@ function numberResult(res: SysexResponse, bytes: number) {
 export interface ProgramInfo {
     programCount: number
     currentProgramId: number
+    currentProgramIndex: number
 }
 
 export interface ProgramInfoResult extends Result {
     data: ProgramInfo
 }
+
+export function newS56kDevice(midi, out: ProcessOutput) {
+    return new S56kSysex(midi, out)
+}
+
+export interface S56kDevice {
+    init()
+
+    ping(): Promise<SysexResponse>
+
+    getProgramInfo(): Promise<ProgramInfoResult>
+
+    getProgramCount(): Promise<NumberResult>
+
+    getProgramId(): Promise<NumberResult>
+
+    getProgramIndex(): Promise<NumberResult>
+
+}
+
 
 class S56kSysex implements S56kDevice {
     private readonly midi: Midi;
@@ -336,11 +343,16 @@ class S56kSysex implements S56kDevice {
         } as ProgramInfoResult
         const programCount = await this.getProgramCount()
         const programId = await this.getProgramId()
+        const programIndex = await this.getProgramIndex()
 
-        rv.errors = rv.errors.concat(programCount.errors).concat(programId.errors)
+        rv.errors = rv.errors
+            .concat(programCount.errors)
+            .concat(programId.errors)
+            .concat(programIndex.errors)
         rv.data = {
             programCount: programCount.data,
-            programId: programId.data
+            programId: programId.data,
+            programIndex: programIndex.data
         } as ProgramInfo
         return rv
     }
@@ -355,6 +367,12 @@ class S56kSysex implements S56kDevice {
     async getProgramId() {
         const res = await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, []))
         return numberResult(res, 2)
+    }
+
+    async getProgramIndex(): Promise<NumberResult> {
+        return numberResult(
+            await this.request(newControlMessage(Section.PROGRAM, ProgramItem.GET_CURRENT_PROGRAM_INDEX, [])),
+            2)
     }
 
     async ping(): Promise<SysexResponse> {
@@ -397,4 +415,6 @@ class S56kSysex implements S56kDevice {
             this.out.log(`Done sending sysex.`)
         })
     }
+
+
 }
