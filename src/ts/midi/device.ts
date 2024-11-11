@@ -352,7 +352,9 @@ export interface ProgramInfo {
     loudness: number
     velocitySensitivity: number
     ampMod1Source: number
-
+    ampMod2Source: number
+    ampMod1Value: number
+    ampMod2Value: number
 }
 
 export interface ProgramInfoResult extends Result {
@@ -426,6 +428,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
         const velocitySensitivity = await this.getVelocitySensitivity()
         const ampMod1Source = await this.getAmpModSource(1)
         const ampMod2Source = await this.getAmpModSource(2)
+        const ampMod1Value = await this.getAmpModValue(1)
+        const ampMod2Value = await this.getAmpModValue(2)
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -435,6 +439,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             .concat(velocitySensitivity.errors)
             .concat(ampMod1Source.errors)
             .concat(ampMod2Source.errors)
+            .concat(ampMod1Value.errors)
+            .concat(ampMod2Value.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
@@ -444,6 +450,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput {
             velocitySensitivity: velocitySensitivity.data,
             ampMod1Source: ampMod1Source.data,
             ampMod2Source: ampMod2Source.data,
+            ampMod1Value: ampMod1Value.data,
+            ampMod2Value: ampMod2Value.data,
         } as ProgramInfo
         return rv
     }
