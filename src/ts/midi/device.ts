@@ -387,20 +387,6 @@ export function newS56kDevice(midi, out: ProcessOutput) {
 }
 
 
-export interface S56kProgramOutput {
-    getLoudness(): Promise<NumberResult>
-
-    getVelocitySensitivity(): Promise<NumberResult>
-
-    getAmpModSource(ampMod: 1 | 2): Promise<NumberResult>
-
-    getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
-
-    getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
-
-    getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
-}
-
 export interface S56kProgramMidiTune {
     getSemitoneTune(): Promise<NumberResult>
 
@@ -440,7 +426,7 @@ export interface S56kProgram {
 
     getInfo(): Promise<ProgramInfoResult>
 
-    getOutput(): S56kProgramOutput
+    getOutput(): ProgramOutput
 
     getMidiTune(): S56kProgramMidiTune
 
@@ -458,7 +444,7 @@ export interface S56kDevice {
 
 }
 
-class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMidiTune, S56kProgramPitchBend {
+class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramPitchBend {
     private sysex: Sysex;
     private out: ProcessOutput;
 
@@ -476,39 +462,46 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
         const programIndex = await this.getIndex()
         const keygroupCount = await this.getKeygroupCount()
         const programName = await this.getName()
-        const loudness = await this.getLoudness()
-        const velocitySensitivity = await this.getVelocitySensitivity()
-        const ampMod1Source = await this.getAmpModSource(1)
-        const ampMod2Source = await this.getAmpModSource(2)
-        const ampMod1Value = await this.getAmpModValue(1)
-        const ampMod2Value = await this.getAmpModValue(2)
-        const panMod1Source = await this.getPanModSource(1)
-        const panMod2Source = await this.getPanModSource(2)
-        const panMod3Source = await this.getPanModSource(3)
-        const panMod1Value = await this.getPanModValue(1)
-        const panMod2Value = await this.getPanModValue(2)
-        const panMod3Value = await this.getPanModValue(3)
+        // const loudness = await this.getLoudness()
+        // const velocitySensitivity = await this.getVelocitySensitivity()
+        // const ampMod1Source = await this.getAmpModSource(1)
+        // const ampMod2Source = await this.getAmpModSource(2)
+        // const ampMod1Value = await this.getAmpModValue(1)
+        // const ampMod2Value = await this.getAmpModValue(2)
+        // const panMod1Source = await this.getPanModSource(1)
+        // const panMod2Source = await this.getPanModSource(2)
+        // const panMod3Source = await this.getPanModSource(3)
+        // const panMod1Value = await this.getPanModValue(1)
+        // const panMod2Value = await this.getPanModValue(2)
+        // const panMod3Value = await this.getPanModValue(3)
         const semitoneTune = await this.getSemitoneTune()
         const fineTune = await this.getFineTune()
         const tuneTemplate = await this.getTuneTemplate()
+        // pitch bend
+        const pb = this.getPitchBend()
+        const pitchBendUp = await pb.getPitchBendUp()
+        const pitchBendDOwn = await pb.getPitchBendDown()
+        const bendMode = await pb.getBendMode()
+        const aftertouchValue = await pb.getAftertouchValue()
+        await pb.getLegatoEnable()
 
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
             .concat(keygroupCount.errors)
             .concat(programName.errors)
-            .concat(loudness.errors)
-            .concat(velocitySensitivity.errors)
-            .concat(ampMod1Source.errors)
-            .concat(ampMod2Source.errors)
-            .concat(ampMod1Value.errors)
-            .concat(ampMod2Value.errors)
-            .concat(panMod1Source.errors)
-            .concat(panMod2Source.errors)
-            .concat(panMod3Source.errors)
-            .concat(panMod1Value.errors)
-            .concat(panMod2Value.errors)
-            .concat(panMod3Value.errors)
+            // .concat(loudness.errors)
+            // .concat(velocitySensitivity.errors)
+            // .concat(ampMod1Source.errors)
+            // .concat(ampMod2Source.errors)
+            // .concat(ampMod1Value.errors)
+            // .concat(ampMod2Value.errors)
+            // .concat(panMod1Source.errors)
+            // .concat(panMod2Source.errors)
+            // .concat(panMod3Source.errors)
+            // .concat(panMod1Value.errors)
+            // .concat(panMod2Value.errors)
+            // .concat(panMod3Value.errors)
             .concat(semitoneTune.errors)
             .concat(fineTune.errors)
             .concat(tuneTemplate.errors)
@@ -517,18 +510,18 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
             name: programName.data,
-            loudness: loudness.data,
-            velocitySensitivity: velocitySensitivity.data,
-            ampMod1Source: ampMod1Source.data,
-            ampMod2Source: ampMod2Source.data,
-            ampMod1Value: ampMod1Value.data,
-            ampMod2Value: ampMod2Value.data,
-            panMod1Source: panMod1Source.data,
-            panMod2Source: panMod2Source.data,
-            panMod3Source: panMod3Source.data,
-            panMod1Value: panMod1Value.data,
-            panMod2Value: panMod2Value.data,
-            panMod3Value: panMod3Value.data,
+            // loudness: loudness.data,
+            // velocitySensitivity: velocitySensitivity.data,
+            // ampMod1Source: ampMod1Source.data,
+            // ampMod2Source: ampMod2Source.data,
+            // ampMod1Value: ampMod1Value.data,
+            // ampMod2Value: ampMod2Value.data,
+            // panMod1Source: panMod1Source.data,
+            // panMod2Source: panMod2Source.data,
+            // panMod3Source: panMod3Source.data,
+            // panMod1Value: panMod1Value.data,
+            // panMod2Value: panMod2Value.data,
+            // panMod3Value: panMod3Value.data,
             semitoneTune: semitoneTune.data,
             fineTune: fineTune.data,
             tuneTemplate: tuneTemplate.data,
@@ -560,58 +553,58 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
     }
 
     // OUTPUT
-    getOutput(): S56kProgramOutput {
-        return this
+    getOutput(): ProgramOutput {
+        return newProgramOutput(this.sysex, this.out)
     }
 
-    async getLoudness(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LOUDNESS, [])),
-            1
-        )
-    }
-
-    async getVelocitySensitivity(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_VELOCITY_SENSITIVITY, [])),
-            2,
-            true
-        )
-    }
-
-    async getAmpModSource(ampMod: 1 | 2): Promise<NumberResult> {
-        const res = newByteArrayResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_SOURCE, [ampMod])),
-            1
-        )
-        return {
-            errors: res.errors,
-            data: res.data[0]
-        }
-    }
-
-    async getAmpModValue(ampMod: 1 | 2): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_VALUE, [ampMod])),
-            2,
-            true
-        )
-    }
-
-    async getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_SOURCE, [panMod])),
-            1
-        )
-    }
-
-    async getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_VALUE, [panMod])),
-            2,
-            true
-        )
-    }
+    // async getLoudness(): Promise<NumberResult> {
+    //     return newNumberResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LOUDNESS, [])),
+    //         1
+    //     )
+    // }
+    //
+    // async getVelocitySensitivity(): Promise<NumberResult> {
+    //     return newNumberResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_VELOCITY_SENSITIVITY, [])),
+    //         2,
+    //         true
+    //     )
+    // }
+    //
+    // async getAmpModSource(ampMod: 1 | 2): Promise<NumberResult> {
+    //     const res = newByteArrayResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_SOURCE, [ampMod])),
+    //         1
+    //     )
+    //     return {
+    //         errors: res.errors,
+    //         data: res.data[0]
+    //     }
+    // }
+    //
+    // async getAmpModValue(ampMod: 1 | 2): Promise<NumberResult> {
+    //     return newNumberResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_VALUE, [ampMod])),
+    //         2,
+    //         true
+    //     )
+    // }
+    //
+    // async getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult> {
+    //     return newNumberResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_SOURCE, [panMod])),
+    //         1
+    //     )
+    // }
+    //
+    // async getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult> {
+    //     return newNumberResult(
+    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_VALUE, [panMod])),
+    //         2,
+    //         true
+    //     )
+    // }
 
     // MIDI/Tune
     getMidiTune(): S56kProgramMidiTune {
@@ -710,6 +703,136 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
     }
 }
 
+export interface ProgramOutput {
+    getLoudness(): Promise<NumberResult>
+
+    getVelocitySensitivity(): Promise<NumberResult>
+
+    getAmpModSource(ampMod: 1 | 2): Promise<NumberResult>
+
+    getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
+
+    getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
+
+    getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
+}
+
+const programOutputSpec = {
+    className: "ProgramOutput",
+    sectionCode: Section.PROGRAM,
+    items: [
+        // |                  | get request spec                                              | set request spec. req data length encoded in length of the spec array
+        // | method name root | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
+        ["loudness", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
+        ["velocitySensitivity", 0x29, "uint8", 1, 0x21, ["int8sign", "int8abs"]],
+        ["ampMod1Source", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
+        ["ampMod2Source", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
+        ["ampMod1Value", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
+        ["ampMod2Value", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
+        ["panMod1Source", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
+        ["panMod2Source", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
+        ["panMod3source", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
+        ["panMod1Value", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
+        ["panMod2Value", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
+        ["panMod3Value", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
+    ]
+}
+
+
+function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
+    return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
+}
+
+/**
+ * Generates a device object with appropriate get/set methods based on the given spec
+ * @param spec
+ * @param sysex
+ * @param out
+ */
+function newDeviceObject(spec, sysex, out: ProcessOutput) {
+    const sectionCode = spec.sectionCode
+    const obj = {}
+    for (const item of spec.items) {
+        let i = 0
+        const methodName = item[i++] as string
+        const getterItemCode = item[i++] as number
+        const getterRequestData = item[i++] as number[]
+        const responseType = item[i++] as string
+        const responseSize = item[i++] as number
+        obj[`get${methodName}`] = async () => {
+            const res = await sysex.sysexRequest(newControlMessage(sectionCode, getterItemCode, getterRequestData))
+            switch (responseType) {
+                case "uint8":
+                    return newNumberResult(res, responseSize)
+                case "int8":
+                    return newNumberResult(res, responseSize, true)
+                default:
+                    return newByteArrayResult(res, responseSize)
+            }
+        }
+
+        const setterItemCode = item[i++]
+        const setterDataSpec = item[i++]
+        const setterRequestData = []
+        let argumentIndex = 0
+
+        for (let i = 0; i < setterDataSpec.length; i++) {
+            const d = setterDataSpec[i]
+            if (typeof d === 'string') {
+                // d describes the datum
+                switch (d) {
+                    case "uint8":
+                        //setterRequestData.push((args) => setterRequestData[i](args[i]))
+                        setterRequestData[i] = (args) => {
+                            // write the argument in the current data slot (erasing this function, which we don't need anymore)
+                            setterRequestData[i] = args[argumentIndex++]
+                        }
+                        break
+                    case "int8sign":
+                        // this data byte is the sign byte signed int8.
+                        setterRequestData[i] = (args) => {
+                            const int8 = args[argumentIndex++]
+                            // write the sign byte into the current data slot (erasing this function, which we don't need anymore)
+                            setterRequestData[i] = int8 >= 0
+                            // write the absolute value into the next data slot
+                            setterRequestData[i + 1] = Math.abs(int8)
+                        }
+                        break
+                    case "int8abs":
+                        // This data byte is the absolute value of the signed int8
+                        // Nothing to do here. The previous handler should have filled this in.
+                        break
+                    case "string":
+                        // XXX
+                        break
+                    default:
+                        break
+                }
+            } else {
+                // d is the literal datum
+                setterRequestData.push(d)
+            }
+        }
+        if (setterDataSpec.length != setterRequestData.length) {
+            throw new Error(`Setter request data length (${setterRequestData.length} is not equal to setterDataSpec length (${setterDataSpec.length}`)
+        }
+        obj[`set${methodName}`] = async () => {
+            // iterate over the setterRequestData to execute argument reading functions (which replace themselves with the
+            // argument data
+            for (let i = 0; i < setterRequestData.length; i++) {
+                const d = setterRequestData[i]
+                if (typeof d === 'function') {
+                    // this *is* an argument-handling function. Call it with the arguments array
+                    d(arguments)
+                }
+            }
+            // TODO: Need to update sysexRequest to only wait for a DONE message instead of a REPLY message.
+            await sysex.sysexRequest(newControlMessage(sectionCode, setterItemCode, setterRequestData))
+        }
+    }
+    return obj
+}
+
 class S56kSysex implements S56kDevice {
     private readonly monitor: boolean;
     private readonly sysex: Sysex;
@@ -765,6 +888,7 @@ class Sysex {
         this.out = out
     }
 
+
     async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
         const midi = this.midi
         const out = this.out
@@ -780,6 +904,8 @@ class Sysex {
                     out.log(`SYSEX RESPONSE ${eventCount}: ${name} = ${event[name]}`)
                 }
                 let response = newResponse(event);
+                // TODO: Update to handle setter messages that receive a "DONE" reply rather than a "REPLY" message
+                // The current implementation doesn't distinguish between the two, but it should.
                 if (response.status == ResponseStatus.OK) {
                     out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
                 } else {
