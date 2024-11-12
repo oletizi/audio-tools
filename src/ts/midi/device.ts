@@ -252,8 +252,8 @@ enum ProgramItem {
     GET_PITCH_BEND_UP = 0x48,
     GET_PITCH_BEND_DOWN = 0x49,
     GET_PITCH_BEND_MODE = 0x4A,
-    GET_AFTERTOUCH_MOD = 0x4B,
-    GET_AFTERTOUCH_VALUE = 0x4C,
+    GET_AFTERTOUCH_VALUE = 0x4B,
+    GET_LEGATO_ENABLE = 0x4C,
     GET_PORTAMENTO_ENABLE = 0x4D,
     GET_PORTAMENTO_MODE = 0x4E,
     GET_PORTAMENTO_TIME = 0x4F,
@@ -294,6 +294,10 @@ interface NumberResult extends Result {
 
 interface StringResult extends Result {
     data: string
+}
+
+interface BooleanResult extends Result {
+    data: boolean
 }
 
 function newByteArrayResult(res: SysexResponse, bytes: number): ByteArrayResult {
@@ -342,6 +346,14 @@ function newStringResult(res: SysexResponse): StringResult {
         rv.errors.push(new Error(`Malformed REPLY message for StringResult: ${res.status}: ${res.message}`))
     }
     return rv
+}
+
+function newBooleanResult(res: SysexResponse): BooleanResult {
+    const result = newNumberResult(res, 1)
+    return {
+        errors: result.errors,
+        data: !!result.data
+    }
 }
 
 export interface ProgramInfo {
@@ -399,6 +411,24 @@ export interface S56kProgramMidiTune {
     getKey(): Promise<NumberResult>
 }
 
+export interface S56kProgramPitchBend {
+    getPitchBendUp(): Promise<NumberResult>
+
+    getPitchBendDown(): Promise<NumberResult>
+
+    getBendMode(): Promise<NumberResult>
+
+    getAftertouchValue(): Promise<NumberResult>
+
+    getLegatoEnable(): Promise<BooleanResult>
+
+    getPortamentoEnable(): Promise<BooleanResult>
+
+    getPortamentoMode(): Promise<NumberResult>
+
+    getPortamentoTime(): Promise<NumberResult>
+}
+
 export interface S56kProgram {
     getName(): Promise<StringResult>
 
@@ -413,6 +443,8 @@ export interface S56kProgram {
     getOutput(): S56kProgramOutput
 
     getMidiTune(): S56kProgramMidiTune
+
+    getPitchBend(): S56kProgramPitchBend
 }
 
 export interface S56kDevice {
@@ -426,7 +458,7 @@ export interface S56kDevice {
 
 }
 
-class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMidiTune {
+class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMidiTune, S56kProgramPitchBend {
     private sysex: Sysex;
     private out: ProcessOutput;
 
@@ -459,6 +491,7 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
         const semitoneTune = await this.getSemitoneTune()
         const fineTune = await this.getFineTune()
         const tuneTemplate = await this.getTuneTemplate()
+
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
@@ -611,6 +644,67 @@ class S56kProgramSysex implements S56kProgram, S56kProgramOutput, S56kProgramMid
     async getKey(): Promise<NumberResult> {
         return newNumberResult(
             await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_KEY, [])),
+            1
+        )
+    }
+
+    // PITCH BEND
+
+    getPitchBend(): S56kProgramPitchBend {
+        return this;
+    }
+
+    async getPitchBendUp(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_UP, [])),
+            1
+        )
+    }
+
+    async getPitchBendDown(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_DOWN, [])),
+            1
+        )
+    }
+
+    async getBendMode(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_MODE, [])),
+            1
+        )
+    }
+
+    async getAftertouchValue(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AFTERTOUCH_VALUE, [])),
+            2,
+            true
+        )
+    }
+
+    async getLegatoEnable(): Promise<BooleanResult> {
+        return newBooleanResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LEGATO_ENABLE, []))
+        )
+    }
+
+    async getPortamentoEnable(): Promise<BooleanResult> {
+        return newBooleanResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_ENABLE, []))
+        )
+    }
+
+    async getPortamentoMode(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_MODE, [])),
+            1
+        )
+    }
+
+    async getPortamentoTime(): Promise<NumberResult> {
+        return newNumberResult(
+            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_TIME, [])),
             1
         )
     }
