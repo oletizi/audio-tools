@@ -744,12 +744,13 @@ function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
 }
 
 /**
- * Generates a device object with appropriate get/set methods based on the given spec
- * @param spec
- * @param sysex
- * @param out
+ * Dynamically generates a device object that implements sysex getter/setter methods based on the given spec
+ *
+ * @param spec -- a spec object describing the getters and setters the device object should have
+ * @param sysex -- a Sysex client that knows how to send and receive Akai S56k system exclusive messages
+ * @param out -- a wrapper around stdout/stderr and/or console.log/console.err, depending on execution context (nodejs or browser)
  */
-function newDeviceObject(spec, sysex, out: ProcessOutput) {
+function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
     const sectionCode = spec.sectionCode
     const obj = {}
     for (const item of spec.items) {
@@ -782,14 +783,17 @@ function newDeviceObject(spec, sysex, out: ProcessOutput) {
                 // d describes the datum
                 switch (d) {
                     case "uint8":
-                        //setterRequestData.push((args) => setterRequestData[i](args[i]))
+                        // Write a function into the current request data array that knows how to retrieve the value from
+                        // the arguments of the method.
                         setterRequestData[i] = (args) => {
                             // write the argument in the current data slot (erasing this function, which we don't need anymore)
                             setterRequestData[i] = args[argumentIndex++]
                         }
                         break
                     case "int8sign":
-                        // this data byte is the sign byte signed int8.
+                        // this data byte is the sign byte signed int8. Write a function into the current request data array
+                        // that knows how to retrieve the number passed in as an argument and replace itself and the next
+                        // data byte with the two-byte version of the argument data
                         setterRequestData[i] = (args) => {
                             const int8 = args[argumentIndex++]
                             // write the sign byte into the current data slot (erasing this function, which we don't need anymore)
@@ -803,7 +807,16 @@ function newDeviceObject(spec, sysex, out: ProcessOutput) {
                         // Nothing to do here. The previous handler should have filled this in.
                         break
                     case "string":
-                        // XXX
+                        //
+                        // TODO: Need to stuff strings into the request data array.
+                        // this means the request data can be variable length and my 1:1 spec:data array indexing scheme
+                        // may not work, unless:
+                        //
+                        //   a) there is only one variable length parameter per request; and
+                        //   b) the variable length parameter is at the end of the data array.
+                        //
+                        // I strongly suspect this is true.
+                        //
                         break
                     default:
                         break
@@ -812,9 +825,6 @@ function newDeviceObject(spec, sysex, out: ProcessOutput) {
                 // d is the literal datum
                 setterRequestData.push(d)
             }
-        }
-        if (setterDataSpec.length != setterRequestData.length) {
-            throw new Error(`Setter request data length (${setterRequestData.length} is not equal to setterDataSpec length (${setterDataSpec.length}`)
         }
         obj[`set${methodName}`] = async () => {
             // iterate over the setterRequestData to execute argument reading functions (which replace themselves with the
@@ -825,6 +835,7 @@ function newDeviceObject(spec, sysex, out: ProcessOutput) {
                     // this *is* an argument-handling function. Call it with the arguments array
                     d(arguments)
                 }
+                // else: all other request data was inserted from the spec
             }
             // TODO: Need to update sysexRequest to only wait for a DONE message instead of a REPLY message.
             await sysex.sysexRequest(newControlMessage(sectionCode, setterItemCode, setterRequestData))
