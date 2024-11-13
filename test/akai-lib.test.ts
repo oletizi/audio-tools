@@ -1,19 +1,34 @@
 import {assert, expect} from 'chai'
 import fs from "fs/promises";
 import {
-    bytes2Number, Keygroup, Lfo1, Lfo2, Mods,
-    newHeaderChunk, newKeygroupChunk,
-    newLfo1Chunk, newLfo2Chunk, newModsChunk,
+    bytes2Number,
+    Keygroup,
+    Lfo1,
+    Lfo2,
+    Mods,
+    newHeaderChunk,
+    newKeygroupChunk,
+    newLfo1Chunk,
+    newLfo2Chunk,
+    newModsChunk,
     newOutputChunk,
-    newProgramChunk, newProgramFromBuffer, newProgramFromJson,
-    newTuneChunk, Output, OutputChunk,
-    parseChunkHeader, Program, ProgramChunk, Tune, Zone
+    newProgramChunk,
+    newProgramFromBuffer,
+    newProgramFromJson,
+    newTuneChunk,
+    Output,
+    OutputChunk,
+    parseChunkHeader,
+    ProgramChunk,
+    Tune,
+    Zone
 } from "../src/ts/akai-lib";
+import path from "path";
 
 async function loadTestFile() {
-    const testFile = 'test/data/BASS.AKP'
-    const buf = await fs.readFile(testFile)
-    return buf;
+    // const testFile = 'test/data/Sx000/BASS.AKP'
+    const testFile = path.join('test', 'data', 'Sx000', 'BASS.AKP')
+    return await fs.readFile(testFile);
 }
 
 describe('Basics...', async () => {

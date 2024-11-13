@@ -1,4 +1,3 @@
-import 'bootstrap'
 import {createRoot, Root} from "react-dom/client";
 import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "./components-s56k";
 import {Midi} from "../midi/midi"

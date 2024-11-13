@@ -22,6 +22,7 @@ export async function ProgramOutputView(data) {
                 <div className={'row'}>
                     <div className={'col'}><span className={'fw-bold'}>{name}</span></div>
                     <div className={'col'}>{data[name]}</div>
+                    <div className={'col'}><sl-range label={name} min="0" max="100"></sl-range></div>
                 </div>
             </li>)
     })

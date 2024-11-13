@@ -114,7 +114,7 @@ export class Midi {
     addListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
         this.out.log(`Adding midi listener: ${eventName} to ${this.input.name}`)
         this.listeners.push({eventName: eventName, eventListener: eventListener})
-        this.input.addListener(eventName, eventListener)
+        return this.input.addListener(eventName, eventListener)
     }
 
     sendSysex(deviceId: number, data: number[]): Midi {
@@ -126,5 +126,9 @@ export class Midi {
     removeListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
         this.input.removeListener(eventName, eventListener)
         this.listeners = this.listeners.filter(value => value.eventName !== eventName && value.eventListener !== eventListener)
+    }
+
+    noteOn(channels: number | number[], note: number, velocity: number) {
+        this.output.sendNoteOn(note, {channels: channels, rawAttack: velocity})
     }
 }

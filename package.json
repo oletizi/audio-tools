@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "start": "src/ts/app/server.ts",
   "type": "module",
+  "web-types": "./web-types.json",
   "directories": {
     "test": "test"
   },
@@ -31,6 +32,7 @@
     "express": "^4.21.1",
     "got": "^14.4.3",
     "lodash": "^4.17.21",
+    "node-mac-permissions": "^2.4.0",
     "node-polyfill-webpack-plugin": "^4.0.0",
     "queue": "^7.0.0",
     "react": "^18.3.1",
@@ -57,6 +59,7 @@
     "electron": "^33.0.1",
     "esbuild": "0.24.0",
     "mocha": "^10.7.3",
+    "mochawesome": "^7.1.3",
     "prettier": "^3.3.3",
     "sass": "^1.80.3",
     "sass-loader": "^16.0.2",

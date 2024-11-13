@@ -852,7 +852,7 @@ class Sysex {
         const s56kId = 0x5E
         const deviceId = 0x00
         const userRef = 0x00
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<any>(  async (resolve, reject) => {
             let eventCount = 0
 
             function listener(event) {
@@ -882,7 +882,9 @@ class Sysex {
                 // }
                 eventCount++
             }
-
+            out.log(`Adding listener for sysex call.`)
+            out.log(`  Output: ${ (await this.midi.getCurrentOutput()).name}`)
+            out.log(`  Input : ${ (await this.midi.getCurrentOutput()).name}`)
             this.midi.addListener('sysex', listener)
             let data = [s56kId, deviceId, userRef, message.section, message.item].concat(message.data);
             out.log(`Sending sysex data: ${data}`)
