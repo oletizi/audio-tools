@@ -9,7 +9,7 @@ import {newS56kDevice, ProgramInfoResult, S56kDevice} from "../midi/device";
 import React from 'react'
 
 const clientCommon = newClientCommon('status')
-const output = clientCommon.getOutput()
+const out = clientCommon.getOutput()
 const midi = new Midi()
 const midiOutputSelectRoot = createRoot(document.getElementById('midi-output-select'))
 const midiInputSelectRoot = createRoot(document.getElementById('midi-input-select'))
@@ -25,7 +25,7 @@ class ClientS56k {
         let instrument: MidiInstrument
         if (result.error) {
             clientCommon.status(result.error)
-            output.error(result.error)
+            out.error(result.error)
         } else {
             this.cfg = result.data
         }
@@ -45,7 +45,7 @@ class ClientS56k {
                     }
                 }
             }
-            this.device = newS56kDevice(midi, output)
+            this.device = newS56kDevice(midi, out)
             this.device.init()
             instrument = newMidiInstrument(midi, 1)
             await updateMidiDeviceSelect(
@@ -98,7 +98,11 @@ class ClientS56k {
         }
 
         // const rOutput = await program.getOutput().getInfo()
-        programOutputRoot.render(await ProgramOutputView(program.getOutput()))
+        let programOutput = program.getOutput();
+        programOutputRoot.render(await ProgramOutputView(programOutput))
+        out.log(`=====> Fetching program output info...`)
+        const outputResult = await programOutput.getInfo()
+        out.log(`=====> Program output info: errors: ${outputResult.errors.length}; data: ${outputResult.data}`)
     }
 
 }
@@ -107,34 +111,34 @@ async function saveConfig(cfg) {
     try {
         const result = await clientCommon.saveConfig(cfg)
         if (result.error) {
-            output.log(`Error saving config: ${result.error}`)
+            out.log(`Error saving config: ${result.error}`)
         } else {
-            output.log(`Done saving config.`)
+            out.log(`Done saving config.`)
         }
     } catch (err) {
-        output.log(`Barfed trying to save config: ${err.message}`)
+        out.log(`Barfed trying to save config: ${err.message}`)
         clientCommon.status(err.message)
     }
 }
 
 async function updateMidiDeviceSelect(root: Root, getNames: Function, isCurrent: Function, selected: Function, label: string = 'Midi Out: ') {
-    output.log(`Updating midi device select...`)
+    out.log(`Updating midi device select...`)
     const specs = []
     for (const name of (await getNames())) {
-        output.log(`Creating spec for device: ${name}`)
+        out.log(`Creating spec for device: ${name}`)
         specs.push({
             name: name,
             isActive: await isCurrent(name),
             action: async () => {
                 clientCommon.status(`You chose ${name}`)
                 await selected(name)
-                output.log(`Updating midi device select..`)
+                out.log(`Updating midi device select..`)
                 await updateMidiDeviceSelect(root, getNames, isCurrent, selected, label)
-                output.log(`Done updating midi device select.`)
+                out.log(`Done updating midi device select.`)
             }
         } as MidiDeviceSpec)
     }
-    output.log(`Specs: ${JSON.stringify(specs)}`)
+    out.log(`Specs: ${JSON.stringify(specs)}`)
     root.render(MidiDeviceSelect(specs, label))
 }
 
@@ -143,6 +147,6 @@ c56k.init()
     .then(() => clientCommon.status(`Initialized.`))
     .catch(err => {
         clientCommon.status(`error: ${err.message}`)
-        output.error(err)
+        out.error(err)
     })
 

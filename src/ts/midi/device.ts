@@ -362,17 +362,6 @@ export interface ProgramInfo {
     index: number
     keygroupCount: number
     loudness: number
-    // velocitySensitivity: number
-    // ampMod1Source: number
-    // ampMod2Source: number
-    // ampMod1Value: number
-    // ampMod2Value: number
-    // panMod1Source: number
-    // panMod2Source: number
-    // panMod3Source: number
-    // panMod1Value: number
-    // panMod2Value: number
-    // panMod3Value: number
     semitoneTune: number
     fineTune: number
     tuneTemplate: number
@@ -462,18 +451,6 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
         const programIndex = await this.getIndex()
         const keygroupCount = await this.getKeygroupCount()
         const programName = await this.getName()
-        // const loudness = await this.getLoudness()
-        // const velocitySensitivity = await this.getVelocitySensitivity()
-        // const ampMod1Source = await this.getAmpModSource(1)
-        // const ampMod2Source = await this.getAmpModSource(2)
-        // const ampMod1Value = await this.getAmpModValue(1)
-        // const ampMod2Value = await this.getAmpModValue(2)
-        // const panMod1Source = await this.getPanModSource(1)
-        // const panMod2Source = await this.getPanModSource(2)
-        // const panMod3Source = await this.getPanModSource(3)
-        // const panMod1Value = await this.getPanModValue(1)
-        // const panMod2Value = await this.getPanModValue(2)
-        // const panMod3Value = await this.getPanModValue(3)
         const semitoneTune = await this.getSemitoneTune()
         const fineTune = await this.getFineTune()
         const tuneTemplate = await this.getTuneTemplate()
@@ -490,18 +467,6 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
             .concat(programIndex.errors)
             .concat(keygroupCount.errors)
             .concat(programName.errors)
-            // .concat(loudness.errors)
-            // .concat(velocitySensitivity.errors)
-            // .concat(ampMod1Source.errors)
-            // .concat(ampMod2Source.errors)
-            // .concat(ampMod1Value.errors)
-            // .concat(ampMod2Value.errors)
-            // .concat(panMod1Source.errors)
-            // .concat(panMod2Source.errors)
-            // .concat(panMod3Source.errors)
-            // .concat(panMod1Value.errors)
-            // .concat(panMod2Value.errors)
-            // .concat(panMod3Value.errors)
             .concat(semitoneTune.errors)
             .concat(fineTune.errors)
             .concat(tuneTemplate.errors)
@@ -510,18 +475,6 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
             name: programName.data,
-            // loudness: loudness.data,
-            // velocitySensitivity: velocitySensitivity.data,
-            // ampMod1Source: ampMod1Source.data,
-            // ampMod2Source: ampMod2Source.data,
-            // ampMod1Value: ampMod1Value.data,
-            // ampMod2Value: ampMod2Value.data,
-            // panMod1Source: panMod1Source.data,
-            // panMod2Source: panMod2Source.data,
-            // panMod3Source: panMod3Source.data,
-            // panMod1Value: panMod1Value.data,
-            // panMod2Value: panMod2Value.data,
-            // panMod3Value: panMod3Value.data,
             semitoneTune: semitoneTune.data,
             fineTune: fineTune.data,
             tuneTemplate: tuneTemplate.data,
@@ -556,55 +509,6 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
     getOutput(): ProgramOutput {
         return newProgramOutput(this.sysex, this.out)
     }
-
-    // async getLoudness(): Promise<NumberResult> {
-    //     return newNumberResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LOUDNESS, [])),
-    //         1
-    //     )
-    // }
-    //
-    // async getVelocitySensitivity(): Promise<NumberResult> {
-    //     return newNumberResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_VELOCITY_SENSITIVITY, [])),
-    //         2,
-    //         true
-    //     )
-    // }
-    //
-    // async getAmpModSource(ampMod: 1 | 2): Promise<NumberResult> {
-    //     const res = newByteArrayResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_SOURCE, [ampMod])),
-    //         1
-    //     )
-    //     return {
-    //         errors: res.errors,
-    //         data: res.data[0]
-    //     }
-    // }
-    //
-    // async getAmpModValue(ampMod: 1 | 2): Promise<NumberResult> {
-    //     return newNumberResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AMP_MOD_VALUE, [ampMod])),
-    //         2,
-    //         true
-    //     )
-    // }
-    //
-    // async getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult> {
-    //     return newNumberResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_SOURCE, [panMod])),
-    //         1
-    //     )
-    // }
-    //
-    // async getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult> {
-    //     return newNumberResult(
-    //         await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PAN_MOD_VALUE, [panMod])),
-    //         2,
-    //         true
-    //     )
-    // }
 
     // MIDI/Tune
     getMidiTune(): S56kProgramMidiTune {
@@ -776,7 +680,6 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
     const sectionCode = spec.sectionCode
     const obj = {}
 
-
     for (const item of spec.items) {
         let i = 0
         const methodName = item[i++] as string
@@ -861,10 +764,23 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
                 }
                 // else: all other request data was inserted from the spec
             }
-            // TODO: Need to update sysexRequest to only wait for a DONE message instead of a REPLY message.
             await sysex.sysexRequest(newControlMessage(sectionCode, setterItemCode, setterRequestData))
         }
     }
+    // Create get<...>Info() method
+    obj[`getInfo`] = async () => {
+        const info = {}
+        let errors = []
+        for (const item of spec.items) {
+            const methodName = 'get' + item[0]
+            const propertyName = String(item[0]).charAt(0).toLowerCase() + String(item[0]).slice(1)
+            const result = await obj[methodName]()
+            info[propertyName] = result.data
+            errors = errors.concat(result.errors)
+        }
+        return {errors: errors, data: info}
+    }
+
     return obj
 }
 
@@ -922,7 +838,6 @@ class Sysex {
         this.midi = midi
         this.out = out
     }
-
 
     async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
         const midi = this.midi
