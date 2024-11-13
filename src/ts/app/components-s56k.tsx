@@ -14,19 +14,14 @@ function uid() {
     return sequence++ + '-' + Math.random().toString(16).slice(2)
 }
 
-export async function ProgramOutputView(data: ProgramOutput) {
+export async function ProgramOutputView(data) {
 
-    const thingy = {}
-    let result = await data.getAmpMod1Source()
-    // TODO: Handle errors
-    thingy['Amp Mod 1 Source'] = result.data
-
-    const items = Object.getOwnPropertyNames(thingy).sort().map((name) => {
+    const items = Object.getOwnPropertyNames(data).sort().map((name) => {
         return (
             <li className={'list-group-item'} key={name}>
                 <div className={'row'}>
                     <div className={'col'}><span className={'fw-bold'}>{name}</span></div>
-                    <div className={'col'}>{thingy[name]}</div>
+                    <div className={'col'}>{data[name]}</div>
                 </div>
             </li>)
     })

@@ -99,10 +99,7 @@ class ClientS56k {
 
         // const rOutput = await program.getOutput().getInfo()
         let programOutput = program.getOutput();
-        programOutputRoot.render(await ProgramOutputView(programOutput))
-        out.log(`=====> Fetching program output info...`)
-        const outputResult = await programOutput.getInfo()
-        out.log(`=====> Program output info: errors: ${outputResult.errors.length}; data: ${outputResult.data}`)
+        programOutputRoot.render(await ProgramOutputView((await programOutput.getInfo()).data))
     }
 
 }

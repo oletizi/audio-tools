@@ -607,23 +607,19 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
     }
 }
 
-export interface ProgramOutputInfo {
-    velocitySensitivity: number
-    ampMod1Source: number
-    ampMod2Source: number
-    ampMod1Value: number
-    ampMod2Value: number
-    panMod1Source: number
-    panMod2Source: number
-    panMod3Source: number
-    panMod1Value: number
-    panMod2Value: number
-    panMod3Value: number
-}
-
-export interface ProgramOutputInfoResult extends Result {
-    data: ProgramOutputInfo
-}
+// export interface ProgramOutputInfo {
+//     velocitySensitivity: number
+//     ampMod1Source: number
+//     ampMod2Source: number
+//     ampMod1Value: number
+//     ampMod2Value: number
+//     panMod1Source: number
+//     panMod2Source: number
+//     panMod3Source: number
+//     panMod1Value: number
+//     panMod2Value: number
+//     panMod3Value: number
+// }
 
 export interface ProgramOutput {
     getLoudness(): Promise<NumberResult>
@@ -634,13 +630,23 @@ export interface ProgramOutput {
 
     getAmpMod2Source(): Promise<NumberResult>
 
-    getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
+    getAmpMod1Value(): Promise<NumberResult>
 
-    getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
+    getAmpMod2Value(): Promise<NumberResult>
 
-    getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
+    getPanMod1Source(): Promise<NumberResult>
 
-    getInfo(): Promise<ProgramOutputInfoResult>
+    getPanMod2Source(): Promise<NumberResult>
+
+    getPanMod3Source(): Promise<NumberResult>
+
+    getPanMod1Value(): Promise<NumberResult>
+
+    getPanMod2Value(): Promise<NumberResult>
+
+    getPanMod3Value(): Promise<NumberResult>
+
+    getInfo(): Promise<Result>
 }
 
 const programOutputSpec = {
