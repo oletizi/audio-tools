@@ -708,7 +708,9 @@ export interface ProgramOutput {
 
     getVelocitySensitivity(): Promise<NumberResult>
 
-    getAmpModSource(ampMod: 1 | 2): Promise<NumberResult>
+    getAmpMod1Source(): Promise<NumberResult>
+
+    getAmpMod2Source(): Promise<NumberResult>
 
     getAmpModValue(ampMod: 1 | 2): Promise<NumberResult>
 
@@ -723,18 +725,18 @@ const programOutputSpec = {
     items: [
         // |                  | get request spec                                              | set request spec. req data length encoded in length of the spec array
         // | method name root | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
-        ["loudness", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
-        ["velocitySensitivity", 0x29, "uint8", 1, 0x21, ["int8sign", "int8abs"]],
-        ["ampMod1Source", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
-        ["ampMod2Source", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
-        ["ampMod1Value", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
-        ["ampMod2Value", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
-        ["panMod1Source", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
-        ["panMod2Source", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
-        ["panMod3source", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
-        ["panMod1Value", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
-        ["panMod2Value", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
-        ["panMod3Value", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
+        ["Loudness", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
+        ["VelocitySensitivity", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
+        ["AmpMod1Source", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
+        ["AmpMod2Source", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
+        ["AmpMod1Value", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
+        ["AmpMod2Value", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
+        ["PanMod1Source", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
+        ["PanMod2Source", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
+        ["PanMod3source", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
+        ["PanMod1Value", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
+        ["PanMod2Value", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
+        ["PanMod3Value", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
     ]
 }
 
@@ -917,13 +919,24 @@ class Sysex {
                 let response = newResponse(event);
                 // TODO: Update to handle setter messages that receive a "DONE" reply rather than a "REPLY" message
                 // The current implementation doesn't distinguish between the two, but it should.
-                if (response.status == ResponseStatus.OK) {
-                    out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
-                } else {
-                    out.log(`SYSEX RESPONSE: ${eventCount}: ${response.status}; Resolving.`)
-                    midi.removeListener('sysex', listener)
-                    resolve(response)
+                switch (response.status) {
+                    case ResponseStatus.OK:
+                        out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
+                        break
+                    case ResponseStatus.DONE:
+                    case ResponseStatus.REPLY:
+                    case ResponseStatus.ERROR:
+                        out.log(`SYSEX RESPONSE: ${eventCount} terminal: ${response.status}; Resolving `)
+                        midi.removeListener('sysex', listener)
+                        resolve(response)
                 }
+                // if (response.status == ResponseStatus.OK) {
+                //     out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
+                // } else if (response.status == ResponseStatus.DONE || response.status == ResponseStatus.) {
+                //     out.log(`SYSEX RESPONSE: ${eventCount}: ${response.status}; Resolving.`)
+                //     midi.removeListener('sysex', listener)
+                //     resolve(response)
+                // }
                 eventCount++
             }
 

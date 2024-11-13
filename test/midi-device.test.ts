@@ -3,15 +3,17 @@ import {WebMidi} from 'webmidi'
 import {expect} from "chai";
 import {newServerOutput} from "../src/ts/process-output";
 import {Midi} from "../src/ts/midi/midi";
+import {newS56kDevice} from "../src/ts/midi/device";
 
 const out = newServerOutput()
 describe('Device', async () => {
     after(async () => {
-        console.log('Disabling MIDI...')
+        out.log('Disabling MIDI...')
         await WebMidi.disable()
-        console.log('MIDI disabled!');
+        out.log('MIDI disabled!');
     })
-    it('Does stuff?', async () => {
+
+    it('Initializes', async () => {
         let calledBack = false
         const midi = new Midi(out)
         await midi.start(() => {
@@ -19,6 +21,25 @@ describe('Device', async () => {
         })
         expect(calledBack).true
         expect((await midi.getOutputs()).length).gte(1)
+    })
+
+    it ('Sysex device', async () => {
+        const midi = new Midi(out)
+        await midi.start(async () => {
+            (await midi.getOutputs()).forEach((output) => out.log(`Output: ${output.name}`))
+            out.log(`Current output: ${(await midi.getCurrentOutput()).name}`)
+            out.log(`Current input: ${(await midi.getCurrentInput()).name}`)
+            if (! await midi.setOutputByName('IAC Driver Bus 1')) {
+                throw new Error("No suitable MIDI output.")
+            }
+            midi.addListener('sysex', async (event) => {
+                out.log(`Sysex!: ${event}`)
+            })
+        })
+        const sampler = newS56kDevice(midi, out)
+        const program = sampler.getCurrentProgram()
+        const output = program.getOutput()
+        await output.getAmpMod1Source()
     })
 
 })
