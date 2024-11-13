@@ -3,7 +3,7 @@ import {WebMidi} from 'webmidi'
 import {expect} from "chai";
 import {newServerOutput} from "../src/ts/process-output";
 import {Midi} from "../src/ts/midi/midi";
-import {newS56kDevice} from "../src/ts/midi/device";
+import {newS56kDevice, newVirtualS5000} from "../src/ts/midi/device";
 
 const out = newServerOutput()
 describe('Device', async () => {
@@ -23,8 +23,10 @@ describe('Device', async () => {
         expect((await midi.getOutputs()).length).gte(1)
     })
 
-    it ('Sysex device', async () => {
+    it ('Sysex', async () => {
         const midi = new Midi(out)
+        const vs5k = newVirtualS5000(midi, out)
+
         await midi.start(async () => {
             (await midi.getOutputs()).forEach((output) => out.log(`Output: ${output.name}`))
             out.log(`Current output: ${(await midi.getCurrentOutput()).name}`)
@@ -32,8 +34,9 @@ describe('Device', async () => {
             if (! await midi.setOutputByName('IAC Driver Bus 1')) {
                 throw new Error("No suitable MIDI output.")
             }
-            midi.addListener('sysex', async (event) => {
-                out.log(`Sysex!: ${event}`)
+            vs5k.init()
+            midi.addListener('sysex', async () => {
+
             })
         })
         const sampler = newS56kDevice(midi, out)

@@ -362,17 +362,17 @@ export interface ProgramInfo {
     index: number
     keygroupCount: number
     loudness: number
-    velocitySensitivity: number
-    ampMod1Source: number
-    ampMod2Source: number
-    ampMod1Value: number
-    ampMod2Value: number
-    panMod1Source: number
-    panMod2Source: number
-    panMod3Source: number
-    panMod1Value: number
-    panMod2Value: number
-    panMod3Value: number
+    // velocitySensitivity: number
+    // ampMod1Source: number
+    // ampMod2Source: number
+    // ampMod1Value: number
+    // ampMod2Value: number
+    // panMod1Source: number
+    // panMod2Source: number
+    // panMod3Source: number
+    // panMod1Value: number
+    // panMod2Value: number
+    // panMod3Value: number
     semitoneTune: number
     fineTune: number
     tuneTemplate: number
@@ -703,6 +703,24 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
     }
 }
 
+export interface ProgramOutputInfo {
+    velocitySensitivity: number
+    ampMod1Source: number
+    ampMod2Source: number
+    ampMod1Value: number
+    ampMod2Value: number
+    panMod1Source: number
+    panMod2Source: number
+    panMod3Source: number
+    panMod1Value: number
+    panMod2Value: number
+    panMod3Value: number
+}
+
+export interface ProgramOutputInfoResult extends Result {
+    data: ProgramOutputInfo
+}
+
 export interface ProgramOutput {
     getLoudness(): Promise<NumberResult>
 
@@ -717,6 +735,8 @@ export interface ProgramOutput {
     getPanModSource(panMod: 1 | 2 | 3): Promise<NumberResult>
 
     getPanModValue(panMod: 1 | 2 | 3): Promise<NumberResult>
+
+    getInfo(): Promise<ProgramOutputInfoResult>
 }
 
 const programOutputSpec = {
@@ -755,6 +775,8 @@ function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
 function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
     const sectionCode = spec.sectionCode
     const obj = {}
+
+
     for (const item of spec.items) {
         let i = 0
         const methodName = item[i++] as string
@@ -945,6 +967,38 @@ class Sysex {
             out.log(`Sending sysex data: ${data}`)
             this.midi.sendSysex(akaiID, data)
             this.out.log(`Done sending sysex.`)
+        })
+    }
+}
+
+
+export interface S5000 {
+    init()
+}
+
+export function newVirtualS5000(midi: Midi, out: ProcessOutput): S5000 {
+    return new VirtualS5000(midi, out)
+}
+
+class VirtualS5000 implements S5000 {
+    private readonly midi: Midi;
+    private readonly out: ProcessOutput;
+
+    constructor(midi: Midi, out: ProcessOutput) {
+        this.midi = midi
+        this.out = out
+    }
+
+    init() {
+        const out = this.out
+
+        function log(msg) {
+            out.log('vs5k sysex: ' + msg)
+        }
+
+        this.midi.addListener('sysex', async (event) => {
+            log(`Sysex!!!`)
+            Object.getOwnPropertyNames(event).sort().forEach((name) => log(`${name}: ${event[name]}`))
         })
     }
 }

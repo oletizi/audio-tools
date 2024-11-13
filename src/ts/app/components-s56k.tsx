@@ -1,6 +1,6 @@
 import React from "react";
 import {Input, Output} from "webmidi";
-import {ProgramInfo} from "../midi/device";
+import {ProgramInfo, ProgramOutput} from "../midi/device";
 
 let sequence = 0
 
@@ -12,6 +12,32 @@ export interface MidiDeviceSpec {
 
 function uid() {
     return sequence++ + '-' + Math.random().toString(16).slice(2)
+}
+
+export async function ProgramOutputView(data: ProgramOutput) {
+
+    const thingy = {}
+    let result = await data.getAmpMod1Source()
+    // TODO: Handle errors
+    thingy['Amp Mod 1 Source'] = result.data
+
+    const items = Object.getOwnPropertyNames(thingy).sort().map((name) => {
+        return (
+            <li className={'list-group-item'} key={name}>
+                <div className={'row'}>
+                    <div className={'col'}><span className={'fw-bold'}>{name}</span></div>
+                    <div className={'col'}>{thingy[name]}</div>
+                </div>
+            </li>)
+    })
+    return (
+        <div className={'card'}>
+            <div className={'card-header fw-bold'}>Program Output</div>
+            <ul className={'list-group list-group-flush'}>
+                {items}
+            </ul>
+        </div>
+    )
 }
 
 export function ProgramInfoView(data: ProgramInfo) {
