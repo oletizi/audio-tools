@@ -10,9 +10,9 @@
   "scripts": {
     "watch:build": "nodemon --watch 'src/*' -e scss,html,ts,tsx -x \"npm run build\"",
     "watch:start": "nodemon --watch 'src/*' -e ts -x \"npm run start\"",
-    "sass-build": "npx sass src/scss/styles.scss build/site/styles.css",
-    "bundler-build": "npx esbuild src/ts/app/client.tsx --bundle --outfile=build/site/client.js && npx esbuild src/ts/app/client-s56k.tsx --bundle --outfile=build/site/s56k-client.js",
-    "build": "tsx build.ts && npm run sass-build && npm run bundler-build",
+    "sass-build": "npx sass src/scss/styles.scss build/site/static/css/styles.css",
+    "bundler-build": "npx esbuild src/ts/app/client.tsx --bundle --outfile=build/site/static/js/client.js && npx esbuild src/ts/app/client-s56k.tsx --bundle --outfile=build/site/static/js/s56k-client.js && npx esbuild src/ts/app/App.tsx --bundle --outfile=build/site/static/js/app.js",
+    "build": "(cd ./src/static && copyfiles ./**/* ../../build/site/static/) && npm run sass-build && npm run bundler-build",
     "start": "npm run build && tsx src/ts/app/server.ts",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
     "translate": "tsx src/ts/translate.ts",
@@ -22,6 +22,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@shoelace-style/shoelace": "^2.18.0",
     "@types/cheerio": "^0.22.35",
     "antlr4": "^4.13.2",
     "bootstrap": "^5.3.3",
@@ -55,6 +56,7 @@
     "@webpack-cli/generators": "^3.0.7",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
+    "copyfiles": "^2.4.1",
     "css-loader": "^7.1.2",
     "electron": "^33.0.1",
     "esbuild": "0.24.0",

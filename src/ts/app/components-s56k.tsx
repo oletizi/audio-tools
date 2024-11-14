@@ -1,7 +1,5 @@
 import React from "react";
-import {Input, Output} from "webmidi";
 import {ProgramInfo, ProgramOutput} from "../midi/device";
-
 let sequence = 0
 
 export interface MidiDeviceSpec {
@@ -14,22 +12,31 @@ function uid() {
     return sequence++ + '-' + Math.random().toString(16).slice(2)
 }
 
-export async function ProgramOutputView(data) {
+export async function ProgramOutputView(data: ProgramOutput) {
+    const props = []
+    props.push({
+        label: "Loudness",
+        min: 0,
+        max: 100,
+        value: async () => (await data.getLoudness()).data,
 
-    const items = Object.getOwnPropertyNames(data).sort().map((name) => {
+    })
+
+    const items = props.map(prop => {
         return (
-            <li className={'list-group-item'} key={name}>
+            <li className={'list-group-item'} key={prop.label}>
                 <div className={'row'}>
-                    <div className={'col'}><span className={'fw-bold'}>{name}</span></div>
-                    <div className={'col'}>{data[name]}</div>
-                    <div className={'col'}><sl-range label={name} min="0" max="100"></sl-range></div>
+                    <div className={'col'}>{prop.label}</div>
+                    <div className={'col'}>
+                        <sl-range value={prop.value} min={prop.min} max={prop.max} onSlInput={event => console.log(`I've changed: ${event} !!!!`)}></sl-range>
+                    </div>
                 </div>
             </li>)
     })
     return (
-        <div className={'card'}>
+        <div className={'card h-100'}>
             <div className={'card-header fw-bold'}>Program Output</div>
-            <ul className={'list-group list-group-flush'}>
+            <ul className={'list-group list-group-flush overflow-scroll h-100'}>
                 {items}
             </ul>
         </div>

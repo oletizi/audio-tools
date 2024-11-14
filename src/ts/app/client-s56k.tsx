@@ -98,7 +98,7 @@ class ClientS56k {
 
         // const rOutput = await program.getOutput().getInfo()
         let programOutput = program.getOutput();
-        programOutputRoot.render(await ProgramOutputView((await programOutput.getInfo()).data))
+        programOutputRoot.render(await ProgramOutputView(programOutput))
     }
 
 }

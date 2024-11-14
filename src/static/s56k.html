@@ -6,7 +6,7 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/light.css"/>
     <!--meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"-->
-    <link href="/styles.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
     <title>Akai S5000/S6000</title>
 </head>
 <body>
@@ -17,11 +17,11 @@
         </div>
     </div>
     <div class="row mb-3">
-        <div class="col-5">
-            <div id="program-info"></div>
+        <div class="col-3">
+            <div id="program-info" class="info-panel"></div>
         </div>
-        <div class="col-5">
-            <div id="program-output"></div>
+        <div class="col-3">
+            <div id="program-output" class="info-panel"></div>
         </div>
     </div>
     <div class="row mb-3">
@@ -52,5 +52,5 @@
         crossorigin="anonymous"></script>
 <script type="module"
         src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/shoelace-autoloader.js"></script>
-<script src="/s56k-client.js"></script>
+<script src="/js/s56k-client.js"></script>
 </body>
