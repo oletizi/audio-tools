@@ -28,6 +28,8 @@ function MyReactBootstrapButton() {
 
 function MyRangeSlider() {
     return (<SlRange
+        onSlChange={(event) => console.log(`Change!!!`)}
+        onSlInput={(event)=> console.log(`Input!!!`)}
         label={'Loudness'}
         min={0}
         max={100}
