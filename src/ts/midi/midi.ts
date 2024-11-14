@@ -30,7 +30,7 @@ export class Midi {
     }
 
     setOutput(output: Output) {
-        this.out.log(`NEW OUTPUT: ${output.name}`)
+        this.out.log(` setOutput(): ${output.name}`)
         this.output = output
     }
 

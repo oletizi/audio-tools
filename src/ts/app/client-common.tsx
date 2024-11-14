@@ -3,6 +3,7 @@ import {Status} from "./components-common";
 import {newClientOutput, ProcessOutput} from "../process-output";
 import {ClientConfig} from "./config-client";
 import React from 'react'
+import {timestamp} from "../lib/core";
 
 export interface Result {
     error: string | null
@@ -40,7 +41,7 @@ class BasicClientCommon implements ClientCommon {
     }
 
     status(msg) {
-        this.statusRoot.render(<Status msg={msg ? msg : 'Unknown'}/>)
+        this.statusRoot.render(<Status msg={timestamp() + ': ' + (msg ? msg : 'Unknown')}/>)
     }
 
     getOutput(): ProcessOutput {

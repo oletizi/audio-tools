@@ -1,8 +1,8 @@
 import React from 'react'
+import SlCard from "@shoelace-style/shoelace/dist/react/card/index.js";
 
 export function Status({msg}) {
     return (
-        <div className={'card text-bg-primary p-3'}>
-            <div className={'card-body'}><span className={'fw-bold'}>Status:</span> {msg}</div>
-        </div>)
+        <SlCard><span className={'fw-bold'}>Status:</span> <span className={'monospace'}>{msg}</span></SlCard>
+    )
 }

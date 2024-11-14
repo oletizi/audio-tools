@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import {timestamp} from "./lib/core";
 
 export interface ProcessOutput {
     log(msg: string | Buffer)
@@ -45,7 +46,3 @@ export function newClientOutput(debug = true) : ProcessOutput {
     return new BasicOutput(console.info, console.error, '', debug)
 }
 
-function timestamp() {
-    const d = dayjs()
-    return `${d.year()}-${d.month()}-${d.day()}:${d.hour()}:${d.minute()}:${d.second()}`
-}
