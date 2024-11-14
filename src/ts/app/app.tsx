@@ -47,7 +47,10 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
     return (
         <SlDropdown>
             <SlButton slot={'trigger'} caret>{label + ': ' + selected}</SlButton>
-            <SlMenu onSlSelect={(event) => {setSelected(desanitize(event.detail.item.value)); onSelect(event)}} name={name} value={value}>
+            <SlMenu onSlSelect={(event) => {
+                setSelected(desanitize(event.detail.item.value));
+                onSelect(event)
+            }} name={name} value={value}>
                 {options.map(d => (<SlMenuItem key={d.name} name={d.name} value={d.value}>{d.name}</SlMenuItem>))}
             </SlMenu>
         </SlDropdown>
@@ -66,6 +69,13 @@ export default function App({data}) {
                         value={data.midiOutputs.value}
                         options={data.midiOutputs.options}
                         onSelect={data.midiOutputs.onSelect}/>
+                    <MidiDeviceSelect
+                        name="midi-input"
+                        label="MIDI Input"
+                        value={data.midiInputs.value}
+                        options={data.midiInputs.options}
+                        onSelect={data.midiInputs.onSelect}
+                    />
                 </Col>
             </Row>
         </Container>
@@ -87,6 +97,25 @@ midi.start(async () => {
     await midi.setOutputByName(cfg.midiOutput)
     await midi.setInputByName(cfg.midiInput)
 
+    async function midiDeviceData(outputs: boolean) {
+        return {
+            value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
+            onSelect: (event) => {
+                const deviceName = desanitize(event.target.value)
+                outputs ? midi.setOutputByName(deviceName) : midi.setInputByName(deviceName)
+                outputs ? cfg.midiOutput = deviceName : cfg.midiInput = deviceName
+                common.saveConfig(cfg)
+            },
+            options: (outputs ? await midi.getOutputs() : await midi.getInputs()).map(device => {
+                return {
+                    name: device.name,
+                    active: outputs ? midi.isCurrentOutput(device.name) : midi.isCurrentInput(device.name),
+                    value: sanitize(device.name)
+                } as Option
+            })
+        } as Selectable
+    }
+
     const data = {
         midiOutputs: {
             value: sanitize((await midi.getCurrentOutput()).name),
@@ -103,7 +132,8 @@ midi.start(async () => {
                     value: sanitize(output.name),
                 } as Option
             })
-        } as Selectable
-    }
-    appRoot.render(<App data={data as AppData}/>)
+        } as Selectable,
+        midiInputs: await midiDeviceData(false)
+    } as AppData
+    appRoot.render(<App data={data}/>)
 }).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))
