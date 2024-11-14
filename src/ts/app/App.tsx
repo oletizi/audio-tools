@@ -5,6 +5,7 @@ import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js'
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 import SlButton from '@shoelace-style/shoelace/dist/react/button/index.js'
+import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js"
 
 function MyButton() {
     return (
@@ -13,7 +14,15 @@ function MyButton() {
 }
 
 function MyShoelaceButton() {
-    return (<SlButton variant={'primary'}>Shoelace!</SlButton>)
+    return (<SlButton variant={'primary'} onClick={() => {console.log(`You Clicked me!`)}}>Shoelace!</SlButton>)
+}
+
+function MyRangeSlider() {
+    return (<SlRange
+        label={'Loudness'}
+        min={0}
+        max={100}
+        value={85}></SlRange>)
 }
 
 export default function App() {
@@ -22,6 +31,7 @@ export default function App() {
             <h1>Welcome to my app</h1>
             <MyButton/>
             <MyShoelaceButton/>
+            <MyRangeSlider/>
         </div>
     )
 }
