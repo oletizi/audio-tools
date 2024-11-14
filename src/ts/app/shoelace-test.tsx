@@ -36,7 +36,7 @@ function MyRangeSlider() {
         value={85}></SlRange>)
 }
 
-export default function App() {
+export default function ShoelaceTest() {
     return (
         <Row>
             <Col lg={4}>
@@ -50,4 +50,4 @@ export default function App() {
     )
 }
 
-createRoot(document.getElementById("app")).render(<App/>)
+createRoot(document.getElementById("app")).render(<ShoelaceTest/>)
