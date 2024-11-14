@@ -1,11 +1,14 @@
 import {createRoot} from "react-dom/client"
 import React from 'react'
+import Button from 'react-bootstrap/Button';
+
 import '@shoelace-style/shoelace/dist/themes/light.css'
 import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js'
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 import SlButton from '@shoelace-style/shoelace/dist/react/button/index.js'
 import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js"
+import {Col, Row} from "react-bootstrap";
 
 function MyButton() {
     return (
@@ -14,7 +17,13 @@ function MyButton() {
 }
 
 function MyShoelaceButton() {
-    return (<SlButton variant={'primary'} onClick={() => {console.log(`You Clicked me!`)}}>Shoelace!</SlButton>)
+    return (<SlButton variant={'primary'} onClick={() => {
+        console.log(`You Clicked me!`)
+    }}>Shoelace!</SlButton>)
+}
+
+function MyReactBootstrapButton() {
+    return (<Button>React-bootstrap</Button>)
 }
 
 function MyRangeSlider() {
@@ -27,12 +36,15 @@ function MyRangeSlider() {
 
 export default function App() {
     return (
-        <div>
-            <h1>Welcome to my app</h1>
-            <MyButton/>
-            <MyShoelaceButton/>
-            <MyRangeSlider/>
-        </div>
+        <Row>
+            <Col lg={4}>
+                <h1>Welcome to my app</h1>
+                <MyButton/>
+                <MyShoelaceButton/>
+                <MyReactBootstrapButton/>
+                <MyRangeSlider/>
+            </Col>
+        </Row>
     )
 }
 

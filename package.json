@@ -37,6 +37,7 @@
     "node-polyfill-webpack-plugin": "^4.0.0",
     "queue": "^7.0.0",
     "react": "^18.3.1",
+    "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "riff-parser": "^1.0.1",
     "tmp": "^0.2.3",

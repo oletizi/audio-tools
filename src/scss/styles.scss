@@ -2,8 +2,10 @@ $cream: #F1DAC4;
 $orange: #F55436;
 $green: #606C38;
 
-$light-gray: #A69CAC;
-$dark-gray: #292F36;
+//$light-gray: #A69CAC;
+$light-gray: var(--sl-color-gray-600);
+//$dark-gray: #292F36;
+$dark-gray: var(--sl-color-gray-200);
 $highlight: $orange;
 
 $primary: $dark-gray;
@@ -12,16 +14,36 @@ $success: $green;
 $danger: $orange;
 $dark: $dark-gray;
 $light: $light-gray;
+// Shoelace
 
 // MPC colors
 $cream: #E9E9DD;
 $light-gray: #c3c5b2;
+//$light-gray: --sl-color-gray-300;
 $dark-gray: #5a5f5c;
 $light-green: #7a7f6b;
 $red: #cf2a25;
-$blue: #387589;
-$light-blue: lighten($blue, 25);
+//$red: var(--sl-color-red-300);
+$blue: #1C627AFF; //var(--sl-color-cyan-200);
+$light-blue: #1896B7FF;//var(--sl-color-cyan-400);
 $yellow: #E3D26F;
+
+:root,
+:host,
+.sl-theme-light {
+  /* your custom styles here */
+  --sl-color-primary-50: var(--sl-color-cyan-50);
+  --sl-color-primary-100: var(--sl-color-cyan-100);
+  --sl-color-primary-200: var(--sl-color-cyan-200);
+  --sl-color-primary-300: var(--sl-color-cyan-300);
+  --sl-color-primary-400: var(--sl-color-cyan-400);
+  --sl-color-primary-500: var(--sl-color-cyan-500);
+  --sl-color-primary-600: var(--sl-color-cyan-600);
+  --sl-color-primary-700: var(--sl-color-cyan-700);
+  --sl-color-primary-800: var(--sl-color-cyan-800);
+  --sl-color-primary-900: var(--sl-color-cyan-900);
+  --sl-color-primary-950: var(--sl-color-cyan-950);
+}
 
 $primary: $blue;
 $secondary: $light-green;
@@ -122,3 +144,5 @@ $info-panel-height: 25rem;
     max-height: $info-panel-height;
   }
 }
+
+
