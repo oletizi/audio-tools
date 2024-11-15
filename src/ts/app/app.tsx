@@ -48,8 +48,9 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
         <SlDropdown>
             <SlButton slot={'trigger'} caret>{label + ': ' + selected}</SlButton>
             <SlMenu onSlSelect={(event) => {
-                setSelected(desanitize(event.detail.item.value));
-                onSelect(event)
+                let selectedDevice = desanitize(event.detail.item.value);
+                setSelected(selectedDevice);
+                onSelect(selectedDevice)
             }} name={name} value={value}>
                 {options.map(d => (<SlMenuItem key={d.name} name={d.name} value={d.value}>{d.name}</SlMenuItem>))}
             </SlMenu>
@@ -100,8 +101,7 @@ midi.start(async () => {
     async function midiDeviceData(outputs: boolean) {
         return {
             value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
-            onSelect: (event) => {
-                const deviceName = desanitize(event.target.value)
+            onSelect: (deviceName) => {
                 outputs ? midi.setOutputByName(deviceName) : midi.setInputByName(deviceName)
                 outputs ? cfg.midiOutput = deviceName : cfg.midiInput = deviceName
                 common.saveConfig(cfg)
@@ -117,22 +117,7 @@ midi.start(async () => {
     }
 
     const data = {
-        midiOutputs: {
-            value: sanitize((await midi.getCurrentOutput()).name),
-            onSelect: (event) => {
-                const outputName = desanitize(event.target.value)
-                midi.setOutputByName(outputName)
-                cfg.midiOutput = outputName
-                common.saveConfig(cfg)
-            },
-            options: (await midi.getOutputs()).map(output => {
-                return {
-                    name: output.name,
-                    active: midi.isCurrentOutput(output.name),
-                    value: sanitize(output.name),
-                } as Option
-            })
-        } as Selectable,
+        midiOutputs: await midiDeviceData(true),
         midiInputs: await midiDeviceData(false)
     } as AppData
     appRoot.render(<App data={data}/>)
