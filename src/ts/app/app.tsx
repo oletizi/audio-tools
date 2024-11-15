@@ -85,23 +85,7 @@ function ProgramView({program}: { program: ProgramData }) {
 function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
     const colSize = 2
     return (<div>
-        <Row>
-            <Col lg={colSize}>Amp Mod 1 Source:</Col>
-            <Col>
-                <SlRange
-                    min={output.ampMod1Source.min}
-                    max={output.ampMod1Source.max}
-                    step={output.ampMod1Source.step}
-                    value={output.ampMod1Source.value}
-                    onSlChange={async (event) => {
-                        const value = (event.target as any).value
-                        const result = await output.ampMod1Source.mutator(value)
-                        console.log(`Result: errors: ${result.errors.length}; data: ${result.data}`)
-                    }
-                    }
-                />
-            </Col>
-        </Row>
+        <ModSourceView source={output.ampMod1Source} label={'Amp Mod 1 Source'}/>
         <ModSourceView source={output.ampMod2Source} label={'Amp Mod 2 Source'}/>
         <ModSourceView source={output.panMod1Source} label={'Pan Mod 1 Source'}/>
         <ModSourceView source={output.panMod1Source} label={'Pan Mod 2 Source'}/>
@@ -129,30 +113,23 @@ function ModSourceView({source, label}: { source: MutableNumber, label: string }
         14: '+External'
     }
     return (
-        <div>
-            <Row>
-                <Col>{label}</Col>
-            </Row>
-            <Row>
-                <Col>
-                    <SlDropdown>
-                        <SlButton slot={'trigger'} value={source.value.toString()} caret>{names[selected]}</SlButton>
-                        <SlMenu onSlSelect={async (event) => {
-                            const val = event.detail.item.value
-                            setSelected(val)
-                            // XXX: TODO: Handle errors here
-                            const result = await source.mutator(Number.parseInt(val))
-                        }}>
-                            {Object.getOwnPropertyNames(names)
-                                .map(val => <SlMenuItem
-                                    key={label + val}
-                                    name={names[val]}
-                                    value={val}>{names[val]}</SlMenuItem>)}
-                        </SlMenu>
-                    </SlDropdown>
-                </Col>
-            </Row>
-        </div>)
+        <SlDropdown>
+            <SlButton slot={'trigger'} value={source.value.toString()} caret>
+                <span className={'fw-bold'}>{label + ': '}</span> <span>{names[selected]}</span></SlButton>
+            <SlMenu onSlSelect={async (event) => {
+                const val = event.detail.item.value
+                setSelected(val)
+                // XXX: TODO: Handle errors here
+                const result = await source.mutator(Number.parseInt(val))
+            }}>
+                {Object.getOwnPropertyNames(names)
+                    .map(val => <SlMenuItem
+                        key={label + val}
+                        name={names[val]}
+                        value={val}>{names[val]}</SlMenuItem>)}
+            </SlMenu>
+        </SlDropdown>
+    )
 }
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {
