@@ -46,12 +46,14 @@ class BasicClientCommon implements ClientCommon {
 
     error(err: string | Error | Error[]) {
         let msg = ''
-        if (err instanceof Array) {
+        if (err instanceof Array && err.length > 0) {
             msg = err.join(', ')
         } else if  (err instanceof String) {
             msg = err
         } else if (err instanceof Error) {
             msg = err.message
+        } else {
+            return
         }
 
         this.statusRoot.render(<Status msg={timestamp() + ': Error(s): ' + msg} variant={'danger'}/>)

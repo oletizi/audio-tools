@@ -364,6 +364,7 @@ export interface MutableNumber {
     mutator: (value: number) => Error[]
     value: number
 }
+
 export interface MutableString {
     mutator: (value: string) => Error[]
     value: string
@@ -487,7 +488,12 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
             id: programId.data,
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
-            name: {value: programName.data, mutator: (value:string) => {this.out.log(`TODO: Write program name: ${value}`); return []}},
+            name: {
+                value: programName.data, mutator: (value: string) => {
+                    this.out.log(`TODO: Write program name: ${value}`);
+                    return []
+                }
+            },
         } as ProgramInfo
         return rv
     }
@@ -617,19 +623,23 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
     }
 }
 
-// export interface ProgramOutputInfo {
-//     velocitySensitivity: number
-//     ampMod1Source: number
-//     ampMod2Source: number
-//     ampMod1Value: number
-//     ampMod2Value: number
-//     panMod1Source: number
-//     panMod2Source: number
-//     panMod3Source: number
-//     panMod1Value: number
-//     panMod2Value: number
-//     panMod3Value: number
-// }
+export interface ProgramOutputInfo {
+    velocitySensitivity: MutableNumber
+    ampMod1Source: MutableNumber
+    ampMod2Source: MutableNumber
+    ampMod1Value: MutableNumber
+    ampMod2Value: MutableNumber
+    panMod1Source: MutableNumber
+    panMod2Source: MutableNumber
+    panMod3Source: MutableNumber
+    panMod1Value: MutableNumber
+    panMod2Value: MutableNumber
+    panMod3Value: MutableNumber
+}
+
+export interface ProgramOutputInfoResult extends Result {
+    data: ProgramOutputInfo
+}
 
 export interface ProgramOutput {
     getLoudness(): Promise<NumberResult>
@@ -656,27 +666,29 @@ export interface ProgramOutput {
 
     getPanMod3Value(): Promise<NumberResult>
 
-    getInfo(): Promise<Result>
+    getInfo(): Promise<ProgramOutputInfoResult>
 }
 
 const programOutputSpec = {
     className: "ProgramOutput",
     sectionCode: Section.PROGRAM,
     items: [
-        // |                  | get request spec                                              | set request spec. req data length encoded in length of the spec array
-        // | method name root | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
-        ["Loudness", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
-        ["VelocitySensitivity", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
-        ["AmpMod1Source", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
-        ["AmpMod2Source", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
-        ["AmpMod1Value", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
-        ["AmpMod2Value", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
-        ["PanMod1Source", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
-        ["PanMod2Source", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
-        ["PanMod3source", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
-        ["PanMod1Value", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
-        ["PanMod2Value", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
-        ["PanMod3Value", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
+        // | general                                 | set request spec. req data length encoded in length of the spec array
+        // | method name root, type spec             | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
+        // |                   'number|min|max|step" |
+        // |                   'string|max'          |
+        ["Loudness", "number|0|100|1", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
+        ["VelocitySensitivity", "number|-100|100|1", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
+        ["AmpMod1Source", "number|0|14|1", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
+        ["AmpMod2Source", "number|0|14|1", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
+        ["AmpMod1Value", "number|-100|100|1", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
+        ["AmpMod2Value", "number|-100|100|1", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
+        ["PanMod1Source", "number|0|14|1", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
+        ["PanMod2Source", "number|0|14|1", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
+        ["PanMod3source", "number|0|14|1", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
+        ["PanMod1Value", "number|-100|100|1", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
+        ["PanMod2Value", "number|-100|100|1", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
+        ["PanMod3Value", "number|-100|100|1", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
     ]
 }
 
@@ -699,6 +711,7 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
     for (const item of spec.items) {
         let i = 0
         const methodName = item[i++] as string
+        const dataTypeSpec = item[i++] as string
         const getterItemCode = item[i++] as number
         const getterRequestData = item[i++] as number[]
         const responseType = item[i++] as string
@@ -788,10 +801,16 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
         const info = {}
         let errors = []
         for (const item of spec.items) {
-            const methodName = 'get' + item[0]
-            const propertyName = String(item[0]).charAt(0).toLowerCase() + String(item[0]).slice(1)
-            const result = await obj[methodName]()
-            info[propertyName] = result.data
+            const methodNameRoot = item[0]
+            const getter = 'get' + methodNameRoot
+            const setter = 'set' + methodNameRoot
+            const dataTypeSpec = item[1]
+            const propertyName = String(methodNameRoot).charAt(0).toLowerCase() + String(methodNameRoot).slice(1)
+            const result = await obj[getter]()
+            info[propertyName] = {
+                value: result.data,
+                mutator: obj[setter]
+            }
             errors = errors.concat(result.errors)
         }
         return {errors: errors, data: info}
@@ -862,7 +881,7 @@ class Sysex {
         const s56kId = 0x5E
         const deviceId = 0x00
         const userRef = 0x00
-        return new Promise<any>(  async (resolve, reject) => {
+        return new Promise<any>(async (resolve, reject) => {
             let eventCount = 0
 
             function listener(event) {
@@ -892,9 +911,10 @@ class Sysex {
                 // }
                 eventCount++
             }
+
             out.log(`Adding listener for sysex call.`)
-            out.log(`  Output: ${ (await this.midi.getCurrentOutput()).name}`)
-            out.log(`  Input : ${ (await this.midi.getCurrentOutput()).name}`)
+            out.log(`  Output: ${(await this.midi.getCurrentOutput()).name}`)
+            out.log(`  Input : ${(await this.midi.getCurrentOutput()).name}`)
             this.midi.addListener('sysex', listener)
             let data = [s56kId, deviceId, userRef, message.section, message.item].concat(message.data);
             out.log(`Sending sysex data: ${data}`)

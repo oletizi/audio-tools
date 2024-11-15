@@ -20,7 +20,7 @@ import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js"
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js"
 import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
 import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
-import {newS56kDevice, ProgramInfo} from "../midi/device"
+import {newS56kDevice, ProgramInfo, ProgramOutputInfo} from "../midi/device"
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 
@@ -46,6 +46,7 @@ interface Selectable {
 
 interface ProgramData {
     info: ProgramInfo
+    output: ProgramOutputInfo
 }
 
 interface AppData {
@@ -70,13 +71,29 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
     )
 }
 
-function ProgramView({program}) {
+function ProgramView({program}: { program: ProgramData }) {
     return (
         <SlTabGroup>
+            <SlTab slot="nav" panel="output">Program Output</SlTab>
             <SlTab slot="nav" panel="info">Program Info</SlTab>
+            <SlTabPanel name="output"><ProgramOutputView output={program.output}/></SlTabPanel>
             <SlTabPanel name="info"><ProgramInfoView info={program.info}/></SlTabPanel>
         </SlTabGroup>
     )
+}
+
+function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
+    const colSize = 2
+    return (<div>
+        <Row>
+            <Col lg={colSize}>Amp Mod 1 Source:</Col>
+            <Col><SlFormatNumber value={output.ampMod1Source.value}/></Col>
+        </Row>
+        <Row>
+            <Col lg={colSize}>Amp Mod 2 Source:</Col>
+            <Col><SlFormatNumber value={output.ampMod2Source.value}/></Col>
+        </Row>
+    </div>)
 }
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {
@@ -107,7 +124,7 @@ function ProgramInfoView({info}: { info: ProgramInfo }) {
     )
 }
 
-export default function App({data}) {
+export default function App({data}: { data: AppData }) {
     return (
         <Container>
             <Row>
@@ -154,9 +171,12 @@ midi.start(async () => {
 
     device.init()
     const program = device.getCurrentProgram()
-    const programInfoResult = await (program.getInfo())
-    if (programInfoResult.errors.length > 0) {
-        common.status(programInfoResult.errors.join(' '))
+    const programInfoResult = await program.getInfo()
+    const programOutputResult = await program.getOutput().getInfo()
+    const errors: Error[] = programInfoResult.errors
+        .concat(programOutputResult.errors)
+    if (errors.length > 0) {
+        common.error(errors)
     }
 
     async function midiDeviceData(outputs: boolean) {
@@ -181,7 +201,8 @@ midi.start(async () => {
         midiOutputs: await midiDeviceData(true),
         midiInputs: await midiDeviceData(false),
         program: {
-            info: programInfoResult.data
+            info: programInfoResult.data,
+            output: programOutputResult.data
         }
     } as AppData
     appRoot.render(<App data={data}/>)
