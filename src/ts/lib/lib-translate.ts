@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
-import {mpc} from "./akai-mpc";
-import {newProgramFromBuffer} from "./akai-lib";
-import {decent} from './decent'
+import {mpc} from "./lib-akai-mpc";
+import {newProgramFromBuffer} from "./lib-akai-s56k";
+import {decent} from './lib-decent'
 import {newSampleFromBuffer} from "./sample";
 import {nullProgress, Progress} from "./progress";
 import * as Path from "path";

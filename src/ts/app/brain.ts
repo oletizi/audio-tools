@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import {Entry, DirList} from "./api.ts"
 import path from "path";
-import {translate} from "../lib/translate-lib";
-import {newProgramFromBuffer} from "../lib/akai-lib";
+import {translate} from "../lib/lib-translate";
+import {newProgramFromBuffer} from "../lib/lib-akai-s56k";
 import * as Path from "path";
 
 export namespace brain {

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import {timestamp} from "./lib/core";
+import {timestamp} from "./lib/lib-core";
 
 export interface ProcessOutput {
     log(msg: string | Buffer)
