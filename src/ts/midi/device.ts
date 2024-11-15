@@ -49,6 +49,7 @@
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
 import {Buffer} from 'buffer/'
+import {MutableNumber, MutableString} from "../lib/lib-core";
 
 enum ResponseStatus {
     OK = 79,
@@ -371,18 +372,6 @@ function newBooleanResult(res: SysexResponse): BooleanResult {
 }
 
 
-export interface MutableNumber {
-    min: number
-    max: number
-    step: number
-    mutator: (value: number) => Promise<Result>
-    value: number
-}
-
-export interface MutableString {
-    mutator: (value: string) => Promise<Result>
-    value: string
-}
 
 export interface ProgramInfo {
     name: MutableString
