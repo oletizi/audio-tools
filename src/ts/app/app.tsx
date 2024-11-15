@@ -19,6 +19,7 @@ import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js"
 import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js"
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js"
 import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
+import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
 import {newS56kDevice, ProgramInfo} from "../midi/device"
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
@@ -79,15 +80,30 @@ function ProgramView({program}) {
 }
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {
+    const colSize = 2
     return (
-        <Row>
-            <Col lg={2}>Name:</Col>
-            <Col><SlInput
-                name="program-name"
-                value={info.name.value}
-                onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
-            </Col>
-        </Row>
+        <div>
+            <Row>
+                <Col lg={colSize}>Name: </Col>
+                <Col><SlInput
+                    name="program-name"
+                    value={info.name.value}
+                    onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
+                </Col>
+            </Row>
+            <Row>
+                <Col lg={colSize}>Id:</Col>
+                <Col><SlFormatNumber value={info.id}/></Col>
+            </Row>
+            <Row>
+                <Col lg={colSize}>Index:</Col>
+                <Col><SlFormatNumber value={info.index}/></Col>
+            </Row>
+            <Row>
+                <Col lg={colSize}>Keygroup Count:</Col>
+                <Col><SlFormatNumber value={info.keygroupCount}/></Col>
+            </Row>
+        </div>
     )
 }
 
