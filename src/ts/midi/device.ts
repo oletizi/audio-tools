@@ -300,6 +300,20 @@ interface BooleanResult extends Result {
     data: boolean
 }
 
+function newResult(res: SysexResponse) : Result {
+    const rv = {
+        errors: [],
+        data: []
+    } as Result
+    if (res.status == ResponseStatus.REPLY && res.data) {
+        rv.data = res.data
+    } else if (res.status == ResponseStatus.ERROR) {
+        rv.errors.push(new Error(`Error: ${res.errorCode}: ${res.message}`))
+    }
+
+    return rv
+}
+
 function newByteArrayResult(res: SysexResponse, bytes: number): ByteArrayResult {
     const rv = {
         errors: [],
@@ -361,12 +375,12 @@ export interface MutableNumber {
     min: number
     max: number
     steps: number
-    mutator: (value: number) => Error[]
+    mutator: (value: number) => Promise<Result>
     value: number
 }
 
 export interface MutableString {
-    mutator: (value: string) => Error[]
+    mutator: (value: string) => Promise<Result>
     value: string
 }
 
@@ -793,7 +807,7 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
                 }
                 // else: all other request data was inserted from the spec
             }
-            await sysex.sysexRequest(newControlMessage(sectionCode, setterItemCode, setterRequestData))
+            return newResult(await sysex.sysexRequest(newControlMessage(sectionCode, setterItemCode, setterRequestData)))
         }
     }
     // Create get<...>Info() method

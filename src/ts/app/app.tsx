@@ -91,13 +91,10 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
                 <SlFormatNumber value={output.ampMod1Source.value}/>
                 <SlRange
                     value={output.ampMod1Source.value}
-                    onSlInput={(event) => {
-                        console.log(`INPUT!!!!!`)
-                    }}
-                    onSlChange={(event) => {
+                    onSlChange={async (event) => {
                         const value = (event.target as any).value
-                        console.log(`CHANGE!!!: ${value}`)
-                        output.ampMod1Source.mutator(value)
+                        const result = await output.ampMod1Source.mutator(value)
+                        console.log(`Result: errors: ${result.errors.length}; data: ${result.data}`)
                     }
                     }
                 />
