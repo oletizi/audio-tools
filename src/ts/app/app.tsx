@@ -87,7 +87,21 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
     return (<div>
         <Row>
             <Col lg={colSize}>Amp Mod 1 Source:</Col>
-            <Col><SlFormatNumber value={output.ampMod1Source.value}/></Col>
+            <Col>
+                <SlFormatNumber value={output.ampMod1Source.value}/>
+                <SlRange
+                    value={output.ampMod1Source.value}
+                    onSlInput={(event) => {
+                        console.log(`INPUT!!!!!`)
+                    }}
+                    onSlChange={(event) => {
+                        const value = (event.target as any).value
+                        console.log(`CHANGE!!!: ${value}`)
+                        output.ampMod1Source.mutator(value)
+                    }
+                    }
+                />
+            </Col>
         </Row>
         <Row>
             <Col lg={colSize}>Amp Mod 2 Source:</Col>

@@ -731,7 +731,6 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
         const setterItemCode = item[i++]
         const setterDataSpec = item[i++]
         const setterRequestData = []
-        let argumentIndex = 0
 
         for (let i = 0; i < setterDataSpec.length; i++) {
             const d = setterDataSpec[i]
@@ -741,17 +740,17 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
                     case "uint8":
                         // Write a function into the current request data array that knows how to retrieve the value from
                         // the arguments of the method.
-                        setterRequestData[i] = (args) => {
+                        setterRequestData[i] = (value) => {
                             // write the argument in the current data slot (erasing this function, which we don't need anymore)
-                            setterRequestData[i] = args[argumentIndex++]
+                            setterRequestData[i] = value
                         }
                         break
                     case "int8sign":
                         // this data byte is the sign byte signed int8. Write a function into the current request data array
                         // that knows how to retrieve the number passed in as an argument and replace itself and the next
                         // data byte with the two-byte version of the argument data
-                        setterRequestData[i] = (args) => {
-                            const int8 = args[argumentIndex++]
+                        setterRequestData[i] = (value) => {
+                            const int8 = value
                             // write the sign byte into the current data slot (erasing this function, which we don't need anymore)
                             setterRequestData[i] = int8 >= 0
                             // write the absolute value into the next data slot
@@ -782,14 +781,15 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
                 setterRequestData.push(d)
             }
         }
-        obj[`set${methodName}`] = async () => {
+        obj[`set${methodName}`] = async (value) => {
             // iterate over the setterRequestData to execute argument reading functions (which replace themselves with the
             // argument data
             for (let i = 0; i < setterRequestData.length; i++) {
                 const d = setterRequestData[i]
                 if (typeof d === 'function') {
                     // this *is* an argument-handling function. Call it with the arguments array
-                    d(arguments)
+                    // d(arguments)
+                    d(value)
                 }
                 // else: all other request data was inserted from the spec
             }
