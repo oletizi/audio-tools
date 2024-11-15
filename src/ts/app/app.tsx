@@ -8,7 +8,6 @@ import SlOption from '@shoelace-style/shoelace/dist/react/option/index.js'
 import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js"
 import SlMenuItem from "@shoelace-style/shoelace/dist/react/menu-item/index.js"
 import SlRadio from "@shoelace-style/shoelace/dist/react/radio/index.js"
-import {Col, Container, Row} from "react-bootstrap"
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js"
 import SlDetails from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
@@ -35,8 +34,6 @@ function desanitize(val: string) {
     return decodeURI(val)
 }
 
-
-
 function MidiDeviceSelect({name, label, value, onSelect, options}) {
     const [selected, setSelected] = useState(desanitize(value))
     return (
@@ -56,31 +53,23 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
 
 export default function App({data}: { data: AppData }) {
     return (
-        <Container>
-            <Row>
-                <Col>
-                    <h1>S5000/S6000 Control</h1>
-                    <MidiDeviceSelect
-                        name="midi-output"
-                        label="MIDI Output"
-                        value={data.midiOutputs.value}
-                        options={data.midiOutputs.options}
-                        onSelect={data.midiOutputs.onSelect}/>
-                    <MidiDeviceSelect
-                        name="midi-input"
-                        label="MIDI Input"
-                        value={data.midiInputs.value}
-                        options={data.midiInputs.options}
-                        onSelect={data.midiInputs.onSelect}
-                    />
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <ProgramView program={data.program}/>
-                </Col>
-            </Row>
-        </Container>
+        <div>
+            <h1>S5000/S6000 Control</h1>
+            <MidiDeviceSelect
+                name="midi-output"
+                label="MIDI Output"
+                value={data.midiOutputs.value}
+                options={data.midiOutputs.options}
+                onSelect={data.midiOutputs.onSelect}/>
+            <MidiDeviceSelect
+                name="midi-input"
+                label="MIDI Input"
+                value={data.midiInputs.value}
+                options={data.midiInputs.options}
+                onSelect={data.midiInputs.onSelect}
+            />
+            <ProgramView program={data.program}/>
+        </div>
     )
 }
 

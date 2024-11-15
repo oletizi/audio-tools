@@ -43,7 +43,11 @@ $yellow: #E3D26F;
   --sl-color-primary-800: var(--sl-color-cyan-800);
   --sl-color-primary-900: var(--sl-color-cyan-900);
   --sl-color-primary-950: var(--sl-color-cyan-950);
+
+  --sl-font-sans: Inter, sans-serif;
 }
+$font-family-base: var(--sl-font-sans);
+$font-size-base: .875rem;
 
 $primary: $blue;
 $secondary: $light-green;

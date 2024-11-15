@@ -1,8 +1,8 @@
 /**
  * Components specific to the Akai S5000/S6000 sampler series
  */
-import { ProgramInfo, ProgramOutputInfo} from "../midi/device";
-import React, {useState} from "react";
+import {ProgramInfo, ProgramOutputInfo} from "../midi/device";
+import React, {CSSProperties, useState} from "react";
 import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js";
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js";
@@ -40,7 +40,6 @@ export function ProgramView({program}: { program: ProgramData }) {
 }
 
 function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
-    const colSize = 2
     return (<div>
         <ModSourceView source={output.ampMod1Source} label={'Amp Mod 1 Source'}/>
         <ModSourceView source={output.ampMod2Source} label={'Amp Mod 2 Source'}/>
@@ -49,7 +48,6 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
         <ModSourceView source={output.panMod1Source} label={'Pan Mod 3 Source'}/>
     </div>)
 }
-
 
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {
@@ -99,22 +97,27 @@ function ModSourceView({source, label}: { source: MutableNumber, label: string }
         13: '+Pitch Bend',
         14: '+External'
     }
+
     return (
-        <SlDropdown>
-            <SlButton slot={'trigger'} value={source.value.toString()} caret>
-                <span className={'fw-bold'}>{label + ': '}</span> <span>{names[selected]}</span></SlButton>
-            <SlMenu onSlSelect={async (event) => {
-                const val = event.detail.item.value
-                setSelected(val)
-                // XXX: TODO: Handle errors here
-                const result = await source.mutator(Number.parseInt(val))
-            }}>
-                {Object.getOwnPropertyNames(names)
-                    .map(val => <SlMenuItem
-                        key={label + val}
-                        name={names[val]}
-                        value={val}>{names[val]}</SlMenuItem>)}
-            </SlMenu>
-        </SlDropdown>
+        <Row>
+            <Col>
+                <SlDropdown>
+                    <SlButton slot={'trigger'} value={source.value.toString()} caret>{label}</SlButton>
+                    <SlMenu onSlSelect={async (event) => {
+                        const val = event.detail.item.value
+                        setSelected(val)
+                        // XXX: TODO: Handle errors here
+                        const result = await source.mutator(Number.parseInt(val))
+                    }}>
+                        {Object.getOwnPropertyNames(names)
+                            .map(val => <SlMenuItem
+                                key={label + val}
+                                name={names[val]}
+                                value={val}>{names[val]}</SlMenuItem>)}
+                    </SlMenu>
+                </SlDropdown>
+            </Col>
+            <Col>{names[selected]}</Col>
+        </Row>
     )
 }
