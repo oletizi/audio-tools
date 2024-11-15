@@ -1,5 +1,5 @@
 import {createRoot, Root} from "react-dom/client";
-import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "./components-s56k";
+import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "../components/components-s56k";
 import {Midi} from "../midi/midi"
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";

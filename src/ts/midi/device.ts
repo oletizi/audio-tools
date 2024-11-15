@@ -638,6 +638,7 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
 }
 
 export interface ProgramOutputInfo {
+    loudness: MutableNumber
     velocitySensitivity: MutableNumber
     ampMod1Source: MutableNumber
     ampMod2Source: MutableNumber

@@ -1,9 +1,9 @@
 import {createRoot, Root} from "react-dom/client";
-import {Status} from "./components-common";
 import {newClientOutput, ProcessOutput} from "../process-output";
 import {ClientConfig} from "./config-client";
 import React from 'react'
 import {timestamp} from "../lib/core";
+import {Status} from "../components/components-common";
 
 export interface Result {
     error: string | null
