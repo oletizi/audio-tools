@@ -2,19 +2,24 @@ import {createRoot} from "react-dom/client"
 import React, {useState} from 'react'
 import '@shoelace-style/shoelace/dist/themes/light.css'
 import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js'
-import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js";
+import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js"
 import SlSelect from "@shoelace-style/shoelace/dist/react/select/index.js";
 import SlOption from '@shoelace-style/shoelace/dist/react/option/index.js'
 import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js"
 import SlMenuItem from "@shoelace-style/shoelace/dist/react/menu-item/index.js"
 import SlRadio from "@shoelace-style/shoelace/dist/react/radio/index.js"
-import {Col, Container, Row} from "react-bootstrap";
-import {Midi} from "../midi/midi";
-import {newClientCommon} from "./client-common";
-import {ClientConfig} from "./config-client";
-import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
+import {Col, Container, Row} from "react-bootstrap"
+import {Midi} from "../midi/midi"
+import {newClientCommon} from "./client-common"
+import {ClientConfig} from "./config-client"
+import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js"
+import SlDetails from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
-import {newS56kDevice, ProgramInfo} from "../midi/device";
+import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js"
+import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js"
+import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js"
+import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
+import {newS56kDevice, ProgramInfo} from "../midi/device"
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 
@@ -64,8 +69,26 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
     )
 }
 
-function ProgramInfoView({info}) {
-    return(<div>Put Program info here.</div>)
+function ProgramView({program}) {
+    return (
+        <SlTabGroup>
+            <SlTab slot="nav" panel="info">Program Info</SlTab>
+            <SlTabPanel name="info"><ProgramInfoView info={program.info}/></SlTabPanel>
+        </SlTabGroup>
+    )
+}
+
+function ProgramInfoView({info}: { info: ProgramInfo }) {
+    return (
+        <Row>
+            <Col lg={2}>Name:</Col>
+            <Col><SlInput
+                name="program-name"
+                value={info.name.value}
+                onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
+            </Col>
+        </Row>
+    )
 }
 
 export default function App({data}) {
@@ -91,7 +114,7 @@ export default function App({data}) {
             </Row>
             <Row>
                 <Col>
-                    <ProgramInfoView info={data.program.info}/>
+                    <ProgramView program={data.program}/>
                 </Col>
             </Row>
         </Container>
@@ -119,6 +142,7 @@ midi.start(async () => {
     if (programInfoResult.errors.length > 0) {
         common.status(programInfoResult.errors.join(' '))
     }
+
     async function midiDeviceData(outputs: boolean) {
         return {
             value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
