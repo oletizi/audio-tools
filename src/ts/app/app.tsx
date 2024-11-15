@@ -20,7 +20,7 @@ import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js"
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js"
 import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
 import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
-import {newS56kDevice, ProgramInfo, ProgramOutputInfo} from "../midi/device"
+import {MutableNumber, newS56kDevice, ProgramInfo, ProgramOutputInfo} from "../midi/device"
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 
@@ -88,8 +88,10 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
         <Row>
             <Col lg={colSize}>Amp Mod 1 Source:</Col>
             <Col>
-                <SlFormatNumber value={output.ampMod1Source.value}/>
                 <SlRange
+                    min={output.ampMod1Source.min}
+                    max={output.ampMod1Source.max}
+                    step={output.ampMod1Source.step}
                     value={output.ampMod1Source.value}
                     onSlChange={async (event) => {
                         const value = (event.target as any).value
@@ -100,11 +102,57 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
                 />
             </Col>
         </Row>
-        <Row>
-            <Col lg={colSize}>Amp Mod 2 Source:</Col>
-            <Col><SlFormatNumber value={output.ampMod2Source.value}/></Col>
-        </Row>
+        <ModSourceView source={output.ampMod2Source} label={'Amp Mod 2 Source'}/>
+        <ModSourceView source={output.panMod1Source} label={'Pan Mod 1 Source'}/>
+        <ModSourceView source={output.panMod1Source} label={'Pan Mod 2 Source'}/>
+        <ModSourceView source={output.panMod1Source} label={'Pan Mod 3 Source'}/>
     </div>)
+}
+
+function ModSourceView({source, label}: { source: MutableNumber, label: string }) {
+    const [selected, setSelected] = useState(source.value.toString())
+    const names = {
+        0: 'No Source',
+        1: 'Modwheel',
+        2: 'Pitch Bend',
+        3: 'Aftertouch',
+        4: 'External',
+        5: 'Velocity',
+        6: 'Keyboard',
+        7: 'LFO 1',
+        8: 'LFO 2',
+        9: 'Amp Envelope',
+        10: 'Filter Envelope',
+        11: 'Aux Envelope',
+        12: '+Modwheel',
+        13: '+Pitch Bend',
+        14: '+External'
+    }
+    return (
+        <div>
+            <Row>
+                <Col>{label}</Col>
+            </Row>
+            <Row>
+                <Col>
+                    <SlDropdown>
+                        <SlButton slot={'trigger'} value={source.value.toString()} caret>{names[selected]}</SlButton>
+                        <SlMenu onSlSelect={async (event) => {
+                            const val = event.detail.item.value
+                            setSelected(val)
+                            // XXX: TODO: Handle errors here
+                            const result = await source.mutator(Number.parseInt(val))
+                        }}>
+                            {Object.getOwnPropertyNames(names)
+                                .map(val => <SlMenuItem
+                                    key={label + val}
+                                    name={names[val]}
+                                    value={val}>{names[val]}</SlMenuItem>)}
+                        </SlMenu>
+                    </SlDropdown>
+                </Col>
+            </Row>
+        </div>)
 }
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {

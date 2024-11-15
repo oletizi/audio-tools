@@ -300,7 +300,7 @@ interface BooleanResult extends Result {
     data: boolean
 }
 
-function newResult(res: SysexResponse) : Result {
+function newResult(res: SysexResponse): Result {
     const rv = {
         errors: [],
         data: []
@@ -374,7 +374,7 @@ function newBooleanResult(res: SysexResponse): BooleanResult {
 export interface MutableNumber {
     min: number
     max: number
-    steps: number
+    step: number
     mutator: (value: number) => Promise<Result>
     value: number
 }
@@ -706,7 +706,6 @@ const programOutputSpec = {
     ]
 }
 
-
 function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
     return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
 }
@@ -821,10 +820,19 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
             const dataTypeSpec = item[1]
             const propertyName = String(methodNameRoot).charAt(0).toLowerCase() + String(methodNameRoot).slice(1)
             const result = await obj[getter]()
-            info[propertyName] = {
+            const propertyValue = {
                 value: result.data,
                 mutator: obj[setter]
             }
+            if (dataTypeSpec.startsWith('number')) {
+                const [type, min, max, step] = dataTypeSpec.split('|')
+                propertyValue['type'] = type
+                propertyValue['min'] = min
+                propertyValue['max'] = max
+                propertyValue['step'] = step
+            }
+
+            info[propertyName] = propertyValue
             errors = errors.concat(result.errors)
         }
         return {errors: errors, data: info}
