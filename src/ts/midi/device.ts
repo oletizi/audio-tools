@@ -356,15 +356,28 @@ function newBooleanResult(res: SysexResponse): BooleanResult {
     }
 }
 
+
+export interface MutableNumber {
+    min: number
+    max: number
+    steps: number
+    mutator: (value: number) => Error[]
+    value: number
+}
+export interface MutableString {
+    mutator: (value: string) => Error[]
+    value: string
+}
+
 export interface ProgramInfo {
-    name: string
+    name: MutableString
     id: number
     index: number
     keygroupCount: number
-    loudness: number
-    semitoneTune: number
-    fineTune: number
-    tuneTemplate: number
+    // loudness: MutableNumber
+    // semitoneTune: MutableNumber
+    // fineTune: MutableNumber
+    // tuneTemplate: MutableNumber
 }
 
 export interface ProgramInfoResult extends Result {
@@ -434,8 +447,8 @@ export interface S56kDevice {
 }
 
 class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramPitchBend {
-    private sysex: Sysex;
-    private out: ProcessOutput;
+    private readonly sysex: Sysex;
+    private readonly out: ProcessOutput;
 
     constructor(sysex: Sysex, out: ProcessOutput) {
         this.sysex = sysex
@@ -456,10 +469,10 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
         const tuneTemplate = await this.getTuneTemplate()
         // pitch bend
         const pb = this.getPitchBend()
-        const pitchBendUp = await pb.getPitchBendUp()
-        const pitchBendDOwn = await pb.getPitchBendDown()
-        const bendMode = await pb.getBendMode()
-        const aftertouchValue = await pb.getAftertouchValue()
+        // const pitchBendUp = await pb.getPitchBendUp()
+        // const pitchBendDOwn = await pb.getPitchBendDown()
+        // const bendMode = await pb.getBendMode()
+        // const aftertouchValue = await pb.getAftertouchValue()
         await pb.getLegatoEnable()
 
         rv.errors = rv.errors
@@ -474,10 +487,7 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
             id: programId.data,
             index: programIndex.data,
             keygroupCount: keygroupCount.data,
-            name: programName.data,
-            semitoneTune: semitoneTune.data,
-            fineTune: fineTune.data,
-            tuneTemplate: tuneTemplate.data,
+            name: {value: programName.data, mutator: (value:string) => {this.out.log(`TODO: Write program name: ${value}`); return []}},
         } as ProgramInfo
         return rv
     }

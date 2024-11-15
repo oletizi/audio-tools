@@ -14,6 +14,7 @@ import {newClientCommon} from "./client-common";
 import {ClientConfig} from "./config-client";
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
+import {newS56kDevice, ProgramInfo} from "../midi/device";
 
 setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
 
@@ -37,9 +38,14 @@ interface Selectable {
     options: Option[]
 }
 
+interface ProgramData {
+    info: ProgramInfo
+}
+
 interface AppData {
     midiOutputs: Selectable
     midiInputs: Selectable
+    program: ProgramData
 }
 
 function MidiDeviceSelect({name, label, value, onSelect, options}) {
@@ -56,6 +62,10 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
             </SlMenu>
         </SlDropdown>
     )
+}
+
+function ProgramInfoView({info}) {
+    return(<div>Put Program info here.</div>)
 }
 
 export default function App({data}) {
@@ -79,16 +89,21 @@ export default function App({data}) {
                     />
                 </Col>
             </Row>
+            <Row>
+                <Col>
+                    <ProgramInfoView info={data.program.info}/>
+                </Col>
+            </Row>
         </Container>
     )
 }
 
 
+const common = newClientCommon('status')
 const appRoot = createRoot(document.getElementById('app'))
 const midi = new Midi()
-
+const device = newS56kDevice(midi, common.getOutput())
 midi.start(async () => {
-    const common = newClientCommon('status')
     const rcfg = await common.fetchConfig()
     if (rcfg.error) {
         common.status(rcfg.error)
@@ -98,6 +113,12 @@ midi.start(async () => {
     await midi.setOutputByName(cfg.midiOutput)
     await midi.setInputByName(cfg.midiInput)
 
+    device.init()
+    const program = device.getCurrentProgram()
+    const programInfoResult = await (program.getInfo())
+    if (programInfoResult.errors.length > 0) {
+        common.status(programInfoResult.errors.join(' '))
+    }
     async function midiDeviceData(outputs: boolean) {
         return {
             value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
@@ -118,7 +139,10 @@ midi.start(async () => {
 
     const data = {
         midiOutputs: await midiDeviceData(true),
-        midiInputs: await midiDeviceData(false)
+        midiInputs: await midiDeviceData(false),
+        program: {
+            info: programInfoResult.data
+        }
     } as AppData
     appRoot.render(<App data={data}/>)
 }).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))

@@ -41,7 +41,20 @@ class BasicClientCommon implements ClientCommon {
     }
 
     status(msg) {
-        this.statusRoot.render(<Status msg={timestamp() + ': ' + (msg ? msg : 'Unknown')}/>)
+        this.statusRoot.render(<Status msg={timestamp() + ': ' + (msg ? msg : 'Unknown')} variant={'neutral'}/>)
+    }
+
+    error(err: string | Error | Error[]) {
+        let msg = ''
+        if (err instanceof Array) {
+            msg = err.join(', ')
+        } else if  (err instanceof String) {
+            msg = err
+        } else if (err instanceof Error) {
+            msg = err.message
+        }
+
+        this.statusRoot.render(<Status msg={timestamp() + ': Error(s): ' + msg} variant={'danger'}/>)
     }
 
     getOutput(): ProcessOutput {

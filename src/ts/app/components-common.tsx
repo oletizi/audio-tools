@@ -1,8 +1,8 @@
 import React from 'react'
-import SlCard from "@shoelace-style/shoelace/dist/react/card/index.js";
+import SlAlert from "@shoelace-style/shoelace/dist/react/alert/index.js";
 
-export function Status({msg}) {
+export function Status({msg, variant}) {
     return (
-        <SlCard><span className={'fw-bold'}>Status:</span> <span className={'monospace'}>{msg}</span></SlCard>
+        <SlAlert variant={variant} open closable>{msg}</SlAlert>
     )
 }
