@@ -32,6 +32,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@chakra-ui/react": "^3.1.2",
     "@shoelace-style/shoelace": "^2.18.0",
     "@types/cheerio": "^0.22.35",
     "antlr4": "^4.13.2",
