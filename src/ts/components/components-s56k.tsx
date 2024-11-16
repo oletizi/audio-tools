@@ -14,7 +14,7 @@ import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
 import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
 import SlCard from "@shoelace-style/shoelace/dist/react/card/index.js";
 import {MutableNumber} from "../lib/lib-core";
-import {Selectable} from "./components-common";
+import {LabeledDropdown, Selectable} from "./components-common";
 
 
 interface ProgramData {
@@ -67,28 +67,7 @@ function ProgramInfoView({info}: { info: ProgramInfo }) {
     )
 }
 
-function LabeledDropdown({items, defaultValue, mutator, label}) {
-    const [selected, setSelected] = useState(defaultValue)
-    return (
-        <div className={'columns-2'}>
-            <SlDropdown className={'w-full'}>
-                <SlButton className={'w-full'} slot={'trigger'} value={defaultValue.toString()} caret>{label}</SlButton>
-                <SlMenu onSlSelect={async (event) => {
-                    const val = event.detail.item.value
-                    setSelected(val)
-                    // XXX: TODO: Handle errors here
-                    const result = await mutator(Number.parseInt(val))
-                }}>
-                    {Object.getOwnPropertyNames(items)
-                        .map(val => <SlMenuItem
-                            key={label + val}
-                            name={items[val]}
-                            value={val}>{items[val]}</SlMenuItem>)}
-                </SlMenu>
-            </SlDropdown>
-            <div className={'p-2.5'}>{items[selected]}</div>
-        </div>)
-}
+
 
 function ModSourceView({modSource, label}: { modSource: MutableNumber, label: string }) {
     const [selected, setSelected] = useState(modSource.value.toString())
@@ -110,24 +89,4 @@ function ModSourceView({modSource, label}: { modSource: MutableNumber, label: st
         14: '+External'
     }
     return (<LabeledDropdown items={items} defaultValue={modSource.value.toString()} mutator={modSource.mutator} label={label}/>)
-    // return (
-    //     <div className={'columns-2'}>
-    //         <SlDropdown className={'w-full'}>
-    //             <SlButton className={'w-full'} slot={'trigger'} value={source.value.toString()} caret>{label}</SlButton>
-    //             <SlMenu onSlSelect={async (event) => {
-    //                 const val = event.detail.item.value
-    //                 setSelected(val)
-    //                 // XXX: TODO: Handle errors here
-    //                 const result = await source.mutator(Number.parseInt(val))
-    //             }}>
-    //                 {Object.getOwnPropertyNames(names)
-    //                     .map(val => <SlMenuItem
-    //                         key={label + val}
-    //                         name={names[val]}
-    //                         value={val}>{names[val]}</SlMenuItem>)}
-    //             </SlMenu>
-    //         </SlDropdown>
-    //         <div className={'p-2.5'}>{names[selected]}</div>
-    //     </div>
-    // )
-}
+ }
