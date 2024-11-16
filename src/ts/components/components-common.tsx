@@ -1,9 +1,11 @@
 import React, {useState} from 'react'
 import SlAlert from "@shoelace-style/shoelace/dist/react/alert/index.js";
-import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js";
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
+import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js";
 import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js";
 import SlMenuItem from "@shoelace-style/shoelace/dist/react/menu-item/index.js";
+import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
+import {MutableNumber} from "../lib/lib-core";
 export interface Option {
     name: string
     value: string
@@ -16,6 +18,25 @@ export interface Selectable {
     options: Option[]
 }
 
+export function LabeledRange({data, label}: { data: MutableNumber, label: string }) {
+    const [value, setValue] = useState(data.value)
+    return (
+        <div className={'columns-2'}>
+            <SlRange label={label}
+                     value={value}
+                     min={data.min}
+                     max={data.max}
+                     step={data.step}
+                     onSlChange={async (event) => {
+                         let val = (event.target as any).value;
+                         setValue(val)
+                         await data.mutator(val)
+                     }}/>
+            <div className={'p-2.5'}>{value}</div>
+        </div>
+    )
+}
+
 export function LabeledDropdown({items, defaultValue, mutator, label}) {
     const [selected, setSelected] = useState(defaultValue)
     return (
@@ -25,8 +46,7 @@ export function LabeledDropdown({items, defaultValue, mutator, label}) {
                 <SlMenu onSlSelect={async (event) => {
                     const val = event.detail.item.value
                     setSelected(val)
-                    // XXX: TODO: Handle errors here
-                    const result = await mutator(Number.parseInt(val))
+                    await mutator(Number.parseInt(val))
                 }}>
                     {Object.getOwnPropertyNames(items)
                         .map(val => <SlMenuItem
