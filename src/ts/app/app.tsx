@@ -50,11 +50,10 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
     )
 }
 
-
 export default function App({data}: { data: AppData }) {
     return (
-        <div>
-            <h1>S5000/S6000 Control</h1>
+        <div className={'container mx-auto bg-stone-50 p-4 h-screen'}>
+            <h1 className={'mb-4'}>S5000/S6000 Control</h1>
             <MidiDeviceSelect
                 name="midi-output"
                 label="MIDI Output"

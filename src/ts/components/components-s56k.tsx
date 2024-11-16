@@ -12,7 +12,7 @@ import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js";
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js";
 import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
 import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
-import {Col, Row} from "react-bootstrap";
+import SlCard from "@shoelace-style/shoelace/dist/react/card/index.js";
 import {MutableNumber} from "../lib/lib-core";
 import {Selectable} from "./components-common";
 
@@ -40,7 +40,7 @@ export function ProgramView({program}: { program: ProgramData }) {
 }
 
 function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
-    return (<div>
+    return (<div className={'columns-2'}>
         <ModSourceView source={output.ampMod1Source} label={'Amp Mod 1 Source'}/>
         <ModSourceView source={output.ampMod2Source} label={'Amp Mod 2 Source'}/>
         <ModSourceView source={output.panMod1Source} label={'Pan Mod 1 Source'}/>
@@ -51,29 +51,18 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
 
 
 function ProgramInfoView({info}: { info: ProgramInfo }) {
-    const colSize = 2
     return (
-        <div>
-            <Row>
-                <Col lg={colSize}>Name: </Col>
-                <Col><SlInput
-                    name="program-name"
-                    value={info.name.value}
-                    onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
-                </Col>
-            </Row>
-            <Row>
-                <Col lg={colSize}>Id:</Col>
-                <Col><SlFormatNumber value={info.id}/></Col>
-            </Row>
-            <Row>
-                <Col lg={colSize}>Index:</Col>
-                <Col><SlFormatNumber value={info.index}/></Col>
-            </Row>
-            <Row>
-                <Col lg={colSize}>Keygroup Count:</Col>
-                <Col><SlFormatNumber value={info.keygroupCount}/></Col>
-            </Row>
+        <div className={'flex columns-2'}>
+            <SlInput
+                name="program-name"
+                value={info.name.value}
+                onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
+            <div>Id:</div>
+            <div><SlFormatNumber value={info.id}/></div>
+            <div>Index:</div>
+            <div><SlFormatNumber value={info.index}/></div>
+            <div>Keygroup Count:</div>
+            <div><SlFormatNumber value={info.keygroupCount}/></div>
         </div>
     )
 }
@@ -99,25 +88,23 @@ function ModSourceView({source, label}: { source: MutableNumber, label: string }
     }
 
     return (
-        <Row>
-            <Col>
-                <SlDropdown>
-                    <SlButton slot={'trigger'} value={source.value.toString()} caret>{label}</SlButton>
-                    <SlMenu onSlSelect={async (event) => {
-                        const val = event.detail.item.value
-                        setSelected(val)
-                        // XXX: TODO: Handle errors here
-                        const result = await source.mutator(Number.parseInt(val))
-                    }}>
-                        {Object.getOwnPropertyNames(names)
-                            .map(val => <SlMenuItem
-                                key={label + val}
-                                name={names[val]}
-                                value={val}>{names[val]}</SlMenuItem>)}
-                    </SlMenu>
-                </SlDropdown>
-            </Col>
-            <Col>{names[selected]}</Col>
-        </Row>
+        <div className={'columns-2'}>
+            <SlDropdown className={'w-full'}>
+                <SlButton className={'w-full'} slot={'trigger'} value={source.value.toString()} caret>{label}</SlButton>
+                <SlMenu onSlSelect={async (event) => {
+                    const val = event.detail.item.value
+                    setSelected(val)
+                    // XXX: TODO: Handle errors here
+                    const result = await source.mutator(Number.parseInt(val))
+                }}>
+                    {Object.getOwnPropertyNames(names)
+                        .map(val => <SlMenuItem
+                            key={label + val}
+                            name={names[val]}
+                            value={val}>{names[val]}</SlMenuItem>)}
+                </SlMenu>
+            </SlDropdown>
+            <div className={'p-2.5'}>{names[selected]}</div>
+        </div>
     )
 }
