@@ -72,7 +72,6 @@ export default function App({data}: { data: AppData }) {
     )
 }
 
-
 const common = newClientCommon('status')
 const appRoot = createRoot(document.getElementById('app'))
 const midi = new Midi()
@@ -93,10 +92,9 @@ midi.start(async () => {
     const programOutputResult = await program.getOutput().getInfo()
     const errors: Error[] = programInfoResult.errors
         .concat(programOutputResult.errors)
-    if (errors.length > 0) {
-        common.error(errors)
-    }
 
+    console.log(`PROGRAM OUTPUT RESULTS.... pan mod 3 source: ${programOutputResult.data.panMod2Source}`)
+    console.log(`PROGRAM OUTPUT RESULTS.... pan mod 3 source: ${programOutputResult.data.panMod3Source}`)
     async function midiDeviceData(outputs: boolean) {
         return {
             value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
@@ -124,4 +122,8 @@ midi.start(async () => {
         }
     } as AppData
     appRoot.render(<App data={data}/>)
+    console.log(`ERRORS: ${errors.length}`)
+    if (errors.length > 0) {
+        common.error(errors)
+    }
 }).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))

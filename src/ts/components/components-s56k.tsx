@@ -62,15 +62,18 @@ function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
             </SlCard>
             <SlCard>
                 <div slot="header">Pan Mod 1</div>
-                <ModSourceView modSource={output.panMod1Source} label={'Pan Mod 1 Source'}/>
+                <ModSourceView modSource={output.panMod1Source} label={'Source'}/>
+                <LabeledRange data={output.panMod1Value} label={'Value'}/>
             </SlCard>
             <SlCard>
                 <div slot="header">Pan Mod 2</div>
-                <ModSourceView modSource={output.panMod1Source} label={'Pan Mod 2 Source'}/>
+                <ModSourceView modSource={output.panMod2Source} label={'Source'}/>
+                <LabeledRange data={output.panMod2Value} label={'Value'}/>
             </SlCard>
             <SlCard>
                 <div slot="header">Pan Mod 3</div>
-                <ModSourceView modSource={output.panMod1Source} label={'Pan Mod 3 Source'}/>
+                <ModSourceView modSource={output.panMod2Source} label={'Source'}/>
+                <LabeledRange data={output.panMod3Value} label={'Value'}/>
             </SlCard>
         </div>
     )
@@ -96,7 +99,7 @@ function ProgramInfoView({info}: { info: ProgramInfo }) {
 
 
 function ModSourceView({modSource, label}: { modSource: MutableNumber, label: string }) {
-    const [selected, setSelected] = useState(modSource.value.toString())
+    const [selected, setSelected] = useState("" + modSource.value)
     const items = {
         0: 'No Source',
         1: 'Modwheel',
