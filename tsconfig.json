@@ -7,7 +7,7 @@
     "jsx": "react",
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/ts/*"]
     }
   },
   "include": ["src/**/*"]
