@@ -49,7 +49,15 @@
 import {Midi} from "./midi";
 import {newClientOutput, ProcessOutput} from "../process-output";
 import {Buffer} from 'buffer/'
-import {MutableNumber, MutableString} from "../lib/lib-core";
+import {
+    BooleanResult,
+    ByteArrayResult,
+    MutableNumber,
+    MutableString,
+    NumberResult,
+    Result,
+    StringResult
+} from "../lib/lib-core";
 
 enum ResponseStatus {
     OK = 79,
@@ -280,26 +288,8 @@ function newControlMessage(section: Section, item: number, data: number[]): Syse
     } as SysexControlMessage
 }
 
-interface Result {
-    errors: Error[]
-    data: any
-}
 
-interface ByteArrayResult extends Result {
-    data: number[]
-}
 
-interface NumberResult extends Result {
-    data: number
-}
-
-interface StringResult extends Result {
-    data: string
-}
-
-interface BooleanResult extends Result {
-    data: boolean
-}
 
 function newResult(res: SysexResponse): Result {
     const rv = {

@@ -9,8 +9,24 @@ export function timestamp() {
  * The data and possible errors from an operation (e.g., http requests or midi sysex)
  */
 export interface Result {
-    error: string | null
+    errors: Error[]
     data: any
+}
+
+export interface ByteArrayResult extends Result {
+    data: number[]
+}
+
+export interface NumberResult extends Result {
+    data: number
+}
+
+export interface StringResult extends Result {
+    data: string
+}
+
+export interface BooleanResult extends Result {
+    data: boolean
 }
 
 export interface MutableNumber {

@@ -1,14 +1,16 @@
 import {DeviceSpec, getDeviceSpecs} from "@/midi/devices/specs";
 import {newServerOutput} from "@/process-output";
+import fs from "fs";
+import path from "path";
 
 // <Device>InfoResult
 // <Device>Info
 // <Device>
 // Constructor
 
-const out = newServerOutput()
+const out = fs.createWriteStream(path.join('src','ts', 'midi', 'devices', 'devices.ts'))
+
 getDeviceSpecs().forEach(device => {
-    out.log(`device: ${device}`)
     gen(device)
 })
 
@@ -75,7 +77,10 @@ function parseItem(itemSpec) {
 function gen(device: DeviceSpec) {
     const basename = device.className
     const infoName = basename + 'Info'
+    out.write('// DO NOT EDIT. THIS IS AUTO-GENERATED.\n\n')
 
+    out.write(`import {MutableNumber, MutableString, Result} from "@/lib/lib-core"\n`)
+    out.write(`import {NumberResult, StringResult} from "@/lib/lib-core"\n\n`)
     //
     // <Device>Info interface
     //
@@ -120,6 +125,6 @@ function gen(device: DeviceSpec) {
         return getter
     }).join('\n'))
     out.write('\n')
-    out.write(`  getInfo(): ${infoName}`)
-    out.write('\n}\n\n')
+    out.write(`  getInfo(): ${infoName}\n`)
+    out.write('}\n\n')
 }
