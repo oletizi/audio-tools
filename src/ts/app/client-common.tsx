@@ -1,9 +1,6 @@
-import {createRoot, Root} from "react-dom/client";
 import {newClientOutput, ProcessOutput} from "@/process-output";
 import {ClientConfig} from "./config-client";
-import React from 'react'
 import {Result, timestamp} from "@/lib/lib-core";
-import {Alert} from "@chakra-ui/react";
 
 export interface ClientCommon {
     fetchConfig(): Promise<Result>
@@ -27,7 +24,7 @@ export function newClientCommon(infoHandler: Function, errorHandler: Function) {
 class BasicClientCommon implements ClientCommon {
     private readonly out: ProcessOutput
     private readonly infoHandler: Function
-    private errorHandler: Function
+    private readonly errorHandler: Function
 
     constructor(infoHandler: Function, errorHandler: Function) {
         this.infoHandler = infoHandler
@@ -68,9 +65,9 @@ class BasicClientCommon implements ClientCommon {
 
     async saveConfig(cfg) {
         const result = await this.post('/config/save', cfg)
-        if (result.error) {
-            this.out.error(result.error)
-            this.status(result.error)
+        if (result.errors.length > 0) {
+            this.out.error(result.errors.join(','))
+            this.status(result.errors)
         } else {
             this.status(result.data.message)
         }
@@ -95,24 +92,24 @@ class BasicClientCommon implements ClientCommon {
             }
         }
         this.out.log(`options.body: ${options.body}`)
-        let rv: Result = {error: null, data: {}}
+        const rv: Result = {errors: [], data: {}}
         try {
             const res = await fetch(url, options)
             let statusMessage = `${res.status}: ${res.statusText}: ${url}`;
             if (res.status == 200) {
                 try {
                     this.status(statusMessage)
-                    rv = await res.json()
+                    rv.data = await res.json()
                 } catch (err) {
                     this.status(`Error: ${err.message}`)
                     this.out.error(err)
-                    rv.error = err.message
+                    rv.errors.push(err.message)
                 }
 
             } else {
                 this.status(statusMessage)
                 this.out.error(statusMessage)
-                rv.error = statusMessage
+                rv.errors.push(new Error(statusMessage))
             }
         } catch (err) {
             console.error(err)

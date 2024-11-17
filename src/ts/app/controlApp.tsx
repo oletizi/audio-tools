@@ -89,8 +89,8 @@ const midi = new Midi()
 const device = newS56kDevice(midi, common.getOutput())
 midi.start(async () => {
     const rcfg = await common.fetchConfig()
-    if (rcfg.error) {
-        common.error(rcfg.error)
+    if (rcfg.errors.length > 0) {
+        common.error(rcfg.errors)
         return
     }
     const cfg = rcfg.data as ClientConfig
