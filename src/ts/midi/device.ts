@@ -389,17 +389,9 @@ export function newS56kDevice(midi, out: ProcessOutput) {
 }
 
 
-export interface S56kProgramMidiTune {
-    getSemitoneTune(): Promise<NumberResult>
 
-    getFineTune(): Promise<NumberResult>
 
-    getTuneTemplate(): Promise<NumberResult>
-
-    getKey(): Promise<NumberResult>
-}
-
-export interface S56kProgramPitchBend {
+export interface ProgramPitchBend {
     getPitchBendUp(): Promise<NumberResult>
 
     getPitchBendDown(): Promise<NumberResult>
@@ -430,9 +422,7 @@ export interface S56kProgram {
 
     getOutput(): ProgramOutput
 
-    getMidiTune(): S56kProgramMidiTune
-
-    getPitchBend(): S56kProgramPitchBend
+    getMidiTune(): ProgramMidiTune
 }
 
 export interface S56kDevice {
@@ -446,7 +436,7 @@ export interface S56kDevice {
 
 }
 
-class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramPitchBend {
+class S56kProgramSysex implements S56kProgram {
     private readonly sysex: Sysex;
     private readonly out: ProcessOutput;
 
@@ -464,25 +454,11 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
         const programIndex = await this.getIndex()
         const keygroupCount = await this.getKeygroupCount()
         const programName = await this.getName()
-        const semitoneTune = await this.getSemitoneTune()
-        const fineTune = await this.getFineTune()
-        const tuneTemplate = await this.getTuneTemplate()
-        // pitch bend
-        const pb = this.getPitchBend()
-        // const pitchBendUp = await pb.getPitchBendUp()
-        // const pitchBendDOwn = await pb.getPitchBendDown()
-        // const bendMode = await pb.getBendMode()
-        // const aftertouchValue = await pb.getAftertouchValue()
-        await pb.getLegatoEnable()
-
         rv.errors = rv.errors
             .concat(programId.errors)
             .concat(programIndex.errors)
             .concat(keygroupCount.errors)
             .concat(programName.errors)
-            .concat(semitoneTune.errors)
-            .concat(fineTune.errors)
-            .concat(tuneTemplate.errors)
         rv.data = {
             id: programId.data,
             index: programIndex.data,
@@ -526,99 +502,8 @@ class S56kProgramSysex implements S56kProgram, S56kProgramMidiTune, S56kProgramP
     }
 
     // MIDI/Tune
-    getMidiTune(): S56kProgramMidiTune {
-        return this
-    }
-
-    async getSemitoneTune(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_SEMITONE_TUNE, [])),
-            2,
-            true
-        )
-    }
-
-    async getFineTune(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_FINE_TUNE, [])),
-            2,
-            true
-        )
-    }
-
-    async getTuneTemplate(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_TUNE_TEMPLATE, [])),
-            1
-        )
-    }
-
-    async getKey(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_KEY, [])),
-            1
-        )
-    }
-
-    // PITCH BEND
-
-    getPitchBend(): S56kProgramPitchBend {
-        return this;
-    }
-
-    async getPitchBendUp(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_UP, [])),
-            1
-        )
-    }
-
-    async getPitchBendDown(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_DOWN, [])),
-            1
-        )
-    }
-
-    async getBendMode(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PITCH_BEND_MODE, [])),
-            1
-        )
-    }
-
-    async getAftertouchValue(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_AFTERTOUCH_VALUE, [])),
-            2,
-            true
-        )
-    }
-
-    async getLegatoEnable(): Promise<BooleanResult> {
-        return newBooleanResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_LEGATO_ENABLE, []))
-        )
-    }
-
-    async getPortamentoEnable(): Promise<BooleanResult> {
-        return newBooleanResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_ENABLE, []))
-        )
-    }
-
-    async getPortamentoMode(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_MODE, [])),
-            1
-        )
-    }
-
-    async getPortamentoTime(): Promise<NumberResult> {
-        return newNumberResult(
-            await this.sysex.sysexRequest(newControlMessage(Section.PROGRAM, ProgramItem.GET_PORTAMENTO_TIME, [])),
-            1
-        )
+    getMidiTune(): ProgramMidiTune {
+        return newProgramMidiTune(this.sysex, this.out)
     }
 }
 
@@ -669,6 +554,12 @@ export interface ProgramOutput {
     getInfo(): Promise<ProgramOutputInfoResult>
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// PROGRAM OUTPUT
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const programOutputSpec = {
     className: "ProgramOutput",
     sectionCode: Section.PROGRAM,
@@ -694,6 +585,42 @@ const programOutputSpec = {
 
 function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
     return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// PROGRAM MIDI TUNE
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface ProgramMidiTuneInfo {
+    semitoneTune: MutableNumber
+    fineTune: MutableNumber
+    tuneTemplate: MutableNumber
+    key: MutableNumber
+}
+
+export interface ProgramMidiTune {
+    getSemitoneTune(): Promise<NumberResult>
+
+    getFineTune(): Promise<NumberResult>
+
+    getTuneTemplate(): Promise<NumberResult>
+
+    getKey(): Promise<NumberResult>
+
+    getInfo(): Promise<ProgramMidiTuneInfo>
+}
+
+const programMidTuneSpec = {
+    className: "ProgramMidiTune",
+    sectionCode: Section.PROGRAM,
+    items: [
+        ["SemitoneTune", "number|-50|50|1", 0x38, [], "int8", 2, 0x30, ["int8sign", "int8abs"]],
+    ]
+}
+function newProgramMidiTune(sysex: Sysex, out:ProcessOutput): ProgramMidiTune {
+    return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune
 }
 
 /**

@@ -23,13 +23,15 @@ export interface AppData {
 export function ProgramView({data}: { data: ProgramData }) {
     return (
 
-        <Tabs.Root defaultValue={'output'}>
+        <Tabs.Root defaultValue={'midi-tune'}>
             <Tabs.List>
-                <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
+                <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
+                <Tabs.Trigger value={'midi-tune'}>Program MIDI/Tune</Tabs.Trigger>
             </Tabs.List>
-            <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
+            <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
+            <Tabs.Content value={'midi-tune'}><div>PUT MIDI/TUNE HERE</div></Tabs.Content>
         </Tabs.Root>
     )
 }
