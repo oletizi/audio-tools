@@ -109,6 +109,7 @@ function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
             <ControlPanel title={'Pitch Bend'}>
                 <MutableSlider data={data.pitchBendUp} label={'Up'}/>
                 <MutableSlider data={data.pitchBendDown} label={'Down'}/>
+                <MutableSlider data={data.bendMode} label={'Mode'}/>
             </ControlPanel>
         </Flex>
     )
