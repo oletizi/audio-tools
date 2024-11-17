@@ -111,6 +111,9 @@ function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
                 <MutableSlider data={data.pitchBendDown} label={'Down'}/>
                 <MutableSlider data={data.bendMode} label={'Mode'}/>
             </ControlPanel>
+            <ControlPanel title={'Aftertouch'}>
+                <MutableSlider data={data.aftertouchValue} label={'Value'}/>
+            </ControlPanel>
         </Flex>
     )
 }

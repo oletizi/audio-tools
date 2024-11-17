@@ -662,6 +662,7 @@ const programPitchBendSpec = {
         ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
         ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
         ["BendMode", "number|0|1|1", 0x4A, [], "uint8", 1, 0x42, ["uint8"]],
+        ["AftertouchValue", "number|-12|12|1", 0x4B, [], "int8", 2, 0x43, ["int8sign", "int8abs"]],
         // ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
         // ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
         // ["Key", "number|0|11|1", 0x3C, [], 'uint8', 1, 0x34, ["uint8"]],
