@@ -5,12 +5,14 @@ import {newS56kDevice} from "@/midi/device"
 import {Midi} from "@/midi/midi"
 import {newClientCommon} from "./client-common"
 import {ClientConfig} from "./config-client"
-import {AppData, ProgramView} from "@/components/components-s56k";
+import {AppData} from "@/components/components-s56k";
 import {Option, Selectable} from "@/components/components-common";
 import {
     Container,
-    createListCollection, Flex,
-    SelectContent, SelectItem,
+    createListCollection,
+    Flex,
+    SelectContent,
+    SelectItem,
     SelectLabel,
     SelectRoot,
     SelectTrigger,
@@ -28,14 +30,19 @@ function desanitize(val: string) {
 
 function MidiDeviceSelect({name, label, onSelect, options}:
                               { name: string, label: string, onSelect: Function, options: Option[] }) {
+
+    const s = options.filter(o => o.selected)
+    const [selected, setSelected] = useState(s.length ? s[0].value : '')
     const items = options.map((o) => {
         return {label: o.name, value: o.value}
     })
     const data = createListCollection({items: items})
     return (
-        <SelectRoot collection={data} name={name} onValueChange={(event) => {
-            let selectedDevice = desanitize(event.value[0]);
-            onSelect(selectedDevice)
+
+        <SelectRoot collection={data} name={name} value={[selected]} onValueChange={(event) => {
+            const value = event.value[0]
+            setSelected(value)
+            onSelect(desanitize(value))
         }}>
             <SelectLabel>{label}</SelectLabel>
             <SelectTrigger>
