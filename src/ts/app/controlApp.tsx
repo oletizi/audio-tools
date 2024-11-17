@@ -120,9 +120,11 @@ midi.start(async () => {
     const programInfoResult = await program.getInfo()
     const programOutputResult = await program.getOutput().getInfo()
     const programMidiTuneResult = await program.getMidiTune().getInfo()
+    const programPitchBendResult = await program.getPitchBend().getInfo()
     const errors: Error[] = programInfoResult.errors
         .concat(programOutputResult.errors)
         .concat(programMidiTuneResult.errors)
+        .concat(programPitchBendResult.errors)
     common.error(errors)
 
 
@@ -132,7 +134,8 @@ midi.start(async () => {
         program: {
             info: programInfoResult.data,
             output: programOutputResult.data,
-            midiTune: programMidiTuneResult.data
+            midiTune: programMidiTuneResult.data,
+            pitchBend: programPitchBendResult.data,
         },
     } as AppData
     appRoot.render(<ControlApp data={data}/>)

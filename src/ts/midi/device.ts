@@ -388,23 +388,6 @@ export function newS56kDevice(midi, out: ProcessOutput) {
 }
 
 
-export interface ProgramPitchBend {
-    getPitchBendUp(): Promise<NumberResult>
-
-    getPitchBendDown(): Promise<NumberResult>
-
-    getBendMode(): Promise<NumberResult>
-
-    getAftertouchValue(): Promise<NumberResult>
-
-    getLegatoEnable(): Promise<BooleanResult>
-
-    getPortamentoEnable(): Promise<BooleanResult>
-
-    getPortamentoMode(): Promise<NumberResult>
-
-    getPortamentoTime(): Promise<NumberResult>
-}
 
 export interface S56kProgram {
     getName(): Promise<StringResult>
@@ -420,6 +403,8 @@ export interface S56kProgram {
     getOutput(): ProgramOutput
 
     getMidiTune(): ProgramMidiTune
+
+    getPitchBend(): ProgramPitchBend
 }
 
 export interface S56kDevice {
@@ -501,6 +486,10 @@ class S56kProgramSysex implements S56kProgram {
     // MIDI/Tune
     getMidiTune(): ProgramMidiTune {
         return newProgramMidiTune(this.sysex, this.out)
+    }
+
+    getPitchBend(): ProgramPitchBend {
+        return newProgramPitchBend(this.sysex, this.out)
     }
 }
 
@@ -626,6 +615,59 @@ const programMidTuneSpec = {
 
 function newProgramMidiTune(sysex: Sysex, out: ProcessOutput): ProgramMidiTune {
     return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// PROGRAM PITCH BEND
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+export interface ProgramPitchBendInfoResult extends Result {
+    data: ProgramPitchBendInfo
+}
+export interface ProgramPitchBendInfo {
+    pitchBendUp: MutableNumber
+    pitchBendDown: MutableNumber
+    bendMode: MutableNumber
+    aftertouchValue: MutableNumber
+    legatoEnable: MutableNumber
+    portamentoEnable: MutableNumber
+    portamentoMode: MutableNumber
+    portamentoTime: MutableNumber
+}
+export interface ProgramPitchBend {
+    getPitchBendUp(): Promise<NumberResult>
+
+    getPitchBendDown(): Promise<NumberResult>
+
+    getBendMode(): Promise<NumberResult>
+
+    getAftertouchValue(): Promise<NumberResult>
+
+    getLegatoEnable(): Promise<BooleanResult>
+
+    getPortamentoEnable(): Promise<BooleanResult>
+
+    getPortamentoMode(): Promise<NumberResult>
+
+    getPortamentoTime(): Promise<NumberResult>
+
+    getInfo(): Promise<ProgramPitchBendInfoResult>
+}
+
+const programPitchBendSpec = {
+    className: "ProgramPitchBend",
+    sectionCode: Section.PROGRAM,
+    items: [
+        ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
+        // ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
+        // ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
+        // ["Key", "number|0|11|1", 0x3C, [], 'uint8', 1, 0x34, ["uint8"]],
+    ]
+}
+
+function newProgramPitchBend(sysex: Sysex, out: ProcessOutput): ProgramPitchBend {
+    return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramPitchBend
 }
 
 /**

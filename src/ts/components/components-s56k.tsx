@@ -2,7 +2,13 @@
  * Components specific to the Akai S5000/S6000 sampler series
  */
 import React from "react";
-import {ProgramInfo, ProgramMidiTuneInfo, ProgramOutputInfo} from "@/midi/device";
+import {
+    ProgramInfo,
+    ProgramMidiTuneInfo,
+    ProgramOutputInfo,
+    ProgramPitchBend,
+    ProgramPitchBendInfo
+} from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
 import {Flex, Tabs} from '@chakra-ui/react'
 
@@ -13,6 +19,7 @@ interface ProgramData {
     info: ProgramInfo
     output: ProgramOutputInfo
     midiTune: ProgramMidiTuneInfo
+    pitchBend: ProgramPitchBendInfo
 }
 
 export interface AppData {
@@ -24,15 +31,17 @@ export interface AppData {
 export function ProgramView({data}: { data: ProgramData }) {
     return (
 
-        <Tabs.Root defaultValue={'midi-tune'}>
+        <Tabs.Root defaultValue={'pitch-bend'}>
             <Tabs.List>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
-                <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
-                <Tabs.Trigger value={'midi-tune'}>Program MIDI/Tune</Tabs.Trigger>
+                <Tabs.Trigger value={'output'}>Output</Tabs.Trigger>
+                <Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>
+                <Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
             <Tabs.Content value={'midi-tune'}><ProgramMidiTuneView data={data.midiTune}/></Tabs.Content>
+            <Tabs.Content value={'pitch-bend'}><p>INSERT PITCH BEND CONTENT</p></Tabs.Content>
         </Tabs.Root>
     )
 }
