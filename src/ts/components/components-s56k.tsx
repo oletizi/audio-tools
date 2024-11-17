@@ -116,7 +116,7 @@ function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
                 <MutableSlider data={data.legatoEnable} label={'Legato Enable'}/>
             </ControlPanel>
             <ControlPanel title={'Portamento'}>
-                <div>INSERT PORTAMENTO HERE.</div>
+                <MutableSlider data={data.portamentoEnable} label={'Enable'}/>
             </ControlPanel>
         </Flex>
     )
