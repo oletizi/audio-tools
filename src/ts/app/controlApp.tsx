@@ -5,7 +5,7 @@ import {newS56kDevice} from "@/midi/device"
 import {Midi} from "@/midi/midi"
 import {newClientCommon} from "./client-common"
 import {ClientConfig} from "./config-client"
-import {AppData} from "@/components/components-s56k";
+import {AppData, ProgramView} from "@/components/components-s56k";
 import {Option, Selectable} from "@/components/components-common";
 import {
     Container,
@@ -63,17 +63,20 @@ function ControlApp({data}: { data: AppData }) {
         <Provider>
             <Container>
                 <h1>S5000/S6000 Control</h1>
-                <Flex>
-                    <MidiDeviceSelect
-                        name="midi-output"
-                        label="MIDI Output"
-                        onSelect={data.midiOutputs.onSelect}
-                        options={data.midiOutputs.options}/>
-                    <MidiDeviceSelect
-                        name={'midi-intput'}
-                        label={'MIDI Input'}
-                        onSelect={data.midiInputs.onSelect}
-                        options={data.midiInputs.options}/>
+                <Flex direction={'column'} gap={5}>
+                    <Flex>
+                        <MidiDeviceSelect
+                            name="midi-output"
+                            label="MIDI Output"
+                            onSelect={data.midiOutputs.onSelect}
+                            options={data.midiOutputs.options}/>
+                        <MidiDeviceSelect
+                            name={'midi-intput'}
+                            label={'MIDI Input'}
+                            onSelect={data.midiInputs.onSelect}
+                            options={data.midiInputs.options}/>
+                    </Flex>
+                    <ProgramView data={data.program}/>
                 </Flex>
             </Container>
         </Provider>
@@ -111,34 +114,23 @@ midi.start(async () => {
         } as Selectable
     }
 
+    // Fetch data from Sysex...
+    device.init()
+    const program = device.getCurrentProgram()
+    const programInfoResult = await program.getInfo()
+    const programOutputResult = await program.getOutput().getInfo()
+    const errors: Error[] = programInfoResult.errors
+        .concat(programOutputResult.errors)
+    common.error(errors)
+
+
     const data = {
         midiOutputs: await midiDeviceData(true),
         midiInputs: await midiDeviceData(false),
+        program: {
+            info: programInfoResult.data,
+            output: programOutputResult.data
+        },
     } as AppData
     appRoot.render(<ControlApp data={data}/>)
 }).catch((err) => console.error(err))
-
-// device.init()
-// const program = device.getCurrentProgram()
-// const programInfoResult = await program.getInfo()
-// const programOutputResult = await program.getOutput().getInfo()
-// const errors: Error[] = programInfoResult.errors
-//     .concat(programOutputResult.errors)
-
-
-// const data = {
-//     midiOutputs: await midiDeviceData(true),
-//     midiInputs: await midiDeviceData(false),
-//     program: {
-//         info: programInfoResult.data,
-//         output: programOutputResult.data
-//     }
-// } as AppData
-// console.log(`RENDERING CONTROL APP TO APP ROOT`)
-// appRoot.render(<div>Hello.</div>)
-// appRoot.render(<ControlApp data={data}/>)
-// console.log(`ERRORS: ${errors.length}`)
-// if (errors.length > 0) {
-//     common.error(errors)
-// }
-// }).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))

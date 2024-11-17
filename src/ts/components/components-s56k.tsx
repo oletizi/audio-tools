@@ -1,22 +1,11 @@
 /**
  * Components specific to the Akai S5000/S6000 sampler series
  */
-import {ProgramInfo, ProgramOutputInfo} from "../midi/device";
-import React, {CSSProperties, useState} from "react";
-import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js";
-import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
-import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js";
-import SlMenuItem from "@shoelace-style/shoelace/dist/react/menu-item/index.js";
-import SlDivider from "@shoelace-style/shoelace/dist/react/divider/index.js";
-import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
-import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
-import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js";
-import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js";
-import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js";
-import SlCard from "@shoelace-style/shoelace/dist/react/card/index.js";
-import {MutableNumber, MutableString} from "../lib/lib-core";
-import {LabeledDropdown, LabeledRange, Selectable} from "./components-common";
-import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
+import React, {useState} from "react";
+import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
+import {LabeledDropdown, Selectable} from "./components-common";
+import {Card, Flex, Tabs} from '@chakra-ui/react'
+import {MutableNumber} from "@/lib/lib-core";
 
 
 interface ProgramData {
@@ -30,72 +19,86 @@ export interface AppData {
     program: ProgramData
 }
 
-export function ProgramView({program}: { program: ProgramData }) {
+export function ProgramView({data}) {
     return (
-        <SlTabGroup>
-            <SlTab slot="nav" panel="output">Program Output</SlTab>
-            <SlTab slot="nav" panel="info">Program Info</SlTab>
-            <SlTabPanel name="output"><ProgramOutputView output={program.output}/></SlTabPanel>
-            <SlTabPanel name="info"><ProgramInfoView info={program.info}/></SlTabPanel>
-        </SlTabGroup>
+        <Card.Root width={'100%'}>
+            <Card.Body>
+                <Tabs.Root defaultValue={'output'}>
+                    <Tabs.List>
+                        <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
+                        <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
+                    </Tabs.List>
+                    <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
+                    <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
+                </Tabs.Root>
+            </Card.Body>
+        </Card.Root>
     )
 }
 
 
-function ProgramOutputView({output}: { output: ProgramOutputInfo }) {
-    // noinspection TypeScriptValidateTypes
+function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
     return (
-        <div className={'grid lg:grid-cols-3 gap-4'}>
-            <SlCard>
-                <div slot={'header'}>Loudness</div>
-                <LabeledRange data={output.loudness} label={''}/>
-            </SlCard>
-            <SlCard>
-                <div slot={'header'}>Amp Mod 1</div>
-                <ModSourceView modSource={output.ampMod1Source} label={'Source'}/>
-                <LabeledRange data={output.ampMod1Value} label={"Value"}/>
-            </SlCard>
-            <SlCard>
-                <div slot="header">Amp Mod 2</div>
-                <ModSourceView modSource={output.ampMod2Source} label={'Source'}/>
-                <LabeledRange data={output.ampMod2Value} label={"Value"}/>
-            </SlCard>
-            <SlCard>
-                <div slot="header">Pan Mod 1</div>
-                <ModSourceView modSource={output.panMod1Source} label={'Source'}/>
-                <LabeledRange data={output.panMod1Value} label={'Value'}/>
-            </SlCard>
-            <SlCard>
-                <div slot="header">Pan Mod 2</div>
-                <ModSourceView modSource={output.panMod2Source} label={'Source'}/>
-                <LabeledRange data={output.panMod2Value} label={'Value'}/>
-            </SlCard>
-            <SlCard>
-                <div slot="header">Pan Mod 3</div>
-                <ModSourceView modSource={output.panMod2Source} label={'Source'}/>
-                <LabeledRange data={output.panMod3Value} label={'Value'}/>
-            </SlCard>
-        </div>
+        <Flex>
+            <Card.Root>
+                <Card.Header> Loudness </Card.Header>
+                <Card.Body>
+                    value: {data.loudness.value}
+                </Card.Body>
+            </Card.Root>
+            <Card.Root>
+                <Card.Header>Amp Mod 1</Card.Header>
+                <Card.Body>
+                    <ModSourceView modSource={data.ampMod1Source} label={'Source'}/>
+                    value: {data.ampMod1Value.value}
+                </Card.Body>
+            </Card.Root>
+            {/*<SlCard>*/}
+            {/*    <div slot={'header'}>Amp Mod 1</div>*/}
+            {/*    <ModSourceView modSource={output.ampMod1Source} label={'Source'}/>*/}
+            {/*    <LabeledRange data={output.ampMod1Value} label={"Value"}/>*/}
+            {/*</SlCard>*/}
+            {/*<SlCard>*/}
+            {/*    <div slot="header">Amp Mod 2</div>*/}
+            {/*    <ModSourceView modSource={output.ampMod2Source} label={'Source'}/>*/}
+            {/*    <LabeledRange data={output.ampMod2Value} label={"Value"}/>*/}
+            {/*</SlCard>*/}
+            {/*<SlCard>*/}
+            {/*    <div slot="header">Pan Mod 1</div>*/}
+            {/*    <ModSourceView modSource={output.panMod1Source} label={'Source'}/>*/}
+            {/*    <LabeledRange data={output.panMod1Value} label={'Value'}/>*/}
+            {/*</SlCard>*/}
+            {/*<SlCard>*/}
+            {/*    <div slot="header">Pan Mod 2</div>*/}
+            {/*    <ModSourceView modSource={output.panMod2Source} label={'Source'}/>*/}
+            {/*    <LabeledRange data={output.panMod2Value} label={'Value'}/>*/}
+            {/*</SlCard>*/}
+            {/*<SlCard>*/}
+            {/*    <div slot="header">Pan Mod 3</div>*/}
+            {/*    <ModSourceView modSource={output.panMod2Source} label={'Source'}/>*/}
+            {/*    <LabeledRange data={output.panMod3Value} label={'Value'}/>*/}
+            {/*</SlCard>*/}
+        </Flex>
     )
 }
 
 
-function ProgramInfoView({info}: { info: ProgramInfo }) {
-    return (
-        <div className={'flex columns-2'}>
-            <SlInput
-                name="program-name"
-                value={info.name.value}
-                onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
-            <div>Id:</div>
-            <div><SlFormatNumber value={info.id}/></div>
-            <div>Index:</div>
-            <div><SlFormatNumber value={info.index}/></div>
-            <div>Keygroup Count:</div>
-            <div><SlFormatNumber value={info.keygroupCount}/></div>
-        </div>
-    )
-}
+// function ProgramInfoView({info}: { info: ProgramInfo }) {
+//     return (
+//         <div className={'flex columns-2'}>
+//             <SlInput
+//                 name="program-name"
+//                 value={info.name.value}
+//                 onSlChange={(event) => info.name.mutator((event.target as any).value)}/>
+//             <div>Id:</div>
+//             <div><SlFormatNumber value={info.id}/></div>
+//             <div>Index:</div>
+//             <div><SlFormatNumber value={info.index}/></div>
+//             <div>Keygroup Count:</div>
+//             <div><SlFormatNumber value={info.keygroupCount}/></div>
+//         </div>
+//     )
+// }
 
 
 function ModSourceView({modSource, label}: { modSource: MutableNumber, label: string }) {
