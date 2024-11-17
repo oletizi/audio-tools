@@ -1,11 +1,11 @@
-// GENERATED: 11/17/2024, 3:19:10 PM
+// GENERATED: 11/17/2024, 3:23:29 PM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
 import {Sysex} from "@/midi/sysex"
 import {newDeviceObject} from "@/midi/device"
 import {ProcessOutput} from "@/process-output"
-import {programOutputSpec,programMidTuneSpec,programPitchBendSpec} from "@/midi/devices/specs"
+import {programOutputSpec,programMidTuneSpec,programPitchBendSpec,programLfosSpec} from "@/midi/devices/specs"
 
 //
 // ProgramOutput
@@ -114,4 +114,26 @@ export interface ProgramPitchBend {
 
 export function newProgramPitchBend(sysex: Sysex, out: ProcessOutput) {
   return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend}
+
+//
+// ProgramLfos
+//
+
+export interface ProgramLfosInfo {
+
+}
+
+export interface ProgramLfosInfoResult extends Result {
+  data: ProgramLfosInfo
+}
+
+
+export interface ProgramLfos {
+
+  getInfo(): ProgramLfosInfo
+}
+
+
+export function newProgramLfos(sysex: Sysex, out: ProcessOutput) {
+  return newDeviceObject(programLfosSpec, sysex, out) as ProgramLfos}
 

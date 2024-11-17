@@ -60,9 +60,10 @@ import {
 } from "@/lib/lib-core";
 import {newControlMessage, ResponseStatus, Section, Sysex, SysexControlMessage, SysexResponse} from "@/midi/sysex";
 import {
+    newProgramLfos,
     newProgramMidiTune,
     newProgramOutput,
-    newProgramPitchBend,
+    newProgramPitchBend, ProgramLfos,
     ProgramMidiTune,
     ProgramOutput, ProgramPitchBend
 } from "@/midi/devices/devices";
@@ -314,127 +315,6 @@ class S56kProgramSysex implements S56kProgram {
     getLfos(): ProgramLfos {
         return newProgramLfos(this.sysex, this.out)
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// PROGRAM PITCH BEND
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// export interface ProgramPitchBendInfoResult extends Result {
-//     data: ProgramPitchBendInfo
-// }
-//
-// export interface ProgramPitchBendInfo {
-//     pitchBendUp: MutableNumber
-//     pitchBendDown: MutableNumber
-//     bendMode: MutableNumber
-//     aftertouchValue: MutableNumber
-//     legatoEnable: MutableNumber
-//     portamentoEnable: MutableNumber
-//     portamentoMode: MutableNumber
-//     portamentoTime: MutableNumber
-// }
-//
-// export interface ProgramPitchBend {
-//     getPitchBendUp(): Promise<NumberResult>
-//
-//     getPitchBendDown(): Promise<NumberResult>
-//
-//     getBendMode(): Promise<NumberResult>
-//
-//     getAftertouchValue(): Promise<NumberResult>
-//
-//     getLegatoEnable(): Promise<BooleanResult>
-//
-//     getPortamentoEnable(): Promise<BooleanResult>
-//
-//     getPortamentoMode(): Promise<NumberResult>
-//
-//     getPortamentoTime(): Promise<NumberResult>
-//
-//     getInfo(): Promise<ProgramPitchBendInfoResult>
-// }
-//
-// const programPitchBendSpec = {
-//     className: "ProgramPitchBend",
-//     sectionCode: Section.PROGRAM,
-//     items: [
-//         ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
-//         ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
-//         ["BendMode", "number|0|1|1", 0x4A, [], "uint8", 1, 0x42, ["uint8"]],
-//         ["AftertouchValue", "number|-12|12|1", 0x4B, [], "int8", 2, 0x43, ["int8sign", "int8abs"]],
-//         ["LegatoEnable", "number|0|1|1", 0x4C, [], "uint8", 1, 0x44, ["uint8"]],
-//         ["PortamentoEnable", "number|0|1|1", 0x4D, [], "uint8", 1, 0x45, ["uint8"]],
-//         ["PortamentoMode", "number|0|1|1", 0x4E, [], "uint8", 1, 0x46, ["uint8"]],
-//         ["PortamentoTime", "number|0|100|1", 0x4F, [], "uint8", 1, 0x47, ["uint8"]],
-//     ]
-// }
-//
-// function newProgramPitchBend(sysex: Sysex, out: ProcessOutput): ProgramPitchBend {
-//     return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// PROGRAM PITCH BEND
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export interface ProgramLfosInfoResult extends Result {
-    data: ProgramLfosInfo
-}
-
-export interface ProgramLfosInfo {
-    lfo1Rate: MutableNumber
-    lfo2Rate: MutableNumber
-    // pitchBendUp: MutableNumber
-    // pitchBendDown: MutableNumber
-    // bendMode: MutableNumber
-    // aftertouchValue: MutableNumber
-    // legatoEnable: MutableNumber
-    // portamentoEnable: MutableNumber
-    // portamentoMode: MutableNumber
-    // portamentoTime: MutableNumber
-}
-
-export interface ProgramLfos {
-    // getPitchBendUp(): Promise<NumberResult>
-    //
-    // getPitchBendDown(): Promise<NumberResult>
-    //
-    // getBendMode(): Promise<NumberResult>
-    //
-    // getAftertouchValue(): Promise<NumberResult>
-    //
-    // getLegatoEnable(): Promise<BooleanResult>
-    //
-    // getPortamentoEnable(): Promise<BooleanResult>
-    //
-    // getPortamentoMode(): Promise<NumberResult>
-    //
-    // getPortamentoTime(): Promise<NumberResult>
-
-    getInfo(): Promise<ProgramLfosInfoResult>
-}
-
-const programLfosSpec = {
-    className: "ProgramLfos",
-    sectionCode: Section.PROGRAM,
-    items: [
-        // ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
-        // ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
-        // ["BendMode", "number|0|1|1", 0x4A, [], "uint8", 1, 0x42, ["uint8"]],
-        // ["AftertouchValue", "number|-12|12|1", 0x4B, [], "int8", 2, 0x43, ["int8sign", "int8abs"]],
-        // ["LegatoEnable", "number|0|1|1", 0x4C, [], "uint8", 1, 0x44, ["uint8"]],
-        // ["PortamentoEnable", "number|0|1|1", 0x4D, [], "uint8", 1, 0x45, ["uint8"]],
-        // ["PortamentoMode", "number|0|1|1", 0x4E, [], "uint8", 1, 0x46, ["uint8"]],
-        // ["PortamentoTime", "number|0|100|1", 0x4F, [], "uint8", 1, 0x47, ["uint8"]],
-    ]
-}
-
-function newProgramLfos(sysex: Sysex, out: ProcessOutput): ProgramLfos {
-    return newDeviceObject(programLfosSpec, sysex, out) as ProgramLfos
 }
 
 /**
