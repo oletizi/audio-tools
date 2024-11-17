@@ -13,7 +13,9 @@ import {
 
 function Selector({data}) {
     return (
-        <SelectRoot collection={data}>
+        <SelectRoot collection={data} onValueChange={(event) => {
+            console.log(`Value changed: ${event.value[0]}`)
+        }}>
             <SelectLabel>Select a thingy</SelectLabel>
             <SelectTrigger>
                 <SelectValueText placeholder={'Select a thingy...'}/>
@@ -77,7 +79,7 @@ function App() {
                             </Card.Description>
                         </Card.Body>
                     </Card.Root>
-                    <Card.Root>
+                    <Card.Root flexGrow={1}>
                         <Card.Body>
                             <Selector data={data}/>
                         </Card.Body>
