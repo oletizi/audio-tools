@@ -12,6 +12,7 @@ export interface Result {
     error: string | null
     data: any
 }
+
 export interface MutableNumber {
     min: number
     max: number
@@ -25,8 +26,16 @@ export interface MutableString {
     value: string
 }
 
-export function scale(value:number, xmin: number, xmax: number, ymin: number, ymax: number) {
+export function scale(value: number, xmin: number, xmax: number, ymin: number, ymax: number) {
     const xrange = xmax - xmin
     const yrange = ymax - ymin
-    return (value - xmin) * yrange/xrange + ymin
+    return (value - xmin) * yrange / xrange + ymin
+}
+
+export function real2natural(value: number, min: number, max: number) {
+    return scale(value, min, max, 0, max - min)
+}
+
+export function natural2real(value: number, min: number, max: number) {
+    return scale(value, 0, max - min, min, max)
 }

@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {MutableNumber} from "@/lib/lib-core";
+import {MutableNumber, scale} from "@/lib/lib-core";
 import {
     Card,
     createListCollection, ListCollection,
