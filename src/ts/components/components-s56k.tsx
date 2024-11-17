@@ -1,7 +1,7 @@
 /**
  * Components specific to the Akai S5000/S6000 sampler series
  */
-import React, {useState} from "react";
+import React from "react";
 import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
 import {Flex, Tabs} from '@chakra-ui/react'
