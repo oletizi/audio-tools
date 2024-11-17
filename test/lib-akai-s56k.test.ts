@@ -22,7 +22,7 @@ import {
     ProgramChunk,
     Tune,
     Zone
-} from "../src/ts/akai-lib";
+} from "../src/ts/lib/lib-akai-s56k";
 import path from "path";
 
 async function loadTestFile() {

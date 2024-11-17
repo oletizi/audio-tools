@@ -24,3 +24,9 @@ export interface MutableString {
     mutator: (value: string) => Promise<Result>
     value: string
 }
+
+export function scale(value:number, xmin: number, xmax: number, ymin: number, ymax: number) {
+    const xrange = xmax - xmin
+    const yrange = ymax - ymin
+    return (value - xmin) * yrange/xrange + ymin
+}

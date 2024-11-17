@@ -1,4 +1,4 @@
-import {newProgress, Progress} from "../src/ts/progress.ts"
+import {newProgress, Progress} from "../src/ts/model/progress.ts"
 import {expect} from "chai";
 
 describe('Progress', () => {

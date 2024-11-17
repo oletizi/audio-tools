@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import {newSampleFromBuffer} from "../src/ts/sample";
+import {newSampleFromBuffer} from "@/model/sample"
 
 describe('Sample', async () => {
     it('Trims a sample via sample interface', async () => {
