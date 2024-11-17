@@ -618,7 +618,8 @@ const programMidTuneSpec = {
     sectionCode: Section.PROGRAM,
     items: [
         ["SemitoneTune", "number|-36|36|1", 0x38, [], "int8", 2, 0x30, ["int8sign", "int8abs"]],
-        ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]]
+        ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
+        ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
     ]
 }
 
