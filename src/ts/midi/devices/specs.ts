@@ -1,10 +1,12 @@
 export interface DeviceSpec {
+    specName: string,
     className: string,
     sectionCode: number,
     items: any[]
 }
 
-const programOutputSpec: DeviceSpec = {
+export const programOutputSpec: DeviceSpec = {
+    specName: 'programOutputSpec',
     className: "ProgramOutput",
     sectionCode: Section.PROGRAM,
     items: [

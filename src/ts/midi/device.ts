@@ -58,176 +58,15 @@ import {
     Result,
     StringResult
 } from "../lib/lib-core";
+import {newControlMessage, ResponseStatus, Section, Sysex, SysexControlMessage, SysexResponse} from "@/midi/sysex";
+import {newProgramOutput, ProgramOutput} from "@/midi/devices/devices";
 
-enum ResponseStatus {
-    OK = 79,
-    DONE = 68,
-    REPLY = 82,
-    ERROR = 69
-}
 
-function getStatusMessage(status: number) {
-    switch (status) {
-        case ResponseStatus.OK:
-            return "Ok"
-        case ResponseStatus.DONE:
-            return "Done"
-        case ResponseStatus.REPLY:
-            return "Reply"
-        case ResponseStatus.ERROR:
-            return "Error"
-        default:
-            return "Unknown"
-    }
-}
 
 enum ErrorCode {
     NOT_SUPPORTED = 0,
     INVALID_FORMAT,
     PARAMETER_OUT_OF_RANGE
-}
-
-function getErrorMessage(errorCode: number) {
-    switch (errorCode) {
-        case 0:
-            return "Error: Not supported"
-        case 1:
-            return "Error: Invalid message format"
-        case 2:
-            return "Error: Parameter out of range"
-        case 3:
-            return "Error: Device: Unknown error"
-        case 4:
-            return "Error: Not found"
-        case 5:
-            return "Error: Unable to create new element"
-        case 6:
-            return "Error: Unable to delete item"
-        case 129:
-            return "Error: Checksum invalid"
-        case 257:
-            return "Disk error: Selected disk invalid"
-        case 258:
-            return "Disk error: Error during load"
-        case 259:
-            return "Disk error: Item not found"
-        case 260:
-            return "Disk error: Unable to create"
-        case 261:
-            return "Disk error: Folder not empty"
-        case 262:
-            return "Disk error: Unable to delete"
-        case 263:
-            return "Disk error: Unknown error"
-        case 264:
-            return "Disk error: Error during save"
-        case 265:
-            return "Disk error: Insufficient space"
-        case 266:
-            return "Disk error: Media is write protected"
-        case 267:
-            return "Disk error: Name not unique"
-        case 268:
-            return "Disk error: Invalid disk handle"
-        case 269:
-            return "Disk error: Disk is empty"
-        case 270:
-            return "Disk error: Aborted"
-        case 271:
-            return "Disk error: Failed on open"
-        case 272:
-            return "Disk error: Read error"
-        case 273:
-            return "Disk error: Disk not ready"
-        case 274:
-            return "Disk error: SCSI error"
-        case 385:
-            return "Program error: Requested keygroup does not exist"
-        default:
-            return "Error code unknown"
-    }
-}
-
-export interface SysexResponse {
-    // 94 (product id)
-    // 0  (deviceId)
-    // 0  (userRef)
-    // 79 ('O':OK) | 68 ('D':DONE) | 82 ('R':REPLY) | 69 ('E': ERROR)
-    // 0  (Data 1)
-    // 0  (Data 2)
-    productId: number
-    deviceId: number
-    userRef: number
-    status: ResponseStatus
-    errorCode: number
-    message: string
-    section: number
-    item: number
-    data: number[]
-}
-
-function newResponse(event) {
-    const data = event['dataBytes']
-    const rv = {} as SysexResponse
-    if (data && data.length >= 6) {
-        let cursor = 0
-        rv.productId = data[cursor++]
-        rv.deviceId = data[cursor++]
-        rv.userRef = data[cursor++]
-        rv.status = data[cursor++]
-        rv.data = []
-
-        if (rv.status == ResponseStatus.REPLY) {
-            // Reply messages have a section byte and an item byte before the data byte
-            rv.section = data[cursor++]
-            rv.item = data[cursor++]
-        }
-        for (; cursor < data.length; cursor++) {
-            rv.data.push(data[cursor])
-        }
-
-        if (rv.status === ResponseStatus.ERROR) {
-            rv.errorCode = data[4] * 128 + data[5]
-            rv.message = getErrorMessage(rv.errorCode)
-        } else {
-            rv.errorCode = -1
-            rv.message = getStatusMessage(rv.status)
-        }
-        rv.message += ` at ${event.timestamp}`
-    } else {
-        rv.productId = -1
-        rv.deviceId = -1
-        rv.userRef = -1
-        rv.status = ResponseStatus.ERROR
-        rv.errorCode = -1
-        rv.message = "Unknown"
-        rv.data = []
-    }
-    return rv as SysexResponse
-}
-
-enum Section {
-    SYSEX_CONFIG = 0x00,
-    SYSTEM_SETUP = 0x02,
-    MIDI_CONFIG = 0x04,
-    KEYGROUP_ZONE = 0x06,
-    KEYGROUP = 0x08,
-    PROGRAM = 0x0A,
-    MULTI = 0x0C,
-    SAMPLE_TOOLS = 0x0E,
-    DISK_TOOLS = 0x10,
-    FX = 0x12,
-    SCENLIST = 0x14,
-    SONGFILE = 0x16,
-    FRONT_PANEL = 0x20,
-    ALT_PROGRAM = 0x2A,
-    ALT_MULTI = 0x2C,
-    ALT_SAMPLE = 0x2E,
-    ALT_FX = 0x32
-}
-
-interface Item {
-    getCode(): number
 }
 
 enum SysexItem {
@@ -274,19 +113,6 @@ enum ProgramItem {
 
 }
 
-interface SysexControlMessage {
-    section: Section
-    item: number
-    data: number[]
-}
-
-function newControlMessage(section: Section, item: number, data: number[]): SysexControlMessage {
-    return {
-        section: section,
-        item: item,
-        data: data
-    } as SysexControlMessage
-}
 
 
 
@@ -503,78 +329,78 @@ export interface DeviceSpec {
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface ProgramOutputInfo {
-    loudness: MutableNumber
-    velocitySensitivity: MutableNumber
-    ampMod1Source: MutableNumber
-    ampMod2Source: MutableNumber
-    ampMod1Value: MutableNumber
-    ampMod2Value: MutableNumber
-    panMod1Source: MutableNumber
-    panMod2Source: MutableNumber
-    panMod3Source: MutableNumber
-    panMod1Value: MutableNumber
-    panMod2Value: MutableNumber
-    panMod3Value: MutableNumber
-}
-
-export interface ProgramOutputInfoResult extends Result {
-    data: ProgramOutputInfo
-}
-
-export interface ProgramOutput {
-    getLoudness(): Promise<NumberResult>
-
-    getVelocitySensitivity(): Promise<NumberResult>
-
-    getAmpMod1Source(): Promise<NumberResult>
-
-    getAmpMod2Source(): Promise<NumberResult>
-
-    getAmpMod1Value(): Promise<NumberResult>
-
-    getAmpMod2Value(): Promise<NumberResult>
-
-    getPanMod1Source(): Promise<NumberResult>
-
-    getPanMod2Source(): Promise<NumberResult>
-
-    getPanMod3Source(): Promise<NumberResult>
-
-    getPanMod1Value(): Promise<NumberResult>
-
-    getPanMod2Value(): Promise<NumberResult>
-
-    getPanMod3Value(): Promise<NumberResult>
-
-    getInfo(): Promise<ProgramOutputInfoResult>
-}
-const programOutputSpec = {
-    className: "ProgramOutput",
-    sectionCode: Section.PROGRAM,
-    items: [
-        // | general                                 | set request spec. req data length encoded in length of the spec array
-        // | method name root, type spec             | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
-        // |                   'number|min|max|step" |
-        // |                   'string|max'          |
-        ["Loudness", "number|0|100|1", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
-        ["VelocitySensitivity", "number|-100|100|1", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
-        ["AmpMod1Source", "number|0|14|1", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
-        ["AmpMod2Source", "number|0|14|1", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
-        ["AmpMod1Value", "number|-100|100|1", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
-        ["AmpMod2Value", "number|-100|100|1", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
-        ["PanMod1Source", "number|0|14|1", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
-        ["PanMod2Source", "number|0|14|1", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
-        ["PanMod3source", "number|0|14|1", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
-        ["PanMod1Value", "number|-100|100|1", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
-        ["PanMod2Value", "number|-100|100|1", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
-        ["PanMod3Value", "number|-100|100|1", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
-    ]
-}
-
-function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
-    return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
-}
+// export interface ProgramOutputInfo {
+//     loudness: MutableNumber
+//     velocitySensitivity: MutableNumber
+//     ampMod1Source: MutableNumber
+//     ampMod2Source: MutableNumber
+//     ampMod1Value: MutableNumber
+//     ampMod2Value: MutableNumber
+//     panMod1Source: MutableNumber
+//     panMod2Source: MutableNumber
+//     panMod3Source: MutableNumber
+//     panMod1Value: MutableNumber
+//     panMod2Value: MutableNumber
+//     panMod3Value: MutableNumber
+// }
+//
+// export interface ProgramOutputInfoResult extends Result {
+//     data: ProgramOutputInfo
+// }
+//
+// export interface ProgramOutput {
+//     getLoudness(): Promise<NumberResult>
+//
+//     getVelocitySensitivity(): Promise<NumberResult>
+//
+//     getAmpMod1Source(): Promise<NumberResult>
+//
+//     getAmpMod2Source(): Promise<NumberResult>
+//
+//     getAmpMod1Value(): Promise<NumberResult>
+//
+//     getAmpMod2Value(): Promise<NumberResult>
+//
+//     getPanMod1Source(): Promise<NumberResult>
+//
+//     getPanMod2Source(): Promise<NumberResult>
+//
+//     getPanMod3Source(): Promise<NumberResult>
+//
+//     getPanMod1Value(): Promise<NumberResult>
+//
+//     getPanMod2Value(): Promise<NumberResult>
+//
+//     getPanMod3Value(): Promise<NumberResult>
+//
+//     getInfo(): Promise<ProgramOutputInfoResult>
+// }
+// const programOutputSpec = {
+//     className: "ProgramOutput",
+//     sectionCode: Section.PROGRAM,
+//     items: [
+//         // | general                                 | set request spec. req data length encoded in length of the spec array
+//         // | method name root, type spec             | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
+//         // |                   'number|min|max|step" |
+//         // |                   'string|max'          |
+//         ["Loudness", "number|0|100|1", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
+//         ["VelocitySensitivity", "number|-100|100|1", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
+//         ["AmpMod1Source", "number|0|14|1", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
+//         ["AmpMod2Source", "number|0|14|1", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
+//         ["AmpMod1Value", "number|-100|100|1", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
+//         ["AmpMod2Value", "number|-100|100|1", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
+//         ["PanMod1Source", "number|0|14|1", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
+//         ["PanMod2Source", "number|0|14|1", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
+//         ["PanMod3source", "number|0|14|1", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
+//         ["PanMod1Value", "number|-100|100|1", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
+//         ["PanMod2Value", "number|-100|100|1", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
+//         ["PanMod3Value", "number|-100|100|1", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
+//     ]
+// }
+//
+// function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
+//     return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -748,7 +574,7 @@ function newProgramLfos(sysex: Sysex, out: ProcessOutput): ProgramLfos {
  * @param sysex -- a Sysex client that knows how to send and receive Akai S56k system exclusive messages
  * @param out -- a wrapper around stdout/stderr and/or console.log/console.err, depending on execution context (nodejs or browser)
  */
-function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
+export function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
     const sectionCode = spec.sectionCode
     const obj = {}
 
@@ -915,65 +741,6 @@ class S56kSysex implements S56kDevice {
 
     getCurrentProgram(): S56kProgram {
         return this.program
-    }
-}
-
-class Sysex {
-    protected midi: Midi
-    protected out: ProcessOutput
-
-    constructor(midi: Midi, out: ProcessOutput) {
-        this.midi = midi
-        this.out = out
-    }
-
-    async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {
-        const midi = this.midi
-        const out = this.out
-        const akaiID = 0x47
-        const s56kId = 0x5E
-        const deviceId = 0x00
-        const userRef = 0x00
-        return new Promise<any>(async (resolve, reject) => {
-            let eventCount = 0
-
-            function listener(event) {
-                for (const name of Object.getOwnPropertyNames(event)) {
-                    out.log(`SYSEX RESPONSE ${eventCount}: ${name} = ${event[name]}`)
-                }
-                let response = newResponse(event);
-                // TODO: Update to handle setter messages that receive a "DONE" reply rather than a "REPLY" message
-                // The current implementation doesn't distinguish between the two, but it should.
-                switch (response.status) {
-                    case ResponseStatus.OK:
-                        out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
-                        break
-                    case ResponseStatus.DONE:
-                    case ResponseStatus.REPLY:
-                    case ResponseStatus.ERROR:
-                        out.log(`SYSEX RESPONSE: ${eventCount} terminal: ${response.status}; Resolving `)
-                        midi.removeListener('sysex', listener)
-                        resolve(response)
-                }
-                // if (response.status == ResponseStatus.OK) {
-                //     out.log(`SYSEX RESPONSE: ${eventCount}: OK`)
-                // } else if (response.status == ResponseStatus.DONE || response.status == ResponseStatus.) {
-                //     out.log(`SYSEX RESPONSE: ${eventCount}: ${response.status}; Resolving.`)
-                //     midi.removeListener('sysex', listener)
-                //     resolve(response)
-                // }
-                eventCount++
-            }
-
-            out.log(`Adding listener for sysex call.`)
-            out.log(`  Output: ${(await this.midi.getCurrentOutput()).name}`)
-            out.log(`  Input : ${(await this.midi.getCurrentOutput()).name}`)
-            this.midi.addListener('sysex', listener)
-            let data = [s56kId, deviceId, userRef, message.section, message.item].concat(message.data);
-            out.log(`Sending sysex data: ${data}`)
-            this.midi.sendSysex(akaiID, data)
-            this.out.log(`Done sending sysex.`)
-        })
     }
 }
 

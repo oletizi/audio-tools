@@ -11,6 +11,15 @@ import {timestamp} from "./src/ts/lib/lib-core";
 
 const out = fs.createWriteStream(path.join('src','ts', 'midi', 'devices', 'devices.ts'))
 
+out.write(`// GENERATED: ${new Date().toLocaleString()}\n`)
+out.write('// DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.\n\n')
+
+out.write(`import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"\n`)
+out.write(`import {Sysex} from "@/midi/sysex"\n`)
+out.write(`import {newDeviceObject} from "@/midi/device"\n`)
+out.write(`import {ProcessOutput} from "@/process-output"\n`)
+
+out.write(`import {${getDeviceSpecs().map(spec => spec.specName).join(',')}} from "@/midi/devices/specs"\n\n`)
 getDeviceSpecs().forEach(device => {
     gen(device)
 })
@@ -78,11 +87,7 @@ function parseItem(itemSpec) {
 function gen(device: DeviceSpec) {
     const basename = device.className
     const infoName = basename + 'Info'
-    out.write(`// GENERATED: ${new Date().toLocaleString()}\n`)
-    out.write('// DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.\n\n')
 
-    out.write(`import {MutableNumber, MutableString, Result} from "@/lib/lib-core"\n`)
-    out.write(`import {NumberResult, StringResult} from "@/lib/lib-core"\n\n`)
     //
     // <Device>Info interface
     //
@@ -128,5 +133,14 @@ function gen(device: DeviceSpec) {
     }).join('\n'))
     out.write('\n')
     out.write(`  getInfo(): ${infoName}\n`)
+    out.write('}\n\n')
+
+    //
+    // <Device> ctor
+    //
+
+    out.write(`\n`)
+    out.write(`export function new${basename}(sysex: Sysex, out: ProcessOutput) {\n`)
+    out.write( `  return newDeviceObject(${device.specName}, sysex, out) as ${basename}`)
     out.write('}\n\n')
 }

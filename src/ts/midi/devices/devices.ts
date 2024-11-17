@@ -1,8 +1,11 @@
-// GENERATED: 11/17/2024, 2:45:26 PM
+// GENERATED: 11/17/2024, 3:11:57 PM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
-import {MutableNumber, MutableString, Result} from "@/lib/lib-core"
-import {NumberResult, StringResult} from "@/lib/lib-core"
+import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
+import {Sysex} from "@/midi/sysex"
+import {newDeviceObject} from "@/midi/device"
+import {ProcessOutput} from "@/process-output"
+import {programOutputSpec} from "@/midi/devices/specs"
 
 export interface ProgramOutputInfo {
   loudness: MutableNumber
@@ -39,4 +42,8 @@ export interface ProgramOutput {
   getPanMod3Value(): NumberResult
   getInfo(): ProgramOutputInfo
 }
+
+
+export function newProgramOutput(sysex: Sysex, out: ProcessOutput) {
+  return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput}
 
