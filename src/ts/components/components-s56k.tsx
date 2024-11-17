@@ -79,8 +79,9 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
 function ProgramMidiTuneView({data}: { data: ProgramMidiTuneInfo }) {
     return (
         <Flex>
-            <ControlPanel title={'Semitone Tune'}>
-                <MutableSlider data={data.semitoneTune} label={'Value'}/>
+            <ControlPanel title={'Tune'}>
+                <MutableSlider data={data.semitoneTune} label={'Semitone'}/>
+                <MutableSlider data={data.fineTune} label={"Fine"}/>
             </ControlPanel>
         </Flex>
     )

@@ -372,7 +372,6 @@ function newBooleanResult(res: SysexResponse): BooleanResult {
 }
 
 
-
 export interface ProgramInfo {
     name: MutableString
     id: number
@@ -387,8 +386,6 @@ export interface ProgramInfoResult extends Result {
 export function newS56kDevice(midi, out: ProcessOutput) {
     return new S56kSysex(midi, out)
 }
-
-
 
 
 export interface ProgramPitchBend {
@@ -620,10 +617,12 @@ const programMidTuneSpec = {
     className: "ProgramMidiTune",
     sectionCode: Section.PROGRAM,
     items: [
-        ["SemitoneTune", "number|-50|50|1", 0x38, [], "int8", 2, 0x30, ["int8sign", "int8abs"]],
+        ["SemitoneTune", "number|-36|36|1", 0x38, [], "int8", 2, 0x30, ["int8sign", "int8abs"]],
+        ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]]
     ]
 }
-function newProgramMidiTune(sysex: Sysex, out:ProcessOutput): ProgramMidiTune {
+
+function newProgramMidiTune(sysex: Sysex, out: ProcessOutput): ProgramMidiTune {
     return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune
 }
 
