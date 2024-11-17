@@ -118,6 +118,7 @@ function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
             <ControlPanel title={'Portamento'}>
                 <MutableSlider data={data.portamentoEnable} label={'Enable'}/>
                 <MutableSlider data={data.portamentoMode} label={'Mode'}/>
+                <MutableSlider data={data.portamentoTime} label={'Time'}/>
             </ControlPanel>
         </Flex>
     )

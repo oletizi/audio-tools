@@ -666,6 +666,7 @@ const programPitchBendSpec = {
         ["LegatoEnable", "number|0|1|1", 0x4C, [], "uint8", 1, 0x44, ["uint8"]],
         ["PortamentoEnable", "number|0|1|1", 0x4D, [], "uint8", 1, 0x45, ["uint8"]],
         ["PortamentoMode", "number|0|1|1", 0x4E, [], "uint8", 1, 0x46, ["uint8"]],
+        ["PortamentoTime", "number|0|100|1", 0x4F, [], "uint8", 1, 0x47, ["uint8"]],
         // ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
         // ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
         // ["Key", "number|0|11|1", 0x3C, [], 'uint8', 1, 0x34, ["uint8"]],
