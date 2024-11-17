@@ -18,7 +18,7 @@ import {
     SelectTrigger,
     SelectValueText
 } from "@chakra-ui/react";
-import {Provider} from "@/components/provider";
+import {Provider} from "@/components/chakra/provider";
 
 function sanitize(val: string) {
     return encodeURI(val)

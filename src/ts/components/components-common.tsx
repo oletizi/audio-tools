@@ -1,14 +1,15 @@
 import React, {useState} from 'react'
 import {MutableNumber} from "@/lib/lib-core";
 import {
-    Alert,
+    Card,
     createListCollection, ListCollection,
     SelectContent, SelectItem,
     SelectLabel,
     SelectRoot,
     SelectTrigger,
-    SelectValueText
+    SelectValueText, Separator, Slider
 } from "@chakra-ui/react";
+import {Slider} from '@/components/chakra/slider'
 
 export interface Option {
     label: string
@@ -21,22 +22,23 @@ export interface Selectable {
     options: Option[]
 }
 
-export function LabeledRange({data, label}: { data: MutableNumber, label: string }) {
-    const [value, setValue] = useState(data.value)
+export function MutableSlider({data, label}: { data: MutableNumber, label: string }) {
+    const [value, setValue] = useState([data.value])
+    console.log(`DATA: ${JSON.stringify(data)}`)
     return (
-        <div className={'columns-2'}>
-            {/*<SlRange label={label}*/}
-            {/*         value={value}*/}
-            {/*         min={data.min}*/}
-            {/*         max={data.max}*/}
-            {/*         step={data.step}*/}
-            {/*         onSlChange={async (event) => {*/}
-            {/*             let val = (event.target as any).value;*/}
-            {/*             setValue(val)*/}
-            {/*             await data.mutator(val)*/}
-            {/*         }}/>*/}
-            <div className={'p-2.5'}>{value}</div>
-        </div>
+        <Slider
+            onValueChangeEnd={async (event) => {
+                const val = event.value
+                console.log(`New Value: ${val[0]}`)
+                setValue(val)
+                await data.mutator(val[0])
+            }}
+            label={label}
+            // XXX: TODO: Chakra sliders don't like negative values. Need to scale the range to positive, then convert back to neg/pos.
+            min={0}
+            max={data.max}
+            value={value}
+        />
     )
 }
 
@@ -60,4 +62,13 @@ export function SimpleSelect({options, defaultValue, mutator, label}:
     )
 }
 
-
+export function ControlPanel({children, title}) {
+    return (
+        <Card.Root flexGrow={1}>
+            <Card.Body gap={4}>
+                <Card.Title>{title}</Card.Title>
+                {children}
+            </Card.Body>
+        </Card.Root>
+    )
+}

@@ -3,8 +3,10 @@
  */
 import React, {useState} from "react";
 import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
-import {SimpleSelect, Selectable, Option} from "./components-common";
-import {Card, Flex, Tabs} from '@chakra-ui/react'
+import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
+import {Flex, Tabs, NumberInput} from '@chakra-ui/react'
+import {Slider} from '@/components/chakra/slider'
+
 import {MutableNumber} from "@/lib/lib-core";
 
 
@@ -21,38 +23,31 @@ export interface AppData {
 
 export function ProgramView({data}) {
     return (
-        <Card.Root width={'100%'}>
-            <Card.Body>
-                <Tabs.Root defaultValue={'output'}>
-                    <Tabs.List>
-                        <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
-                        <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
-                    </Tabs.List>
-                    <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
-                    <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
-                </Tabs.Root>
-            </Card.Body>
-        </Card.Root>
+
+        <Tabs.Root defaultValue={'output'}>
+            <Tabs.List>
+                <Tabs.Trigger value={'output'}>Program Output</Tabs.Trigger>
+                <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
+            <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
+        </Tabs.Root>
     )
 }
 
 
 function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
+    const variant = 'subtle'
     return (
-        <Flex>
-            <Card.Root>
-                <Card.Header> Loudness </Card.Header>
-                <Card.Body>
-                    value: {data.loudness.value}
-                </Card.Body>
-            </Card.Root>
-            <Card.Root>
-                <Card.Header>Amp Mod 1</Card.Header>
-                <Card.Body>
-                    <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
-                    value: {data.ampMod1Value.value}
-                </Card.Body>
-            </Card.Root>
+        <Flex gap={4}>
+            <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
+                value: {data.loudness.value}
+            </ControlPanel>
+
+            <ControlPanel title={'Amp Mod 1'}>
+                <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
+                <MutableSlider data={data.ampMod1Value} label={'Value'}/>
+            </ControlPanel>
             {/*<SlCard>*/}
             {/*    <div slot={'header'}>Amp Mod 1</div>*/}
             {/*    <ModSourceView modSource={output.ampMod1Source} label={'Source'}/>*/}

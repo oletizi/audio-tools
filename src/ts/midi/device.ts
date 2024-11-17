@@ -755,7 +755,7 @@ function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
                         setterRequestData[i] = (value) => {
                             const int8 = value
                             // write the sign byte into the current data slot (erasing this function, which we don't need anymore)
-                            setterRequestData[i] = int8 >= 0
+                            setterRequestData[i] = (int8 >= 0) ? 0 : 1
                             // write the absolute value into the next data slot
                             setterRequestData[i + 1] = Math.abs(int8)
                         }
