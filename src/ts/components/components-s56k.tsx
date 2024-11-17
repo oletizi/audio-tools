@@ -85,6 +85,10 @@ function ProgramMidiTuneView({data}: { data: ProgramMidiTuneInfo }) {
             </ControlPanel>
             <ControlPanel title={'Tune Template'}>
                 <MutableSlider data={data.tuneTemplate} label={'Template'}/>
+                <div>ADD USER TEMPLATE HERE.</div>
+            </ControlPanel>
+            <ControlPanel title={'Key'}>
+                <MutableSlider data={data.key} label={'Value'}/>
             </ControlPanel>
         </Flex>
     )

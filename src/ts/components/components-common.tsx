@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {MutableNumber, natural2real, real2natural} from "@/lib/lib-core";
 import {
     Card,
-    createListCollection, ListCollection,
+    createListCollection, Flex, ListCollection,
     SelectContent, SelectItem,
     SelectLabel,
     SelectRoot,
@@ -77,7 +77,7 @@ export function ControlPanel({children, title}) {
         <Card.Root flexGrow={1} minW={200}>
             <Card.Body gap={4}>
                 <Card.Title>{title}</Card.Title>
-                {children}
+                <Flex direction={'column'} gap={4}>{children}</Flex>
             </Card.Body>
         </Card.Root>
     )
