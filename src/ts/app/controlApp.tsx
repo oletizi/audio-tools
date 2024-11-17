@@ -119,8 +119,10 @@ midi.start(async () => {
     const program = device.getCurrentProgram()
     const programInfoResult = await program.getInfo()
     const programOutputResult = await program.getOutput().getInfo()
+    const programMidiTuneResult = await program.getMidiTune().getInfo()
     const errors: Error[] = programInfoResult.errors
         .concat(programOutputResult.errors)
+        .concat(programMidiTuneResult.errors)
     common.error(errors)
 
 
@@ -129,7 +131,8 @@ midi.start(async () => {
         midiInputs: await midiDeviceData(false),
         program: {
             info: programInfoResult.data,
-            output: programOutputResult.data
+            output: programOutputResult.data,
+            midiTune: programMidiTuneResult.data
         },
     } as AppData
     appRoot.render(<ControlApp data={data}/>)

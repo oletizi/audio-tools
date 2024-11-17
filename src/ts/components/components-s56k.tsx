@@ -2,7 +2,7 @@
  * Components specific to the Akai S5000/S6000 sampler series
  */
 import React from "react";
-import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
+import {ProgramInfo, ProgramMidiTuneInfo, ProgramOutputInfo} from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
 import {Flex, Tabs} from '@chakra-ui/react'
 
@@ -12,6 +12,7 @@ import {MutableNumber} from "@/lib/lib-core";
 interface ProgramData {
     info: ProgramInfo
     output: ProgramOutputInfo
+    midiTune: ProgramMidiTuneInfo
 }
 
 export interface AppData {
@@ -31,7 +32,7 @@ export function ProgramView({data}: { data: ProgramData }) {
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
-            <Tabs.Content value={'midi-tune'}><div>PUT MIDI/TUNE HERE</div></Tabs.Content>
+            <Tabs.Content value={'midi-tune'}><ProgramMidiTuneView data={data.midiTune}/></Tabs.Content>
         </Tabs.Root>
     )
 }
@@ -75,6 +76,15 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
     )
 }
 
+function ProgramMidiTuneView({data}: { data: ProgramMidiTuneInfo }) {
+    return (
+        <Flex>
+            <ControlPanel title={'Semitone Tune'}>
+                <MutableSlider data={data.semitoneTune} label={'Value'}/>
+            </ControlPanel>
+        </Flex>
+    )
+}
 
 // function ProgramInfoView({info}: { info: ProgramInfo }) {
 //     return (

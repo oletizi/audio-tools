@@ -593,6 +593,10 @@ function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export interface ProgramMidiTuneInfoResult extends Result {
+    data: ProgramMidiTuneInfo
+}
+
 export interface ProgramMidiTuneInfo {
     semitoneTune: MutableNumber
     fineTune: MutableNumber
@@ -609,7 +613,7 @@ export interface ProgramMidiTune {
 
     getKey(): Promise<NumberResult>
 
-    getInfo(): Promise<ProgramMidiTuneInfo>
+    getInfo(): Promise<ProgramMidiTuneInfoResult>
 }
 
 const programMidTuneSpec = {
