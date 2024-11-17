@@ -7,7 +7,7 @@ import {
     SelectContent, SelectItem,
     SelectLabel,
     SelectRoot,
-    SelectValueText
+    SelectValueText, Stack
 } from "@chakra-ui/react";
 import {SelectTrigger} from "@/components/ui/select";
 
@@ -39,11 +39,22 @@ function App() {
     return (
         <Provider>
             <Container>
-                <Flex align={'center'} gap={3}>
+                <Flex align={'top'} gap={3} wrap="wrap">
                     <Card.Root>
-                        <Card.Body>
+                        <Card.Body gap={3}>
                             <Card.Description>
                                 Hi. This is a nice thing in a nice card.
+                            </Card.Description>
+                        </Card.Body>
+                    </Card.Root>
+                    <Card.Root>
+                        <Card.Body gap={10}>
+                            <Stack gap={5}>
+                                <Button>Click me.</Button>
+                                <Button>Click me, too.</Button>
+                            </Stack>
+                            <Card.Description>
+                                This is a nice description. It must be text, though. It's inside a p tag
                             </Card.Description>
                         </Card.Body>
                     </Card.Root>
