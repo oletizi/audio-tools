@@ -9,7 +9,7 @@ import {AppData, ProgramView} from "@/components/components-s56k";
 import {Option, Selectable} from "@/components/components-common";
 import {
     Container,
-    createListCollection,
+    createListCollection, Flex,
     SelectContent, SelectItem,
     SelectLabel,
     SelectRoot,
@@ -27,7 +27,7 @@ function desanitize(val: string) {
 }
 
 function MidiDeviceSelect({name, label, onSelect, options}:
-                              { name: string, label: string, value: string, onSelect: Function, options: Option[] }) {
+                              { name: string, label: string, onSelect: Function, options: Option[] }) {
     const items = options.map((o) => {
         return {label: o.name, value: o.value}
     })
@@ -56,11 +56,18 @@ function ControlApp({data}: { data: AppData }) {
         <Provider>
             <Container>
                 <h1>S5000/S6000 Control</h1>
-                <MidiDeviceSelect
-                    name="midi-output"
-                    label="MIDI Output"
-                    options={data.midiOutputs.options}
-                    onSelect={data.midiOutputs.onSelect}/>
+                <Flex>
+                    <MidiDeviceSelect
+                        name="midi-output"
+                        label="MIDI Output"
+                        onSelect={data.midiOutputs.onSelect}
+                        options={data.midiOutputs.options}/>
+                    <MidiDeviceSelect
+                        name={'midi-intput'}
+                        label={'MIDI Input'}
+                        onSelect={data.midiInputs.onSelect}
+                        options={data.midiInputs.options}/>
+                </Flex>
             </Container>
         </Provider>
     )
@@ -99,7 +106,7 @@ midi.start(async () => {
 
     const data = {
         midiOutputs: await midiDeviceData(true),
-        midiInput: await midiDeviceData(false),
+        midiInputs: await midiDeviceData(false),
     } as AppData
     appRoot.render(<ControlApp data={data}/>)
 }).catch((err) => console.error(err))
