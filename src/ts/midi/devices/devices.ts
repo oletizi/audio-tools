@@ -1,11 +1,11 @@
-// GENERATED: 11/17/2024, 3:15:24 PM
+// GENERATED: 11/17/2024, 3:19:10 PM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
 import {Sysex} from "@/midi/sysex"
 import {newDeviceObject} from "@/midi/device"
 import {ProcessOutput} from "@/process-output"
-import {programOutputSpec,} from "@/midi/devices/specs"
+import {programOutputSpec,programMidTuneSpec,programPitchBendSpec} from "@/midi/devices/specs"
 
 //
 // ProgramOutput
@@ -77,5 +77,41 @@ export interface ProgramMidiTune {
 
 
 export function newProgramMidiTune(sysex: Sysex, out: ProcessOutput) {
-  return newDeviceObject(undefined, sysex, out) as ProgramMidiTune}
+  return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune}
+
+//
+// ProgramPitchBend
+//
+
+export interface ProgramPitchBendInfo {
+  pitchBendUp: MutableNumber
+  pitchBendDown: MutableNumber
+  bendMode: MutableNumber
+  aftertouchValue: MutableNumber
+  legatoEnable: MutableNumber
+  portamentoEnable: MutableNumber
+  portamentoMode: MutableNumber
+  portamentoTime: MutableNumber
+}
+
+export interface ProgramPitchBendInfoResult extends Result {
+  data: ProgramPitchBendInfo
+}
+
+
+export interface ProgramPitchBend {
+  getPitchBendUp(): NumberResult
+  getPitchBendDown(): NumberResult
+  getBendMode(): NumberResult
+  getAftertouchValue(): NumberResult
+  getLegatoEnable(): NumberResult
+  getPortamentoEnable(): NumberResult
+  getPortamentoMode(): NumberResult
+  getPortamentoTime(): NumberResult
+  getInfo(): ProgramPitchBendInfo
+}
+
+
+export function newProgramPitchBend(sysex: Sysex, out: ProcessOutput) {
+  return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend}
 

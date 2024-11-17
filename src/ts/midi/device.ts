@@ -47,7 +47,7 @@
  */
 
 import {Midi} from "./midi";
-import {newClientOutput, ProcessOutput} from "../process-output";
+import {newClientOutput, ProcessOutput} from "@/process-output";
 import {Buffer} from 'buffer/'
 import {
     BooleanResult,
@@ -57,9 +57,15 @@ import {
     NumberResult,
     Result,
     StringResult
-} from "../lib/lib-core";
+} from "@/lib/lib-core";
 import {newControlMessage, ResponseStatus, Section, Sysex, SysexControlMessage, SysexResponse} from "@/midi/sysex";
-import {newProgramMidiTune, newProgramOutput, ProgramMidiTune, ProgramOutput} from "@/midi/devices/devices";
+import {
+    newProgramMidiTune,
+    newProgramOutput,
+    newProgramPitchBend,
+    ProgramMidiTune,
+    ProgramOutput, ProgramPitchBend
+} from "@/midi/devices/devices";
 
 
 
@@ -112,10 +118,6 @@ enum ProgramItem {
     GET_LFO_DEPTH = 0x62,       // DATA1: 1 | 2
 
 }
-
-
-
-
 
 function newResult(res: SysexResponse): Result {
     const rv = {
@@ -314,196 +316,64 @@ class S56kProgramSysex implements S56kProgram {
     }
 }
 
-
-export interface DeviceSpec {
-    className: string,
-    sectionCode: number,
-    items: any[]
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// PROGRAM OUTPUT
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// export interface ProgramOutputInfo {
-//     loudness: MutableNumber
-//     velocitySensitivity: MutableNumber
-//     ampMod1Source: MutableNumber
-//     ampMod2Source: MutableNumber
-//     ampMod1Value: MutableNumber
-//     ampMod2Value: MutableNumber
-//     panMod1Source: MutableNumber
-//     panMod2Source: MutableNumber
-//     panMod3Source: MutableNumber
-//     panMod1Value: MutableNumber
-//     panMod2Value: MutableNumber
-//     panMod3Value: MutableNumber
-// }
-//
-// export interface ProgramOutputInfoResult extends Result {
-//     data: ProgramOutputInfo
-// }
-//
-// export interface ProgramOutput {
-//     getLoudness(): Promise<NumberResult>
-//
-//     getVelocitySensitivity(): Promise<NumberResult>
-//
-//     getAmpMod1Source(): Promise<NumberResult>
-//
-//     getAmpMod2Source(): Promise<NumberResult>
-//
-//     getAmpMod1Value(): Promise<NumberResult>
-//
-//     getAmpMod2Value(): Promise<NumberResult>
-//
-//     getPanMod1Source(): Promise<NumberResult>
-//
-//     getPanMod2Source(): Promise<NumberResult>
-//
-//     getPanMod3Source(): Promise<NumberResult>
-//
-//     getPanMod1Value(): Promise<NumberResult>
-//
-//     getPanMod2Value(): Promise<NumberResult>
-//
-//     getPanMod3Value(): Promise<NumberResult>
-//
-//     getInfo(): Promise<ProgramOutputInfoResult>
-// }
-// const programOutputSpec = {
-//     className: "ProgramOutput",
-//     sectionCode: Section.PROGRAM,
-//     items: [
-//         // | general                                 | set request spec. req data length encoded in length of the spec array
-//         // | method name root, type spec             | item code, req data, response data type, response data length | item code, [req byte 1 (type | value), ..., req byte n (type | value) ]
-//         // |                   'number|min|max|step" |
-//         // |                   'string|max'          |
-//         ["Loudness", "number|0|100|1", 0x28, [], "uint8", 1, 0x20, ["uint8"]],
-//         ["VelocitySensitivity", "number|-100|100|1", 0x29, [], "uint8", 1, 0x21, ["int8sign", "int8abs"]],
-//         ["AmpMod1Source", "number|0|14|1", 0x2A, [1], "uint8", 1, 0x22, [1, "uint8"]],
-//         ["AmpMod2Source", "number|0|14|1", 0x2A, [2], "uint8", 1, 0x22, [2, "uint8"]],
-//         ["AmpMod1Value", "number|-100|100|1", 0x2B, [1], "int8", 2, 0x23, [1, "int8sign", "int8abs"]],
-//         ["AmpMod2Value", "number|-100|100|1", 0x2B, [2], "int8", 2, 0x23, [2, "int8sign", "int8abs"]],
-//         ["PanMod1Source", "number|0|14|1", 0x2C, [1], "uint8", 1, 0x24, [1, "uint8"]],
-//         ["PanMod2Source", "number|0|14|1", 0x2C, [2], "uint8", 1, 0x24, [2, "uint8"]],
-//         ["PanMod3source", "number|0|14|1", 0x2C, [3], "uint8", 1, 0x24, [3, "uint8"]],
-//         ["PanMod1Value", "number|-100|100|1", 0x2D, [1], "int8", 2, 0x25, [1, "int8sign", "int8abs"]],
-//         ["PanMod2Value", "number|-100|100|1", 0x2D, [2], "int8", 2, 0x25, [2, "int8sign", "int8abs"]],
-//         ["PanMod3Value", "number|-100|100|1", 0x2D, [3], "int8", 2, 0x25, [3, "int8sign", "int8abs"]],
-//     ]
-// }
-//
-// function newProgramOutput(sysex: Sysex, out: ProcessOutput): ProgramOutput {
-//     return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// PROGRAM MIDI TUNE
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// export interface ProgramMidiTuneInfoResult extends Result {
-//     data: ProgramMidiTuneInfo
-// }
-//
-// export interface ProgramMidiTuneInfo {
-//     semitoneTune: MutableNumber
-//     fineTune: MutableNumber
-//     tuneTemplate: MutableNumber
-//     key: MutableNumber
-// }
-//
-// export interface ProgramMidiTune {
-//     getSemitoneTune(): Promise<NumberResult>
-//
-//     getFineTune(): Promise<NumberResult>
-//
-//     getTuneTemplate(): Promise<NumberResult>
-//
-//     getKey(): Promise<NumberResult>
-//
-//     getInfo(): Promise<ProgramMidiTuneInfoResult>
-// }
-
-// const programMidTuneSpec = {
-//     className: "ProgramMidiTune",
-//     sectionCode: Section.PROGRAM,
-//     items: [
-//         ["SemitoneTune", "number|-36|36|1", 0x38, [], "int8", 2, 0x30, ["int8sign", "int8abs"]],
-//         ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
-//         ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
-//         ["Key", "number|0|11|1", 0x3C, [], 'uint8', 1, 0x34, ["uint8"]],
-//     ]
-// }
-//
-// function newProgramMidiTune(sysex: Sysex, out: ProcessOutput): ProgramMidiTune {
-//     return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune
-// }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // PROGRAM PITCH BEND
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-export interface ProgramPitchBendInfoResult extends Result {
-    data: ProgramPitchBendInfo
-}
-
-export interface ProgramPitchBendInfo {
-    pitchBendUp: MutableNumber
-    pitchBendDown: MutableNumber
-    bendMode: MutableNumber
-    aftertouchValue: MutableNumber
-    legatoEnable: MutableNumber
-    portamentoEnable: MutableNumber
-    portamentoMode: MutableNumber
-    portamentoTime: MutableNumber
-}
-
-export interface ProgramPitchBend {
-    getPitchBendUp(): Promise<NumberResult>
-
-    getPitchBendDown(): Promise<NumberResult>
-
-    getBendMode(): Promise<NumberResult>
-
-    getAftertouchValue(): Promise<NumberResult>
-
-    getLegatoEnable(): Promise<BooleanResult>
-
-    getPortamentoEnable(): Promise<BooleanResult>
-
-    getPortamentoMode(): Promise<NumberResult>
-
-    getPortamentoTime(): Promise<NumberResult>
-
-    getInfo(): Promise<ProgramPitchBendInfoResult>
-}
-
-const programPitchBendSpec = {
-    className: "ProgramPitchBend",
-    sectionCode: Section.PROGRAM,
-    items: [
-        ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
-        ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
-        ["BendMode", "number|0|1|1", 0x4A, [], "uint8", 1, 0x42, ["uint8"]],
-        ["AftertouchValue", "number|-12|12|1", 0x4B, [], "int8", 2, 0x43, ["int8sign", "int8abs"]],
-        ["LegatoEnable", "number|0|1|1", 0x4C, [], "uint8", 1, 0x44, ["uint8"]],
-        ["PortamentoEnable", "number|0|1|1", 0x4D, [], "uint8", 1, 0x45, ["uint8"]],
-        ["PortamentoMode", "number|0|1|1", 0x4E, [], "uint8", 1, 0x46, ["uint8"]],
-        ["PortamentoTime", "number|0|100|1", 0x4F, [], "uint8", 1, 0x47, ["uint8"]],
-    ]
-}
-
-function newProgramPitchBend(sysex: Sysex, out: ProcessOutput): ProgramPitchBend {
-    return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend
-}
+// export interface ProgramPitchBendInfoResult extends Result {
+//     data: ProgramPitchBendInfo
+// }
+//
+// export interface ProgramPitchBendInfo {
+//     pitchBendUp: MutableNumber
+//     pitchBendDown: MutableNumber
+//     bendMode: MutableNumber
+//     aftertouchValue: MutableNumber
+//     legatoEnable: MutableNumber
+//     portamentoEnable: MutableNumber
+//     portamentoMode: MutableNumber
+//     portamentoTime: MutableNumber
+// }
+//
+// export interface ProgramPitchBend {
+//     getPitchBendUp(): Promise<NumberResult>
+//
+//     getPitchBendDown(): Promise<NumberResult>
+//
+//     getBendMode(): Promise<NumberResult>
+//
+//     getAftertouchValue(): Promise<NumberResult>
+//
+//     getLegatoEnable(): Promise<BooleanResult>
+//
+//     getPortamentoEnable(): Promise<BooleanResult>
+//
+//     getPortamentoMode(): Promise<NumberResult>
+//
+//     getPortamentoTime(): Promise<NumberResult>
+//
+//     getInfo(): Promise<ProgramPitchBendInfoResult>
+// }
+//
+// const programPitchBendSpec = {
+//     className: "ProgramPitchBend",
+//     sectionCode: Section.PROGRAM,
+//     items: [
+//         ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
+//         ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
+//         ["BendMode", "number|0|1|1", 0x4A, [], "uint8", 1, 0x42, ["uint8"]],
+//         ["AftertouchValue", "number|-12|12|1", 0x4B, [], "int8", 2, 0x43, ["int8sign", "int8abs"]],
+//         ["LegatoEnable", "number|0|1|1", 0x4C, [], "uint8", 1, 0x44, ["uint8"]],
+//         ["PortamentoEnable", "number|0|1|1", 0x4D, [], "uint8", 1, 0x45, ["uint8"]],
+//         ["PortamentoMode", "number|0|1|1", 0x4E, [], "uint8", 1, 0x46, ["uint8"]],
+//         ["PortamentoTime", "number|0|100|1", 0x4F, [], "uint8", 1, 0x47, ["uint8"]],
+//     ]
+// }
+//
+// function newProgramPitchBend(sysex: Sysex, out: ProcessOutput): ProgramPitchBend {
+//     return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
