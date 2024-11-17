@@ -4,8 +4,7 @@
 import React, {useState} from "react";
 import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
-import {Flex, Tabs, NumberInput} from '@chakra-ui/react'
-import {Slider} from '@/components/chakra/slider'
+import {Flex, Tabs} from '@chakra-ui/react'
 
 import {MutableNumber} from "@/lib/lib-core";
 
@@ -89,7 +88,6 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
 
 
 function ModSourceSelect({modSource, label}: { modSource: MutableNumber, label: string }) {
-    const [selected, setSelected] = useState("" + modSource.value)
     const items = {
         0: 'No Source',
         1: 'Modwheel',
@@ -110,7 +108,7 @@ function ModSourceSelect({modSource, label}: { modSource: MutableNumber, label: 
     return (
         <SimpleSelect
             options={Object.getOwnPropertyNames(items).map(key => {
-                return {value: key, label: items[key], selected: key === selected} as Option
+                return {value: key, label: items[key], selected: key === "" + modSource.value} as Option
             })}
             mutator={modSource.mutator}
             label={label}
