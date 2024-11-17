@@ -1,16 +1,15 @@
 import {createRoot} from "react-dom/client";
 import * as React from "react"
-import {Provider} from "@/components/ui/provider"
+import {Provider} from "@/components/provider"
 import {
     Box,
     Button, Card, Container,
-    createListCollection, Field, Flex, HStack,
+    createListCollection, Field, Flex, FlexProps, HStack,
     SelectContent, SelectItem,
     SelectLabel,
-    SelectRoot,
+    SelectRoot, SelectTrigger,
     SelectValueText, Stack, Tabs
 } from "@chakra-ui/react";
-import {SelectTrigger} from "@/components/ui/select";
 
 function Selector({data}) {
     return (
@@ -28,24 +27,22 @@ function Selector({data}) {
     )
 }
 
-function Tabber() {
+function Tabber(props) {
     return (
-        <Tabs.Root defaultValue="thing-3">
-            <Tabs.List>
-                <Tabs.Trigger value="thing-1">Thing 1</Tabs.Trigger>
-                <Tabs.Trigger value="thing-2">Thing 2</Tabs.Trigger>
-                <Tabs.Trigger value="thing-3">Thing 3</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="thing-1">Tab content for thing 1.</Tabs.Content>
-            <Tabs.Content value="thing-2">Tab content for thing 2.</Tabs.Content>
-            <Tabs.Content value="thing-3">
-                <Card.Root>
-                    <Card.Body>
-                        Tab content for thing 3.
-                    </Card.Body>
-                </Card.Root>
-            </Tabs.Content>
-        </Tabs.Root>
+        <Card.Root{...props}>
+            <Card.Body>
+                <Tabs.Root defaultValue="thing-3" >
+                    <Tabs.List>
+                        <Tabs.Trigger value="thing-1">Thing 1</Tabs.Trigger>
+                        <Tabs.Trigger value="thing-2">Thing 2</Tabs.Trigger>
+                        <Tabs.Trigger value="thing-3">Thing 3</Tabs.Trigger>
+                    </Tabs.List>
+                    <Tabs.Content value="thing-1">Tab content for thing 1.</Tabs.Content>
+                    <Tabs.Content value="thing-2">Tab content for thing 2.</Tabs.Content>
+                    <Tabs.Content value="thing-3">Tab content for thing 3.</Tabs.Content>
+                </Tabs.Root>
+            </Card.Body>
+        </Card.Root>
     )
 }
 
@@ -61,7 +58,7 @@ function App() {
     return (
         <Provider>
             <Container>
-                <Flex align={'top'} gap={3} wrap="wrap">
+                <Flex align={'stretch'} gap={3} wrap="wrap">
                     <Card.Root>
                         <Card.Body gap={3}>
                             <Card.Description>
@@ -85,9 +82,7 @@ function App() {
                             <Selector data={data}/>
                         </Card.Body>
                     </Card.Root>
-                    <Box flexGrow={1}>
-                        <Tabber/>
-                    </Box>
+                    <Tabber flexGrow={1}/>
                 </Flex>
             </Container>
         </Provider>
