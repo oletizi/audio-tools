@@ -34,7 +34,7 @@ function MidiDeviceSelect({name, label, onSelect, options}:
     const s = options.filter(o => o.selected)
     const [selected, setSelected] = useState(s.length ? s[0].value : '')
     const items = options.map((o) => {
-        return {label: o.name, value: o.value}
+        return {label: o.label, value: o.value}
     })
     const data = createListCollection({items: items})
     return (
@@ -106,7 +106,7 @@ midi.start(async () => {
             },
             options: (outputs ? await midi.getOutputs() : await midi.getInputs()).map(device => {
                 return {
-                    name: device.name,
+                    label: device.name,
                     selected: outputs ? midi.isCurrentOutput(device.name) : midi.isCurrentInput(device.name),
                     value: sanitize(device.name)
                 } as Option

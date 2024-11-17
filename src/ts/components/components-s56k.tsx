@@ -3,7 +3,7 @@
  */
 import React, {useState} from "react";
 import {ProgramInfo, ProgramOutputInfo} from "@/midi/device";
-import {LabeledDropdown, Selectable} from "./components-common";
+import {SimpleSelect, Selectable, Option} from "./components-common";
 import {Card, Flex, Tabs} from '@chakra-ui/react'
 import {MutableNumber} from "@/lib/lib-core";
 
@@ -49,7 +49,7 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
             <Card.Root>
                 <Card.Header>Amp Mod 1</Card.Header>
                 <Card.Body>
-                    <ModSourceView modSource={data.ampMod1Source} label={'Source'}/>
+                    <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
                     value: {data.ampMod1Value.value}
                 </Card.Body>
             </Card.Root>
@@ -101,7 +101,7 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
 // }
 
 
-function ModSourceView({modSource, label}: { modSource: MutableNumber, label: string }) {
+function ModSourceSelect({modSource, label}: { modSource: MutableNumber, label: string }) {
     const [selected, setSelected] = useState("" + modSource.value)
     const items = {
         0: 'No Source',
@@ -120,6 +120,14 @@ function ModSourceView({modSource, label}: { modSource: MutableNumber, label: st
         13: '+Pitch Bend',
         14: '+External'
     }
-    return (<LabeledDropdown items={items} defaultValue={modSource.value.toString()} mutator={modSource.mutator}
-                             label={label}/>)
+    return (
+        <SimpleSelect
+            options={Object.getOwnPropertyNames(items).map(key => {
+                return {value: key, label: items[key], selected: key === selected} as Option
+            })}
+            defaultValue={modSource.value.toString()}
+            mutator={modSource.mutator}
+            label={label}
+        />
+    )
 }
