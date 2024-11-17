@@ -88,6 +88,10 @@ function gen(device: DeviceSpec) {
     const basename = device.className
     const infoName = basename + 'Info'
 
+    out.write(`//\n`)
+    out.write(`// ${basename}\n`)
+    out.write(`//\n\n`)
+
     //
     // <Device>Info interface
     //

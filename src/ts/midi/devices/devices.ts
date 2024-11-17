@@ -1,11 +1,15 @@
-// GENERATED: 11/17/2024, 3:11:57 PM
+// GENERATED: 11/17/2024, 3:15:24 PM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
 import {Sysex} from "@/midi/sysex"
 import {newDeviceObject} from "@/midi/device"
 import {ProcessOutput} from "@/process-output"
-import {programOutputSpec} from "@/midi/devices/specs"
+import {programOutputSpec,} from "@/midi/devices/specs"
+
+//
+// ProgramOutput
+//
 
 export interface ProgramOutputInfo {
   loudness: MutableNumber
@@ -46,4 +50,32 @@ export interface ProgramOutput {
 
 export function newProgramOutput(sysex: Sysex, out: ProcessOutput) {
   return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput}
+
+//
+// ProgramMidiTune
+//
+
+export interface ProgramMidiTuneInfo {
+  semitoneTune: MutableNumber
+  fineTune: MutableNumber
+  tuneTemplate: MutableNumber
+  key: MutableNumber
+}
+
+export interface ProgramMidiTuneInfoResult extends Result {
+  data: ProgramMidiTuneInfo
+}
+
+
+export interface ProgramMidiTune {
+  getSemitoneTune(): NumberResult
+  getFineTune(): NumberResult
+  getTuneTemplate(): NumberResult
+  getKey(): NumberResult
+  getInfo(): ProgramMidiTuneInfo
+}
+
+
+export function newProgramMidiTune(sysex: Sysex, out: ProcessOutput) {
+  return newDeviceObject(undefined, sysex, out) as ProgramMidiTune}
 
