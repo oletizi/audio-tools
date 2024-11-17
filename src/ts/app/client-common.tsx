@@ -1,10 +1,9 @@
 import {createRoot, Root} from "react-dom/client";
-import {newClientOutput, ProcessOutput} from "../process-output";
+import {newClientOutput, ProcessOutput} from "@/process-output";
 import {ClientConfig} from "./config-client";
 import React from 'react'
-import {Result, timestamp} from "../lib/lib-core";
-import {Status} from "../components/components-common";
-
+import {Result, timestamp} from "@/lib/lib-core";
+import {Alert} from "@chakra-ui/react";
 
 export interface ClientCommon {
     fetchConfig(): Promise<Result>
@@ -21,30 +20,30 @@ export interface ClientCommon {
 
 }
 
-export function newClientCommon(statusId: string) {
-    return new BasicClientCommon(statusId)
+export function newClientCommon(infoHandler: Function, errorHandler: Function) {
+    return new BasicClientCommon(infoHandler, errorHandler)
 }
 
 class BasicClientCommon implements ClientCommon {
-    private readonly statusRoot: Root;
-    private readonly terminalRoot: Root;
     private readonly out: ProcessOutput
+    private readonly infoHandler: Function
+    private errorHandler: Function
 
-    constructor(statusId: string = 'status', terminalId: string = 'terminal') {
-        this.statusRoot = createRoot(document.getElementById(statusId))
-        this.terminalRoot = createRoot(document.getElementById(terminalId))
+    constructor(infoHandler: Function, errorHandler: Function) {
+        this.infoHandler = infoHandler
+        this.errorHandler = errorHandler
         this.out = newClientOutput()
     }
 
     status(msg) {
-        this.statusRoot.render(<Status msg={timestamp() + ': ' + (msg ? msg : 'Unknown')} variant={'neutral'}/>)
+        this.infoHandler(timestamp() + ': ' + (msg ? msg : 'Unknown'))
     }
 
     error(err: string | Error | Error[]) {
         let msg = ''
         if (err instanceof Array && err.length > 0) {
             msg = err.join(', ')
-        } else if  (err instanceof String) {
+        } else if (err instanceof String) {
             msg = err
         } else if (err instanceof Error) {
             msg = err.message
@@ -52,7 +51,7 @@ class BasicClientCommon implements ClientCommon {
             return
         }
 
-        this.statusRoot.render(<Status msg={timestamp() + ': Error(s): ' + msg} variant={'danger'}/>)
+        this.errorHandler(timestamp() + ': ' + (msg ? msg : 'Unknown'))
     }
 
     getOutput(): ProcessOutput {

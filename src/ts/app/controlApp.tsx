@@ -1,30 +1,22 @@
 import {createRoot} from "react-dom/client"
 import React, {useState} from 'react'
-import '@shoelace-style/shoelace/dist/themes/light.css'
-import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js'
-import SlDropdown from "@shoelace-style/shoelace/dist/react/dropdown/index.js"
-import SlSelect from "@shoelace-style/shoelace/dist/react/select/index.js";
-import SlOption from '@shoelace-style/shoelace/dist/react/option/index.js'
-import SlMenu from "@shoelace-style/shoelace/dist/react/menu/index.js"
-import SlMenuItem from "@shoelace-style/shoelace/dist/react/menu-item/index.js"
-import SlRadio from "@shoelace-style/shoelace/dist/react/radio/index.js"
-import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js"
-import SlDetails from "@shoelace-style/shoelace/dist/react/button/index.js";
-import SlRange from "@shoelace-style/shoelace/dist/react/range/index.js";
-import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js"
-import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js"
-import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js"
-import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
-import SlFormatNumber from "@shoelace-style/shoelace/dist/react/format-number/index.js";
-import {newS56kDevice} from "../midi/device"
+import {newS56kDevice} from "@/midi/device"
 
-import {Midi} from "../midi/midi"
+import {Midi} from "@/midi/midi"
 import {newClientCommon} from "./client-common"
 import {ClientConfig} from "./config-client"
-import {AppData, ProgramView} from "../components/components-s56k";
-import {Option, Selectable} from "../components/components-common";
-
-setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/')
+import {AppData, ProgramView} from "@/components/components-s56k";
+import {Option, Selectable} from "@/components/components-common";
+import {
+    Container,
+    createListCollection,
+    SelectContent, SelectItem,
+    SelectLabel,
+    SelectRoot,
+    SelectTrigger,
+    SelectValueText
+} from "@chakra-ui/react";
+import {Provider} from "@/components/provider";
 
 function sanitize(val: string) {
     return encodeURI(val)
@@ -34,70 +26,62 @@ function desanitize(val: string) {
     return decodeURI(val)
 }
 
-function MidiDeviceSelect({name, label, value, onSelect, options}) {
-    const [selected, setSelected] = useState(desanitize(value))
+function MidiDeviceSelect({name, label, onSelect, options}:
+                              { name: string, label: string, value: string, onSelect: Function, options: Option[] }) {
+    const items = options.map((o) => {
+        return {label: o.name, value: o.value}
+    })
+    const data = createListCollection({items: items})
     return (
-        <SlDropdown>
-            <SlButton slot={'trigger'} caret>{label + ': ' + selected}</SlButton>
-            <SlMenu onSlSelect={(event) => {
-                let selectedDevice = desanitize(event.detail.item.value);
-                setSelected(selectedDevice);
-                onSelect(selectedDevice)
-            }} name={name} value={value}>
-                {options.map(d => (<SlMenuItem key={d.name} name={d.name} value={d.value}>{d.name}</SlMenuItem>))}
-            </SlMenu>
-        </SlDropdown>
+        <SelectRoot collection={data} name={name} onValueChange={(event) => {
+            let selectedDevice = desanitize(event.value[0]);
+            onSelect(selectedDevice)
+        }}>
+            <SelectLabel>{label}</SelectLabel>
+            <SelectTrigger>
+                <SelectValueText placeholder={'Select...'}/>
+            </SelectTrigger>
+            <SelectContent>
+                {data.items.map((item) => (
+                    <SelectItem item={item} key={item.value}>{item.label}</SelectItem>
+                ))}
+            </SelectContent>
+        </SelectRoot>
     )
 }
 
-export default function ControlApp({data}: { data: AppData }) {
+function ControlApp({data}: { data: AppData }) {
+    console.log(`data: ${JSON.stringify(data)}`)
     return (
-        <div className={'container mx-auto bg-stone-50 p-4 h-screen'}>
-            <h1 className={'mb-4'}>S5000/S6000 Control</h1>
-            <MidiDeviceSelect
-                name="midi-output"
-                label="MIDI Output"
-                value={data.midiOutputs.value}
-                options={data.midiOutputs.options}
-                onSelect={data.midiOutputs.onSelect}/>
-            <MidiDeviceSelect
-                name="midi-input"
-                label="MIDI Input"
-                value={data.midiInputs.value}
-                options={data.midiInputs.options}
-                onSelect={data.midiInputs.onSelect}
-            />
-            <ProgramView program={data.program}/>
-        </div>
+        <Provider>
+            <Container>
+                <h1>S5000/S6000 Control</h1>
+                <MidiDeviceSelect
+                    name="midi-output"
+                    label="MIDI Output"
+                    options={data.midiOutputs.options}
+                    onSelect={data.midiOutputs.onSelect}/>
+            </Container>
+        </Provider>
     )
 }
 
-const common = newClientCommon('status')
+const common = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 const appRoot = createRoot(document.getElementById('app'))
 const midi = new Midi()
 const device = newS56kDevice(midi, common.getOutput())
 midi.start(async () => {
     const rcfg = await common.fetchConfig()
     if (rcfg.error) {
-        common.status(rcfg.error)
+        common.error(rcfg.error)
         return
     }
     const cfg = rcfg.data as ClientConfig
     await midi.setOutputByName(cfg.midiOutput)
     await midi.setInputByName(cfg.midiInput)
 
-    device.init()
-    const program = device.getCurrentProgram()
-    const programInfoResult = await program.getInfo()
-    const programOutputResult = await program.getOutput().getInfo()
-    const errors: Error[] = programInfoResult.errors
-        .concat(programOutputResult.errors)
-
-    console.log(`PROGRAM OUTPUT RESULTS.... pan mod 3 source: ${programOutputResult.data.panMod2Source}`)
-    console.log(`PROGRAM OUTPUT RESULTS.... pan mod 3 source: ${programOutputResult.data.panMod3Source}`)
     async function midiDeviceData(outputs: boolean) {
         return {
-            value: sanitize(outputs ? (await midi.getCurrentOutput()).name : (await midi.getCurrentInput()).name),
             onSelect: (deviceName) => {
                 outputs ? midi.setOutputByName(deviceName) : midi.setInputByName(deviceName)
                 outputs ? cfg.midiOutput = deviceName : cfg.midiInput = deviceName
@@ -106,7 +90,7 @@ midi.start(async () => {
             options: (outputs ? await midi.getOutputs() : await midi.getInputs()).map(device => {
                 return {
                     name: device.name,
-                    active: outputs ? midi.isCurrentOutput(device.name) : midi.isCurrentInput(device.name),
+                    selected: outputs ? midi.isCurrentOutput(device.name) : midi.isCurrentInput(device.name),
                     value: sanitize(device.name)
                 } as Option
             })
@@ -115,15 +99,32 @@ midi.start(async () => {
 
     const data = {
         midiOutputs: await midiDeviceData(true),
-        midiInputs: await midiDeviceData(false),
-        program: {
-            info: programInfoResult.data,
-            output: programOutputResult.data
-        }
+        midiInput: await midiDeviceData(false),
     } as AppData
     appRoot.render(<ControlApp data={data}/>)
-    console.log(`ERRORS: ${errors.length}`)
-    if (errors.length > 0) {
-        common.error(errors)
-    }
-}).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))
+}).catch((err) => console.error(err))
+
+// device.init()
+// const program = device.getCurrentProgram()
+// const programInfoResult = await program.getInfo()
+// const programOutputResult = await program.getOutput().getInfo()
+// const errors: Error[] = programInfoResult.errors
+//     .concat(programOutputResult.errors)
+
+
+// const data = {
+//     midiOutputs: await midiDeviceData(true),
+//     midiInputs: await midiDeviceData(false),
+//     program: {
+//         info: programInfoResult.data,
+//         output: programOutputResult.data
+//     }
+// } as AppData
+// console.log(`RENDERING CONTROL APP TO APP ROOT`)
+// appRoot.render(<div>Hello.</div>)
+// appRoot.render(<ControlApp data={data}/>)
+// console.log(`ERRORS: ${errors.length}`)
+// if (errors.length > 0) {
+//     common.error(errors)
+// }
+// }).catch(e => appRoot.render(<div>Fail. ${e.message}</div>))
