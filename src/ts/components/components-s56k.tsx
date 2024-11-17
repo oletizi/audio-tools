@@ -39,7 +39,7 @@ export function ProgramView({data}) {
 function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
     const variant = 'subtle'
     return (
-        <Flex gap={4}>
+        <Flex gap={4} wrap={'wrap'}>
             <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
                 <MutableSlider data={data.loudness} label={'Loudness'}/>
             </ControlPanel>
@@ -48,31 +48,23 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
                 <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
                 <MutableSlider data={data.ampMod1Value} label={'Value'}/>
             </ControlPanel>
-            {/*<SlCard>*/}
-            {/*    <div slot={'header'}>Amp Mod 1</div>*/}
-            {/*    <ModSourceView modSource={output.ampMod1Source} label={'Source'}/>*/}
-            {/*    <LabeledRange data={output.ampMod1Value} label={"Value"}/>*/}
-            {/*</SlCard>*/}
-            {/*<SlCard>*/}
-            {/*    <div slot="header">Amp Mod 2</div>*/}
-            {/*    <ModSourceView modSource={output.ampMod2Source} label={'Source'}/>*/}
-            {/*    <LabeledRange data={output.ampMod2Value} label={"Value"}/>*/}
-            {/*</SlCard>*/}
-            {/*<SlCard>*/}
-            {/*    <div slot="header">Pan Mod 1</div>*/}
-            {/*    <ModSourceView modSource={output.panMod1Source} label={'Source'}/>*/}
-            {/*    <LabeledRange data={output.panMod1Value} label={'Value'}/>*/}
-            {/*</SlCard>*/}
-            {/*<SlCard>*/}
-            {/*    <div slot="header">Pan Mod 2</div>*/}
-            {/*    <ModSourceView modSource={output.panMod2Source} label={'Source'}/>*/}
-            {/*    <LabeledRange data={output.panMod2Value} label={'Value'}/>*/}
-            {/*</SlCard>*/}
-            {/*<SlCard>*/}
-            {/*    <div slot="header">Pan Mod 3</div>*/}
-            {/*    <ModSourceView modSource={output.panMod2Source} label={'Source'}/>*/}
-            {/*    <LabeledRange data={output.panMod3Value} label={'Value'}/>*/}
-            {/*</SlCard>*/}
+            <ControlPanel title={'Amp Mod 2'}>
+                <ModSourceSelect modSource={data.ampMod2Source} label={'Source'}/>
+                <MutableSlider data={data.ampMod2Value} label={'Value'}/>
+            </ControlPanel>
+            <ControlPanel title={'Pan Mod 1'}>
+                <ModSourceSelect modSource={data.panMod1Source} label={'Source'}/>
+                <MutableSlider data={data.panMod1Value} label={'Value'}/>
+            </ControlPanel>
+            <ControlPanel title={'Pan Mod 2'}>
+                <ModSourceSelect modSource={data.panMod2Source} label={'Source'}/>
+                <MutableSlider data={data.panMod2Value} label={'Value'}/>
+            </ControlPanel>
+            <ControlPanel title={'Pan Mod 3'}>
+                <div>Fix me. My data is borken.</div>
+                {/*<ModSourceSelect modSource={data.panMod3Source} label={'Source'}/>*/}
+                {/*<MutableSlider data={data.panMod3Value} label={'Value'}/>*/}
+            </ControlPanel>
         </Flex>
     )
 }

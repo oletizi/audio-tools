@@ -74,7 +74,7 @@ export function SimpleSelect({options, mutator, label}:
 
 export function ControlPanel({children, title}) {
     return (
-        <Card.Root flexGrow={1}>
+        <Card.Root flexGrow={1} minW={75}>
             <Card.Body gap={4}>
                 <Card.Title>{title}</Card.Title>
                 {children}
