@@ -660,6 +660,7 @@ const programPitchBendSpec = {
     sectionCode: Section.PROGRAM,
     items: [
         ["PitchBendUp", "number|0|24|1", 0x48, [], "uint8", 1, 0x40, ["uint8"]],
+        ["PitchBendDown", "number|0|24|1", 0x49, [], "uint8", 1, 0x41, ["uint8"]],
         // ["FineTune", "number|-50|50|1", 0x39, [], "int8", 2, 0x31, ["int8sign", "int8abs"]],
         // ["TuneTemplate", "number|0|7|1", 0x3A, [], 'uint8', 1, 0x32, ["uint8"]],
         // ["Key", "number|0|11|1", 0x3C, [], 'uint8', 1, 0x34, ["uint8"]],
@@ -667,7 +668,7 @@ const programPitchBendSpec = {
 }
 
 function newProgramPitchBend(sysex: Sysex, out: ProcessOutput): ProgramPitchBend {
-    return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramPitchBend
+    return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend
 }
 
 /**

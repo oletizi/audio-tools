@@ -41,7 +41,7 @@ export function ProgramView({data}: { data: ProgramData }) {
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
             <Tabs.Content value={'midi-tune'}><ProgramMidiTuneView data={data.midiTune}/></Tabs.Content>
-            <Tabs.Content value={'pitch-bend'}><p>INSERT PITCH BEND CONTENT</p></Tabs.Content>
+            <Tabs.Content value={'pitch-bend'}><ProgramPitchBendView data={data.pitchBend}/></Tabs.Content>
         </Tabs.Root>
     )
 }
@@ -98,6 +98,17 @@ function ProgramMidiTuneView({data}: { data: ProgramMidiTuneInfo }) {
             </ControlPanel>
             <ControlPanel title={'Key'}>
                 <MutableSlider data={data.key} label={'Value'}/>
+            </ControlPanel>
+        </Flex>
+    )
+}
+
+function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
+    return(
+        <Flex gap={4}>
+            <ControlPanel title={'Pitch Bend'}>
+                <MutableSlider data={data.pitchBendUp} label={'Up'}/>
+                <MutableSlider data={data.pitchBendDown} label={'Down'}/>
             </ControlPanel>
         </Flex>
     )
