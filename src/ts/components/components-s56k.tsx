@@ -111,8 +111,12 @@ function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
                 <MutableSlider data={data.pitchBendDown} label={'Down'}/>
                 <MutableSlider data={data.bendMode} label={'Mode'}/>
             </ControlPanel>
-            <ControlPanel title={'Aftertouch'}>
-                <MutableSlider data={data.aftertouchValue} label={'Value'}/>
+            <ControlPanel title={'Aftertouch/Legato'}>
+                <MutableSlider data={data.aftertouchValue} label={'Aftertouch Value'}/>
+                <MutableSlider data={data.legatoEnable} label={'Legato Enable'}/>
+            </ControlPanel>
+            <ControlPanel title={'Portamento'}>
+                <div>INSERT PORTAMENTO HERE.</div>
             </ControlPanel>
         </Flex>
     )
