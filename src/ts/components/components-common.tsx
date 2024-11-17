@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {MutableNumber, natural2real, real2natural, scale} from "@/lib/lib-core";
+import {MutableNumber, natural2real, real2natural} from "@/lib/lib-core";
 import {
     Card,
     createListCollection, ListCollection,
@@ -7,7 +7,7 @@ import {
     SelectLabel,
     SelectRoot,
     SelectTrigger,
-    SelectValueText, Separator, Slider
+    SelectValueText
 } from "@chakra-ui/react";
 import {Slider} from '@/components/chakra/slider'
 
@@ -25,7 +25,7 @@ export interface Selectable {
 export function MutableSlider({data, label}: { data: MutableNumber, label: string }) {
     const [naturalValue, setNaturalValue] = useState([real2natural(data.value, data.min, data.max)])
     const realValue = natural2real(naturalValue[0], data.min, data.max)
-    const naturalMin= 0
+    const naturalMin = 0
     const naturalMax = data.max - data.min
 
 
@@ -35,11 +35,7 @@ export function MutableSlider({data, label}: { data: MutableNumber, label: strin
             onValueChangeEnd={async (event) => {
                 const val = event.value
                 const naturalVal = val[0]
-                const realVal= natural2real(naturalVal, data.min, data.max)
-                console.log(`min: ${data.min}; max: ${data.max}`)
-                console.log(`natural min: ${naturalMin}; natural max: ${naturalMax}`)
-                console.log(`New natural value: ${naturalVal}`)
-                console.log(`New real value: ${realVal}`)
+                const realVal = natural2real(naturalVal, data.min, data.max)
                 setNaturalValue(val)
                 await data.mutator(realVal)
             }}
@@ -51,13 +47,18 @@ export function MutableSlider({data, label}: { data: MutableNumber, label: strin
     )
 }
 
-export function SimpleSelect({options, defaultValue, mutator, label}:
+export function SimpleSelect({options, mutator, label}:
                                  { options: Option[], mutator: Function, label: string }) {
-    const [selected, setSelected] = useState(defaultValue)
     const items: ListCollection<Option> = createListCollection({items: options})
+    const [selected, setSelected] = useState(items.items.filter(o => o.selected).map((o => o.value)))
 
     return (
-        <SelectRoot collection={items} defaultValue={defaultValue}>
+        <SelectRoot collection={items} value={selected} onValueChange={
+            (event) => {
+                setSelected(event.value)
+                mutator(event.value)
+            }
+        }>
             <SelectLabel>{label}</SelectLabel>
             <SelectTrigger>
                 <SelectValueText placeholder={'Select...'}/>

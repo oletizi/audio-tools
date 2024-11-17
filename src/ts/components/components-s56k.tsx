@@ -120,7 +120,6 @@ function ModSourceSelect({modSource, label}: { modSource: MutableNumber, label: 
             options={Object.getOwnPropertyNames(items).map(key => {
                 return {value: key, label: items[key], selected: key === selected} as Option
             })}
-            defaultValue={modSource.value.toString()}
             mutator={modSource.mutator}
             label={label}
         />
