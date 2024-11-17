@@ -24,16 +24,16 @@ export interface Selectable {
 
 export function MutableSlider({data, label}: { data: MutableNumber, label: string }) {
     const [value, setValue] = useState([data.value])
-    console.log(`DATA: ${JSON.stringify(data)}`)
     return (
         <Slider
+            onValueChange={(event) => setValue(event.value)}
             onValueChangeEnd={async (event) => {
                 const val = event.value
                 console.log(`New Value: ${val[0]}`)
                 setValue(val)
                 await data.mutator(val[0])
             }}
-            label={label}
+            label={`${label} (${value[0]})`}
             // XXX: TODO: Chakra sliders don't like negative values. Need to scale the range to positive, then convert back to neg/pos.
             min={0}
             max={data.max}

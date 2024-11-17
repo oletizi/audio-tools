@@ -41,7 +41,7 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
     return (
         <Flex gap={4}>
             <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
-                value: {data.loudness.value}
+                <MutableSlider data={data.loudness} label={'Loudness'}/>
             </ControlPanel>
 
             <ControlPanel title={'Amp Mod 1'}>
