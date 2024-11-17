@@ -50,7 +50,7 @@ function MidiDeviceSelect({name, label, value, onSelect, options}) {
     )
 }
 
-export default function App({data}: { data: AppData }) {
+export default function ControlApp({data}: { data: AppData }) {
     return (
         <div className={'container mx-auto bg-stone-50 p-4 h-screen'}>
             <h1 className={'mb-4'}>S5000/S6000 Control</h1>
@@ -121,7 +121,7 @@ midi.start(async () => {
             output: programOutputResult.data
         }
     } as AppData
-    appRoot.render(<App data={data}/>)
+    appRoot.render(<ControlApp data={data}/>)
     console.log(`ERRORS: ${errors.length}`)
     if (errors.length > 0) {
         common.error(errors)
