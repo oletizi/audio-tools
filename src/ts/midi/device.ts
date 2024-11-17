@@ -378,10 +378,6 @@ export interface ProgramInfo {
     id: number
     index: number
     keygroupCount: number
-    // loudness: MutableNumber
-    // semitoneTune: MutableNumber
-    // fineTune: MutableNumber
-    // tuneTemplate: MutableNumber
 }
 
 export interface ProgramInfoResult extends Result {

@@ -20,7 +20,7 @@ export interface AppData {
     program: ProgramData
 }
 
-export function ProgramView({data}) {
+export function ProgramView({data}: { data: ProgramData }) {
     return (
 
         <Tabs.Root defaultValue={'output'}>
@@ -42,7 +42,11 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
             <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
                 <MutableSlider data={data.loudness} label={'Loudness'}/>
             </ControlPanel>
-
+            <ControlPanel title={'Velocity Sensitivity'}>
+                <MutableSlider data={data.velocitySensitivity} label={'Sensitivity'}/>
+                <p>Fix me :-(</p>
+                <p>I can't save my data.</p>
+            </ControlPanel>
             <ControlPanel title={'Amp Mod 1'}>
                 <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
                 <MutableSlider data={data.ampMod1Value} label={'Value'}/>
@@ -60,7 +64,8 @@ function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
                 <MutableSlider data={data.panMod2Value} label={'Value'}/>
             </ControlPanel>
             <ControlPanel title={'Pan Mod 3'}>
-                <div>Fix me. My data is borken.</div>
+                <p>Fix me :-(</p>
+                <p> My data is borken.</p>
                 {/*<ModSourceSelect modSource={data.panMod3Source} label={'Source'}/>*/}
                 {/*<MutableSlider data={data.panMod3Value} label={'Value'}/>*/}
             </ControlPanel>
