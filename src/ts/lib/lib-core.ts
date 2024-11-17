@@ -26,16 +26,16 @@ export interface MutableString {
     value: string
 }
 
-export function scale(value: number, xmin: number, xmax: number, ymin: number, ymax: number) {
-    const xrange = xmax - xmin
-    const yrange = ymax - ymin
-    return (value - xmin) * yrange / xrange + ymin
+export function scale(value: number | string, xmin: number | string, xmax: number | string, ymin: number | string, ymax: number | string) {
+    const xrange = Number(xmax) - Number(xmin)
+    const yrange = Number(ymax) - Number(ymin)
+    return (Number(value) - Number(xmin)) * yrange / xrange + Number(ymin)
 }
 
-export function real2natural(value: number, min: number, max: number) {
-    return scale(value, min, max, 0, max - min)
+export function real2natural(value: number | string, min: number | string, max: number | string) {
+    return scale(Number(value), Number(min), Number(max), 0, Number(max) - Number(min))
 }
 
-export function natural2real(value: number, min: number, max: number) {
-    return scale(value, 0, max - min, min, max)
+export function natural2real(value: number | string, min: number | string, max: number | string) {
+    return scale(Number(value), 0, Number(max) - Number(min), Number(min), Number(max))
 }

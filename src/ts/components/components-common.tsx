@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {MutableNumber, scale} from "@/lib/lib-core";
+import {MutableNumber, natural2real, real2natural, scale} from "@/lib/lib-core";
 import {
     Card,
     createListCollection, ListCollection,
@@ -23,21 +23,30 @@ export interface Selectable {
 }
 
 export function MutableSlider({data, label}: { data: MutableNumber, label: string }) {
-    const [value, setValue] = useState([data.value])
+    const [naturalValue, setNaturalValue] = useState([real2natural(data.value, data.min, data.max)])
+    const realValue = natural2real(naturalValue[0], data.min, data.max)
+    const naturalMin= 0
+    const naturalMax = data.max - data.min
+
+
     return (
         <Slider
-            onValueChange={(event) => setValue(event.value)}
+            onValueChange={(event) => setNaturalValue(event.value)}
             onValueChangeEnd={async (event) => {
                 const val = event.value
-                console.log(`New Value: ${val[0]}`)
-                setValue(val)
-                await data.mutator(val[0])
+                const naturalVal = val[0]
+                const realVal= natural2real(naturalVal, data.min, data.max)
+                console.log(`min: ${data.min}; max: ${data.max}`)
+                console.log(`natural min: ${naturalMin}; natural max: ${naturalMax}`)
+                console.log(`New natural value: ${naturalVal}`)
+                console.log(`New real value: ${realVal}`)
+                setNaturalValue(val)
+                await data.mutator(realVal)
             }}
-            label={`${label} (${value[0]})`}
-            // XXX: TODO: Chakra sliders don't like negative values. Need to scale the range to positive, then convert back to neg/pos.
-            min={0}
-            max={data.max}
-            value={value}
+            label={`${label} (${realValue})`}
+            min={naturalMin}
+            max={naturalMax}
+            value={naturalValue}
         />
     )
 }

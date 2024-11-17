@@ -3,11 +3,11 @@ import path from "path"
 import {brain} from "./brain.ts"
 import Queue from "queue";
 import {PassThrough} from "stream";
-import {newProgress} from "../lib/progress";
+import {newProgress} from "@/model/progress"
 import {newClientConfig, saveClientConfig} from "./config-server";
-import {newServerOutput} from "../process-output";
+import {newServerOutput} from "@/process-output";
 import {ClientConfig} from "./config-client";
-import {Result} from "./client-common";
+import {Result} from "@/lib/lib-core"
 
 const app = express()
 const port = 3000
