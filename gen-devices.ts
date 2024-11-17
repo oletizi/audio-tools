@@ -2,6 +2,7 @@ import {DeviceSpec, getDeviceSpecs} from "@/midi/devices/specs";
 import {newServerOutput} from "@/process-output";
 import fs from "fs";
 import path from "path";
+import {timestamp} from "./src/ts/lib/lib-core";
 
 // <Device>InfoResult
 // <Device>Info
@@ -77,7 +78,8 @@ function parseItem(itemSpec) {
 function gen(device: DeviceSpec) {
     const basename = device.className
     const infoName = basename + 'Info'
-    out.write('// DO NOT EDIT. THIS IS AUTO-GENERATED.\n\n')
+    out.write(`// GENERATED: ${new Date().toLocaleString()}\n`)
+    out.write('// DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.\n\n')
 
     out.write(`import {MutableNumber, MutableString, Result} from "@/lib/lib-core"\n`)
     out.write(`import {NumberResult, StringResult} from "@/lib/lib-core"\n\n`)
