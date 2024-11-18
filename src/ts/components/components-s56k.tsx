@@ -38,18 +38,29 @@ export interface AppData {
 
 export function ProgramView({data}: { data: ProgramData }) {
     return (
-        <Tabs.Root defaultValue={'midi-tune'}>
+        <Tabs.Root defaultValue={'pitch-bend'}>
             <Tabs.List>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
                 <Tabs.Trigger value={'output'}>Output</Tabs.Trigger>
                 <Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>
-                {/*<Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>*/}
+                <Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
-            <Tabs.Content value={'output'}> <SectionView data={data.output}><ProgramOutputView
-                data={data.output}/></SectionView></Tabs.Content>
-            <Tabs.Content value={'midi-tune'}><SectionView data={data.midiTune}><ProgramMidiTuneView data={data.midiTune}/></SectionView></Tabs.Content>
-            {/*<Tabs.Content value={'pitch-bend'}><ProgramPitchBendView data={data.pitchBend}/></Tabs.Content>*/}
+            <Tabs.Content value={'output'}>
+                <SectionView data={data.output}>
+                    <ProgramOutputView data={data.output}/>
+                </SectionView>
+            </Tabs.Content>
+            <Tabs.Content value={'midi-tune'}>
+                <SectionView data={data.midiTune}>
+                    <ProgramMidiTuneView data={data.midiTune}/>
+                </SectionView>
+            </Tabs.Content>
+            <Tabs.Content value={'pitch-bend'}>
+                <SectionView data={data.midiTune}>
+                    <ProgramPitchBendView data={data.pitchBend}/>
+                </SectionView>
+            </Tabs.Content>
         </Tabs.Root>
     )
 }
@@ -137,22 +148,27 @@ function ProgramMidiTuneView({data}: { data: Promise<ProgramMidiTuneInfoResult> 
     )
 }
 
-function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
+function ProgramPitchBendView({data}: { data: Promise<ProgramPitchBendInfoResult> }) {
+    const [result, setResult] = useState(null)
+    // noinspection TypeScriptValidateTypes
+    data.then(d => setResult(d))
+    if (!result) return (<></>)
+    const info = result.data
     return (
         <Flex gap={4}>
             <ControlPanel title={'Pitch Bend'}>
-                <MutableSlider data={data.pitchBendUp} label={'Up'}/>
-                <MutableSlider data={data.pitchBendDown} label={'Down'}/>
-                <MutableSlider data={data.bendMode} label={'Mode'}/>
+                <MutableSlider data={info.pitchBendUp} label={'Up'}/>
+                <MutableSlider data={info.pitchBendDown} label={'Down'}/>
+                <MutableSlider data={info.bendMode} label={'Mode'}/>
             </ControlPanel>
             <ControlPanel title={'Aftertouch/Legato'}>
-                <MutableSlider data={data.aftertouchValue} label={'Aftertouch Value'}/>
-                <MutableSlider data={data.legatoEnable} label={'Legato Enable'}/>
+                <MutableSlider data={info.aftertouchValue} label={'Aftertouch Value'}/>
+                <MutableSlider data={info.legatoEnable} label={'Legato Enable'}/>
             </ControlPanel>
             <ControlPanel title={'Portamento'}>
-                <MutableSlider data={data.portamentoEnable} label={'Enable'}/>
-                <MutableSlider data={data.portamentoMode} label={'Mode'}/>
-                <MutableSlider data={data.portamentoTime} label={'Time'}/>
+                <MutableSlider data={info.portamentoEnable} label={'Enable'}/>
+                <MutableSlider data={info.portamentoMode} label={'Mode'}/>
+                <MutableSlider data={info.portamentoTime} label={'Time'}/>
             </ControlPanel>
         </Flex>
     )
