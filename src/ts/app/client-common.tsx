@@ -55,7 +55,7 @@ class BasicClientCommon implements ClientCommon {
         return this.out
     }
 
-    fetchConfig(): Promise<Result> {
+     fetchConfig(): Promise<Result> {
         return new Promise<Result>((resolve, reject) => {
             this.request('/config')
                 .then((result) => resolve(result))
@@ -99,7 +99,7 @@ class BasicClientCommon implements ClientCommon {
             if (res.status == 200) {
                 try {
                     this.status(statusMessage)
-                    rv.data = await res.json()
+                    rv.data = (await res.json()).data
                 } catch (err) {
                     this.status(`Error: ${err.message}`)
                     this.out.error(err)

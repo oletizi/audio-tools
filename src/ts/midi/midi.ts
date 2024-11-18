@@ -1,5 +1,5 @@
 import {Input, InputEventMap, Output, WebMidi} from "webmidi"
-import {newClientOutput, ProcessOutput} from "../process-output";
+import {newClientOutput, ProcessOutput} from "@/process-output";
 
 export class Midi {
     private output: Output;
@@ -7,8 +7,8 @@ export class Midi {
     private listeners = []
     private out: ProcessOutput;
 
-    constructor(out: ProcessOutput = newClientOutput()) {
-        this.out = out
+    constructor() {
+        this.out = newClientOutput(false)
     }
 
     async start(onEnabled = () => {
@@ -95,9 +95,8 @@ export class Midi {
         const selected = (await this.getOutputs()).filter(output => output.name == name)
         if (selected.length == 1) {
             this.setOutput(selected[0])
-            updated = true
         }
-        return updated
+        return this.output
     }
 
     // XXX: Refactor to generalize setting output & input by name in a single function
@@ -107,9 +106,8 @@ export class Midi {
         if (selected.length == 1) {
             // this.input = selected[0]
             this.setInput(selected[0])
-            updated = true
         }
-        return updated
+        return this.output
     }
 
     addListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {

@@ -1,5 +1,7 @@
 import {Midi} from "@/midi/midi";
-import {ProcessOutput} from "@/process-output";
+import {newClientOutput, ProcessOutput} from "@/process-output";
+
+const DEBUG = false
 
 export enum Section {
     SYSEX_CONFIG = 0x00,
@@ -135,6 +137,7 @@ function getStatusMessage(status: number) {
             return "Unknown"
     }
 }
+
 export function newResponse(event) {
     const data = event['dataBytes']
     const rv = {} as SysexResponse
@@ -179,9 +182,9 @@ export class Sysex {
     protected midi: Midi
     protected out: ProcessOutput
 
-    constructor(midi: Midi, out: ProcessOutput) {
+    constructor(midi: Midi) {
         this.midi = midi
-        this.out = out
+        this.out = newClientOutput(false)
     }
 
     async sysexRequest(message: SysexControlMessage): Promise<SysexResponse> {

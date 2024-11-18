@@ -136,7 +136,7 @@ function gen(device: DeviceSpec) {
         return getter
     }).join('\n'))
     out.write('\n')
-    out.write(`  getInfo(): ${infoName}Result\n`)
+    out.write(`  getInfo(): Promise<${infoName}Result>\n`)
     out.write('}\n\n')
 
     //

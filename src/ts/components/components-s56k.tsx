@@ -1,87 +1,112 @@
 /**
  * Components specific to the Akai S5000/S6000 sampler series
  */
-import React from "react";
+import React, {useState} from "react";
 import {
     ProgramInfo,
-    ProgramMidiTuneInfo,
-    ProgramOutputInfo,
-    ProgramPitchBend,
-    ProgramPitchBendInfo
 } from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
-import {Flex, Tabs} from '@chakra-ui/react'
+import {Alert} from '@/components/chakra/alert'
+import {Flex, Stack, Tabs} from '@chakra-ui/react'
 
 import {MutableNumber} from "@/lib/lib-core";
+import {
+    ProgramMidiTuneInfo,
+    ProgramOutputInfo,
+    ProgramOutputInfoResult,
+    ProgramPitchBendInfo
+} from "@/midi/devices/devices";
 
 
 interface ProgramData {
-    info: ProgramInfo
-    output: ProgramOutputInfo
-    midiTune: ProgramMidiTuneInfo
-    pitchBend: ProgramPitchBendInfo
+    info: Promise<ProgramInfo>
+    output: Promise<ProgramOutputInfo>
+    midiTune: Promise<ProgramMidiTuneInfo>
+    pitchBend: Promise<ProgramPitchBendInfo>
+}
+
+export interface MidiDeviceData {
+    midiOutputs: Selectable
+    midiInputs: Selectable
 }
 
 export interface AppData {
-    midiOutputs: Selectable
-    midiInputs: Selectable
+    midiDeviceData: Promise<MidiDeviceData>
     program: ProgramData
 }
 
+
 export function ProgramView({data}: { data: ProgramData }) {
     return (
-
-        <Tabs.Root defaultValue={'pitch-bend'}>
+        <Tabs.Root defaultValue={'output'}>
             <Tabs.List>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
                 <Tabs.Trigger value={'output'}>Output</Tabs.Trigger>
-                <Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>
-                <Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>
+                {/*<Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>*/}
+                {/*<Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>*/}
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}> <ProgramOutputView data={data.output}/></Tabs.Content>
-            <Tabs.Content value={'midi-tune'}><ProgramMidiTuneView data={data.midiTune}/></Tabs.Content>
-            <Tabs.Content value={'pitch-bend'}><ProgramPitchBendView data={data.pitchBend}/></Tabs.Content>
+            {/*<Tabs.Content value={'midi-tune'}><ProgramMidiTuneView data={data.midiTune}/></Tabs.Content>*/}
+            {/*<Tabs.Content value={'pitch-bend'}><ProgramPitchBendView data={data.pitchBend}/></Tabs.Content>*/}
         </Tabs.Root>
     )
 }
 
-
-function ProgramOutputView({data}: { data: ProgramOutputInfo }) {
+function ProgramOutputView({data}: { data: Promise<ProgramOutputInfoResult> }) {
+    const [result, setResolved] = useState(null)
     const variant = 'subtle'
+    let errors
+    data.then((result) => {
+        setResolved(result)
+    })
+    if (!result) {
+        return (<div>Waiting...</div>)
+    }
+    if (result.errors.length > 0) {
+        errors = (<Alert status="error" title="Errors">
+            <ul>{result.errors.map(e => (<li key={e.message}>{e.message}</li>))}</ul>
+        </Alert>)
+    } else {
+        errors = (<span></span>)
+    }
+    const info = result.data
     return (
-        <Flex gap={4} wrap={'wrap'}>
-            <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
-                <MutableSlider data={data.loudness} label={'Loudness'}/>
-            </ControlPanel>
-            <ControlPanel title={'Velocity Sensitivity'}>
-                <MutableSlider data={data.velocitySensitivity} label={'Sensitivity'}/>
-                <p>Fix me :-(</p>
-                <p>I can't save my data.</p>
-            </ControlPanel>
-            <ControlPanel title={'Amp Mod 1'}>
-                <ModSourceSelect modSource={data.ampMod1Source} label={'Source'}/>
-                <MutableSlider data={data.ampMod1Value} label={'Value'}/>
-            </ControlPanel>
-            <ControlPanel title={'Amp Mod 2'}>
-                <ModSourceSelect modSource={data.ampMod2Source} label={'Source'}/>
-                <MutableSlider data={data.ampMod2Value} label={'Value'}/>
-            </ControlPanel>
-            <ControlPanel title={'Pan Mod 1'}>
-                <ModSourceSelect modSource={data.panMod1Source} label={'Source'}/>
-                <MutableSlider data={data.panMod1Value} label={'Value'}/>
-            </ControlPanel>
-            <ControlPanel title={'Pan Mod 2'}>
-                <ModSourceSelect modSource={data.panMod2Source} label={'Source'}/>
-                <MutableSlider data={data.panMod2Value} label={'Value'}/>
-            </ControlPanel>
-            <ControlPanel title={'Pan Mod 3'}>
-                <p>Fix me :-(</p>
-                <p> My data is borken.</p>
-                {/*<ModSourceSelect modSource={data.panMod3Source} label={'Source'}/>*/}
-                {/*<MutableSlider data={data.panMod3Value} label={'Value'}/>*/}
-            </ControlPanel>
-        </Flex>
+        <Stack>
+            <Flex gap={4} wrap={'wrap'}>
+                <ControlPanel title={'Loudness'} flexGrow={1} variant={variant}>
+                    <MutableSlider data={info.loudness} label={'Loudness'}/>
+                </ControlPanel>
+                <ControlPanel title={'Velocity Sensitivity'}>
+                    <MutableSlider data={info.velocitySensitivity} label={'Sensitivity'}/>
+                    <p>Fix me :-(</p>
+                    <p>I can't save my data.</p>
+                </ControlPanel>
+                <ControlPanel title={'Amp Mod 1'}>
+                    <ModSourceSelect modSource={info.ampMod1Source} label={'Source'}/>
+                    <MutableSlider data={info.ampMod1Value} label={'Value'}/>
+                </ControlPanel>
+                <ControlPanel title={'Amp Mod 2'}>
+                    <ModSourceSelect modSource={info.ampMod2Source} label={'Source'}/>
+                    <MutableSlider data={info.ampMod2Value} label={'Value'}/>
+                </ControlPanel>
+                <ControlPanel title={'Pan Mod 1'}>
+                    <ModSourceSelect modSource={info.panMod1Source} label={'Source'}/>
+                    <MutableSlider data={info.panMod1Value} label={'Value'}/>
+                </ControlPanel>
+                <ControlPanel title={'Pan Mod 2'}>
+                    <ModSourceSelect modSource={info.panMod2Source} label={'Source'}/>
+                    <MutableSlider data={info.panMod2Value} label={'Value'}/>
+                </ControlPanel>
+                <ControlPanel title={'Pan Mod 3'}>
+                    <p>Fix me :-(</p>
+                    <p> My data is borken.</p>
+                    {/*<ModSourceSelect modSource={data.panMod3Source} label={'Source'}/>*/}
+                    {/*<MutableSlider data={data.panMod3Value} label={'Value'}/>*/}
+                </ControlPanel>
+            </Flex>
+            {errors}
+        </Stack>
     )
 }
 
@@ -104,7 +129,7 @@ function ProgramMidiTuneView({data}: { data: ProgramMidiTuneInfo }) {
 }
 
 function ProgramPitchBendView({data}: { data: ProgramPitchBendInfo }) {
-    return(
+    return (
         <Flex gap={4}>
             <ControlPanel title={'Pitch Bend'}>
                 <MutableSlider data={data.pitchBendUp} label={'Up'}/>

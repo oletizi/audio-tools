@@ -456,7 +456,7 @@ class S56kSysex implements S56kDevice {
     private readonly program: S56kProgramSysex;
 
     constructor(midi, out: ProcessOutput = newClientOutput(), monitor: boolean = false) {
-        this.sysex = new Sysex(midi, out)
+        this.sysex = new Sysex(midi)
         this.program = new S56kProgramSysex(this.sysex, out)
         this.midi = midi
         this.out = out

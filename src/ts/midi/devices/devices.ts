@@ -1,4 +1,4 @@
-// GENERATED: 11/17/2024, 3:34:28 PM
+// GENERATED: 11/17/2024, 7:47:57 PM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
@@ -44,7 +44,7 @@ export interface ProgramOutput {
   getPanMod1Value(): NumberResult
   getPanMod2Value(): NumberResult
   getPanMod3Value(): NumberResult
-  getInfo(): ProgramOutputInfoResult
+  getInfo(): Promise<ProgramOutputInfoResult>
 }
 
 
@@ -72,7 +72,7 @@ export interface ProgramMidiTune {
   getFineTune(): NumberResult
   getTuneTemplate(): NumberResult
   getKey(): NumberResult
-  getInfo(): ProgramMidiTuneInfoResult
+  getInfo(): Promise<ProgramMidiTuneInfoResult>
 }
 
 
@@ -108,7 +108,7 @@ export interface ProgramPitchBend {
   getPortamentoEnable(): NumberResult
   getPortamentoMode(): NumberResult
   getPortamentoTime(): NumberResult
-  getInfo(): ProgramPitchBendInfoResult
+  getInfo(): Promise<ProgramPitchBendInfoResult>
 }
 
 
@@ -132,7 +132,7 @@ export interface ProgramLfosInfoResult extends Result {
 export interface ProgramLfos {
   getLfo1Rate(): NumberResult
   getLfo2Rate(): NumberResult
-  getInfo(): ProgramLfosInfoResult
+  getInfo(): Promise<ProgramLfosInfoResult>
 }
 
 

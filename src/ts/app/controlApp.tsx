@@ -5,9 +5,10 @@ import {newS56kDevice} from "@/midi/device"
 import {Midi} from "@/midi/midi"
 import {newClientCommon} from "./client-common"
 import {ClientConfig} from "./config-client"
-import {AppData, ProgramView} from "@/components/components-s56k";
+import {AppData, MidiDeviceData, ProgramView} from "@/components/components-s56k";
 import {Option, Selectable} from "@/components/components-common";
 import {
+    Button,
     Container,
     createListCollection,
     Flex,
@@ -57,8 +58,17 @@ function MidiDeviceSelect({name, label, onSelect, options}:
     )
 }
 
+
 function ControlApp({data}: { data: AppData }) {
     console.log(`data: ${JSON.stringify(data)}`)
+    const [midi, setMidi] = useState(null)
+    // noinspection TypeScriptValidateTypes
+    data.midiDeviceData
+        .then(deviceData => setMidi(deviceData))
+        .catch(e => common.error(e))
+    if (!midi) {
+        return (<div>Waiting on midi device data...</div>)
+    }
     return (
         <Provider>
             <Container>
@@ -68,13 +78,13 @@ function ControlApp({data}: { data: AppData }) {
                         <MidiDeviceSelect
                             name="midi-output"
                             label="MIDI Output"
-                            onSelect={data.midiOutputs.onSelect}
-                            options={data.midiOutputs.options}/>
+                            onSelect={midi.midiOutputs.onSelect}
+                            options={midi.midiOutputs.options}/>
                         <MidiDeviceSelect
                             name={'midi-intput'}
                             label={'MIDI Input'}
-                            onSelect={data.midiInputs.onSelect}
-                            options={data.midiInputs.options}/>
+                            onSelect={midi.midiInputs.onSelect}
+                            options={midi.midiInputs.options}/>
                     </Flex>
                     <ProgramView data={data.program}/>
                 </Flex>
@@ -87,16 +97,27 @@ const common = newClientCommon((msg) => console.log(msg), (msg) => console.error
 const appRoot = createRoot(document.getElementById('app'))
 const midi = new Midi()
 const device = newS56kDevice(midi, common.getOutput())
-midi.start(async () => {
-    const rcfg = await common.fetchConfig()
-    if (rcfg.errors.length > 0) {
-        common.error(rcfg.errors)
-        return
-    }
-    const cfg = rcfg.data as ClientConfig
-    await midi.setOutputByName(cfg.midiOutput)
-    await midi.setInputByName(cfg.midiInput)
+midi.start(() => {
+    common.fetchConfig()
+        .catch(e => common.error(e))
+        .then(rcfg => {
+            if (rcfg && rcfg.errors.length > 0) {
+                common.error(rcfg.errors)
+            } else if (rcfg) {
+                const cfg = rcfg.data as ClientConfig
+                Promise.all([
+                    midi.setOutputByName(cfg.midiOutput),
+                    midi.setInputByName(cfg.midiInput)]
+                ).then(() => renderApp(cfg))
+                    .catch(e => common.error(e))
 
+            } else {
+                common.error(`No result loading config.`)
+            }
+        })
+}).catch((err) => console.error(err))
+
+function renderApp(cfg: ClientConfig) {
     async function midiDeviceData(outputs: boolean) {
         return {
             onSelect: (deviceName) => {
@@ -117,26 +138,31 @@ midi.start(async () => {
     // Fetch data from Sysex...
     device.init()
     const program = device.getCurrentProgram()
-    const programInfoResult = await program.getInfo()
-    const programOutputResult = await program.getOutput().getInfo()
-    const programMidiTuneResult = await program.getMidiTune().getInfo()
-    const programPitchBendResult = await program.getPitchBend().getInfo()
-    const errors: Error[] = programInfoResult.errors
-        .concat(programOutputResult.errors)
-        .concat(programMidiTuneResult.errors)
-        .concat(programPitchBendResult.errors)
-    common.error(errors)
-
+    const programInfoResult = program.getInfo()
+    const programOutputResult = program.getOutput().getInfo()
+    const programMidiTuneResult = program.getMidiTune().getInfo()
+    const programPitchBendResult = program.getPitchBend().getInfo()
 
     const data = {
-        midiOutputs: await midiDeviceData(true),
-        midiInputs: await midiDeviceData(false),
+        midiDeviceData: new Promise<MidiDeviceData>((resolve, reject) => {
+            Promise.all([midiDeviceData(true), midiDeviceData(false)])
+                .then(results => {
+                    resolve({
+                        midiOutputs: results[0],
+                        midiInputs: results[1]
+                    })
+                }).catch(e => {
+                common.error(e);
+                reject(e)
+            })
+        }),
         program: {
-            info: programInfoResult.data,
-            output: programOutputResult.data,
-            midiTune: programMidiTuneResult.data,
-            pitchBend: programPitchBendResult.data,
+            info: programInfoResult,
+            output: programOutputResult,
+            midiTune: programMidiTuneResult,
+            pitchBend: programPitchBendResult,
         },
     } as AppData
+
     appRoot.render(<ControlApp data={data}/>)
-}).catch((err) => console.error(err))
+}

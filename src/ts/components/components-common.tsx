@@ -1,15 +1,15 @@
 import React, {useState} from 'react'
 import {MutableNumber, natural2real, real2natural} from "@/lib/lib-core";
+import {Box, Card, createListCollection, Flex, ListCollection} from "@chakra-ui/react";
+import {Slider} from '@/components/chakra/slider'
 import {
-    Card,
-    createListCollection, Flex, ListCollection,
-    SelectContent, SelectItem,
+    SelectContent,
+    SelectItem,
     SelectLabel,
     SelectRoot,
     SelectTrigger,
     SelectValueText
-} from "@chakra-ui/react";
-import {Slider} from '@/components/chakra/slider'
+} from '@/components/chakra/select'
 
 export interface Option {
     label: string
@@ -22,7 +22,14 @@ export interface Selectable {
     options: Option[]
 }
 
+
 export function MutableSlider({data, label}: { data: MutableNumber, label: string }) {
+    if (data.value == undefined) {
+        return (
+            <Slider disabled label={label + ': Borken. Value is undefined.'}/>
+        )
+
+    }
     const [naturalValue, setNaturalValue] = useState([real2natural(data.value, data.min, data.max)])
     const realValue = natural2real(naturalValue[0], data.min, data.max)
     const naturalMin = 0

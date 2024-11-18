@@ -1,13 +1,13 @@
 import {createRoot, Root} from "react-dom/client";
-import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "../components/components-experimental";
-import {Midi} from "../midi/midi"
+import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "@/components/components-experimental";
+import {Midi} from "@/midi/midi"
 import {ClientConfig, newNullClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
-import {MidiInstrument, newMidiInstrument} from "../midi/instrument";
-import {newS56kDevice, ProgramInfoResult, S56kDevice} from "../midi/device";
+import {MidiInstrument, newMidiInstrument} from "@/midi/instrument";
+import {newS56kDevice, ProgramInfoResult, S56kDevice} from "@/midi/device";
 import React from 'react'
 
-const clientCommon = newClientCommon('status')
+const clientCommon = newClientCommon()
 const out = clientCommon.getOutput()
 const midi = new Midi()
 const midiOutputSelectRoot = createRoot(document.getElementById('midi-output-select'))
@@ -22,9 +22,9 @@ class ClientS56k {
     async init() {
         let result = await clientCommon.fetchConfig()
         let instrument: MidiInstrument
-        if (result.error) {
-            clientCommon.status(result.error)
-            out.error(result.error)
+        if (result.errors.length > 0) {
+            clientCommon.status(result.errors)
+            out.error(result.errors)
         } else {
             this.cfg = result.data
         }
