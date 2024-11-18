@@ -64,6 +64,8 @@ export const programLfosSpec = {
     items: [
         ["Lfo1Rate", "number|0|100|1", 0x60, [1], "uint8", 1, 0x50, [1, "uint8"]],
         ["Lfo2Rate", "number|0|100|1", 0x60, [2], "uint8", 1, 0x50, [2, "uint8"]],
+        ["Lfo1Delay", "number|0|100|1", 0x61, [1], "uint8", 1, 0x51, [1, "uint8"]],
+        ["Lfo2Delay", "number|0|100|1", 0x61, [2], "uint8", 1, 0x51, [2, "uint8"]],
     ]
 }
 

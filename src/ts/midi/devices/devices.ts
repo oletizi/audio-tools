@@ -1,4 +1,4 @@
-// GENERATED: 11/17/2024, 7:47:57 PM
+// GENERATED: 11/18/2024, 8:36:08 AM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
@@ -122,6 +122,8 @@ export function newProgramPitchBend(sysex: Sysex, out: ProcessOutput) {
 export interface ProgramLfosInfo {
   lfo1Rate: MutableNumber
   lfo2Rate: MutableNumber
+  lfo1Delay: MutableNumber
+  lfo2Delay: MutableNumber
 }
 
 export interface ProgramLfosInfoResult extends Result {
@@ -132,6 +134,8 @@ export interface ProgramLfosInfoResult extends Result {
 export interface ProgramLfos {
   getLfo1Rate(): NumberResult
   getLfo2Rate(): NumberResult
+  getLfo1Delay(): NumberResult
+  getLfo2Delay(): NumberResult
   getInfo(): Promise<ProgramLfosInfoResult>
 }
 

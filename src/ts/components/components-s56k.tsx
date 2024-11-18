@@ -191,9 +191,11 @@ function ProgramLfosView({data}:{data:Promise<ProgramLfosInfoResult>}) {
     return (<Flex gap={4}>
         <ControlPanel title={'LFO 1'}>
             <MutableSlider data={info.lfo1Rate} label={'Rate'}/>
+            <MutableSlider data={info.lfo1Delay} label={'Delay'}/>
         </ControlPanel>
         <ControlPanel title={'LFO 2'}>
             <MutableSlider data={info.lfo2Rate} label={'Rate'}/>
+            <MutableSlider data={info.lfo2Delay} label={'Delay'}/>
         </ControlPanel>
     </Flex>)
 }
