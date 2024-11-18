@@ -8,7 +8,6 @@ import {ClientConfig} from "./config-client"
 import {AppData, MidiDeviceData, ProgramView} from "@/components/components-s56k";
 import {Option, Selectable} from "@/components/components-common";
 import {
-    Button,
     Container,
     createListCollection,
     Flex,
@@ -138,11 +137,6 @@ function renderApp(cfg: ClientConfig) {
     // Fetch data from Sysex...
     device.init()
     const program = device.getCurrentProgram()
-    const programInfoResult = program.getInfo()
-    const programOutputResult = program.getOutput().getInfo()
-    const programMidiTuneResult = program.getMidiTune().getInfo()
-    const programPitchBendResult = program.getPitchBend().getInfo()
-
     const data = {
         midiDeviceData: new Promise<MidiDeviceData>((resolve, reject) => {
             Promise.all([midiDeviceData(true), midiDeviceData(false)])
@@ -157,10 +151,11 @@ function renderApp(cfg: ClientConfig) {
             })
         }),
         program: {
-            info: programInfoResult,
-            output: programOutputResult,
-            midiTune: programMidiTuneResult,
-            pitchBend: programPitchBendResult,
+            info: program.getInfo(),
+            output: program.getOutput().getInfo(),
+            midiTune: program.getMidiTune().getInfo(),
+            pitchBend: program.getPitchBend().getInfo(),
+            lfos: program.getLfos().getInfo(),
         },
     } as AppData
 

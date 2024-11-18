@@ -3,7 +3,7 @@
  */
 import React, {useState} from "react";
 import {
-    ProgramInfo, ProgramInfoResult,
+    ProgramInfoResult,
 } from "@/midi/device";
 import {SimpleSelect, Selectable, Option, ControlPanel, MutableSlider} from "./components-common";
 import {Alert} from '@/components/chakra/alert'
@@ -11,10 +11,11 @@ import {Flex, Stack, Tabs} from '@chakra-ui/react'
 
 import {MutableNumber, Result} from "@/lib/lib-core";
 import {
-    ProgramMidiTuneInfo, ProgramMidiTuneInfoResult,
-    ProgramOutputInfo,
+    ProgramLfosInfo,
+    ProgramLfosInfoResult,
+    ProgramMidiTuneInfoResult,
     ProgramOutputInfoResult,
-    ProgramPitchBendInfo, ProgramPitchBendInfoResult
+    ProgramPitchBendInfoResult
 } from "@/midi/devices/devices";
 
 
@@ -23,6 +24,7 @@ interface ProgramData {
     output: Promise<ProgramOutputInfoResult>
     midiTune: Promise<ProgramMidiTuneInfoResult>
     pitchBend: Promise<ProgramPitchBendInfoResult>
+    lfos: Promise<ProgramLfosInfoResult>
 }
 
 export interface MidiDeviceData {
@@ -38,12 +40,13 @@ export interface AppData {
 
 export function ProgramView({data}: { data: ProgramData }) {
     return (
-        <Tabs.Root defaultValue={'pitch-bend'}>
+        <Tabs.Root defaultValue={'lfos'}>
             <Tabs.List>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
                 <Tabs.Trigger value={'output'}>Output</Tabs.Trigger>
                 <Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>
                 <Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>
+                <Tabs.Trigger value={'lfos'}>LFOs</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}>
@@ -59,6 +62,11 @@ export function ProgramView({data}: { data: ProgramData }) {
             <Tabs.Content value={'pitch-bend'}>
                 <SectionView data={data.midiTune}>
                     <ProgramPitchBendView data={data.pitchBend}/>
+                </SectionView>
+            </Tabs.Content>
+            <Tabs.Content value={'lfos'}>
+                <SectionView data={data.lfos}>
+                    <ProgramLfosView data={data.lfos}/>
                 </SectionView>
             </Tabs.Content>
         </Tabs.Root>
@@ -83,9 +91,9 @@ function SectionView({data, children}: { data: Promise<Result> }) {
 
 function ProgramOutputView({data}: { data: Promise<ProgramOutputInfoResult> }) {
     const [result, setResolved] = useState(null)
-    data.then((result) => {
+    data.then((r) => {
         // noinspection TypeScriptValidateTypes
-        setResolved(result)
+        setResolved(r)
     })
     if (!result) return (<></>)
     const info = result.data
@@ -128,7 +136,7 @@ function ProgramOutputView({data}: { data: Promise<ProgramOutputInfoResult> }) {
 function ProgramMidiTuneView({data}: { data: Promise<ProgramMidiTuneInfoResult> }) {
     const [result, setResult] = useState(null)
     // noinspection TypeScriptValidateTypes
-    data.then(result => setResult(result))
+    data.then(r => setResult(r))
     if (!result) return (<></>)
     const info = result.data
     return (
@@ -151,7 +159,7 @@ function ProgramMidiTuneView({data}: { data: Promise<ProgramMidiTuneInfoResult> 
 function ProgramPitchBendView({data}: { data: Promise<ProgramPitchBendInfoResult> }) {
     const [result, setResult] = useState(null)
     // noinspection TypeScriptValidateTypes
-    data.then(d => setResult(d))
+    data.then(r => setResult(r))
     if (!result) return (<></>)
     const info = result.data
     return (
@@ -172,6 +180,22 @@ function ProgramPitchBendView({data}: { data: Promise<ProgramPitchBendInfoResult
             </ControlPanel>
         </Flex>
     )
+}
+
+function ProgramLfosView({data}:{data:Promise<ProgramLfosInfoResult>}) {
+    const [result, setResult] = useState(null)
+    // noinspection TypeScriptValidateTypes
+    data.then(r => setResult(r))
+    if (!result) return (<></>)
+    const info:ProgramLfosInfo = result.data
+    return (<Flex gap={4}>
+        <ControlPanel title={'LFO 1'}>
+            <MutableSlider data={info.lfo1Rate} label={'Rate'}/>
+        </ControlPanel>
+        <ControlPanel title={'LFO 2'}>
+            <MutableSlider data={info.lfo2Rate} label={'Rate'}/>
+        </ControlPanel>
+    </Flex>)
 }
 
 // function ProgramInfoView({info}: { info: ProgramInfo }) {
