@@ -38,17 +38,17 @@ export interface AppData {
 
 export function ProgramView({data}: { data: ProgramData }) {
     return (
-        <Tabs.Root defaultValue={'output'}>
+        <Tabs.Root defaultValue={'midi-tune'}>
             <Tabs.List>
                 <Tabs.Trigger value={'info'}>Program Info</Tabs.Trigger>
                 <Tabs.Trigger value={'output'}>Output</Tabs.Trigger>
-                {/*<Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>*/}
+                <Tabs.Trigger value={'midi-tune'}>MIDI/Tune</Tabs.Trigger>
                 {/*<Tabs.Trigger value={'pitch-bend'}>Pitch Bend</Tabs.Trigger>*/}
             </Tabs.List>
             <Tabs.Content value={'info'}>Tab content for Program Info.</Tabs.Content>
             <Tabs.Content value={'output'}> <SectionView data={data.output}><ProgramOutputView
                 data={data.output}/></SectionView></Tabs.Content>
-            {/*<Tabs.Content value={'midi-tune'}><SectionView data={data.midiTune}><ProgramMidiTuneView data={data.midiTune}/></SectionView></Tabs.Content>*/}
+            <Tabs.Content value={'midi-tune'}><SectionView data={data.midiTune}><ProgramMidiTuneView data={data.midiTune}/></SectionView></Tabs.Content>
             {/*<Tabs.Content value={'pitch-bend'}><ProgramPitchBendView data={data.pitchBend}/></Tabs.Content>*/}
         </Tabs.Root>
     )
@@ -115,18 +115,23 @@ function ProgramOutputView({data}: { data: Promise<ProgramOutputInfoResult> }) {
 }
 
 function ProgramMidiTuneView({data}: { data: Promise<ProgramMidiTuneInfoResult> }) {
+    const [result, setResult] = useState(null)
+    // noinspection TypeScriptValidateTypes
+    data.then(result => setResult(result))
+    if (!result) return (<></>)
+    const info = result.data
     return (
         <Flex gap={4}>
             <ControlPanel title={'Tune'}>
-                <MutableSlider data={data.semitoneTune} label={'Semitone'}/>
-                <MutableSlider data={data.fineTune} label={"Fine"}/>
+                <MutableSlider data={info.semitoneTune} label={'Semitone'}/>
+                <MutableSlider data={info.fineTune} label={"Fine"}/>
             </ControlPanel>
             <ControlPanel title={'Tune Template'}>
-                <MutableSlider data={data.tuneTemplate} label={'Template'}/>
+                <MutableSlider data={info.tuneTemplate} label={'Template'}/>
                 <div>ADD USER TEMPLATE HERE.</div>
             </ControlPanel>
             <ControlPanel title={'Key'}>
-                <MutableSlider data={data.key} label={'Value'}/>
+                <MutableSlider data={info.key} label={'Value'}/>
             </ControlPanel>
         </Flex>
     )
