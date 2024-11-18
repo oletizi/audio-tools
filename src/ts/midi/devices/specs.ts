@@ -70,6 +70,7 @@ export const programLfosSpec = {
         ["Lfo2Depth", "number|0|100|1", 0x62, [2], "uint8", 1, 0x52, [2, "uint8"]],
         ["Lfo1Waveform", "number|0|8|1", 0x63, [1], "uint8", 1, 0x53, [1, "uint8"]],
         ["Lfo2Waveform", "number|0|8|1", 0x63, [2], "uint8", 1, 0x53, [2, "uint8"]],
+        ["Lfo1Sync", "number|0|1|1", 0x64, [1], "uint8", 1, 0x54, [1, "uint8"]],
     ]
 }
 

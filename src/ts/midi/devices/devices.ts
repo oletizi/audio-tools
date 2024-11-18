@@ -1,4 +1,4 @@
-// GENERATED: 11/18/2024, 8:42:43 AM
+// GENERATED: 11/18/2024, 8:46:42 AM
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
@@ -128,6 +128,7 @@ export interface ProgramLfosInfo {
   lfo2Depth: MutableNumber
   lfo1Waveform: MutableNumber
   lfo2Waveform: MutableNumber
+  lfo1Sync: MutableNumber
 }
 
 export interface ProgramLfosInfoResult extends Result {
@@ -144,6 +145,7 @@ export interface ProgramLfos {
   getLfo2Depth(): NumberResult
   getLfo1Waveform(): NumberResult
   getLfo2Waveform(): NumberResult
+  getLfo1Sync(): NumberResult
   getInfo(): Promise<ProgramLfosInfoResult>
 }
 

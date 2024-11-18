@@ -194,6 +194,7 @@ function ProgramLfosView({data}:{data:Promise<ProgramLfosInfoResult>}) {
             <MutableSlider data={info.lfo1Delay} label={'Delay'}/>
             <MutableSlider data={info.lfo1Depth} label={'Depth'}/>
             <MutableSlider data={info.lfo1Waveform} label={'Waveform'}/>
+            <MutableSlider data={info.lfo1Sync} label={'Sync'}/>
         </ControlPanel>
         <ControlPanel title={'LFO 2'}>
             <MutableSlider data={info.lfo2Rate} label={'Rate'}/>
