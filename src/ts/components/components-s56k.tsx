@@ -192,10 +192,12 @@ function ProgramLfosView({data}:{data:Promise<ProgramLfosInfoResult>}) {
         <ControlPanel title={'LFO 1'}>
             <MutableSlider data={info.lfo1Rate} label={'Rate'}/>
             <MutableSlider data={info.lfo1Delay} label={'Delay'}/>
+            <MutableSlider data={info.lfo1Depth} label={'Depth'}/>
         </ControlPanel>
         <ControlPanel title={'LFO 2'}>
             <MutableSlider data={info.lfo2Rate} label={'Rate'}/>
             <MutableSlider data={info.lfo2Delay} label={'Delay'}/>
+            <MutableSlider data={info.lfo2Depth} label={'Depth'}/>
         </ControlPanel>
     </Flex>)
 }
