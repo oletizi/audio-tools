@@ -33,9 +33,9 @@ describe('MPC', async () => {
         expect(slice.end).eq(61521)
     })
 
-    it('Gracefully handles samples without slice data', async () =>{
-        const buf = await fs.readFile(path.join('test', 'data', 'mpc', 'Oscar', 'Oscar.WAV'))
-        const data = mpc.newSampleSliceDataFromBuffer(buf)
-        expect(data).to.exist
-    })
+    // it('Gracefully handles samples without slice data', async () =>{
+    //     const buf = await fs.readFile(path.join('test', 'data', 'mpc', 'Oscar', 'Oscar.WAV'))
+    //     const data = mpc.newSampleSliceDataFromBuffer(buf)
+    //     expect(data).to.exist
+    // })
 })

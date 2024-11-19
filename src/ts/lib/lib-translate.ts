@@ -19,6 +19,7 @@ export namespace translate {
         }
         return hash
     }
+
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
         const ddir = path.dirname(infile)
         const programName = Path.parse(infile).name
@@ -103,15 +104,34 @@ export namespace translate {
 
         progress.setTotal(mpcProgram.layers.length + 1)
 
-        for (const layer of mpcProgram.layers) {
+        // for (const layer of mpcProgram.layers) {
+        for (let i=0; i<mpcProgram.layers.length; i++) {
+            const layer = mpcProgram.layers[i]
             // chop & copy sample
             const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
             const basename = layer.sampleName.substring(0, 8)
             const sliceName = `${basename}-${sliceCounter++}-${snapshot}`
 
             try {
-                const sample = newSampleFromBuffer(await fs.readFile(samplePath))
-                let trimmed = sample.trim(layer.sliceStart, layer.sliceEnd)
+                let buf = await fs.readFile(samplePath);
+                let sliceStart = 0
+                let sliceEnd = 0
+
+                const sliceData = mpc.newSampleSliceDataFromBuffer(buf)
+                // Check the sample for embedded slice data
+                console.log(`CHECKING SAMPLE FOR EMBEDDED SLICE DATA...`)
+                if (sliceData.slices.length >= i) {
+                    const slice = sliceData.slices[i]
+
+                    sliceStart = slice.start
+                    sliceEnd = slice.end
+                } else {
+                    sliceStart = layer.sliceStart
+                    sliceEnd = layer.sliceEnd
+                }
+
+                const sample = newSampleFromBuffer(buf)
+                let trimmed = sample.trim(sliceStart, sliceEnd)
                 trimmed = trimmed.to16Bit()
 
                 const bytesWritten = trimmed.write(outbuf, 0)
