@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import {mpc} from "../src/ts/lib/lib-akai-mpc";
 import {expect} from "chai";
 import Layer = mpc.Layer;
+import path from "path";
 
 describe('MPC', async () => {
     it('Parses an MPC program', async () => {
@@ -17,5 +18,24 @@ describe('MPC', async () => {
         expect(layer.sampleName).to.eq('Oscar')
         expect(layer.sliceStart).to.eq(0)
         expect(layer.sliceEnd).to.eq(133300)
+    })
+
+    it('Parses slice data from sample', async () => {
+        const buf = await fs.readFile(path.join('test', 'data', 'mpc', 'Dub Tao A Kit.WAV'))
+        const data = mpc.newSampleSliceDataFromBuffer(buf)
+        expect(data).to.exist
+        expect(data.slices).to.exist
+        expect(data.slices.length).eq(16)
+
+        const slice = data.slices[1]
+        expect(slice).to.exist
+        expect(slice.start).eq(30840)
+        expect(slice.end).eq(61521)
+    })
+
+    it('Gracefully handles samples without slice data', async () =>{
+        const buf = await fs.readFile(path.join('test', 'data', 'mpc', 'Oscar', 'Oscar.WAV'))
+        const data = mpc.newSampleSliceDataFromBuffer(buf)
+        expect(data).to.exist
     })
 })

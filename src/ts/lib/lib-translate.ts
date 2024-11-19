@@ -91,7 +91,6 @@ export namespace translate {
         const sxkProgram = newProgramFromBuffer(sxkbuf)
         const snapshot = new Date().getMilliseconds()
 
-
         const mods = {
             keygroupCount: mpcProgram.layers.length,
             keygroups: []
@@ -107,7 +106,8 @@ export namespace translate {
         for (const layer of mpcProgram.layers) {
             // chop & copy sample
             const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
-            const sliceName = `${layer.sampleName}-${sliceCounter++}-${snapshot}`
+            const basename = layer.sampleName.substring(0, 8)
+            const sliceName = `${basename}-${sliceCounter++}-${snapshot}`
 
             try {
                 const sample = newSampleFromBuffer(await fs.readFile(samplePath))

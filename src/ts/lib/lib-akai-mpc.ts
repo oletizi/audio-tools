@@ -1,6 +1,58 @@
 import * as htmlparser2 from "htmlparser2"
+import riffFile from "riff-file";
 
 export namespace mpc {
+
+    export interface Slice {
+        name: string
+        start: number
+        end: number
+        loopStart: number
+    }
+
+    export interface SampleSliceData {
+        version
+        note: string
+        scale: string
+        slices: Slice[]
+        barCount: number
+    }
+
+    export function newSampleSliceDataFromBuffer(buf) {
+        const rv = {
+            version: -1,
+            note: "",
+            scale: "",
+            barCount: -1,
+            slices: []
+        } as SampleSliceData
+        const riff = new riffFile.RIFFFile()
+        riff.setSignature(buf)
+        const chunk = riff.findChunk('atem')
+        if (chunk) {
+            let d: string = buf.subarray(chunk["chunkData"].start, chunk["chunkData"].end).toString()
+            //
+            // while (d.length > 0 && d.charAt(d.length - 1) !== '}') {
+            //     d = d.substring(0, d.length - 2)
+            // }
+            // console.log(d)
+
+            const o = JSON.parse(d)
+            const value0 = o['value0']
+            for (const name of Object.getOwnPropertyNames(value0)) {
+                if (name.startsWith('Slice')) {
+                    const s = value0[name] as Slice
+                    const slice = {} as Slice
+                    slice.name = name
+                    slice.start = s['Start']
+                    slice.end = s['End']
+                    rv.slices.push(slice)
+                }
+            }
+        }
+        return rv
+    }
+
     export function newProgramFromBuffer(buf) {
         const layers = []
         const program = {
