@@ -105,7 +105,7 @@ export namespace translate {
         progress.setTotal(mpcProgram.layers.length + 1)
 
         // for (const layer of mpcProgram.layers) {
-        for (let i=0; i<mpcProgram.layers.length; i++) {
+        for (let i = 0; i < mpcProgram.layers.length; i++) {
             const layer = mpcProgram.layers[i]
             // chop & copy sample
             const samplePath = path.join(mpcdir, layer.sampleName + '.WAV')
