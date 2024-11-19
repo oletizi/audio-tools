@@ -1,7 +1,7 @@
 import {createRoot, Root} from "react-dom/client";
 import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "@/components/components-experimental";
 import {Midi} from "@/midi/midi"
-import {ClientConfig, newNullClientConfig} from "./config-client";
+import {ClientConfig, newClientConfig} from "./config-client";
 import {newClientCommon} from "./client-common";
 import {MidiInstrument, newMidiInstrument} from "@/midi/instrument";
 import {newS56kDevice, ProgramInfoResult, S56kDevice} from "@/midi/device";
@@ -16,7 +16,7 @@ const programInfoRoot = createRoot(document.getElementById('program-info'))
 const programOutputRoot = createRoot(document.getElementById('program-output'))
 
 class ClientS56k {
-    private cfg: ClientConfig = newNullClientConfig()
+    private cfg: ClientConfig = newClientConfig()
     private device: S56kDevice
 
     async init() {

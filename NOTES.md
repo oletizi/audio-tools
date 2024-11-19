@@ -14,3 +14,6 @@
 * https://svelte.dev/
 * https://alpinejs.dev/
 * https://vuejs.org/
+
+## PiSCSI sync
+`ssh pi-scsi.local /home/orion/mount.sh && rsync -e ssh -av . pi-scsi.local:~/stacks2/ && ssh pi-scsi.local sudo /home/orion/umount.sh`

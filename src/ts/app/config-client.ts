@@ -4,7 +4,7 @@ export interface ClientConfig {
     midiOutput: string
 }
 
-export function newNullClientConfig() {
+export function newClientConfig() {
     return {
         midiOutput: '',
         midiInput: '',

@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
+import fs from "fs/promises";
 
 export function timestamp() {
     const d = dayjs()
     return `${d.year()}-${d.month()}-${d.day()}:${d.hour()}:${d.minute()}:${d.second()}`
 }
+
 
 /**
  * The data and possible errors from an operation (e.g., http requests or midi sysex)

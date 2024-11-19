@@ -117,10 +117,16 @@ export namespace translate {
                 let sliceStart = 0
                 let sliceEnd = 0
 
-                const sliceData = mpc.newSampleSliceDataFromBuffer(buf)
+                let sliceData;
+                try {
+                    sliceData = mpc.newSampleSliceDataFromBuffer(buf)
+                } catch (e) {
+                    console.error(e)
+                }
+
                 // Check the sample for embedded slice data
                 console.log(`CHECKING SAMPLE FOR EMBEDDED SLICE DATA...`)
-                if (sliceData.slices.length >= i) {
+                if (sliceData && sliceData.slices.length >= i) {
                     const slice = sliceData.slices[i]
 
                     sliceStart = slice.start

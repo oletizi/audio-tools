@@ -1,10 +1,38 @@
 import fs from "fs/promises";
 import path from "path";
-import {newServerOutput} from "../process-output";
-import {ClientConfig, newNullClientConfig} from "./config-client";
+import {newServerOutput, ProcessOutput} from "@/process-output";
+import {ClientConfig, newClientConfig} from "./config-client";
+import {mkdir, objectFromFile} from "@/lib/lib-server";
 
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
-const out = newServerOutput()
+const DEFAULT_SOURCE_DIR = path.join(DEFAULT_DATA_DIR, 'source')
+const DEFAULT_TARGET_DIR = path.join(DEFAULT_DATA_DIR, 'target')
+const out: ProcessOutput = newServerOutput()
+
+export interface ServerConfig {
+    sourceRoot: string
+    targetRoot: string
+}
+
+async function validate(cfg: ServerConfig) {
+    return cfg && await mkdir(cfg.sourceRoot) && await mkdir(cfg.targetRoot)
+}
+
+export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
+    const rv = {
+        sourceRoot: DEFAULT_SOURCE_DIR,
+        targetRoot: DEFAULT_TARGET_DIR,
+    } as ServerConfig
+    const configPath = path.join(dataDir, 'server-config.json')
+    const storedConfig = (await objectFromFile(configPath)).data
+    if (await validate(storedConfig)) {
+        rv.sourceRoot = storedConfig.sourceRoot
+        rv.targetRoot = storedConfig.targetRoot
+    } else {
+        await validate(rv)
+    }
+    return rv
+}
 
 export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR): Promise<string> {
     const configPath = path.join(dataDir, 'config.json')
@@ -20,8 +48,8 @@ export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR):
 }
 
 export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
-    const rv: ClientConfig = newNullClientConfig()
-    let configPath = path.join(dataDir, 'config.json');
+    const rv: ClientConfig = newClientConfig()
+    const configPath = path.join(dataDir, 'config.json');
     let storedConfig = null
     try {
         out.log(`Reading config from: ${configPath}`)

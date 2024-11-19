@@ -39,7 +39,7 @@ class BasicOutput implements ProcessOutput {
 }
 
 export function newServerOutput(debug = true) : ProcessOutput {
-    return new BasicOutput((msg) => process.stdout.write(msg), (msg) => process.stderr.write(msg),'\n', debug)
+    return new BasicOutput((msg) => process.stdout.write(msg), (msg) => console.error(msg),'\n', debug)
 }
 
 export function newClientOutput(debug = true) : ProcessOutput {
