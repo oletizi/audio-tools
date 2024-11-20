@@ -23,7 +23,7 @@ export namespace translate {
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
         const ddir = path.dirname(infile)
         const programName = Path.parse(infile).name
-        const hash = hasher(programName, 20)
+        const hash = hasher(programName, 12)
         const dprogram = await decent.newProgramFromBuffer(await fs.readFile(infile))
 
         const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
