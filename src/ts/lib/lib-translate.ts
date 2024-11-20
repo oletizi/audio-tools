@@ -6,7 +6,7 @@ import {AkaiS56ProgramResult, newProgramFromBuffer, Zone} from "@/lib/lib-akai-s
 import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
-import {pad} from "@/lib/lib-core";
+import {C3, pad} from "@/lib/lib-core";
 import {newServerOutput} from "@/process-output";
 
 
@@ -23,7 +23,7 @@ export namespace translate {
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash;
         }
-        return hash
+        return Math.abs(hash)
     }
 
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
@@ -116,6 +116,7 @@ export namespace translate {
 
                 for (let i = 0; i < size; i++) {
                     const sampleDescriptor = sampleDescriptors[i]
+                    const sampleName = sampleDescriptor.basename
                     const sample:Sample = sampleDescriptor.sample
                     let highVelocity = 127
                     let lowVelocity = 0
@@ -130,7 +131,8 @@ export namespace translate {
                         lowVelocity = sample.loVel
                     }
                     const zone = {} as Zone
-                    zone.sampleName = sampleDescriptor.basename
+                    zone.sampleName = sampleName
+                    zone.semiToneTune = C3 - sample.rootNote
                     zone.highVelocity = highVelocity
                     zone.lowVelocity = lowVelocity
                     keygroup['zone' + (i + 1)] = zone

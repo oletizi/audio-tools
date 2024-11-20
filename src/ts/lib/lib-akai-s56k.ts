@@ -872,6 +872,7 @@ class BasicProgram implements AkaiS56kProgram {
                         if (modZone) {
                             const myZone: Zone = myKeygroup[zoneName]
                             myZone.sampleName = modZone.sampleName
+                            myZone.semiToneTune = modZone.semiToneTune
                             myZone.lowVelocity = modZone.lowVelocity
                             myZone.highVelocity = modZone.highVelocity
                         }
