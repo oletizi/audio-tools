@@ -8,7 +8,7 @@ clean:
 install:
 	npm install
 
-build/styles.css: src/scss/styles.scss
+build/styles.css: src/scss/styles-translator.scss
 	npm run sass-build
 
 build: install build/styles.css
