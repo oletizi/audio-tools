@@ -35,8 +35,8 @@ const degrees = {
     'B': 11,
     'Cb': 11
 }
-const C3 = 60
-const C0 = C3 - 3 * 12
+export const C3 = 60
+export const C0 = C3 - 3 * 12
 
 export function parseNote(n: string) {
     n = n.trim()
