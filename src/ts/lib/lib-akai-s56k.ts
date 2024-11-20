@@ -1,6 +1,11 @@
 import {newServerOutput} from "@/process-output";
+import {Result} from "@/lib/lib-core";
 
 const out = newServerOutput(false)
+
+export interface AkaiS56ProgramResult extends Result {
+    data: AkaiS56kProgram[]
+}
 
 /**
  * Writes the data into the buffer; returns the number of bytes written
@@ -774,7 +779,7 @@ function writeSampleName(zone: ZoneChunk) {
     }
 }
 
-export interface Program {
+export interface AkaiS56kProgram {
     getKeygroupCount(): number;
 
     getProgramNumber(): number;
@@ -796,23 +801,19 @@ export interface Program {
     apply(mods: any): void;
 }
 
-export function newProgramFromBuffer(buf): Program {
+export function newProgramFromBuffer(buf): AkaiS56kProgram {
     const program = new BasicProgram()
     program.parse(buf)
     return program
 }
 
-export function newProgramFromJson(json: string): Program {
+export function newProgramFromJson(json: string): AkaiS56kProgram {
     const program = new BasicProgram()
     program.copyFromJson(json)
     return program
 }
 
-function apply(fieldMap: Object, source: any, dest: any) {
-
-}
-
-class BasicProgram implements Program {
+class BasicProgram implements AkaiS56kProgram {
     private readonly program: ProgramChunk
     private readonly header: HeaderChunk
     private readonly output: OutputChunk
@@ -859,14 +860,28 @@ class BasicProgram implements Program {
                     if (i >= this.keygroups.length) {
                         // add a new keygroup
                         const keygroup = newKeygroupChunk()
+
                         this.keygroups.push(keygroup)
                         keygroup.parse(this.originalBuffer, this.firstKeygroupOffset)
+                    }
+                    const modKeygroup: Keygroup =  mods.keygroups[i]
+                    const myKeygroup = this.keygroups[i]
+                    for (let i = 0; i< 4; i++) {
+                        const zoneName = 'zone' + (i + 1)
+                        const modZone: Zone = modKeygroup[zoneName]
+                        if (modZone) {
+                            const myZone: Zone = myKeygroup[zoneName]
+                            myZone.sampleName = modZone.sampleName
+                            myZone.lowVelocity = modZone.lowVelocity
+                            myZone.highVelocity = modZone.highVelocity
+                        }
                     }
                 }
             }
         }
         recursiveApply(mods, this)
         recursiveApply(mods, this.program)
+
     }
 
     parse(buf: Buffer, offset: number = 0) {

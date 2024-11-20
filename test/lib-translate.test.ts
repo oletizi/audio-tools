@@ -1,5 +1,5 @@
 import {translate} from '@/lib/lib-translate'
-import {newProgramFromBuffer} from "@/lib/lib-akai-s56k"
+import {Keygroup, newProgramFromBuffer} from "@/lib/lib-akai-s56k"
 import fs from "fs/promises"
 import {expect} from "chai"
 import path from "path"
@@ -47,13 +47,29 @@ describe(`Translate`, async () => {
         expect(program).to.exist
     })
 
-    it( 'Handles decent sampler programs with velocity zones', async () => {
-        const infile = path.join('test','data', 'decent', 'multizone.dspreset')
+    it('Handles decent sampler programs with velocity zones', async () => {
+        const infile = path.join('test', 'data', 'decent', 'multizone.dspreset')
         const outdir = 'build'
         const outfile = path.join(outdir, 'multizone.AKP')
         let result = await translate.decent2Sxk(infile, outdir);
         expect(result.errors.length).eq(90) // one error for each missing sample file
-        const program = result.data
-        expect(program).exist
+        expect(result.data.length).eq(2)
+        const program = result.data[0]
+        expect(program).to.exist
+        const keygroups = program.getKeygroups()
+        expect(keygroups.length).eq(9)
+        const keygroup: Keygroup = keygroups[0]
+        expect(keygroup).to.exist
+
+        const zone1 = keygroup.zone1
+        expect(zone1).to.exist
+        expect(zone1.highVelocity).to.eq(127)
+        console.log(`zone1 sample name: ${zone1.sampleName}`)
+        console.log(`zone1 low velocity: ${zone1.lowVelocity}`)
+        console.log(`zone1 high velocity: ${zone1.highVelocity}`)
+
+        const zone4 = keygroup.zone4
+        expect(zone4).to.exist
+        expect(zone4.lowVelocity).to.eq(0)
     })
 })

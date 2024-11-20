@@ -14,6 +14,47 @@ export function pad(v: number, size: number) {
     return s
 }
 
+const degrees = {
+    'C': 0,
+    'C#': 1,
+    'Db': 1,
+    'D': 2,
+    'D#': 3,
+    'Eb': 3,
+    'E': 4,
+    'E#': 5,
+    'F': 5,
+    'F#': 6,
+    'Gb': 6,
+    'G': 7,
+    'G#': 8,
+    'Ab': 8,
+    'A': 9,
+    'A#': 10,
+    'Bb': 10,
+    'B': 11,
+    'Cb': 11
+}
+const C3 = 60
+const C0 = C3 - 3 * 12
+
+export function parseNote(n: string) {
+    n = n.trim()
+    let rv = Number.parseInt(n)
+    if (Number.isNaN(rv) && n && n.length >= 2 && n.length <= 3) {
+        // parse as scale note
+        const letter = (n.length == 3 ? n.substring(0, 2) : n.substring(0, 1)).toUpperCase()
+        const octave = Number.parseInt(n.charAt(n.length - 1))
+        if (!Number.isNaN(octave)) {
+            const degree = degrees[letter]
+            if (degree != undefined) {
+                rv = C0 + (12 * octave) + degree
+            }
+        }
+    }
+    return rv
+}
+
 /**
  * The data and possible errors from an operation (e.g., http requests or midi sysex)
  */

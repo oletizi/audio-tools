@@ -1,4 +1,4 @@
-import {natural2real, real2natural, scale} from "@/lib/lib-core"
+import {natural2real, parseNote, real2natural, scale} from "@/lib/lib-core"
 import {expect} from "chai";
 
 describe('Core lib', () => {
@@ -10,9 +10,15 @@ describe('Core lib', () => {
         expect(real2natural(0, -100, 100)).eq(100)
         expect(real2natural(50, 0, 100)).eq(50)
     })
-    it('natural2real', () =>{
+    it('natural2real', () => {
         expect(natural2real(50, 0, 100)).eq(50)
         expect(natural2real(100, -100, 100)).eq(0)
         expect(natural2real(100, -50, 100)).eq(50)
+    })
+    it('parses note as number', () => {
+        expect(parseNote("60")).eq(60)
+    })
+    it('parses note as scale', () => {
+        expect(parseNote('C3')).eq(60)
     })
 })

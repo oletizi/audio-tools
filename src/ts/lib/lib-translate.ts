@@ -1,19 +1,20 @@
 import fs from "fs/promises";
 import {createWriteStream, WriteStream} from "fs";
-import path from "path";
+import path, * as Path from "path";
 import {mpc} from "@/lib/lib-akai-mpc";
-import {newProgramFromBuffer} from "@/lib/lib-akai-s56k";
+import {AkaiS56ProgramResult, newProgramFromBuffer, Zone} from "@/lib/lib-akai-s56k";
 import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
-import * as Path from "path";
-import {pad, Result} from "@/lib/lib-core";
+import {pad} from "@/lib/lib-core";
 import {newServerOutput} from "@/process-output";
 
 
 const out = newServerOutput()
 
 export namespace translate {
+
+    import Sample = decent.Sample;
 
     function hasher(text: string, max: number) {
         let hash
@@ -26,30 +27,40 @@ export namespace translate {
     }
 
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
-        const rv = { data: null, errors: []} as Result
+        const rv = {data: [], errors: []} as AkaiS56ProgramResult
         const ddir = path.dirname(infile)
         const programName = Path.parse(infile).name
         const hash = hasher(programName, 12)
         const dprogram = await decent.newProgramFromBuffer(await fs.readFile(infile))
 
-        const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
         let outbuf = Buffer.alloc(1024 * 1000) // XXX: This is a data corruption bug waiting to happen
         let fstream: WriteStream
-        let keygroupCount = 0
-        const keygroups = []
-        for (const group of dprogram.groups) {
-            keygroupCount += group.samples.length
-        }
-        progress.setTotal(keygroupCount + 1) // one progress increment for each keygroup, one for the program file
-        keygroupCount = 0
+        let sampleCount = 0
+        dprogram.groups.forEach(g => sampleCount += g.samples.length)
+        progress.setTotal(sampleCount + 1) // one progress increment for each sample to convert
 
         for (const group of dprogram.groups) {
-            for (const sample of group.samples) {
-                keygroupCount++
+            const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
+            const keyspans: { string: { sample: decent.Sample, basename: string } } = {}
+            for (let i = 0; i < group.samples.length; i++) {
+                const sample = group.samples[i]
+                let keyspan
+                if (!Number.isNaN(sample.loNote) && !Number.isNaN(sample.hiNote)) {
+                    keyspan = sample.loNote + '-' + sample.hiNote
+                } else {
+                    keyspan = sample.rootNote
+                }
+                if (!keyspans[keyspan]) {
+                    keyspans[keyspan] = []
+                }
+
                 const samplePath = path.join(ddir, sample.path)
-                let basename = hash + '-' + pad(keygroupCount, 3);
+                let basename = hash + '-' + pad(i + 1, 3);
                 const outname = basename + '.WAV'
                 const outpath = path.join(outdir, outname);
+
+                keyspans[keyspan].push({sample: sample, basename: basename})
+
                 try {
                     // Chop sample and write to disk
                     let wav = newSampleFromBuffer(await fs.readFile(samplePath))
@@ -76,30 +87,68 @@ export namespace translate {
                         }))
                     }
                 }
-                keygroups.push({
-                    kloc: {
-                        lowNote: sample.loNote,
-                        highNote: sample.hiNote,
-                    },
-                    zone1: {
-                        sampleName: basename
-                    }
-                })
+                // keygroups.push({
+                //     kloc: {
+                //         lowNote: sample.loNote,
+                //         highNote: sample.hiNote,
+                //     },
+                //     zone1: {
+                //         sampleName: basename
+                //     }
+                // })
             }
-        }
+            const keygroups = []
+            for (const keyspanName of Object.getOwnPropertyNames(keyspans)) {
+                let sampleDescriptors = keyspans[keyspanName]
 
-        const mods = {
-            keygroupCount: keygroupCount,
-            keygroups: keygroups
-        }
-        sxkProgram.apply(mods)
+                const [low, high] = keyspanName.split('-').map(c => Number.parseInt(c))
+                const keygroup = {
+                    kloc: {
+                        lowNote: low,
+                        highNote: high
+                    }
+                }
+                // const max = Math.min(4, samples.length)
+                sampleDescriptors = sampleDescriptors.sort((a, b) => {
+                    return a.sample.highVelocity - b.sample.highVelocity
+                })
+                const size = Math.min(sampleDescriptors.length, 4)
 
-        const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
-        let outfile = path.join(outdir, programName + '.AKP');
-        outstream.write(`Writing program file: ${outfile}\n`)
-        await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
-        progress.incrementCompleted(1)
-        rv.data = sxkProgram
+                for (let i = 0; i < size; i++) {
+                    const sampleDescriptor = sampleDescriptors[i]
+                    const sample:Sample = sampleDescriptor.sample
+                    let highVelocity = 127
+                    let lowVelocity = 0
+                    if (i !=0 && ! Number.isNaN(sample.hiVel)) {
+                        // if this isn't the first (loudest) sample AND its high velocity is set, set high velocity to the
+                        // sample high velocity
+                        highVelocity = sample.hiVel
+                    }
+                    if (i != size - 1) {
+                        // if this isn't tte last (quietest) sample AND its low velocity is set, set the low velocity to the
+                        // sample low velocity
+                        lowVelocity = sample.loVel
+                    }
+                    const zone = {} as Zone
+                    zone.sampleName = sampleDescriptor.basename
+                    zone.highVelocity = highVelocity
+                    zone.lowVelocity = lowVelocity
+                    keygroup['zone' + (i + 1)] = zone
+                }
+                keygroups.push(keygroup)
+            }
+            const mods = {
+                keygroupCount: Object.getOwnPropertyNames(keyspans).length,
+                keygroups: keygroups
+            }
+            sxkProgram.apply(mods)
+            const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
+            let outfile = path.join(outdir, programName + '.' + group.name + '.AKP');
+            outstream.write(`Writing program file: ${outfile}\n`)
+            await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
+            progress.incrementCompleted(1)
+            rv.data.push(newProgramFromBuffer(await fs.readFile(outfile)))
+        }
         return rv
     }
 

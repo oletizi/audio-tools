@@ -1,7 +1,8 @@
 import * as htmlparser2 from "htmlparser2";
+import {parseNote} from "@/lib/lib-core";
 
 export namespace decent {
-    interface Sample {
+    export interface Sample {
         volume: string
         sustain: number
         start: number
@@ -23,6 +24,7 @@ export namespace decent {
     }
 
     interface Group {
+        name: string
         samples: Sample[]
     }
 
@@ -45,8 +47,8 @@ export namespace decent {
                         inGroups = true
                         break
                     case 'group':
-                        inGroups = true
-                        group = {samples: []} as Group
+                        inGroup = true
+                        group = {samples: [], name: attribs.name ? attribs.name: "" + program.groups.length + 1} as Group
                         program.groups.push(group)
                         break
                     case 'sample':
@@ -59,18 +61,25 @@ export namespace decent {
                         sample.decay = Number.parseFloat(attribs.decay)
                         sample.decayCurve = Number.parseFloat(attribs.decaycurve)
                         sample.end = Number.parseFloat(attribs.end)
-                        sample.hiNote = Number.parseInt(attribs.hinote)
+                        sample.hiNote = parseNote(attribs.hinote)
                         sample.hiVel = Number.parseInt(attribs.hivel)
-                        sample.loNote = Number.parseInt(attribs.lonote)
+                        sample.loNote = parseNote(attribs.lonote)
                         sample.loVel = Number.parseInt(attribs.lovel)
                         sample.pan = Number.parseFloat(attribs.pan)
                         sample.pitchKeyTrack = Number.parseFloat(attribs.pitchkeytrack)
                         sample.release = Number.parseFloat(attribs.release)
                         sample.releaseCurve = Number.parseFloat(attribs.releasecurve)
-                        sample.rootNote = Number.parseInt(attribs.rootnote)
+                        sample.rootNote = parseNote(attribs.rootnote)
                         sample.start = Number.parseFloat(attribs.start)
                         sample.sustain = Number.parseFloat(attribs.sustain)
                         sample.volume = attribs.volume
+                        if (Number.isNaN(sample.rootNote)) {
+                            if (!Number.isNaN(sample.loNote)) {
+                                sample.rootNote = sample.loNote
+                            } else if (!Number.isNaN(sample.hiNote)) {
+                                sample.rootNote = sample.hiNote
+                            }
+                        }
                         break
                     default:
                         break
