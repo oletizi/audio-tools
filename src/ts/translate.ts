@@ -1,6 +1,5 @@
 import {program} from "commander"
-import {mpc} from "./akai-mpc";
-import {translate} from "./translate-lib";
+import {translate} from "@/lib/lib-translate"
 
 // const buf = fs.readFile()
 // const program = mpc.newProgramFromBuffer(buf)

@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import {createWriteStream, WriteStream} from "fs";
 import path from "path";
 import {mpc} from "@/lib/lib-akai-mpc";
 import {newProgramFromBuffer} from "@/lib/lib-akai-s56k";
@@ -7,7 +8,9 @@ import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
 import * as Path from "path";
 import {pad} from "@/lib/lib-core";
+import {newServerOutput} from "@/process-output";
 
+const out = newServerOutput()
 
 export namespace translate {
 
@@ -28,8 +31,8 @@ export namespace translate {
         const dprogram = await decent.newProgramFromBuffer(await fs.readFile(infile))
 
         const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
-        const outbuf = Buffer.alloc(1024 * 1000)
-
+        let outbuf = Buffer.alloc(1024 * 1000) // XXX: This is a data corruption bug waiting to happen
+        let fstream: WriteStream
         let keygroupCount = 0
         const keygroups = []
         for (const group of dprogram.groups) {
@@ -47,18 +50,29 @@ export namespace translate {
                 const outpath = path.join(outdir, outname);
                 try {
                     // Chop sample and write to disk
-                    const wav = newSampleFromBuffer(await fs.readFile(samplePath))
-                    let trimmed = wav.trim(sample.start, sample.end)
-                    trimmed = trimmed.to16Bit()
-                    trimmed = trimmed.to441()
-                    trimmed.cleanup()
-                    const bytesWritten = trimmed.write(outbuf, 0)
+                    let wav = newSampleFromBuffer(await fs.readFile(samplePath))
+                    if (!Number.isNaN(sample.start) && !Number.isNaN(sample.end)) {
+                        wav = wav.trim(sample.start, sample.end)
+                    }
+
+                    wav = wav.to16Bit()
+                    wav = wav.to441()
+                    wav.cleanup()
+
+
                     outstream.write(`TRANSLATE: writing trimmed sample to: ${outpath}\n`)
-                    await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))
+                    fstream = createWriteStream(outpath)
+                    const bytesWritten = await wav.writeToStream(fstream)
+                    outstream.write(`TRANSLATE: wrote ${bytesWritten} bytes to ${outpath}\n`)
                 } catch (e) {
-                    console.error(e)
+                    out.error(e)
                 } finally {
                     progress.incrementCompleted(1)
+                    if (fstream) {
+                        fstream.close((e => {
+                            if (e) out.error(e)
+                        }))
+                    }
                 }
                 keygroups.push({
                     kloc: {
@@ -123,11 +137,11 @@ export namespace translate {
                 try {
                     sliceData = mpc.newSampleSliceDataFromBuffer(buf)
                 } catch (e) {
-                    console.error(e)
+                    out.error(e)
                 }
 
                 // Check the sample for embedded slice data
-                console.log(`CHECKING SAMPLE FOR EMBEDDED SLICE DATA...`)
+                out.log(`CHECKING SAMPLE FOR EMBEDDED SLICE DATA...`)
                 if (sliceData && sliceData.slices.length >= i) {
                     const slice = sliceData.slices[i]
 
@@ -148,7 +162,7 @@ export namespace translate {
                 await fs.writeFile(outpath, Buffer.copyBytesFrom(outbuf, 0, bytesWritten))
             } catch (err) {
                 // no joy
-                console.error(err)
+                out.error(err)
             } finally {
                 progress.incrementCompleted(1)
             }
