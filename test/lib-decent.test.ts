@@ -1,6 +1,7 @@
 import {decent} from "../src/ts/lib/lib-decent";
 import {expect} from "chai";
 import fs from "fs/promises";
+import path from "path";
 
 describe('Decent Sampler parsing', async ()=> {
     it ('Parses a Decent Sampler preset', async () => {
@@ -32,6 +33,13 @@ describe('Decent Sampler parsing', async ()=> {
         expect(sample.start).to.eq(0.000)
         expect(sample.sustain).to.eq(1.000)
         expect(sample.volume).to.eq('6.0dB')
+    })
+
+    it('Handles multiple groups', async () => {
+        const filepath = path.join('test', 'data','decent', 'multizone.dspreset')
+        const program = await decent.newProgramFromBuffer(await fs.readFile(filepath))
+        expect(program).exist
+        expect(program.groups.length).to.eq(2)
     })
 
 })

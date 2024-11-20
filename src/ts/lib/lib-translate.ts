@@ -7,8 +7,9 @@ import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
 import * as Path from "path";
-import {pad} from "@/lib/lib-core";
+import {pad, Result} from "@/lib/lib-core";
 import {newServerOutput} from "@/process-output";
+
 
 const out = newServerOutput()
 
@@ -25,6 +26,7 @@ export namespace translate {
     }
 
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
+        const rv = { data: null, errors: []} as Result
         const ddir = path.dirname(infile)
         const programName = Path.parse(infile).name
         const hash = hasher(programName, 12)
@@ -65,12 +67,12 @@ export namespace translate {
                     const bytesWritten = await wav.writeToStream(fstream)
                     outstream.write(`TRANSLATE: wrote ${bytesWritten} bytes to ${outpath}\n`)
                 } catch (e) {
-                    out.error(e)
+                    rv.errors.push(e)
                 } finally {
                     progress.incrementCompleted(1)
                     if (fstream) {
                         fstream.close((e => {
-                            if (e) out.error(e)
+                            if (e) rv.errors.push(e)
                         }))
                     }
                 }
@@ -91,11 +93,14 @@ export namespace translate {
             keygroups: keygroups
         }
         sxkProgram.apply(mods)
+
         const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
         let outfile = path.join(outdir, programName + '.AKP');
         outstream.write(`Writing program file: ${outfile}\n`)
         await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
         progress.incrementCompleted(1)
+        rv.data = sxkProgram
+        return rv
     }
 
     export async function mpc2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {

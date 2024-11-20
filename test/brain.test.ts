@@ -1,10 +1,10 @@
-import {brain} from "../src/ts/app/brain";
 import path from "path";
 import {expect} from "chai";
+import {Brain} from "../src/ts/app/brain";
 
 describe('Brain', async () => {
     it('Returns a list of files in the from and to directories', async () => {
-        const theBrain = new brain.Brain(path.join('test', 'data', 'mpc'), '/tmp')
+        const theBrain = new Brain(path.join('test', 'data', 'mpc'), '/tmp')
         let lists = await theBrain.list()
         expect(lists.length).to.eq(2)
 
@@ -36,7 +36,7 @@ describe('Brain', async () => {
     })
 
     it('Calculates breadcrumbs', async ()=> {
-        const theBrain = new brain.Brain(path.join('test', 'data', 'mpc'), '/tmp')
+        const theBrain = new Brain(path.join('test', 'data', 'mpc'), '/tmp')
 
         let lists = await theBrain.list()
         let fromList = lists[0]

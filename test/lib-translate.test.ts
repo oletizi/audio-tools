@@ -41,9 +41,19 @@ describe(`Translate`, async () => {
         const outdir = path.join('build')
         const outfile = path.join(outdir, 'Oscar.AKP')
         // const program = decent.newProgramFromBuffer(await fs.readFile(infile))
-        translate.decent2Sxk(infile, outdir)
+        await translate.decent2Sxk(infile, outdir)
 
         const program = newProgramFromBuffer(await fs.readFile(outfile))
         expect(program).to.exist
+    })
+
+    it( 'Handles decent sampler programs with velocity zones', async () => {
+        const infile = path.join('test','data', 'decent', 'multizone.dspreset')
+        const outdir = 'build'
+        const outfile = path.join(outdir, 'multizone.AKP')
+        let result = await translate.decent2Sxk(infile, outdir);
+        expect(result.errors.length).eq(90) // one error for each missing sample file
+        const program = result.data
+        expect(program).exist
     })
 })
