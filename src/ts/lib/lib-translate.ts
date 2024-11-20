@@ -6,6 +6,7 @@ import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
 import * as Path from "path";
+import {pad} from "@/lib/lib-core";
 
 
 export namespace translate {
@@ -41,7 +42,8 @@ export namespace translate {
             for (const sample of group.samples) {
                 keygroupCount++
                 const samplePath = path.join(ddir, sample.path)
-                const outname = hash + '-' + keygroupCount + '.WAV'
+                let basename = hash + '-' + pad(keygroupCount, 3);
+                const outname = basename + '.WAV'
                 const outpath = path.join(outdir, outname);
                 try {
                     // Chop sample and write to disk
@@ -64,7 +66,7 @@ export namespace translate {
                         highNote: sample.hiNote,
                     },
                     zone1: {
-                        sampleName: outname
+                        sampleName: basename
                     }
                 })
             }

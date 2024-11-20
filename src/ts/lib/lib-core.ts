@@ -6,6 +6,13 @@ export function timestamp() {
     return `${d.year()}-${d.month()}-${d.day()}:${d.hour()}:${d.minute()}:${d.second()}`
 }
 
+export function pad(v: number, size: number) {
+    let s = "" + v
+    while (s.length < size) {
+        s = "0" + s
+    }
+    return s
+}
 
 /**
  * The data and possible errors from an operation (e.g., http requests or midi sysex)

@@ -1,5 +1,6 @@
-import {Sample} from "./sample";
-import {PathLike} from "fs";
+import {newServerOutput} from "@/process-output";
+
+const out = newServerOutput(false)
 
 /**
  * Writes the data into the buffer; returns the number of bytes written
@@ -106,23 +107,23 @@ function readFromSpec(buf, obj: any, spec: string[], offset): number {
     const checkpoint = offset
     const verbose = chunkNameString === 'zone'
     if (verbose) {
-        console.log(`START READING ${chunkNameString} @ offset ${offset}`)
+        out.log(`START READING ${chunkNameString} @ offset ${offset}`)
     }
     for (let i = 0; i < spec.length; i++, offset++) {
         try {
             if (verbose) {
-                console.log(`  reading at offset: ${offset}: spec[${spec[i]}]: ${readByte(buf, offset)}`)
+                out.log(`  reading at offset: ${offset}: spec[${spec[i]}]: ${readByte(buf, offset)}`)
             }
             obj[spec[i]] = readByte(buf, offset)
         } catch (err) {
-            console.log(`Error: i: ${i}; spec[${i}]: ${spec[i]}; offset: ${offset}`)
-            console.log(`spec: ${spec}`)
+            out.log(`Error: i: ${i}; spec[${i}]: ${spec[i]}; offset: ${offset}`)
+            out.log(`spec: ${spec}`)
             throw err
         }
     }
     const bytesRead = offset - checkpoint
     if (verbose) {
-        console.log(`END READING ${chunkNameString} @ offset ${offset}; bytes read: ${bytesRead}; reporting bytes read: ${spec.length}`)
+        out.log(`END READING ${chunkNameString} @ offset ${offset}; bytes read: ${bytesRead}; reporting bytes read: ${spec.length}`)
     }
     // XXX: This should probably report the actual bytes read
     return spec.length
@@ -135,16 +136,16 @@ function writeFromSpec(buf, chunk, spec, offset): number {
     const verbose = chunkNameString === 'zone'
     const zeroPad = chunkNameString === 'zone'
     if (verbose) {
-        console.log(`START WRITING ${chunkNameString} @ offset ${offset}`)
+        out.log(`START WRITING ${chunkNameString} @ offset ${offset}`)
     }
     for (let i = 0; i < chunk.chunkName.length; i++, offset++) {
         if (verbose) {
-            console.log(`  writing at offset: ${offset}: chunk.chunkName[${i}]: ${chunk.chunkName[i]}`)
+            out.log(`  writing at offset: ${offset}: chunk.chunkName[${i}]: ${chunk.chunkName[i]}`)
         }
         writeByte(buf, chunk.chunkName[i], offset)
     }
     if (verbose) {
-        console.log(`  writing at offset ${offset}: chunk.length: ${chunk.length}`)
+        out.log(`  writing at offset ${offset}: chunk.length: ${chunk.length}`)
     }
 
     // !!!: This is weird. Buffer returns the offset + the bytes written, not the bytes written.
@@ -155,12 +156,12 @@ function writeFromSpec(buf, chunk, spec, offset): number {
             chunk[spec[i]] = 0
         }
         if (verbose) {
-            console.log(`  writing at offset ${offset}: chunk[${spec[i]}] = ${chunk[spec[i]]}`)
+            out.log(`  writing at offset ${offset}: chunk[${spec[i]}] = ${chunk[spec[i]]}`)
         }
         writeByte(buf, chunk[spec[i]], offset)
     }
     if (verbose) {
-        console.log(`END WRITING ${chunkNameString} @ offset ${offset}; Returning ${offset - checkpoint} bytes written`)
+        out.log(`END WRITING ${chunkNameString} @ offset ${offset}; Returning ${offset - checkpoint} bytes written`)
     }
     return offset - checkpoint
 }
@@ -174,7 +175,7 @@ function newChunkFromSpec(chunkName: number[], chunkLength: number, spec: string
             try {
                 checkOrThrow(buf, chunkName, offset)
             } catch (err) {
-                console.error(`Chunk name: ${chunkName} ("${chunkNameString}"), chunkLength: ${chunkLength}, spec: ${spec}`)
+                out.error(`Chunk name: ${chunkName} ("${chunkNameString}"), chunkLength: ${chunkLength}, spec: ${spec}`)
                 throw err
             }
             offset += parseChunkHeader(buf, this, offset)
@@ -884,8 +885,8 @@ class BasicProgram implements Program {
             try {
                 offset += keygroup.parse(buf, offset)
             } catch (err) {
-                console.error(`Barf parsing keygroup; i: ${i}, offset: ${offset}, this.keygroupCount: ${this.getKeygroupCount()}`)
-                console.error(`  this.keygroups.length: ${this.keygroups.length}`)
+                out.error(`Barf parsing keygroup; i: ${i}, offset: ${offset}, this.keygroupCount: ${this.getKeygroupCount()}`)
+                out.error(`  this.keygroups.length: ${this.keygroups.length}`)
                 throw err
             }
         }
