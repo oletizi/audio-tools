@@ -29,8 +29,7 @@ export namespace translate {
     export async function decent2Sxk(infile, outdir, outstream = process.stdout, progress: Progress = nullProgress) {
         const rv = {data: [], errors: []} as AkaiS56ProgramResult
         const ddir = path.dirname(infile)
-        const programName = Path.parse(infile).name
-        const hash = hasher(programName, 12)
+        const programBasename = Path.parse(infile).name
         const dprogram = await decent.newProgramFromBuffer(await fs.readFile(infile))
 
         let outbuf = Buffer.alloc(1024 * 1000) // XXX: This is a data corruption bug waiting to happen
@@ -42,6 +41,7 @@ export namespace translate {
         for (const group of dprogram.groups) {
             const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
             const keyspans: { string: { sample: decent.Sample, basename: string } } = {}
+            const hash = hasher(group.name + programBasename + group.name, 12)
             for (let i = 0; i < group.samples.length; i++) {
                 const sample = group.samples[i]
                 let keyspan
@@ -145,7 +145,7 @@ export namespace translate {
             }
             sxkProgram.apply(mods)
             const bufferSize = sxkProgram.writeToBuffer(outbuf, 0)
-            let outfile = path.join(outdir, programName + '.' + group.name + '.AKP');
+            let outfile = path.join(outdir, programBasename + '.' + group.name + '.AKP');
             outstream.write(`Writing program file: ${outfile}\n`)
             await fs.writeFile(outfile, Buffer.copyBytesFrom(outbuf, 0, bufferSize))
             progress.incrementCompleted(1)

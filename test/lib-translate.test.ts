@@ -68,6 +68,8 @@ describe(`Translate`, async () => {
         console.log(`zone1 low velocity: ${zone1.lowVelocity}`)
         console.log(`zone1 high velocity: ${zone1.highVelocity}`)
 
+        const zone2 = keygroup.zone2
+        console.log(`zone sample name: <${zone2.sampleName}>`)
         const zone4 = keygroup.zone4
         expect(zone4).to.exist
         expect(zone4.lowVelocity).to.eq(0)

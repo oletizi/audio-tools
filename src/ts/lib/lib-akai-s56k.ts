@@ -662,7 +662,7 @@ export function newKeygroupChunk() {
     // 20 character sample name
     const sampleNameSpec = []
     for (let i = 0; i < 20; i++) {
-        sampleNameSpec.push('c' + i)
+        sampleNameSpec.push('character' + i)
     }
     // 12 unused fields after the sample name
     const zonePadSpec = []
@@ -768,14 +768,20 @@ export function newKeygroupChunk() {
 function parseSampleName(zone: ZoneChunk) {
     zone.sampleName = ''
     for (let i = 0; i < zone.sampleNameLength; i++) {
-        zone.sampleName += String.fromCharCode(zone[`c${i}`])
+        zone.sampleName += String.fromCharCode(zone[`character${i}`])
     }
 }
 
 function writeSampleName(zone: ZoneChunk) {
     zone.sampleNameLength = zone.sampleName.length
+    // XXX: This is a hack
+    for(const name of Object.getOwnPropertyNames(zone)) {
+        if (name.startsWith('character')) {
+            zone[name] = 0
+        }
+    }
     for (let i = 0; i < zone.sampleNameLength; i++) {
-        zone[`c${i}`] = zone.sampleName.charCodeAt(i)
+        zone[`character${i}`] = zone.sampleName.charCodeAt(i)
     }
 }
 
@@ -872,6 +878,7 @@ class BasicProgram implements AkaiS56kProgram {
                         if (modZone) {
                             const myZone: Zone = myKeygroup[zoneName]
                             myZone.sampleName = modZone.sampleName
+                            myZone.sampleNameLength = myZone.sampleName.length
                             myZone.semiToneTune = modZone.semiToneTune
                             myZone.lowVelocity = modZone.lowVelocity
                             myZone.highVelocity = modZone.highVelocity
