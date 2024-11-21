@@ -1,10 +1,9 @@
 import fs from "fs/promises";
 import {newSampleFromBuffer} from "@/model/sample"
-import wavefile from "wavefile";
 import riffFile from 'riff-file'
-import * as htmlparser2 from "htmlparser2"
 import path from "path";
 import {expect} from "chai";
+import wavefile from "wavefile";
 
 
 describe('Sample', async () => {
@@ -52,5 +51,30 @@ describe('Sample', async () => {
 
         expect(chunk.value1).to.exist
         expect(chunk.value1.version).eq(1)
+    })
+
+    it('Looks inside a wav file', async () =>  {
+        let buf = await fs.readFile(path.join('test', 'data', 'sx000', 'NEW SAMPLE  1.WAV'));
+        const wav = new wavefile.WaveFile()
+        wav.fromBuffer(buf)
+        const smpl = wav.smpl
+        const sample = newSampleFromBuffer(buf)
+        const meta = sample.getMetadata()
+        expect(meta).to.exist
+        expect(meta.manufacturerId).eq(16777287)
+        expect(meta.productId).eq(94)
+        expect(meta.samplePeriod).eq(20833)
+        expect(meta.rootNote).eq(60)
+        expect(meta.pitchFraction).eq(0)
+
+        const newRootNote = 75
+
+        sample.setRootNote(newRootNote)
+
+        let outbuf = Buffer.alloc(buf.length)
+        sample.write(outbuf, 0)
+
+        const savedSample = newSampleFromBuffer(outbuf)
+        expect(savedSample.getMetadata().rootNote).eq(newRootNote)
     })
 })

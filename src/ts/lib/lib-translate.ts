@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import {createWriteStream, WriteStream} from "fs";
 import path, * as Path from "path";
 import {mpc} from "@/lib/lib-akai-mpc";
-import {AkaiS56ProgramResult, newProgramFromBuffer, Zone} from "@/lib/lib-akai-s56k";
+import {AkaiS56ProgramResult, Kloc, newProgramFromBuffer, Zone} from "@/lib/lib-akai-s56k";
 import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
@@ -62,12 +62,18 @@ export namespace translate {
                 keyspans[keyspan].push({sample: sample, basename: basename})
 
                 try {
-                    // Chop sample and write to disk
+
                     let wav = newSampleFromBuffer(await fs.readFile(samplePath))
+
+                    // Chop sample and write to disk
                     if (!Number.isNaN(sample.start) && !Number.isNaN(sample.end)) {
                         wav = wav.trim(sample.start, sample.end)
                     }
 
+                    // Set the root note in the smpl metadata of the wav file. S5000 uses it to calculate playback
+                    if (sample.rootNote) {
+                        wav.setRootNote(sample.rootNote)
+                    }
                     wav = wav.to16Bit()
                     wav = wav.to441()
                     wav.cleanup()
@@ -106,7 +112,7 @@ export namespace translate {
                     kloc: {
                         lowNote: low,
                         highNote: high
-                    }
+                    } as Kloc
                 }
                 // const max = Math.min(4, samples.length)
                 sampleDescriptors = sampleDescriptors.sort((a, b) => {
@@ -132,7 +138,8 @@ export namespace translate {
                     }
                     const zone = {} as Zone
                     zone.sampleName = sampleName
-                    zone.semiToneTune = C3 - sample.rootNote
+                    // NOTE: Don't we need this zone tuning now that the root note is set in the sample wav file metadata
+                    // zone.semiToneTune = C3 - sample.rootNote
                     zone.highVelocity = highVelocity
                     zone.lowVelocity = lowVelocity
                     keygroup['zone' + (i + 1)] = zone
