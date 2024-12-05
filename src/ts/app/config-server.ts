@@ -47,7 +47,7 @@ export function saveClientConfig(cfg: ClientConfig, dataDir = DEFAULT_DATA_DIR):
     )
 }
 
-export async function newClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
+export async function loadClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<ClientConfig> {
     const rv: ClientConfig = newClientConfig()
     const configPath = path.join(dataDir, 'config.json');
     let storedConfig = null

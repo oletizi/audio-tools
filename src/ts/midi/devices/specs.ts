@@ -71,6 +71,8 @@ export const programLfosSpec = {
         ["Lfo1Waveform", "number|0|8|1", 0x63, [1], "uint8", 1, 0x53, [1, "uint8"]],
         ["Lfo2Waveform", "number|0|8|1", 0x63, [2], "uint8", 1, 0x53, [2, "uint8"]],
         ["Lfo1Sync", "number|0|1|1", 0x64, [1], "uint8", 1, 0x54, [1, "uint8"]],
+        ["Lfo2Retrigger", "number|0|1|1", 0x65, [2], "uint8", 2, 0x55, [2, "uint8"]],
+        ["Lfo1RateModSource", "number|0|14|1", 0x66, [1], "uint8", 1, 0x56, [1, "uint8"]]
     ]
 }
 
@@ -82,6 +84,7 @@ export function getDeviceSpecs(): DeviceSpec[] {
         programLfosSpec
     ]
 }
+
 enum Section {
     SYSEX_CONFIG = 0x00,
     SYSTEM_SETUP = 0x02,

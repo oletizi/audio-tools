@@ -1,6 +1,6 @@
 import {describe, it} from 'mocha'
 import tmp from 'tmp'
-import {newClientConfig, saveClientConfig} from "../src/ts/app/config-server";
+import {loadClientConfig, saveClientConfig} from "../src/ts/app/config-server";
 import {expect} from "chai";
 import fs from "fs/promises";
 
@@ -9,7 +9,7 @@ describe(`Config`, async () => {
     it('CRUDs config', async () => {
         const dataDir = tmp.dirSync().name
 
-        const cfg = await newClientConfig(dataDir)
+        const cfg = await loadClientConfig(dataDir)
         expect(cfg).to.exist
         expect(cfg.midiOutput).to.be.empty
 
@@ -21,7 +21,7 @@ describe(`Config`, async () => {
         expect(stats.isDirectory()).to.be.false
 
 
-        const loaded = await newClientConfig(dataDir)
+        const loaded = await loadClientConfig(dataDir)
         expect(loaded).to.exist
         expect(loaded.midiOutput).to.eq(midiOutput)
 

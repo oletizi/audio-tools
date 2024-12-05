@@ -3,7 +3,7 @@ import path from "path"
 import Queue from "queue";
 import {PassThrough} from "stream";
 import {newProgress} from "@/model/progress"
-import {newClientConfig, newServerConfig, saveClientConfig} from "./config-server";
+import {loadClientConfig, newServerConfig, saveClientConfig} from "./config-server";
 import {newServerOutput} from "@/process-output";
 import {ClientConfig} from "./config-client";
 import {Result} from "@/lib/lib-core"
@@ -33,7 +33,7 @@ app.use(express.static(path.join(process.cwd(), 'build', 'site', 'static'), {ext
 
 app.get('/config', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    newClientConfig().then((cfg) => {
+    loadClientConfig().then((cfg) => {
         const result = {data: cfg}
         const body = JSON.stringify(result)
         out.log(`Sending config body: ${body}`)

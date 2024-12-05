@@ -318,6 +318,7 @@ class S56kProgramSysex implements S56kProgram {
 }
 
 /**
+ * XXX: Move this to gen-devices.ts
  * Dynamically generates a device object that implements sysex getter/setter methods based on the given spec
  *
  * @param spec -- a spec object describing the getters and setters the device object should have
@@ -336,7 +337,7 @@ export function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
         const getterRequestData = item[i++] as number[]
         const responseType = item[i++] as string
         const responseSize = item[i++] as number
-        obj[`get${methodName}`] = async () => {
+        obj[`get${methodName}`] = async (methodName) => {
             const res = await sysex.sysexRequest(newControlMessage(sectionCode, getterItemCode, getterRequestData))
             switch (responseType) {
                 case "uint8":
