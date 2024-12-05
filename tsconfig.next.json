@@ -23,7 +23,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*", "./src/ts/*"]
     }
 
   },
@@ -33,7 +33,9 @@
     "./src/app/**/*.ts",
     "./src/app/**/*.tsx",
     "./src/components/**/*.ts",
-    "./src/components/**/*.tsx"
+    "./src/components/**/*.tsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
   ],
   "exclude": [
     "node_modules"
