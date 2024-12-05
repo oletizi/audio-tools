@@ -23,6 +23,7 @@
     "build:all": "npm run build:controlApp && npm run build:client && npm run build:client-s56k",
     "build:DEPRECATED": "(cd ./src/static && copyfiles ./**/* ../../build/site/static/) && npm run tailwind-build && npm run sass-build && npm run bundler-build",
     "start": "npm run build && tsx src/ts/app/server.ts",
+    "dev": "next dev",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' c8 mocha 'test/**/*.test.{js,ts,tsx}'",
     "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts",

@@ -22,7 +22,7 @@ export function FileList(props) {
                 </ListItemButton>)
             ))
             .concat(data.files.map(item => (<ListItem key={seq()}>{item.name}</ListItem>)))
-        items = join(items, () => <Divider/>)
+        items = join(items, () => <Divider key={seq()}/>)
     }
     return (<List {...props}>{items}</List>)
 }
