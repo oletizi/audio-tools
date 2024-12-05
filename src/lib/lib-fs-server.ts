@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import {Directory, File, FileSet, FileSetResult} from "@/lib/lib-fs-api";
 import path from "path";
 
-export async function list(dir: string): Promise<FileSetResult> {
+export async function list(dir: string, filter: (f: File) => boolean = () => true): Promise<FileSetResult> {
     const errors: Error[] = []
     const dirs: Directory[] = []
     const files: File[] = []
@@ -21,7 +21,7 @@ export async function list(dir: string): Promise<FileSetResult> {
         errors.push(e)
     }
     const set: FileSet = {
-        directories: dirs, files: files
+        directories: dirs.filter(filter), files: files.filter(filter)
     }
     return {
         data: set,

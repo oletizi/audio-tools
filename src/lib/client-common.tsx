@@ -1,5 +1,5 @@
-import {newClientOutput, ProcessOutput} from "@/process-output";
-import {ClientConfig} from "./config-client";
+import {newClientOutput, ProcessOutput} from "@/lib/process-output";
+import {ClientConfig} from "@/lib/config-client";
 import {Result, timestamp} from "@/lib/lib-core";
 
 export interface ClientCommon {
@@ -55,7 +55,7 @@ class BasicClientCommon implements ClientCommon {
         return this.out
     }
 
-     fetchConfig(): Promise<Result> {
+    fetchConfig(): Promise<Result> {
         return new Promise<Result>((resolve, reject) => {
             this.request('/config')
                 .then((result) => resolve(result))
@@ -82,11 +82,11 @@ class BasicClientCommon implements ClientCommon {
         return result
     }
 
-    get(url) {
+    get(url): Promise<Result> {
         return this.request(url, 'GET')
     }
 
-    post(url, obj: any) {
+    post(url, obj: any): Promise<Result> {
         return this.request(url, 'POST', obj)
     }
 

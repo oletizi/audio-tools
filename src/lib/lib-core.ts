@@ -1,4 +1,10 @@
 import dayjs from "dayjs";
+import {randomInt} from "crypto";
+
+export function newSequence(base: string = '' + Date.now()): () => string {
+    let s = 0
+    return () => base + '-' + s++
+}
 
 export function timestamp() {
     const d = dayjs()

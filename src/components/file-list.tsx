@@ -1,10 +1,28 @@
 import List from '@mui/material/list'
-import {ListItem} from "@mui/material";
+import {Divider, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
+import FolderIcon from '@mui/icons-material/Folder'
+import {newSequence} from "@/lib/lib-core";
+import {FileSet} from "@/lib/lib-fs-api";
 
-export function FileList({data}) {
+const seq = newSequence('file-list')
 
-    return (<List>
-        <ListItem>I'm a nice list item.</ListItem>
-        <ListItem>I'm another nice list item.</ListItem>
-    </List>)
+export function join(items: [], separator) {
+    return items.map((item, index) => (<>{item}{index < items.length - 1 ? separator() : ''}</>))
+}
+
+export function FileList(props) {
+    let items = []
+    const data: FileSet = props.data
+    if (data) {
+        items = items
+            .concat(data.directories.map(item =>
+                (<ListItemButton key={seq()} className="border-b-2">
+                    <ListItemIcon><FolderIcon/></ListItemIcon>
+                    <ListItemText>{item.name}</ListItemText>
+                </ListItemButton>)
+            ))
+            .concat(data.files.map(item => (<ListItem key={seq()}>{item.name}</ListItem>)))
+        items = join(items, () => <Divider/>)
+    }
+    return (<List {...props}>{items}</List>)
 }
