@@ -2,7 +2,6 @@
   "name": "akai-sampler",
   "version": "1.0.0",
   "start": "src/ts/app/server.ts",
-  "type": "module",
   "web-types": "./web-types.json",
   "directories": {
     "test": "test"

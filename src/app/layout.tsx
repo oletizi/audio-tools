@@ -1,5 +1,6 @@
 import React from "react";
 import {Metadata} from "next";
+import "./globals.css";
 export const metadata: Metadata = {
     title: 'Akai Sampler App',
     description: 'A set of experimental tools for the Akai S5000/S6000 series samplers.',
