@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import fs from "fs/promises";
 
 export function timestamp() {
     const d = dayjs()

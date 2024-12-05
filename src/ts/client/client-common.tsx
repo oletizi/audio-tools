@@ -63,6 +63,14 @@ class BasicClientCommon implements ClientCommon {
         })
     }
 
+    fetchServerConfig(): Promise<Result> {
+        return new Promise<Result>((resolve, reject) => {
+            this.request('/config/server')
+                .then((result) => resolve(result))
+                .catch(err => reject(err))
+        })
+    }
+
     async saveConfig(cfg) {
         const result = await this.post('/config/save', cfg)
         if (result.errors.length > 0) {
