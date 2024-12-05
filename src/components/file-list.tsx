@@ -16,13 +16,13 @@ export function FileList(props) {
     if (data) {
         items = items
             .concat(data.directories.map(item =>
-                (<ListItemButton key={seq()} className="border-b-2">
+                (<><ListItemButton key={seq()} className="border-b-2">
                     <ListItemIcon><FolderIcon/></ListItemIcon>
                     <ListItemText>{item.name}</ListItemText>
-                </ListItemButton>)
+                </ListItemButton><Divider/></>)
             ))
-            .concat(data.files.map(item => (<ListItem key={seq()}>{item.name}</ListItem>)))
-        items = join(items, () => <Divider key={seq()}/>)
+            .concat(data.files.map(item => (<><ListItem key={seq()}>{item.name}</ListItem><Divider/></>)))
+        // items = join(items, () => <Divider key={seq()}/>)
     }
     return (<List {...props}>{items}</List>)
 }
