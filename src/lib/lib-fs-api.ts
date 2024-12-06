@@ -1,15 +1,16 @@
 import {Result} from "@/lib/lib-core";
 
-export interface File {
+export interface FileSpec {
     name: string
+    isDirectory: boolean
 }
 
-export interface Directory extends File {
+export interface DirectorySpec extends FileSpec {
 }
 
 export interface FileSet {
-    files: File[]
-    directories: Directory[]
+    files: FileSpec[]
+    directories: DirectorySpec[]
 }
 
 export interface FileSetResult extends Result {

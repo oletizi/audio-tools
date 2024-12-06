@@ -2,7 +2,7 @@ import List from '@mui/material/list'
 import {Divider, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder'
 import {newSequence} from "@/lib/lib-core";
-import {Directory, FileSet} from "@/lib/lib-fs-api";
+import {DirectorySpec, FileSet} from "@/lib/lib-fs-api";
 
 const seq = newSequence('file-list')
 
@@ -10,7 +10,7 @@ export function join(items: [], separator) {
     return items.map((item, index) => (<>{item}{index < items.length - 1 ? separator() : ''}</>))
 }
 
-export function FileList({data, onSelect}: { data: FileSet | null, onSelect: (f:File | Directory) => void }) {
+export function FileList({data, onSelect}: { data: FileSet | null, onSelect: (f:File | DirectorySpec) => void }) {
     let items = []
     // const data: FileSet = props.data
     onSelect = onSelect ? onSelect : (e) => {}

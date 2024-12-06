@@ -1,28 +1,38 @@
 import fs from "fs/promises";
-import {Directory, File, FileSet, FileSetResult} from "@/lib/lib-fs-api";
+import {DirectorySpec, FileSpec, FileSet, FileSetResult} from "@/lib/lib-fs-api";
 import path from "path";
 
-export async function list(dir: string, filter: (f: File) => boolean = () => true): Promise<FileSetResult> {
-    console.log(`dir: ${dir}`)
+export async function list(dir: string): Promise<FileSetResult> {
+    console.log(`list()....`)
+    console.log(dir)
     const errors: Error[] = []
-    const dirs: Directory[] = []
-    const files: File[] = []
+    const dirs: DirectorySpec[] = []
+    const files: FileSpec[] = []
+    dir = dir + '/'
     try {
+        console.log(`readdir(${dir})`)
         for (const item of await fs.readdir(dir)) {
-            const stats = await fs.stat(path.join(dir, item))
+            let itemPath = path.join(dir, item);
+            console.log(`item: ${item}; itemPath: ${itemPath}`)
+            const stats = await fs.stat(itemPath)
             if (stats.isDirectory()) {
                 dirs.push({
-                    name: item
+                    name: item,
+                    isDirectory: true
                 })
             } else if (stats.isFile()) {
-                files.push({name: item})
+                files.push({
+                    name: item,
+                    isDirectory: false
+                })
             }
         }
     } catch (e) {
+        console.error(e)
         errors.push(e)
     }
     const set: FileSet = {
-        directories: dirs.filter(filter), files: files.filter(filter)
+        directories: dirs, files: files
     }
     return {
         data: set,

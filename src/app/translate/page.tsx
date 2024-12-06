@@ -1,8 +1,8 @@
 "use client"
 import {FileList} from "@/components/file-list"
-import {listSource, listTarget} from "@/lib/client-translator";
+import {listSource, listTarget, cdSource, cdTarget} from "@/lib/client-translator";
 import {useState} from "react";
-import {Directory, FileSet} from "@/lib/lib-fs-api";
+import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 
 export default function Page() {
     const [source, updateSource] = useState<FileSet | null>(null)
@@ -11,16 +11,32 @@ export default function Page() {
         return f.name != undefined && !f.name.startsWith('.DS_Store')
     }
 
-    if (!source) {
+    function fetchSource() {
         listSource(filter).then(r => updateSource(r.data))
     }
-    if (!target) {
+    function fetchTarget() {
         listTarget(filter).then(r => updateTarget(r.data))
     }
 
-    function sourceSelect(f: File | Directory) {
+    if (!source) {
+        fetchSource()
+    }
+    if (!target) {
+        fetchTarget()
+    }
+
+    function sourceSelect(f: FileSpec) {
         console.log(`Source select: `)
         console.log(f)
+        if (f.isDirectory) {
+            cdSource(f.name).then(fetchSource)
+        }
+    }
+
+    function targetSelect(f: FileSpec) {
+        if (f.isDirectory) {
+            cdTarget(f.name).then(fetchTarget)
+        }
     }
 
     return (<div className="container mx-auto">
@@ -31,7 +47,7 @@ export default function Page() {
             </div>
             <div className="flex-1">
                 <div>To:</div>
-                <FileList data={target} onSelect={sourceSelect}/>
+                <FileList data={target} onSelect={targetSelect}/>
             </div>
         </div>
     </div>)

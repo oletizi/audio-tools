@@ -8,26 +8,33 @@ import fs from "fs/promises";
 // Docs: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
 
 export async function POST(request, {params}: { params: Promise<{ path: string[] }> }) {
-    let p: string[] = (await params).path
-    p.shift() // the first path element should be 'root' which we only need to make the path params stuff work
-    let sessionId = await getSessionId();
-    const session = await getSessionData(sessionId)
-    console.log(`SESSION DATA: ========`)
-    console.log(session)
-    console.log(`PATH PARAMS: `)
-    console.log(p)
-    p = session.translate.source.concat(p)
-    const normal = path.normalize(p.join('/'))
-    console.log(`NORMAL: ${normal}`)
-
-    const absolute = path.join((await newServerConfig()).sourceRoot, normal)
-    console.log(`ABSOLUTE: ${absolute}`)
-
     try {
+        let p: string[] = (await params).path
+        const location = p.shift()
+        if (location !== 'source' && location !== 'target') {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Invalid location.')
+        }
+
+        let sessionId = await getSessionId();
+        const session = await getSessionData(sessionId)
+        console.log(`SESSION DATA: ========`)
+        console.log(session)
+        console.log(`PATH PARAMS: `)
+        console.log(p)
+        p = session.translate.source.concat(p)
+        const normal = path.normalize(p.join('/'))
+        console.log(`NORMAL: ${normal}`)
+
+        let cfg = await newServerConfig();
+        let root = location === 'source' ? cfg.sourceRoot : cfg.targetRoot;
+        const absolute = path.join(root, normal)
+
+        console.log(`ABSOLUTE: ${absolute}`)
         console.log(`Fetching status for: ${absolute}`)
         const stats = await fs.stat(absolute)
         if (stats.isDirectory()) {
-            session.translate.source = normal.split('/')
+            session.translate[location] = normal.split('/')
             await saveSessionData(sessionId, session)
             return NextResponse.json({message: "OK", status: 200})
         } else {
