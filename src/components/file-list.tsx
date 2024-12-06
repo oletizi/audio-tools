@@ -14,9 +14,8 @@ export function join(items: [], separator) {
 
 export function FileList({data, onSelect}: { data: FileSet | null, onSelect: (f: File | DirectorySpec) => void }) {
     let items = []
-    // const data: FileSet = props.data
-    onSelect = onSelect ? onSelect : (e) => {
-    }
+
+    onSelect = onSelect ? onSelect : () => {}
     if (data) {
         items = items
             .concat(data.directories.map(item =>

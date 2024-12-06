@@ -25,7 +25,9 @@ export async function GET(request, {params}: { params: Promise<{ path: string[] 
         out.error(`GET list: Invalid directory: ${dir}`)
         throw new Error('Invalid directory')
     }
-    let result = await list(dir);
+    let result = await list(dir, (filename) => {
+        return !filename.startsWith('.DS_Store') && ! filename.startsWith('DSLibraryInfo') && ! filename.startsWith('.git')
+    });
     if (session.translate[location].length > 0) {
         // we're in a subdirectory. Add '..'
         result.data.directories.unshift({isDirectory: true, name: ".."})

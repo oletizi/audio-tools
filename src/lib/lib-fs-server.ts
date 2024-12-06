@@ -5,12 +5,13 @@ import {newServerOutput} from "@/lib/process-output";
 
 const out = newServerOutput(true, ': lib-fs-server')
 
-export async function list(dir: string): Promise<FileSetResult> {
+export async function list(dir: string, filter: (n:string) => boolean = () => true): Promise<FileSetResult> {
     const errors: Error[] = []
     const dirs: DirectorySpec[] = []
     const files: FileSpec[] = []
     try {
         for (const item of await fs.readdir(dir)) {
+            if (! filter(item)) continue
             let itemPath = path.join(dir, item);
             const stats = await fs.stat(itemPath)
             if (stats.isDirectory()) {
