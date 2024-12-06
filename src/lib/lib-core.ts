@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import {randomInt} from "crypto";
 
-export function newSequence(base: string = '' + Date.now()): () => string {
+export function newSequence(base: string = 'seq'): () => string {
     let s = 0
+    base += '-' + Date.now()
     return () => base + '-' + s++
 }
 

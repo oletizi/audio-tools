@@ -12,16 +12,17 @@ export default function Page() {
     }
 
     if (!source) {
-        listSource('/', filter).then(r => updateSource(r.data))
+        listSource(filter).then(r => updateSource(r.data))
     }
     if (!target) {
-        listTarget('/', filter).then(r => updateTarget(r.data))
+        listTarget(filter).then(r => updateTarget(r.data))
     }
 
     function sourceSelect(f: File | Directory) {
         console.log(`Source select: `)
         console.log(f)
     }
+
     return (<div className="container mx-auto">
         <div className="flex gap-10">
             <div className="flex-1">
