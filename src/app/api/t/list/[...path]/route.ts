@@ -3,8 +3,9 @@ import {newServerConfig} from "@/lib/config-server";
 import {list} from "@/lib/lib-fs-server";
 import {getSessionData, getSessionId} from "@/lib/lib-session";
 import path from "path";
+import {newServerOutput} from "@/lib/process-output";
 
-// Docs: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+const out = newServerOutput(true, ': /api/t/list/...path/route')
 
 export async function GET(request, {params}: { params: Promise<{ path: string[] }> }) {
     const p = (await params).path
@@ -21,18 +22,13 @@ export async function GET(request, {params}: { params: Promise<{ path: string[] 
     let root = (await newServerConfig())[location + 'Root'];
     let dir = path.normalize(root + '/' + session.translate[location].join('/'))
     if (!dir.startsWith(root)) {
-        console.error(`GET list: Invalid directory: ${dir}`)
+        out.error(`GET list: Invalid directory: ${dir}`)
         throw new Error('Invalid directory')
     }
-    console.log(`GET list: ${dir}`)
     let result = await list(dir);
-    console.log(`checking session.translate[${location}].length: ${session.translate[location].length}`)
     if (session.translate[location].length > 0) {
         // we're in a subdirectory. Add '..'
         result.data.directories.unshift({isDirectory: true, name: ".."})
-    } else {
-        console.log('session: ')
-        console.log(session.translate[location])
     }
 
     return NextResponse.json(result)
