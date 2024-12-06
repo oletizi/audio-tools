@@ -8,7 +8,6 @@ export async function list(dir: string): Promise<FileSetResult> {
     const errors: Error[] = []
     const dirs: DirectorySpec[] = []
     const files: FileSpec[] = []
-    dir = dir + '/'
     try {
         console.log(`readdir(${dir})`)
         for (const item of await fs.readdir(dir)) {

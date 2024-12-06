@@ -91,7 +91,7 @@ enum ProgramItem {
     // OUTPUT
     GET_LOUDNESS = 0x28,
     GET_VELOCITY_SENSITIVITY = 0x29,
-    GET_AMP_MOD_SOURCE = 0x2A, // !!! This message requires data to select between amp mod source 1 or 2
+    GET_AMP_MOD_SOURCE = 0x2A, // !!! This message requires data to select between amp mod [...path] 1 or 2
     GET_AMP_MOD_VALUE = 0x2B,  // !!! Ibid.
     GET_PAN_MOD_SOURCE = 0x2C, // DATA1: 1 | 2 | 3
     GET_PAN_MOD_VALUE = 0x2D,  // DATA1: 1 | 2 | 3

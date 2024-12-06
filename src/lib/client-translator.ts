@@ -5,7 +5,7 @@ const root = '/api/t'
 const client = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
 export async function cdSource(path: string) {
-    await cd(root + '/cd/source', path)
+    await cd(root + '/cd/[...path]', path)
 }
 
 export async function cdTarget(path: string) {
@@ -17,7 +17,7 @@ async function cd(endpoint: string, path: string) {
 }
 
 export async function listSource(filter: (f: File) => boolean = () => true): Promise<FileSetResult> {
-    return list(root + '/list/source', filter)
+    return list(root + '/list/[...path]', filter)
 }
 
 export async function listTarget(filter: (f: File) => boolean = () => true) {
