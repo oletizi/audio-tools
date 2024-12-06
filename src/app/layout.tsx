@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={roboto.variable}>
+        <body className={`${roboto.variable} bg-white text-gray-900`}>
         <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
                 <div id="root">{children}</div>
