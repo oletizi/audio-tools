@@ -22,24 +22,17 @@ export async function POST(request: NextRequest, {params}: { params: Promise<{ p
 
         let sessionId = await getSessionId();
         const session = await getSessionData(sessionId)
-        console.log(`SESSION DATA: ========`)
-        console.log(session)
 
-        // p = session.translate.source.concat(p)
         const normal = path.normalize(path.join(session.translate[location].join('/'), data.path))
-        console.log(`NORMAL: ${normal}`)
 
         let cfg = await newServerConfig();
         const absolute = path.normalize(path.join(cfg[location + 'Root'], normal))
 
-        console.log(`ABSOLUTE: ${absolute}`)
         if (!absolute.startsWith(cfg[location + 'Root'])) {
             // Make sure the absolute path is within the root directory
             // noinspection ExceptionCaughtLocallyJS
             throw new Error('Invalid')
         }
-
-        console.log(`Fetching status for: ${absolute}`)
 
         const stats = await fs.stat(absolute)
         if (stats.isDirectory()) {
@@ -53,6 +46,4 @@ export async function POST(request: NextRequest, {params}: { params: Promise<{ p
         console.error(e)
         return NextResponse.json({message: "Not Found", status: 404})
     }
-
-    // return NextResponse.json(await list((await newServerConfig()).sourceRoot + '/' + p.join('/')))
 }

@@ -1,18 +1,17 @@
 import fs from "fs/promises";
 import {DirectorySpec, FileSpec, FileSet, FileSetResult} from "@/lib/lib-fs-api";
 import path from "path";
+import {newServerOutput} from "@/lib/process-output";
+
+const out = newServerOutput(true, ': lib-fs-server')
 
 export async function list(dir: string): Promise<FileSetResult> {
-    console.log(`list()....`)
-    console.log(dir)
     const errors: Error[] = []
     const dirs: DirectorySpec[] = []
     const files: FileSpec[] = []
     try {
-        console.log(`readdir(${dir})`)
         for (const item of await fs.readdir(dir)) {
             let itemPath = path.join(dir, item);
-            console.log(`item: ${item}; itemPath: ${itemPath}`)
             const stats = await fs.stat(itemPath)
             if (stats.isDirectory()) {
                 dirs.push({
@@ -27,7 +26,7 @@ export async function list(dir: string): Promise<FileSetResult> {
             }
         }
     } catch (e) {
-        console.error(e)
+        out.error(e)
         errors.push(e)
     }
     const set: FileSet = {

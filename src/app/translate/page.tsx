@@ -26,8 +26,6 @@ export default function Page() {
     }
 
     function sourceSelect(f: FileSpec) {
-        console.log(`Source select: `)
-        console.log(f)
         if (f.isDirectory) {
             cdSource(f.name).then(fetchSource)
         }

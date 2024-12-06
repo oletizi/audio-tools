@@ -5,7 +5,7 @@ import {NextResponse} from "next/server";
 import {getSessionData, saveSessionData} from "@/lib/lib-session";
 
 const seq = newSequence('smplr')
-export const SESSION_COOKIE_NAME = 'smplr'
+export const SESSION_COOKIE_NAME:string = 'smplr'
 
 export async function middleware(request: NextRequest) {
     const cookieStore = await cookies()

@@ -21,7 +21,6 @@ export async function getSessionId() {
 }
 
 async function sessionDataFile(sessionId: string) {
-    console.log(`Return sessiondata file for session id: ${sessionId}`)
     return path.join((await newServerConfig()).sessionRoot, sessionId + '.json')
 }
 
