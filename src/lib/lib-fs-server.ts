@@ -3,6 +3,7 @@ import {Directory, File, FileSet, FileSetResult} from "@/lib/lib-fs-api";
 import path from "path";
 
 export async function list(dir: string, filter: (f: File) => boolean = () => true): Promise<FileSetResult> {
+    console.log(`dir: ${dir}`)
     const errors: Error[] = []
     const dirs: Directory[] = []
     const files: File[] = []
