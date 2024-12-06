@@ -1,4 +1,4 @@
-import {NextResponse} from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import {newServerConfig} from "@/lib/config-server";
 import {list} from "@/lib/lib-fs-server";
 import {getSessionData, getSessionId, saveSessionData} from "@/lib/lib-session";
@@ -7,31 +7,40 @@ import fs from "fs/promises";
 
 // Docs: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
 
-export async function POST(request, {params}: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest, {params}: { params: Promise<{ path: string[] }> }) {
     try {
-        let p: string[] = (await params).path
-        const location = p.shift()
+        const location = (await params).path.shift()
         if (location !== 'source' && location !== 'target') {
             // noinspection ExceptionCaughtLocallyJS
             throw new Error('Invalid location.')
+        }
+        const data = await request.json()
+        if (data.path == undefined) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Invalid path.')
         }
 
         let sessionId = await getSessionId();
         const session = await getSessionData(sessionId)
         console.log(`SESSION DATA: ========`)
         console.log(session)
-        console.log(`PATH PARAMS: `)
-        console.log(p)
-        p = session.translate.source.concat(p)
-        const normal = path.normalize(p.join('/'))
+
+        // p = session.translate.source.concat(p)
+        const normal = path.normalize(path.join(session.translate[location].join('/'), data.path))
         console.log(`NORMAL: ${normal}`)
 
         let cfg = await newServerConfig();
-        let root = location === 'source' ? cfg.sourceRoot : cfg.targetRoot;
-        const absolute = path.join(root, normal)
+        const absolute = path.normalize(path.join(cfg[location + 'Root'], normal))
 
         console.log(`ABSOLUTE: ${absolute}`)
+        if (!absolute.startsWith(cfg[location + 'Root'])) {
+            // Make sure the absolute path is within the root directory
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Invalid')
+        }
+
         console.log(`Fetching status for: ${absolute}`)
+
         const stats = await fs.stat(absolute)
         if (stats.isDirectory()) {
             session.translate[location] = normal.split('/')
