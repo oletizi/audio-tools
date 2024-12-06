@@ -2,7 +2,7 @@
 import {FileList} from "@/components/file-list"
 import {listSource, listTarget} from "@/lib/client-translator";
 import {useState} from "react";
-import {FileSet} from "@/lib/lib-fs-api";
+import {Directory, FileSet} from "@/lib/lib-fs-api";
 
 export default function Page() {
     const [source, updateSource] = useState<FileSet | null>(null)
@@ -18,7 +18,7 @@ export default function Page() {
         listTarget('/', filter).then(r => updateTarget(r.data))
     }
 
-    function sourceSelect(f: File) {
+    function sourceSelect(f: File | Directory) {
         console.log(`Source select: `)
         console.log(f)
     }
@@ -30,7 +30,7 @@ export default function Page() {
             </div>
             <div className="flex-1">
                 <div>To:</div>
-                <FileList data={target}/>
+                <FileList data={target} onSelect={sourceSelect}/>
             </div>
         </div>
     </div>)
