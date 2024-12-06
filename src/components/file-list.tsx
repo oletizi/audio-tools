@@ -13,6 +13,7 @@ export function join(items: [], separator) {
 export function FileList(props) {
     let items = []
     const data: FileSet = props.data
+    const sourceSelect = props.sourceSelect
     if (data) {
         items = items
             .concat(data.directories.map(item =>

@@ -17,11 +17,16 @@ export default function Page() {
     if (!target) {
         listTarget('/', filter).then(r => updateTarget(r.data))
     }
+
+    function sourceSelect(f: File) {
+        console.log(`Source select: `)
+        console.log(f)
+    }
     return (<div className="container mx-auto">
         <div className="flex gap-10">
             <div className="flex-1">
                 <div>From:</div>
-                <FileList data={source}/>
+                <FileList data={source} onSelect={sourceSelect}/>
             </div>
             <div className="flex-1">
                 <div>To:</div>
