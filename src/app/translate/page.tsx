@@ -2,7 +2,7 @@
 import {FileList} from "@/components/file-list"
 import {listSource, listTarget, cdSource, cdTarget} from "@/lib/client-translator";
 import {useState} from "react";
-import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
+import {FileSet, FileSpec} from "@/lib/lib-fs-api";
 
 export default function Page() {
     const [source, updateSource] = useState<FileSet | null>(null)
@@ -37,15 +37,17 @@ export default function Page() {
         }
     }
 
-    return (<div className="container mx-auto">
-        <div className="flex gap-10">
+    const fileListClasses = "h-2/3 overflow-y-scroll border-neutral-100 border-solid border-2 rounded"
+
+    return (<div className="container mx-auto h-screen">
+        <div className="flex gap-10 h-full">
             <div className="flex-1">
                 <div>From:</div>
-                <FileList data={source} onSelect={sourceSelect}/>
+                <FileList className={fileListClasses} data={source} onSelect={sourceSelect}/>
             </div>
             <div className="flex-1">
                 <div>To:</div>
-                <FileList data={target} onSelect={targetSelect}/>
+                <FileList className={fileListClasses} data={target} onSelect={targetSelect}/>
             </div>
         </div>
     </div>)

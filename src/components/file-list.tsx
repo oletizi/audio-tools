@@ -12,10 +12,15 @@ export function join(items: [], separator) {
     return items.map((item, index) => (<>{item}{index < items.length - 1 ? separator() : ''}</>))
 }
 
-export function FileList({data, onSelect}: { data: FileSet | null, onSelect: (f: File | DirectorySpec) => void }) {
+export function FileList({data, onSelect, className}: {
+    data: FileSet | null,
+    onSelect: (f: File | DirectorySpec) => void,
+    className: string,
+}) {
     let items = []
 
-    onSelect = onSelect ? onSelect : () => {}
+    onSelect = onSelect ? onSelect : () => {
+    }
     if (data) {
         items = items
             .concat(data.directories.map(item =>
@@ -27,5 +32,6 @@ export function FileList({data, onSelect}: { data: FileSet | null, onSelect: (f:
             .concat(data.files.map(item => (<div key={seq()}><ListItem
                 onClick={() => onSelect(item)}>{item.name}</ListItem><Divider/></div>)))
     }
-    return (<List>{items}</List>)
+    return (<List className={className}>{items}</List>)
+
 }
