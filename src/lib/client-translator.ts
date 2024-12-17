@@ -36,6 +36,17 @@ async function list(endpoint, filter: (f: File) => boolean) {
     }
     return rv
 }
+export async function mkdirSource(path) {
+    await mkdir( root + '/mkdir/source', path)
+}
+
+export async function mkdirTarget(path) {
+    await mkdir(root + '/mkdir/target', path)
+}
+
+async function mkdir(endpoint, path) {
+    await client.post(endpoint, {path: path})
+}
 
 export async function rmTarget(path:string) {
     await rm(root + '/rm/target', path)

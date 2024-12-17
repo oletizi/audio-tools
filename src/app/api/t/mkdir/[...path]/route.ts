@@ -6,7 +6,6 @@ import path from "path";
 import fs from "fs/promises";
 
 
-
 export async function POST(request: NextRequest, {params}: { params: Promise<{ path: string[] }> }) {
     try {
         const location = (await params).path.shift()
@@ -33,20 +32,16 @@ export async function POST(request: NextRequest, {params}: { params: Promise<{ p
             // noinspection ExceptionCaughtLocallyJS
             throw new Error('Invalid')
         }
-        console.log(`fs.stat(${absolute})`)
-        const stats = await fs.stat(absolute)
-
-        if (stats.isDirectory()) {
-            // session.translate[location] = normal.split('/')
-            // await saveSessionData(sessionId, session)
-            console.log(`fs.rmdir(${absolute})`)
-            await fs.rmdir(absolute)
-            return NextResponse.json({message: "OK", status: 200})
-        } else {
-            console.log(`fs.rm(${absolute})`)
-            await fs.rm(absolute)
-            return NextResponse.json({message: "Ok", status: 200})
+        try {
+            const stats = await fs.stat(absolute)
+            // failure condition
+            return NextResponse.json({message: "Invalid", status: 403})
+        } catch (e) {
+            // success condition
         }
+
+        await fs.mkdir(absolute)
+        return NextResponse.json({message: "Ok"})
     } catch (e) {
         console.error(e)
         return NextResponse.json({message: "Not Found", status: 404})

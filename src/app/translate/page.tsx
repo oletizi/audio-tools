@@ -1,8 +1,9 @@
 "use client"
 import {FileList, ItemAdornments, visitItem} from "@/components/file-list"
-import {listSource, listTarget, cdSource, cdTarget, rmTarget} from "@/lib/client-translator";
+import {listSource, listTarget, cdSource, cdTarget, mkdirTarget, rmTarget} from "@/lib/client-translator";
 import {useState} from "react";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
+import NewDirectory from "@/components/new-directory";
 
 export default function Page() {
     const [source, updateSource] = useState<FileSet | null>(null)
@@ -14,6 +15,7 @@ export default function Page() {
     function fetchSource() {
         listSource(filter).then(r => updateSource(r.data))
     }
+
     function fetchTarget() {
         listTarget(filter).then(r => updateTarget(r.data))
     }
@@ -35,7 +37,7 @@ export default function Page() {
                 }
             },
             deletable: false,
-            onDelete(f: FileSpec | DirectorySpec): Promise<void> {
+            onDelete(): Promise<void> {
                 // noop
             },
             transformable: false,
@@ -51,17 +53,17 @@ export default function Page() {
         const rv: ItemAdornments = {
             clickable: false,
             onClick(f: FileSpec | DirectorySpec): void {
-                console.log(`ON CLICK!!!!`)
                 if (f.isDirectory) {
                     cdTarget(f.name).then(fetchTarget)
                 }
             },
-            deletable: true,
+            deletable: !f.name.startsWith('..'),
             onDelete(f: FileSpec | DirectorySpec): void {
                 rmTarget(f.name).then(fetchTarget)
             },
             transformable: false,
-            onTransform(f: FileSpec | DirectorySpec): void {
+            onTransform(): void {
+                // noop
             },
         }
         return rv
@@ -76,8 +78,11 @@ export default function Page() {
                 <FileList className={fileListClasses} data={source} visit={sourceItemVisitor}/>
             </div>
             <div className="flex-1">
-                <div>To:</div>
-                <FileList className={fileListClasses} data={target} visit={targetItemVisitor}/>
+                <div className="flex flex-col gap-3 h-screen">
+                    <div>To:</div>
+                    <FileList className={fileListClasses} data={target} visit={targetItemVisitor}/>
+                    <NewDirectory inputHandler={(dirname:string) => mkdirTarget(dirname).then(fetchTarget)}/>
+                </div>
             </div>
         </div>
     </div>)

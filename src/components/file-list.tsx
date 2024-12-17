@@ -1,7 +1,10 @@
+import IconButton from '@mui/material/IconButton'
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import List from '@mui/material/List'
 import ListItemButton from "@mui/material/ListItemButton";
 import Divider from '@mui/material/Divider'
 import FolderIcon from '@mui/icons-material/Folder'
+import DeleteIcon from '@mui/icons-material/Delete'
 import {newSequence} from "@/lib/lib-core";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 import {ListItem, ListItemIcon, ListItemText} from "@mui/material";
@@ -51,17 +54,35 @@ export function FileList({data, className, visit = nullVisitItem}: {
         items = items
             .concat(data.directories.map(item => {
                     const adornments: ItemAdornments = visit(item)
-
-                    return (<div key={seq()}><ListItemButton className="border-b-2" onClick={() => adornments.onClick(item)}>
-                        <ListItemIcon><FolderIcon/></ListItemIcon>
-                        <ListItemText>{item.name}</ListItemText>
-                    </ListItemButton><Divider/></div>)
+                    const deleteButton = adornments.deletable ? <IconButton onClick={() => {
+                        adornments.onDelete(item)
+                    }}><DeleteIcon/></IconButton> : ''
+                    return (
+                        <div key={seq()}>
+                            <ListItem>
+                                <ListItemButton onClick={() => adornments.onClick(item)}>
+                                    <ListItemIcon><FolderIcon/></ListItemIcon>
+                                    <ListItemText>{item.name}</ListItemText>
+                                </ListItemButton>
+                                {deleteButton}
+                            </ListItem>
+                            <Divider/></div>)
                 }
             ))
             .concat(data.files.map(item => {
                 const adornments = visit(item)
-                return (<div key={seq()}><ListItem
-                    onClick={() => adornments.onClick(item)}>{item.name}</ListItem><Divider/></div>)
+                const deleteButton = adornments.deletable ? <IconButton onClick={() => {
+                    adornments.onDelete(item)
+                }}><DeleteIcon/></IconButton> : ''
+                return (<div key={seq()}>
+                    <ListItem>
+                        <ListItemButton>
+                            <ListItemIcon><InsertDriveFileIcon/></ListItemIcon>
+                            <ListItemText>{item.name}</ListItemText>
+                        </ListItemButton>
+                        {deleteButton}
+                    </ListItem>
+                    <Divider/></div>)
             }))
     }
     return (<List className={className}>{items}</List>)
