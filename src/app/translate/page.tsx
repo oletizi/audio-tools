@@ -1,6 +1,6 @@
 "use client"
 import {FileList, ItemAdornments, visitItem} from "@/components/file-list"
-import {listSource, listTarget, cdSource, cdTarget} from "@/lib/client-translator";
+import {listSource, listTarget, cdSource, cdTarget, rmTarget} from "@/lib/client-translator";
 import {useState} from "react";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 
@@ -23,18 +23,6 @@ export default function Page() {
     }
     if (!target) {
         fetchTarget()
-    }
-
-    function sourceSelect(f: FileSpec) {
-        if (f.isDirectory) {
-            cdSource(f.name).then(fetchSource)
-        }
-    }
-
-    function targetSelect(f: FileSpec) {
-        if (f.isDirectory) {
-            cdTarget(f.name).then(fetchTarget)
-        }
     }
 
     // Define what should happen to items in the source list
@@ -63,19 +51,20 @@ export default function Page() {
         const rv: ItemAdornments = {
             clickable: false,
             onClick(f: FileSpec | DirectorySpec): void {
+                console.log(`ON CLICK!!!!`)
                 if (f.isDirectory) {
                     cdTarget(f.name).then(fetchTarget)
                 }
             },
             deletable: true,
             onDelete(f: FileSpec | DirectorySpec): void {
+                rmTarget(f.name).then(fetchTarget)
             },
             transformable: false,
             onTransform(f: FileSpec | DirectorySpec): void {
             },
         }
         return rv
-
     }
 
     const fileListClasses = "h-2/3 overflow-y-scroll border-neutral-100 border-solid border-2 rounded"
@@ -84,11 +73,11 @@ export default function Page() {
         <div className="flex gap-10 h-full">
             <div className="flex-1">
                 <div>From:</div>
-                <FileList className={fileListClasses} data={source} onSelect={sourceSelect} visitor={sourceItemVisitor}/>
+                <FileList className={fileListClasses} data={source} visit={sourceItemVisitor}/>
             </div>
             <div className="flex-1">
                 <div>To:</div>
-                <FileList className={fileListClasses} data={target} onSelect={targetSelect} visitor={targetItemVisitor}/>
+                <FileList className={fileListClasses} data={target} visit={targetItemVisitor}/>
             </div>
         </div>
     </div>)

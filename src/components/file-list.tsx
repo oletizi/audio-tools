@@ -40,21 +40,19 @@ export function join(items: [], separator) {
     return items.map((item, index) => (<>{item}{index < items.length - 1 ? separator() : ''}</>))
 }
 
-export function FileList({data, onSelect, className, visit = nullVisitItem}: {
+export function FileList({data, className, visit = nullVisitItem}: {
     data: FileSet | null,
-    onSelect: (f: FileSpec | DirectorySpec) => void,
     className: string,
-    visitor: visitItem
+    visit: visitItem
 }) {
     let items = []
 
-    onSelect = onSelect ? onSelect : () => {
-    }
     if (data) {
         items = items
             .concat(data.directories.map(item => {
-                    const adornments = visit(item)
-                    return (<div key={seq()}><ListItemButton className="border-b-2" onClick={() => onSelect(item)}>
+                    const adornments: ItemAdornments = visit(item)
+
+                    return (<div key={seq()}><ListItemButton className="border-b-2" onClick={() => adornments.onClick(item)}>
                         <ListItemIcon><FolderIcon/></ListItemIcon>
                         <ListItemText>{item.name}</ListItemText>
                     </ListItemButton><Divider/></div>)
@@ -63,7 +61,7 @@ export function FileList({data, onSelect, className, visit = nullVisitItem}: {
             .concat(data.files.map(item => {
                 const adornments = visit(item)
                 return (<div key={seq()}><ListItem
-                    onClick={() => onSelect(item)}>{item.name}</ListItem><Divider/></div>)
+                    onClick={() => adornments.onClick(item)}>{item.name}</ListItem><Divider/></div>)
             }))
     }
     return (<List className={className}>{items}</List>)
