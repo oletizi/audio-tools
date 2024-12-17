@@ -36,3 +36,11 @@ async function list(endpoint, filter: (f: File) => boolean) {
     }
     return rv
 }
+
+export async function rmTarget(path:string) {
+    await rm(root + '/rm/target', path)
+}
+
+async function rm(endpoint, path) {
+    await client.post(endpoint, {path: path})
+}
