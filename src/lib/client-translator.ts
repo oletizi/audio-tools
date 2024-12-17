@@ -4,6 +4,10 @@ import {newClientCommon} from "@/lib/client-common";
 const root = '/api/t'
 const client = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
+export async function translate(path: string) {
+    await client.post(root + '/translate', {path: path})
+}
+
 export async function cdSource(path: string) {
     await cd(root + '/cd/source', path)
 }

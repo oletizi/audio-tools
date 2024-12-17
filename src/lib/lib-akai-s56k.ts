@@ -1,4 +1,4 @@
-import {newServerOutput} from "@/process-output";
+import {newServerOutput} from "@/lib/process-output";
 import {Result} from "@/lib/lib-core";
 
 const out = newServerOutput(false)

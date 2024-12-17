@@ -1,3 +1,4 @@
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import IconButton from '@mui/material/IconButton'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import List from '@mui/material/List'
@@ -15,7 +16,7 @@ export interface ItemAdornments {
     clickable: boolean
     onClick: (f: FileSpec | DirectorySpec) => void
 
-    transformable: boolean
+    translatable: boolean
     onTransform: (f: FileSpec | DirectorySpec) => void
 
     deletable: boolean
@@ -34,7 +35,7 @@ const nullVisitItem: visitItem = () => {
             return Promise.resolve(undefined);
         }, onTransform(f: FileSpec | DirectorySpec): Promise<void> {
             return Promise.resolve(undefined);
-        }, transformable: false
+        }, translatable: false
     }
     return rv
 }
@@ -71,9 +72,11 @@ export function FileList({data, className, visit = nullVisitItem}: {
             ))
             .concat(data.files.map(item => {
                 const adornments = visit(item)
-                const deleteButton = adornments.deletable ? <IconButton onClick={() => {
-                    adornments.onDelete(item)
-                }}><DeleteIcon/></IconButton> : ''
+                const deleteButton = adornments.deletable ?
+                    <IconButton onClick={() => adornments.onDelete(item)}><DeleteIcon/></IconButton> : ''
+                const translateButton = adornments.translatable ?
+                    <IconButton onClick={() => adornments.onTransform(item)}><ArrowForwardIcon/></IconButton> : ''
+
                 return (<div key={seq()}>
                     <ListItem>
                         <ListItemButton>
@@ -81,6 +84,7 @@ export function FileList({data, className, visit = nullVisitItem}: {
                             <ListItemText>{item.name}</ListItemText>
                         </ListItemButton>
                         {deleteButton}
+                        {translateButton}
                     </ListItem>
                     <Divider/></div>)
             }))

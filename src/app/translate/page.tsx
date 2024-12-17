@@ -1,6 +1,6 @@
 "use client"
 import {FileList, ItemAdornments, visitItem} from "@/components/file-list"
-import {listSource, listTarget, cdSource, cdTarget, mkdirTarget, rmTarget} from "@/lib/client-translator";
+import {listSource, listTarget, cdSource, cdTarget, mkdirTarget, rmTarget, translate} from "@/lib/client-translator";
 import {useState} from "react";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 import NewDirectory from "@/components/new-directory";
@@ -30,7 +30,7 @@ export default function Page() {
     // Define what should happen to items in the source list
     const sourceItemVisitor: visitItem = (f) => {
         const rv: ItemAdornments = {
-            clickable: f.isDirectory || f.name.endsWith('.dsbundle') || f.name.endsWith('.xpm'),
+            clickable: f.isDirectory ,
             onClick(f: FileSpec | DirectorySpec): Promise<void> {
                 if (f.isDirectory) {
                     cdSource(f.name).then(fetchSource)
@@ -40,9 +40,9 @@ export default function Page() {
             onDelete(): Promise<void> {
                 // noop
             },
-            transformable: false,
+            translatable: f.name.endsWith('.dspreset') || f.name.endsWith('.xpm'),
             onTransform(f: FileSpec | DirectorySpec): Promise<void> {
-                // TODO: implement transform
+                translate(f.name).then(fetchTarget)
             },
         }
         return rv
@@ -61,7 +61,7 @@ export default function Page() {
             onDelete(f: FileSpec | DirectorySpec): void {
                 rmTarget(f.name).then(fetchTarget)
             },
-            transformable: false,
+            translatable: false,
             onTransform(): void {
                 // noop
             },
@@ -71,17 +71,19 @@ export default function Page() {
 
     const fileListClasses = "h-2/3 overflow-y-scroll border-neutral-100 border-solid border-2 rounded"
 
-    return (<div className="container mx-auto h-screen">
+    return (<div className="container mx-auto">
         <div className="flex gap-10 h-full">
             <div className="flex-1">
-                <div>From:</div>
-                <FileList className={fileListClasses} data={source} visit={sourceItemVisitor}/>
+                <div className="flex flex-col gap-3 h-screen">
+                    <div>From:</div>
+                    <FileList className={fileListClasses} data={source} visit={sourceItemVisitor}/>
+                </div>
             </div>
             <div className="flex-1">
                 <div className="flex flex-col gap-3 h-screen">
                     <div>To:</div>
                     <FileList className={fileListClasses} data={target} visit={targetItemVisitor}/>
-                    <NewDirectory inputHandler={(dirname:string) => mkdirTarget(dirname).then(fetchTarget)}/>
+                    <NewDirectory inputHandler={(dirname: string) => mkdirTarget(dirname).then(fetchTarget)}/>
                 </div>
             </div>
         </div>

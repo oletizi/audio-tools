@@ -6,8 +6,8 @@ import {AkaiS56ProgramResult, Kloc, newProgramFromBuffer, Zone} from "@/lib/lib-
 import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
 import {nullProgress, Progress} from "@/model/progress"
-import {C3, pad} from "@/lib/lib-core";
-import {newServerOutput} from "@/process-output";
+import {pad} from "@/lib/lib-core";
+import {newServerOutput} from "@/lib/process-output";
 
 
 const out = newServerOutput()
@@ -17,7 +17,7 @@ export namespace translate {
     import Sample = decent.Sample;
 
     function hasher(text: string, max: number) {
-        let hash
+        let hash = 0
         for (let i = 0; i < text.length && i <= max; i++) {
             let char = text.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
