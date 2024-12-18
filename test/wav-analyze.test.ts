@@ -1,4 +1,4 @@
-import wavefile from "wavefile";
+import * as wavefile from "wavefile";
 import fs from "fs/promises";
 import path from "path";
 

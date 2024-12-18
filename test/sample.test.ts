@@ -1,9 +1,9 @@
 import fs from "fs/promises";
 import {newSampleFromBuffer} from "@/model/sample"
-import riffFile from 'riff-file'
+import * as riffFile from 'riff-file'
 import path from "path";
 import {expect} from "chai";
-import wavefile from "wavefile";
+import * as wavefile from "wavefile";
 
 
 describe('Sample', async () => {

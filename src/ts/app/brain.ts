@@ -84,7 +84,7 @@ export class Brain {
         console.log(`cd: newdir: ${newdir}`)
         const newpath = path.resolve(path.join(olddir, newdir))
 
-        const stats = await fs.stat(newpath)
+        await fs.stat(newpath)
         if (newpath.startsWith(this.sourceRoot)) {
             console.log(`Changing cwd to ${newpath}`)
         } else {

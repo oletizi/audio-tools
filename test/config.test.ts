@@ -1,6 +1,6 @@
 import {describe, it} from 'mocha'
 import tmp from 'tmp'
-import {loadClientConfig, saveClientConfig} from "../src/ts/app/config-server";
+import {loadClientConfig, saveClientConfig} from "@/lib/config-server";
 import {expect} from "chai";
 import fs from "fs/promises";
 

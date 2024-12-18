@@ -1,5 +1,5 @@
 import * as htmlparser2 from "htmlparser2"
-import riffFile from "riff-file";
+import * as riffFile from "riff-file";
 
 export namespace mpc {
 

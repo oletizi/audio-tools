@@ -1,5 +1,5 @@
 import {Input, InputEventMap, Output, WebMidi} from "webmidi"
-import {newClientOutput, ProcessOutput} from "@/process-output";
+import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 
 export class Midi {
     private output: Output;

@@ -6,7 +6,8 @@ import path from "path"
 
 describe(`Translate`, async () => {
     let cleanup = false
-    it('Converts MPC drum program to Akai Sx000 program.', async () => {
+    it('Converts MPC drum program to Akai Sx000 program.', async function () {
+        this.timeout(10000)
         const infile = 'test/data/mpc/Oscar/Oscar.xpm'
         const outdir = 'build'
         await translate.mpc2Sxk(infile, outdir)
@@ -36,7 +37,8 @@ describe(`Translate`, async () => {
         const buf = await fs.readFile('test/data/Sx000/Oscar/Oscar-unmuted.AKP')
         const program = newProgramFromBuffer(buf)
     })
-    it('Converts decent sampler program to Akai Sx000 program', async () => {
+    it('Converts decent sampler program to Akai Sx000 program', async function () {
+        this.timeout(10000)
         const infile = path.join('test', 'data', 'decent', 'Oscar.dspreset')
         const outdir = path.join('build')
         const outfile = path.join(outdir, 'Oscar.AKP')

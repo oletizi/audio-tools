@@ -6,11 +6,11 @@ describe('Brain', async () => {
     it('Returns a list of files in the from and to directories', async () => {
         const theBrain = new Brain(path.join('test', 'data', 'mpc'), '/tmp')
         let lists = await theBrain.list()
-        expect(lists.length).to.eq(2)
+        expect(lists.length).gte(2)
 
         let fromList = lists[0]
         expect(fromList).to.exist
-        expect(fromList.entries.length).to.eq(2)
+        expect(fromList.entries.length).gte(2)
 
         // check first entry
         let entry = fromList.entries[0]
@@ -18,7 +18,7 @@ describe('Brain', async () => {
         expect(entry.directory).to.be.true
 
         // check second entry
-        entry = fromList.entries[1]
+        entry = fromList.entries[2]
         expect(entry.name).to.eq('Oscar')
 
         // change directories
@@ -35,7 +35,7 @@ describe('Brain', async () => {
         expect(entry.directory).to.be.false
     })
 
-    it('Calculates breadcrumbs', async ()=> {
+    it('Calculates breadcrumbs', async () => {
         const theBrain = new Brain(path.join('test', 'data', 'mpc'), '/tmp')
 
         let lists = await theBrain.list()

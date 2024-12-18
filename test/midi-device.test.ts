@@ -1,28 +1,10 @@
 import {describe, it} from 'mocha'
 import {expect} from "chai";
-import {newServerOutput} from "../src/ts/process-output";
-import {Midi} from "../src/ts/midi/midi";
+import {newServerOutput} from "@/lib/process-output";
+import {Midi} from "@/midi/midi";
 import {Message} from "webmidi";
 
 const out = newServerOutput()
-const permissionTypes = [
-    'accessibility',
-    'bluetooth',
-    'calendar',
-    'camera',
-    'contacts',
-    'full-disk-access',
-    'input-monitoring',
-    'location',
-    'microphone',
-    'music-library',
-    'photos-add-only',
-    'photos-read-write',
-    'reminders',
-    'speech-recognition',
-    'screen',
-]
-
 const activeDevices = {
     "MT4 Port 1": {
         input: "MT4 Port 1",
@@ -37,7 +19,7 @@ const loopbackDevice = {
 }
 
 describe('Device', async () => {
-    const midi = new Midi(out)
+    const midi = new Midi()
     let isActive = false
 
     before(async () => {

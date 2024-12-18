@@ -1,4 +1,4 @@
-import {decent} from "../src/ts/lib/lib-decent";
+import {decent} from "@/lib/lib-decent";
 import {expect} from "chai";
 import fs from "fs/promises";
 import path from "path";

@@ -1,7 +1,8 @@
-import wavefile from "wavefile";
+import * as wavefile from "wavefile";
 import {WriteStream} from "fs";
 
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
+    console.log(`wavefile: ${wavefile}`)
     const wav = new wavefile.WaveFile()
     wav.fromBuffer(buf)
     return new WavSample(wav)

@@ -3,9 +3,9 @@ import path from "path"
 import Queue from "queue";
 import {PassThrough} from "stream";
 import {newProgress} from "@/model/progress"
-import {loadClientConfig, newServerConfig, saveClientConfig} from "./config-server";
-import {newServerOutput} from "@/process-output";
-import {ClientConfig} from "./config-client";
+import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server";
+import {newServerOutput} from "@/lib/process-output";
+import {ClientConfig} from "@/lib/config-client";
 import {Result} from "@/lib/lib-core"
 import {Brain} from "@/app/brain";
 

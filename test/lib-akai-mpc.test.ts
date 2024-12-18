@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 
-import {mpc} from "../src/ts/lib/lib-akai-mpc";
+import {mpc} from "@/lib/lib-akai-mpc";
 import {expect} from "chai";
 import Layer = mpc.Layer;
 import path from "path";
