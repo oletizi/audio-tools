@@ -4,6 +4,8 @@ import {getSessionData, getSessionId, saveSessionData} from "@/lib/lib-session";
 import path from "path";
 import fs from "fs/promises";
 import {translate} from "@/lib/lib-translate";
+import {enqueue} from "@/lib/lib-jobs";
+import {newServerOutput} from "@/lib/process-output";
 
 
 export async function POST(request: NextRequest) {
@@ -45,15 +47,22 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({message: "Invalid", status: 403})
         } else {
             await fs.mkdir(absoluteTarget)
+            let jobId = ''
             if (absoluteSource.endsWith('.dspreset')) {
                 // this is a Decent Sampler patch
-                await translate.decent2Sxk(absoluteSource, absoluteTarget)
+                jobId = await enqueue(sessionId, async (p) => {
+                    console.log(`Translating Decent Sampler program...`)
+                    await translate.decent2Sxk(absoluteSource, absoluteTarget, process.stdout, p)
+                })
             } else if (absoluteSource.endsWith('.xpm')) {
-                await translate.mpc2Sxk(absoluteSource, absoluteTarget)
+                jobId = await enqueue(sessionId, async (p) => {
+                    console.log(`Translating MPC program...`)
+                    await translate.mpc2Sxk(absoluteSource, absoluteTarget, process.stdout, p)
+                })
             } else {
                 return NextResponse.json({message: "Invalid", status: 403})
             }
-            return NextResponse.json({message: "Ok", status: 200})
+            return NextResponse.json({message: "Ok", status: 200, jobId: jobId})
         }
     } catch (e) {
         console.error(e)

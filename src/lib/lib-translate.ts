@@ -5,7 +5,7 @@ import {mpc} from "@/lib/lib-akai-mpc";
 import {AkaiS56ProgramResult, Kloc, newProgramFromBuffer, Zone} from "@/lib/lib-akai-s56k";
 import {decent} from '@/lib/lib-decent'
 import {newSampleFromBuffer} from "@/model/sample"
-import {nullProgress, Progress} from "@/model/progress"
+import {nullProgress, Progress} from "@/lib/lib-jobs"
 import {pad} from "@/lib/lib-core";
 import {newServerOutput} from "@/lib/process-output";
 
@@ -36,7 +36,8 @@ export namespace translate {
         let fstream: WriteStream
         let sampleCount = 0
         dprogram.groups.forEach(g => sampleCount += g.samples.length)
-        progress.setTotal(sampleCount + 1) // one progress increment for each sample to convert
+
+        progress.incrementTotal(sampleCount + 1) // one progress increment for each sample to convert
 
         for (const group of dprogram.groups) {
             const sxkProgram = newProgramFromBuffer(await fs.readFile(path.join('data', 'DEFAULT.AKP')))
@@ -181,7 +182,7 @@ export namespace translate {
         let midiNote = 60
         let detune = 0
 
-        progress.setTotal(mpcProgram.layers.length + 1)
+        progress.incrementTotal(mpcProgram.layers.length + 1)
 
         // for (const layer of mpcProgram.layers) {
         for (let i = 0; i < mpcProgram.layers.length; i++) {

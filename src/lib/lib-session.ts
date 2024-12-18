@@ -17,7 +17,7 @@ export interface SessionData {
 }
 
 
-export async function getSessionId() {
+export async function getSessionId():Promise<SessionId> {
     const cookieStore = await cookies()
     const cookie = cookieStore.get(SESSION_COOKIE_NAME)
     return (cookie ? cookie.value : '') as SessionId

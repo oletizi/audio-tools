@@ -1,10 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
-import {newServerConfig} from "@/lib/config-server";
-import {getSessionData, getSessionId, saveSessionData} from "@/lib/lib-session";
-import path from "path";
-import fs from "fs/promises";
-import {translate} from "@/lib/lib-translate";
-import {enqueue, getProgress, Progress} from "@/lib/lib-jobs";
+import {getSessionId} from "@/lib/lib-session";
+import {getProgress} from "@/lib/lib-jobs";
 
 
 export async function POST(request: NextRequest) {
