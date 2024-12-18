@@ -9,6 +9,7 @@ export interface DirectorySpec extends FileSpec {
 }
 
 export interface FileSet {
+    path: string[]
     files: FileSpec[]
     directories: DirectorySpec[]
 }

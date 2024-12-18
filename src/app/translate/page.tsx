@@ -75,13 +75,13 @@ export default function Page() {
         <div className="flex gap-10 h-full">
             <div className="flex-1">
                 <div className="flex flex-col gap-3 h-screen">
-                    <div>From:</div>
+                    <div>From: {source?.path.join(' › ')}</div>
                     <FileList className={fileListClasses} data={source} visit={sourceItemVisitor}/>
                 </div>
             </div>
             <div className="flex-1">
                 <div className="flex flex-col gap-3 h-screen">
-                    <div>To:</div>
+                    <div>To: {target?.path.join(' > ')}</div>
                     <FileList className={fileListClasses} data={target} visit={targetItemVisitor}/>
                     <NewDirectory inputHandler={(dirname: string) => mkdirTarget(dirname).then(fetchTarget)}/>
                 </div>

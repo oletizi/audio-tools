@@ -4,6 +4,7 @@ import {list} from "@/lib/lib-fs-server";
 import {getSessionData, getSessionId} from "@/lib/lib-session";
 import path from "path";
 import {newServerOutput} from "@/lib/process-output";
+import {FileSet} from "@/lib/lib-fs-api";
 
 const out = newServerOutput(true, ': /api/t/list/...path/route')
 
@@ -25,8 +26,13 @@ export async function GET(request, {params}: { params: Promise<{ path: string[] 
         out.error(`GET list: Invalid directory: ${dir}`)
         throw new Error('Invalid directory')
     }
-    let result = await list(dir, (filename) => {
-        return !filename.startsWith('.DS_Store') && ! filename.startsWith('DSLibraryInfo') && ! filename.startsWith('.git')
+    const set: FileSet = {
+        directories: [], files: [], path: [].concat(session.translate[location]?.map((i) => {
+            return i === '.' ? '' : i
+        }))
+    }
+    let result = await list(dir, set, (filename) => {
+        return !filename.startsWith('.DS_Store') && !filename.startsWith('DSLibraryInfo') && !filename.startsWith('.git')
     });
     if (session.translate[location].length > 0) {
         // we're in a subdirectory. Add '..'
