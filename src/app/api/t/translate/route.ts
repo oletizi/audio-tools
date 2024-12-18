@@ -18,25 +18,33 @@ export async function POST(request: NextRequest, {params}: { params: Promise<{ p
         const session = await getSessionData(sessionId)
 
         const normalSource = path.normalize(path.join(session.translate.source.join('/'), data.path))
-        const normalTarget = path.normalize(session.translate.target.join('/'))
+        const name = path.parse(data.path).name
+        const normalTarget = path.normalize(path.join(session.translate.target.join('/'), name))
 
         let cfg = await newServerConfig();
         const absoluteSource = path.normalize(path.join(cfg.sourceRoot, normalSource))
         const absoluteTarget = path.normalize(path.join(cfg.targetRoot, normalTarget))
 
-        if (!absoluteSource.startsWith(cfg.sourceRoot)) {
+        if (!(absoluteSource.startsWith(cfg.sourceRoot) && absoluteTarget.startsWith(cfg.targetRoot))) {
             // Make sure the absolute path is within the root directory
             // noinspection ExceptionCaughtLocallyJS
             throw new Error('Invalid')
         }
 
-        const stats = await fs.stat(absoluteSource)
+        try {
+            await fs.stat(absoluteTarget)
+            // The target exists. Bail.
+            return NextResponse.json({message: "Invalid", status: 403})
+        } catch (e) {
+            // The target doesn't exist. Ok.
+        }
 
-        if (stats.isDirectory()) {
+        const statsSource = await fs.stat(absoluteSource)
+
+        if (statsSource.isDirectory()) {
             return NextResponse.json({message: "Invalid", status: 403})
         } else {
-            // await fs.rm(absolute)
-            console.log(`TRANSLATE: ${absoluteSource} to ${absoluteTarget}`)
+            await fs.mkdir(absoluteTarget)
             if (absoluteSource.endsWith('.dspreset')) {
                 // this is a Decent Sampler patch
                 await translate.decent2Sxk(absoluteSource, absoluteTarget)
