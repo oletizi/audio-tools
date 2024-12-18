@@ -14,6 +14,7 @@ export interface ServerConfig {
     sourceRoot: string
     targetRoot: string
     sessionRoot: string
+    jobsRoot: string
 }
 
 async function validate(cfg: ServerConfig) {
@@ -21,11 +22,12 @@ async function validate(cfg: ServerConfig) {
 }
 
 export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
-    const rv = {
+    const rv: ServerConfig = {
         sourceRoot: DEFAULT_SOURCE_DIR,
         targetRoot: DEFAULT_TARGET_DIR,
+        jobsRoot: path.join(dataDir, 'jobs'),
         sessionRoot: path.join(dataDir, 'sessions')
-    } as ServerConfig
+    }
     const configPath = path.join(dataDir, 'server-config.json')
     const storedConfig = (await objectFromFile(configPath)).data
     if (await validate(storedConfig)) {

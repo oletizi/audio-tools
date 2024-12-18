@@ -6,7 +6,7 @@ import fs from "fs/promises";
 import {translate} from "@/lib/lib-translate";
 
 
-export async function POST(request: NextRequest, {params}: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest) {
     try {
         const data = await request.json()
         if (data.path == undefined) {

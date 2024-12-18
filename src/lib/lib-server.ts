@@ -13,4 +13,3 @@ export async function objectFromFile(filename: string) {
     }
     return rv
 }
-
