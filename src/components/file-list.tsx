@@ -17,7 +17,7 @@ export interface ItemAdornments {
     onClick: (f: FileSpec | DirectorySpec) => void
 
     translatable: boolean
-    onTransform: (f: FileSpec | DirectorySpec) => void
+    onTranslate: (f: FileSpec | DirectorySpec) => void
 
     deletable: boolean
     onDelete: (f: FileSpec | DirectorySpec) => void
@@ -33,7 +33,7 @@ const nullVisitItem: visitItem = () => {
             return Promise.resolve(undefined);
         }, onDelete(f: FileSpec | DirectorySpec): Promise<void> {
             return Promise.resolve(undefined);
-        }, onTransform(f: FileSpec | DirectorySpec): Promise<void> {
+        }, onTranslate(f: FileSpec | DirectorySpec): Promise<void> {
             return Promise.resolve(undefined);
         }, translatable: false
     }
@@ -53,41 +53,55 @@ export function FileList({data, className, visit = nullVisitItem}: {
 
     if (data) {
         items = items
-            .concat(data.directories.map(item => {
-                    const adornments: ItemAdornments = visit(item)
-                    const deleteButton = adornments.deletable ? <IconButton onClick={() => {
-                        adornments.onDelete(item)
-                    }}><DeleteIcon/></IconButton> : ''
-                    return (
-                        <div key={seq()}>
-                            <ListItem>
-                                <ListItemButton onClick={() => adornments.onClick(item)}>
-                                    <ListItemIcon><FolderIcon/></ListItemIcon>
-                                    <ListItemText>{item.name}</ListItemText>
-                                </ListItemButton>
-                                {deleteButton}
-                            </ListItem>
-                            <Divider/></div>)
-                }
-            ))
-            .concat(data.files.map(item => {
-                const adornments = visit(item)
-                const deleteButton = adornments.deletable ?
-                    <IconButton onClick={() => adornments.onDelete(item)}><DeleteIcon/></IconButton> : ''
-                const translateButton = adornments.translatable ?
-                    <IconButton onClick={() => adornments.onTransform(item)}><ArrowForwardIcon/></IconButton> : ''
+            .concat(data.directories
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(item => {
+                        const adornments: ItemAdornments = visit(item)
+                        const deleteButton = adornments.deletable ? <IconButton onClick={() => {
+                            adornments.onDelete(item)
+                        }}><DeleteIcon/></IconButton> : ''
+                        return (
+                            <div key={seq()}>
+                                <ListItem className="hover:bg-neutral-100">
+                                    <div className="flex items-center h-full w-full" onClick={() => adornments.onClick(item)}>
+                                        <ListItemIcon><FolderIcon/></ListItemIcon>
+                                        <ListItemText>{item.name}</ListItemText>
+                                    </div>
+                                    {deleteButton}
+                                </ListItem>
+                                <Divider/></div>)
+                    }
+                ))
+            .concat(data.files
+                .sort((a, b) => {
+                    const aAdornments = visit(a)
+                    const bAdornments = visit(b)
+                    if (aAdornments.translatable && bAdornments.translatable) {
+                        return a.name.localeCompare(b.name)
+                    } else if (aAdornments.translatable) {
+                        return -1
+                    } else if (bAdornments.translatable) {
+                        return 1
+                    }
+                    return a.name.localeCompare(b.name)
+                })
+                .map(item => {
+                    const adornments = visit(item)
+                    const classes = adornments.translatable ? "hover:bg-neutral-100" : ""
+                    const deleteButton = adornments.deletable ?
+                        <IconButton onClick={() => adornments.onDelete(item)}><DeleteIcon/></IconButton> : ''
+                    const translateButton = adornments.translatable ?
+                        <IconButton onClick={() => adornments.onTranslate(item)}><ArrowForwardIcon/></IconButton> : ''
 
-                return (<div key={seq()}>
-                    <ListItem>
-                        <ListItemButton>
+                    return (<div key={seq()}>
+                        <ListItem className={classes} onClick={adornments.translatable ? () => {adornments.onTranslate(item)} : () => {}}>
                             <ListItemIcon><InsertDriveFileIcon/></ListItemIcon>
                             <ListItemText>{item.name}</ListItemText>
-                        </ListItemButton>
-                        {deleteButton}
-                        {translateButton}
-                    </ListItem>
-                    <Divider/></div>)
-            }))
+                            {deleteButton}
+                            {translateButton}
+                        </ListItem>
+                        <Divider/></div>)
+                }))
     }
     return (<List className={className}>{items}</List>)
 }

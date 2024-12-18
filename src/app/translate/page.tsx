@@ -41,7 +41,7 @@ export default function Page() {
                 // noop
             },
             translatable: f.name.endsWith('.dspreset') || f.name.endsWith('.xpm'),
-            onTransform(f: FileSpec | DirectorySpec): Promise<void> {
+            onTranslate(f: FileSpec | DirectorySpec): Promise<void> {
                 translate(f.name).then(fetchTarget)
             },
         }
@@ -62,7 +62,7 @@ export default function Page() {
                 rmTarget(f.name).then(fetchTarget)
             },
             translatable: false,
-            onTransform(): void {
+            onTranslate(): void {
                 // noop
             },
         }
