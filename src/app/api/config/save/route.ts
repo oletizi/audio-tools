@@ -4,7 +4,6 @@ import {NextResponse} from "next/server";
 export async function POST(request) {
     const cfg = await request.json()
     try {
-        console.log(`Saving client config: ${cfg}`)
         await saveClientConfig(cfg)
         return NextResponse.json({data: {message: "Ok", status: 200}})
     } catch (e) {
