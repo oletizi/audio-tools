@@ -50,19 +50,19 @@ export class Midi {
         this.input = input
     }
 
-    async getOutputs() {
+    getOutputs() {
         return WebMidi.outputs
     }
 
-    async getInputs() {
+    getInputs() {
         return WebMidi.inputs
     }
 
-    async getCurrentOutput() {
+    getCurrentOutput() {
         return this.output
     }
 
-    async getCurrentInput() {
+    getCurrentInput() {
         return this.input
     }
 
@@ -90,9 +90,8 @@ export class Midi {
         return this.input && this.input.name === name
     }
 
-    async setOutputByName(name) {
-        let updated = false
-        const selected = (await this.getOutputs()).filter(output => output.name == name)
+    setOutputByName(name) {
+        const selected = this.getOutputs().filter(output => output.name === name)
         if (selected.length == 1) {
             this.setOutput(selected[0])
         }
@@ -100,14 +99,13 @@ export class Midi {
     }
 
     // XXX: Refactor to generalize setting output & input by name in a single function
-    async setInputByName(name) {
-        let updated = false
-        const selected = (await this.getInputs()).filter(input => input.name == name)
+    setInputByName(name) {
+        const selected = this.getInputs().filter(input => input.name === name)
         if (selected.length == 1) {
             // this.input = selected[0]
             this.setInput(selected[0])
         }
-        return this.output
+        return this.input
     }
 
     addListener(eventName: Symbol | keyof InputEventMap, eventListener: (event) => void) {
