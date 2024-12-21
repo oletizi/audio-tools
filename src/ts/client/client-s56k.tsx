@@ -1,13 +1,13 @@
 import {createRoot, Root} from "react-dom/client";
 import {MidiDeviceSelect, MidiDeviceSpec, ProgramInfoView, ProgramOutputView} from "@/components/components-experimental";
 import {Midi} from "@/midi/midi"
-import {ClientConfig, newClientConfig} from "./config-client";
-import {newClientCommon} from "./client-common";
+import {ClientConfig, newClientConfig} from "@/lib/config-client";
+import {newClientCommon} from "@/lib/client-common";
 import {MidiInstrument, newMidiInstrument} from "@/midi/instrument";
 import {newS56kDevice, ProgramInfoResult, S56kDevice} from "@/midi/device";
 import React from 'react'
 
-const clientCommon = newClientCommon()
+const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 const out = clientCommon.getOutput()
 const midi = new Midi()
 const midiOutputSelectRoot = createRoot(document.getElementById('midi-output-select'))
@@ -106,8 +106,8 @@ class ClientS56k {
 async function saveConfig(cfg) {
     try {
         const result = await clientCommon.saveConfig(cfg)
-        if (result.error) {
-            out.log(`Error saving config: ${result.error}`)
+        if (result.errors.length > 0) {
+            out.log(`Error saving config: ${result.errors}`)
         } else {
             out.log(`Done saving config.`)
         }
