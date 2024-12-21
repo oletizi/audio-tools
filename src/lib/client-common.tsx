@@ -57,13 +57,13 @@ class BasicClientCommon implements ClientCommon {
 
     fetchConfig(): Promise<Result> {
         return new Promise<Result>((resolve, reject) => {
-            this.request('/config')
+            this.request('/api/config')
                 .then((result) => resolve(result))
                 .catch(err => reject(err))
         })
     }
     async saveConfig(cfg) {
-        const result = await this.post('/config/save', cfg)
+        const result = await this.post('/api/config/save', cfg)
         if (result.errors.length > 0) {
             this.out.error(result.errors.join(','))
             this.status(result.errors)
