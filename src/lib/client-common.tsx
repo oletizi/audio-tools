@@ -62,15 +62,6 @@ class BasicClientCommon implements ClientCommon {
                 .catch(err => reject(err))
         })
     }
-
-    fetchServerConfig(): Promise<Result> {
-        return new Promise<Result>((resolve, reject) => {
-            this.request('/config/server')
-                .then((result) => resolve(result))
-                .catch(err => reject(err))
-        })
-    }
-
     async saveConfig(cfg) {
         const result = await this.post('/config/save', cfg)
         if (result.errors.length > 0) {
@@ -108,6 +99,7 @@ class BasicClientCommon implements ClientCommon {
                 try {
                     this.status(statusMessage)
                     rv.data = (await res.json()).data
+                    console.log(`request returning result: ${JSON.stringify(rv)}`)
                 } catch (err) {
                     this.status(`Error: ${err.message}`)
                     this.out.error(err)

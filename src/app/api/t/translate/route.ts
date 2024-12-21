@@ -52,17 +52,17 @@ export async function POST(request: NextRequest) {
                 // this is a Decent Sampler patch
                 jobId = await enqueue(sessionId, async (p) => {
                     console.log(`Translating Decent Sampler program...`)
-                    await translate.decent2Sxk(absoluteSource, absoluteTarget, process.stdout, p)
+                    translate.decent2Sxk(absoluteSource, absoluteTarget, process.stdout, p).then()
                 })
             } else if (absoluteSource.endsWith('.xpm')) {
                 jobId = await enqueue(sessionId, async (p) => {
                     console.log(`Translating MPC program...`)
-                    await translate.mpc2Sxk(absoluteSource, absoluteTarget, process.stdout, p)
+                    translate.mpc2Sxk(absoluteSource, absoluteTarget, process.stdout, p).then()
                 })
             } else {
                 return NextResponse.json({message: "Invalid", status: 403})
             }
-            return NextResponse.json({message: "Ok", status: 200, jobId: jobId})
+            return NextResponse.json({message: "Ok", status: 200, data: {jobId: jobId}})
         }
     } catch (e) {
         console.error(e)
