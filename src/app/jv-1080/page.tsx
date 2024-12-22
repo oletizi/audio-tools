@@ -19,6 +19,7 @@ import * as sysex from "roland-sysex.js"
 import Terminal, {TerminalListener, TerminalNotifier} from "@/components/terminal";
 import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
+import IntField from "@/components/number-field";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
@@ -150,6 +151,18 @@ export default function Page() {
                     }}>
                         <TextField label="Perf. No." defaultValue={0}/>
                     </form>
+                </div>
+                <div className="flex gap-10">
+                    <ButtonGroup label="Patch Group">
+                        <Button onClick={() => {
+                            jv1080.patchGroupUser()
+                        }}>User</Button>
+                        <Button onClick={() => {
+                            jv1080.patchGroupPcm()
+                        }}>PCM</Button>
+                        <Button>EXP</Button>
+                    </ButtonGroup>
+                    <IntField label="Patch Grp. Id" min={0} max={127} onSubmit={n => jv1080.setPatchGroupId(n)}/>
                 </div>
             </div>
         </div>)

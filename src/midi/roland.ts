@@ -47,7 +47,8 @@ const CMD_DT1 = 0x12
 const BASE_SYSTEM = [0, 0, 0, 0]
 const OFFSET_PANEL_MODE = [0, 0, 0, 0]
 const OFFSET_PERFORMANCE_NUMBER = [0, 0, 0, 1]
-
+const OFFSET_PATCH_GROUP = [0, 0, 0, 2]
+const OFFSET_PATCH_GROUP_ID = [0, 0, 0, 3]
 const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
 
 export class Jv1080 {
@@ -100,6 +101,23 @@ export class Jv1080 {
 
     setPerformanceNumber(n: number) {
         this.set(param(BASE_SYSTEM, OFFSET_PERFORMANCE_NUMBER).concat([n]))
+    }
+
+    patchGroupUser() {
+        // this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP).concat([0]))
+        this.patchGroup(0)
+    }
+
+    patchGroupPcm() {
+        // this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP).concat[[1]])
+        this.patchGroup(1)
+    }
+    private patchGroup(n:number) {
+        this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP).concat([n]))
+    }
+
+    setPatchGroupId(n: number) {
+        this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP_ID).concat([n]))
     }
 }
 
