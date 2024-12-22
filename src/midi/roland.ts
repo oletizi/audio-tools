@@ -45,7 +45,8 @@ const CMD_RQ1 = 0x11
 const CMD_DT1 = 0x12
 
 const BASE_SYSTEM = [0, 0, 0, 0]
-const OFFSET_PANEL_MODE = [0, 0]
+const OFFSET_PANEL_MODE = [0, 0, 0, 0]
+const OFFSET_PERFORMANCE_NUMBER = [0, 0, 0, 1]
 
 const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
 
@@ -96,12 +97,12 @@ export class Jv1080 {
     panelModeGm() {
         this.set(param(BASE_SYSTEM, OFFSET_PANEL_MODE).concat([0x02]))
     }
+
+    setPerformanceNumber(n: number) {
+        this.set(param(BASE_SYSTEM, OFFSET_PERFORMANCE_NUMBER).concat([n]))
+    }
 }
 
 function param(base: number[], offset: number[]) {
-    const revBase = base.toReversed()
-    for (let i=0; i<offset.toReversed(); i++) {
-        revBase[i] = revBase[i] + offset[i]
-    }
-    return revBase.reverse()
+    return base.map((n, i) => n + offset[i])
 }

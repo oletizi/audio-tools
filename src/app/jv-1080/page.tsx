@@ -1,6 +1,15 @@
 "use client"
 import FormControl from "@mui/material/FormControl";
-import {Button, ButtonGroup, InputLabel, MenuItem, Select, SelectChangeEvent, ToggleButton} from "@mui/material";
+import {
+    Button,
+    ButtonGroup,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    TextField,
+    ToggleButton
+} from "@mui/material";
 import {Midi} from "@/midi/midi";
 import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
@@ -129,6 +138,18 @@ export default function Page() {
                         <Button onClick={() => jv1080.panelModePatch()}>Patch</Button>
                         <Button onClick={() => jv1080.panelModeGm()}>GM</Button>
                     </ButtonGroup>
+                    <form onSubmit={(e) => {
+                        e.preventDefault()
+                        const value = e.target[0].value
+                        console.log(`Value: ${value}`)
+                        const n = Number.parseInt(value)
+                        console.log(`Performance number: ${n}`)
+                        if (!isNaN(n)) {
+                            jv1080.setPerformanceNumber(n)
+                        }
+                    }}>
+                        <TextField label="Perf. No." defaultValue={0}/>
+                    </form>
                 </div>
             </div>
         </div>)
