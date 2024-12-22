@@ -31,14 +31,14 @@ class ClientS56k {
 
         await midi.start(async () => {
             if (this.cfg.midiOutput && this.cfg.midiOutput !== '') {
-                for (const out of await midi.getOutputs()) {
+                for (const out of  midi.getOutputs()) {
                     if (out.name === this.cfg.midiOutput) {
                         midi.setOutput(out)
                     }
                 }
             }
             if (this.cfg.midiInput && this.cfg.midiInput !== '') {
-                for (const input of await midi.getInputs()) {
+                for (const input of  midi.getInputs()) {
                     if (input.name === this.cfg.midiInput) {
                         midi.setInput(input)
                     }
@@ -60,7 +60,7 @@ class ClientS56k {
             )
             await updateMidiDeviceSelect(
                 midiInputSelectRoot,
-                async () => (await midi.getInputs()).map((input) => input.name),
+                async () => midi.getInputs().map((input) => input.name),
                 async (name) => midi.isCurrentInput(name),
                 async (name) => {
                     await midi.setInputByName(name)

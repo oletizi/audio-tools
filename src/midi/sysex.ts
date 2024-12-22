@@ -1,5 +1,5 @@
 import {Midi} from "@/midi/midi";
-import {newClientOutput, ProcessOutput} from "@/process-output";
+import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 
 const DEBUG = false
 
@@ -194,7 +194,7 @@ export class Sysex {
         const s56kId = 0x5E
         const deviceId = 0x00
         const userRef = 0x00
-        return new Promise<any>(async (resolve, reject) => {
+        return new Promise<any>(async (resolve) => {
             let eventCount = 0
 
             function listener(event) {
