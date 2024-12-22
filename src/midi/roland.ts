@@ -49,6 +49,12 @@ const OFFSET_PANEL_MODE = [0, 0, 0, 0]
 const OFFSET_PERFORMANCE_NUMBER = [0, 0, 0, 1]
 const OFFSET_PATCH_GROUP = [0, 0, 0, 2]
 const OFFSET_PATCH_GROUP_ID = [0, 0, 0, 3]
+const OFFSET_PATCH_NUMBER = [0, 0, 0, 4]
+const OFFSET_EFX_SWITCH = [0, 0, 0, 8]
+const OFFSET_CHORUS_FX_SWITCH = [0, 0, 0, 9]
+const OFFSET_REVERB_FX_SWITCH = [0, 0, 0, 10]
+const OFFSET_PATCH_REMAIN = [0, 0, 0, 11]
+
 const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
 
 export class Jv1080 {
@@ -112,12 +118,33 @@ export class Jv1080 {
         // this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP).concat[[1]])
         this.patchGroup(1)
     }
-    private patchGroup(n:number) {
+
+    private patchGroup(n: number) {
         this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP).concat([n]))
     }
 
     setPatchGroupId(n: number) {
         this.set(param(BASE_SYSTEM, OFFSET_PATCH_GROUP_ID).concat([n]))
+    }
+
+    setPatchNumber(n: number) {
+        this.set(param(BASE_SYSTEM, OFFSET_PATCH_NUMBER).concat([n]))
+    }
+
+    setInsertFx(on: boolean) {
+        this.set(param(BASE_SYSTEM, OFFSET_EFX_SWITCH).concat([on ? 1 : 0]))
+    }
+
+    setChorusFx(on: boolean) {
+        this.set(param(BASE_SYSTEM, OFFSET_CHORUS_FX_SWITCH).concat([on ? 1 : 0]))
+    }
+
+    setReverbFx(on: boolean) {
+        this.set(param(BASE_SYSTEM, OFFSET_REVERB_FX_SWITCH).concat([on ? 1 : 0]))
+    }
+
+    setPatchRemain(on: boolean) {
+        this.set(param(BASE_SYSTEM, OFFSET_PATCH_REMAIN).concat([on ? 1 : 0]))
     }
 }
 

@@ -2,21 +2,16 @@
 import FormControl from "@mui/material/FormControl";
 import {
     Button,
-    ButtonGroup,
+    ButtonGroup, FormControlLabel, FormGroup,
     InputLabel,
     MenuItem,
     Select,
-    SelectChangeEvent,
-    TextField,
-    ToggleButton
+    SelectChangeEvent, Switch,
 } from "@mui/material";
 import {Midi} from "@/midi/midi";
 import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
-// noinspection TypeScriptCheckImport
-import * as sysex from "roland-sysex.js"
-import Terminal, {TerminalListener, TerminalNotifier} from "@/components/terminal";
 import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
 import IntField from "@/components/number-field";
@@ -139,7 +134,8 @@ export default function Page() {
                         <Button onClick={() => jv1080.panelModePatch()}>Patch</Button>
                         <Button onClick={() => jv1080.panelModeGm()}>GM</Button>
                     </ButtonGroup>
-                    <IntField label="Perf. No." defaultValue={1} min={1} max={128} onSubmit={n => jv1080.setPerformanceNumber(n - 1)}/>
+                    <IntField label="Perf. No." defaultValue={1} min={1} max={128}
+                              onSubmit={n => jv1080.setPerformanceNumber(n - 1)}/>
                 </div>
                 <div className="flex gap-10">
                     <ButtonGroup label="Patch Group">
@@ -151,7 +147,20 @@ export default function Page() {
                         }}>PCM</Button>
                         <Button>EXP</Button>
                     </ButtonGroup>
-                    <IntField label="Patch Grp. Id" defaultValue={1} min={1} max={128} onSubmit={n => jv1080.setPatchGroupId(n - 1)}/>
+                    <IntField label="Patch Grp. Id" defaultValue={1} min={1} max={128}
+                              onSubmit={n => jv1080.setPatchGroupId(n - 1)}/>
+                    <IntField label="Patch No." defaultValue={1} min={1} max={254}
+                              onSubmit={n => jv1080.setPatchNumber(n - 1)}/>
+                </div>
+                <div className="flex gap-10">
+                    <FormGroup>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setInsertFx(e.target.checked)}/>} label="Insert EFX"/>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setChorusFx(e.target.checked)}/>} label="Chorus"/>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setReverbFx(e.target.checked)}/>} label="Reverb"/>
+                    </FormGroup>
+                    <FormGroup>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setPatchRemain(e.target.checked)}/>} label="Patch Remain" />
+                    </FormGroup>
                 </div>
             </div>
         </div>)
