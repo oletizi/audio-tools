@@ -126,8 +126,8 @@ export default function Page() {
                     >Test Sysex</Button>
                     <ButtonGroup variant="contained">
                         <Button onClick={() => jv1080.panelModePerformance()}>Performance</Button>
-                        <Button>Patch</Button>
-                        <Button>Rhythm</Button>
+                        <Button onClick={() => jv1080.panelModePatch()}>Patch</Button>
+                        <Button onClick={() => jv1080.panelModeGm()}>GM</Button>
                     </ButtonGroup>
                 </div>
             </div>

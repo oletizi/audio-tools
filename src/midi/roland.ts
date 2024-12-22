@@ -65,7 +65,15 @@ export class Jv1080 {
     }
 
     private set(msg: number[]) {
-        this.midi.sendSysex(this.getIdentifier(), [CMD_DT1].concat(msg).concat(this.checksum(msg)))
+        this.sysex(CMD_DT1, msg)
+    }
+
+    private get(msg: number[]) {
+        this.sysex(CMD_RQ1, msg)
+    }
+
+    private sysex(cmd: number, msg) {
+        this.midi.sendSysex(this.getIdentifier(), [cmd].concat(msg).concat(this.checksum(msg)))
     }
 
     testSysex() {
@@ -73,7 +81,16 @@ export class Jv1080 {
     }
 
 
-    panelModePerformance = () => {
-
+    panelModePerformance() {
+        this.set(BASE_SYSTEM.concat([0x00]))
     }
+
+    panelModePatch() {
+        this.set(BASE_SYSTEM.concat([0x01]))
+    }
+
+    panelModeGm() {
+        this.set(BASE_SYSTEM.concat([0x02]))
+    }
+
 }
