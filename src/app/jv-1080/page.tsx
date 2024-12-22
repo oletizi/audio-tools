@@ -139,18 +139,7 @@ export default function Page() {
                         <Button onClick={() => jv1080.panelModePatch()}>Patch</Button>
                         <Button onClick={() => jv1080.panelModeGm()}>GM</Button>
                     </ButtonGroup>
-                    <form onSubmit={(e) => {
-                        e.preventDefault()
-                        const value = e.target[0].value
-                        console.log(`Value: ${value}`)
-                        const n = Number.parseInt(value)
-                        console.log(`Performance number: ${n}`)
-                        if (!isNaN(n)) {
-                            jv1080.setPerformanceNumber(n)
-                        }
-                    }}>
-                        <TextField label="Perf. No." defaultValue={0}/>
-                    </form>
+                    <IntField label="Perf. No." defaultValue={1} min={1} max={128} onSubmit={n => jv1080.setPerformanceNumber(n - 1)}/>
                 </div>
                 <div className="flex gap-10">
                     <ButtonGroup label="Patch Group">
@@ -162,7 +151,7 @@ export default function Page() {
                         }}>PCM</Button>
                         <Button>EXP</Button>
                     </ButtonGroup>
-                    <IntField label="Patch Grp. Id" min={0} max={127} onSubmit={n => jv1080.setPatchGroupId(n)}/>
+                    <IntField label="Patch Grp. Id" defaultValue={1} min={1} max={128} onSubmit={n => jv1080.setPatchGroupId(n - 1)}/>
                 </div>
             </div>
         </div>)
