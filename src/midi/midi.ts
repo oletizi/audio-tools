@@ -114,9 +114,9 @@ export class Midi {
         return this.input.addListener(eventName, eventListener)
     }
 
-    sendSysex(deviceId: number, data: number[]): Midi {
+    sendSysex(identifier: number | number[], data: number[]): Midi {
         this.out.log(`Sending sysex to ${this.output.name}`)
-        this.output.sendSysex(deviceId, data)
+        this.output.sendSysex(identifier, data)
         return this
     }
 

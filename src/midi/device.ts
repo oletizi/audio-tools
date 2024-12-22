@@ -58,7 +58,7 @@ import {
     Result,
     StringResult
 } from "@/lib/lib-core";
-import {newControlMessage, ResponseStatus, Section, Sysex, SysexControlMessage, SysexResponse} from "@/midi/sysex";
+import {newControlMessage, ResponseStatus, Section, AkaiS56kSysex, SysexControlMessage, SysexResponse} from "@/midi/akai-s56k-sysex";
 import {
     newProgramLfos,
     newProgramMidiTune,
@@ -239,10 +239,10 @@ export interface S56kDevice {
 }
 
 class S56kProgramSysex implements S56kProgram {
-    private readonly sysex: Sysex;
+    private readonly sysex: AkaiS56kSysex;
     private readonly out: ProcessOutput;
 
-    constructor(sysex: Sysex, out: ProcessOutput) {
+    constructor(sysex: AkaiS56kSysex, out: ProcessOutput) {
         this.sysex = sysex
         this.out = out
     }
@@ -325,7 +325,7 @@ class S56kProgramSysex implements S56kProgram {
  * @param sysex -- a Sysex client that knows how to send and receive Akai S56k system exclusive messages
  * @param out -- a wrapper around stdout/stderr and/or console.log/console.err, depending on execution context (nodejs or browser)
  */
-export function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
+export function newDeviceObject(spec, sysex: AkaiS56kSysex, out: ProcessOutput) {
     const sectionCode = spec.sectionCode
     const obj = {}
 
@@ -451,13 +451,13 @@ export function newDeviceObject(spec, sysex: Sysex, out: ProcessOutput) {
 
 class S56kSysex implements S56kDevice {
     private readonly monitor: boolean;
-    private readonly sysex: Sysex;
+    private readonly sysex: AkaiS56kSysex;
     private readonly midi: any;
     private readonly out: ProcessOutput;
     private readonly program: S56kProgramSysex;
 
     constructor(midi, out: ProcessOutput = newClientOutput(), monitor: boolean = false) {
-        this.sysex = new Sysex(midi)
+        this.sysex = new AkaiS56kSysex(midi)
         this.program = new S56kProgramSysex(this.sysex, out)
         this.midi = midi
         this.out = out

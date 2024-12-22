@@ -2,7 +2,7 @@
 // DO NOT EDIT. YOUR CHANGES WILL BE OVERWRITTEN.
 
 import {MutableNumber, MutableString, Result, NumberResult, StringResult} from "@/lib/lib-core"
-import {Sysex} from "@/midi/sysex"
+import {AkaiS56kSysex} from "@/midi/akai-s56k-sysex"
 import {newDeviceObject} from "@/midi/device"
 import {ProcessOutput} from "@/process-output"
 import {programOutputSpec,programMidTuneSpec,programPitchBendSpec,programLfosSpec} from "@/midi/devices/specs"
@@ -48,7 +48,7 @@ export interface ProgramOutput {
 }
 
 
-export function newProgramOutput(sysex: Sysex, out: ProcessOutput) {
+export function newProgramOutput(sysex: AkaiS56kSysex, out: ProcessOutput) {
   return newDeviceObject(programOutputSpec, sysex, out) as ProgramOutput}
 
 //
@@ -76,7 +76,7 @@ export interface ProgramMidiTune {
 }
 
 
-export function newProgramMidiTune(sysex: Sysex, out: ProcessOutput) {
+export function newProgramMidiTune(sysex: AkaiS56kSysex, out: ProcessOutput) {
   return newDeviceObject(programMidTuneSpec, sysex, out) as ProgramMidiTune}
 
 //
@@ -112,7 +112,7 @@ export interface ProgramPitchBend {
 }
 
 
-export function newProgramPitchBend(sysex: Sysex, out: ProcessOutput) {
+export function newProgramPitchBend(sysex: AkaiS56kSysex, out: ProcessOutput) {
   return newDeviceObject(programPitchBendSpec, sysex, out) as ProgramPitchBend}
 
 //
@@ -154,6 +154,6 @@ export interface ProgramLfos {
 }
 
 
-export function newProgramLfos(sysex: Sysex, out: ProcessOutput) {
+export function newProgramLfos(sysex: AkaiS56kSysex, out: ProcessOutput) {
   return newDeviceObject(programLfosSpec, sysex, out) as ProgramLfos}
 

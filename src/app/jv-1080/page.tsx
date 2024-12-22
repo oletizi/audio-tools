@@ -9,6 +9,7 @@ import {newClientCommon} from "@/lib/client-common";
 import * as sysex from "roland-sysex.js"
 import Terminal, {TerminalListener, TerminalNotifier} from "@/components/terminal";
 import {Message, Note} from "webmidi";
+import {Jv1080} from "@/midi/roland";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
@@ -27,6 +28,7 @@ const midiListener = (e) => {
     }
 }
 const midi = new Midi()
+const jv1080 = new Jv1080(midi, 16)
 midi.start(() => {
     clientCommon.fetchConfig().then(r => {
             if (r.errors.length == 0) {
@@ -119,7 +121,7 @@ export default function Page() {
                     <Button variant="contained"
                             onClick={() => {
                                 console.log(`Test Sysex!!!!!`)
-
+                                jv1080.testSysex()
                             }}
                     >Test Sysex</Button>
                 </div>
