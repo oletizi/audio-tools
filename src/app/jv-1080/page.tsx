@@ -6,27 +6,25 @@ import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
 // noinspection TypeScriptCheckImport
+import * as sysex from "roland-sysex.js"
 import Terminal, {TerminalListener, TerminalNotifier} from "@/components/terminal";
-import {Note, NoteMessageEvent} from "webmidi";
+import {Message, Note} from "webmidi";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
-const terminalListeners: TerminalListener[] = []
-const terminalNotifier: TerminalNotifier = {
-    addListener(l: TerminalListener) {
-        terminalListeners.push(l)
-    }
-}
+
 const midiListener = (e) => {
     console.log(`Midi Event!!!!`)
     console.log(e)
-    terminalListeners.forEach((t) => {
-        switch (e.type) {
-            case 'noteon': {
-                const note :Note = e.note
-                t.append(`${new Date().getTime()}: ${e.type}: Note: ${note.name} Velocity: ${note.rawAttack}\n`)
-            }
+    switch (e.type) {
+        case 'noteon':
+            const m: Message = e.message
+            const note: Note = e.note
+            console.log(`${new Date().getTime()}: ${e.type}, Chan: ${m.channel}, Note: ${note.name}, Vel: ${note.rawAttack}\n`)
+            break
+        default: {
+            console.log(`${new Date().getTime()}: ${e.type}\n`)
         }
-    })
+    }
 }
 const midi = new Midi()
 midi.start(() => {
@@ -37,6 +35,7 @@ midi.start(() => {
                 midi.setOutputByName(cfg.midiOutput)
 
                 midi.addListener('noteon', midiListener)
+                midi.addListener('sysex', midiListener)
 
             } else {
                 console.error(r.errors)
@@ -120,10 +119,10 @@ export default function Page() {
                     <Button variant="contained"
                             onClick={() => {
                                 console.log(`Test Sysex!!!!!`)
+
                             }}
                     >Test Sysex</Button>
                 </div>
-                <Terminal notifier={terminalNotifier} maxRows={5}></Terminal>
             </div>
         </div>)
 }
