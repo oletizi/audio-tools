@@ -1,6 +1,6 @@
 "use client"
 import FormControl from "@mui/material/FormControl";
-import {Button, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {Button, ButtonGroup, InputLabel, MenuItem, Select, SelectChangeEvent, ToggleButton} from "@mui/material";
 import {Midi} from "@/midi/midi";
 import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
@@ -124,6 +124,11 @@ export default function Page() {
                                 jv1080.testSysex()
                             }}
                     >Test Sysex</Button>
+                    <ButtonGroup variant="contained">
+                        <Button onClick={() => jv1080.panelModePerformance()}>Performance</Button>
+                        <Button>Patch</Button>
+                        <Button>Rhythm</Button>
+                    </ButtonGroup>
                 </div>
             </div>
         </div>)

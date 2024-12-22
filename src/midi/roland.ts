@@ -1,6 +1,5 @@
 import {Midi} from "@/midi/midi";
 // noinspection TypeScriptCheckImport
-import {format} from "roland-sysex.js"
 /**
  * | Byte       | Description       |
  * + ---------- + ----------------- +
@@ -57,24 +56,24 @@ export class Jv1080 {
         this.deviceId = deviceId
     }
 
-    testSysex() {
-        const msg = [0x01, 0x00, 0x00, 0x28, 0x06]
-        //   return (128 - buf.reduce(function (a, b) {
-        //     return (a + b) % 128;
-        //   }, 0)) % 128;
-        // let data = [CMD_DT1, 0x01, 0x00, 0x00, 0x28, 0x06, 0x51];
-        const checksum = this.checksum(msg)
-        console.log(`checksum: ${checksum}; expected 81`)
-        msg.unshift(CMD_DT1)
-        // msg.push(0x51)
-        msg.push(checksum)
-        this.midi.sendSysex(this.getIdentifier(), msg)
-    }
-
     private checksum(msg: number[]) {
         return (128 - msg.reduce((acc, val) => (acc + val) % 128)) % 128
     }
+
     private getIdentifier() {
         return [ROLAND_MANUFACTURER_ID, this.deviceId, JV_1080_MODEL_ID];
+    }
+
+    private set(msg: number[]) {
+        this.midi.sendSysex(this.getIdentifier(), [CMD_DT1].concat(msg).concat(this.checksum(msg)))
+    }
+
+    testSysex() {
+        this.set([0x01, 0x00, 0x00, 0x28, 0x06])
+    }
+
+
+    panelModePerformance = () => {
+
     }
 }
