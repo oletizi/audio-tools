@@ -45,6 +45,8 @@ const CMD_RQ1 = 0x11
 const CMD_DT1 = 0x12
 
 const BASE_SYSTEM = [0, 0, 0, 0]
+const OFFSET_PANEL_MODE = [0, 0]
+
 const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
 
 export class Jv1080 {
@@ -65,6 +67,8 @@ export class Jv1080 {
     }
 
     private set(msg: number[]) {
+        console.log(`set msg:`)
+        console.log(msg)
         this.sysex(CMD_DT1, msg)
     }
 
@@ -82,15 +86,22 @@ export class Jv1080 {
 
 
     panelModePerformance() {
-        this.set(BASE_SYSTEM.concat([0x00]))
+        this.set(param(BASE_SYSTEM, OFFSET_PANEL_MODE).concat([0x00]))
     }
 
     panelModePatch() {
-        this.set(BASE_SYSTEM.concat([0x01]))
+        this.set(param(BASE_SYSTEM, OFFSET_PANEL_MODE).concat([0x01]))
     }
 
     panelModeGm() {
-        this.set(BASE_SYSTEM.concat([0x02]))
+        this.set(param(BASE_SYSTEM, OFFSET_PANEL_MODE).concat([0x02]))
     }
+}
 
+function param(base: number[], offset: number[]) {
+    const revBase = base.toReversed()
+    for (let i=0; i<offset.toReversed(); i++) {
+        revBase[i] = revBase[i] + offset[i]
+    }
+    return revBase.reverse()
 }
