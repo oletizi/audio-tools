@@ -2,9 +2,9 @@
 import FormControl from "@mui/material/FormControl";
 import {
     Button,
-    ButtonGroup, FormControlLabel, FormGroup,
+    ButtonGroup, FormControlLabel, FormGroup, FormLabel,
     InputLabel,
-    MenuItem,
+    MenuItem, Radio, RadioGroup,
     Select,
     SelectChangeEvent, Switch,
 } from "@mui/material";
@@ -154,13 +154,28 @@ export default function Page() {
                 </div>
                 <div className="flex gap-10">
                     <FormGroup>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setInsertFx(e.target.checked)}/>} label="Insert EFX"/>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setChorusFx(e.target.checked)}/>} label="Chorus"/>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setReverbFx(e.target.checked)}/>} label="Reverb"/>
+                        <FormLabel>Effects</FormLabel>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setInsertFx(e.target.checked)}/>}
+                                          label="Insert EFX"/>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setChorusFx(e.target.checked)}/>}
+                                          label="Chorus"/>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setReverbFx(e.target.checked)}/>}
+                                          label="Reverb"/>
                     </FormGroup>
                     <FormGroup>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setPatchRemain(e.target.checked)}/>} label="Patch Remain" />
+                        <FormLabel>Patch Remain</FormLabel>
+                        <FormControlLabel control={<Switch onChange={e => jv1080.setPatchRemain(e.target.checked)}/>}
+                                          label="Patch Remain"/>
                     </FormGroup>
+                    <FormControl>
+                        <FormLabel>Clock</FormLabel>
+                        <RadioGroup>
+                            <FormControlLabel value={0} control={<Radio onClick={() => jv1080.setClockInternal()}/>}
+                                              label="Internal"/>
+                            <FormControlLabel value={1} control={<Radio onClick={() => jv1080.setClockMidi()}/>}
+                                              label="MIDI"/>
+                        </RadioGroup>
+                    </FormControl>
                 </div>
             </div>
         </div>)

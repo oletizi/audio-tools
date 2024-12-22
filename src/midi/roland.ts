@@ -54,6 +54,7 @@ const OFFSET_EFX_SWITCH = [0, 0, 0, 8]
 const OFFSET_CHORUS_FX_SWITCH = [0, 0, 0, 9]
 const OFFSET_REVERB_FX_SWITCH = [0, 0, 0, 10]
 const OFFSET_PATCH_REMAIN = [0, 0, 0, 11]
+const OFFSET_CLOCK = [0, 0, 0, 12]
 
 const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
 
@@ -145,6 +146,14 @@ export class Jv1080 {
 
     setPatchRemain(on: boolean) {
         this.set(param(BASE_SYSTEM, OFFSET_PATCH_REMAIN).concat([on ? 1 : 0]))
+    }
+
+    setClockInternal() {
+        this.set(param(BASE_SYSTEM, OFFSET_CLOCK).concat([0]))
+    }
+
+    setClockMidi() {
+        this.set(param(BASE_SYSTEM, OFFSET_CLOCK).concat([1]))
     }
 }
 
