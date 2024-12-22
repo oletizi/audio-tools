@@ -1,3 +1,5 @@
+import {Midi} from "@/midi/midi";
+
 /**
  * | Byte       | Description       |
  * + ---------- + ----------------- +
@@ -9,9 +11,6 @@
  * | [Body] | Main data         |
  * | 0xF7   | End Sysex         |
  */
-
-import {Output} from "webmidi";
-import {Midi} from "@/midi/midi";
 
 /**
  * Example message from device
@@ -32,6 +31,8 @@ import {Midi} from "@/midi/midi";
 
 const ROLAND_MANUFACTURER_ID = 0x41
 const JV_1080_MODEL_ID = 0x6A
+const CMD_RQ1 = 0x11
+const CMD_DT1 = 0x12
 
 export class Jv1080 {
     private readonly midi: Midi;
@@ -42,7 +43,12 @@ export class Jv1080 {
     }
 
     testSysex() {
-        this.midi.sendSysex([ROLAND_MANUFACTURER_ID, this.deviceId, JV_1080_MODEL_ID],
-            [0x12, 0x01, 0x00, 0x00, 0x28, 0x06, 0x51])
+
+        this.midi.sendSysex(this.getIdentifier(),
+            [CMD_DT1, 0x01, 0x00, 0x00, 0x28, 0x06, 0x51])
+    }
+
+    private getIdentifier() {
+        return [ROLAND_MANUFACTURER_ID, this.deviceId, JV_1080_MODEL_ID];
     }
 }
