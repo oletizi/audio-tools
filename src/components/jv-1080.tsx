@@ -47,9 +47,9 @@ const FX_TYPES = [
 export function FxSelect({onSubmit}: { onSubmit: (n: number) => void }) {
     const [value, setValue] = useState("0")
     return (
-        <FormControl>
+        <FormControl fullWidth>
             <InputLabel>Fx Select</InputLabel>
-            <Select value={value} onChange={(e : SelectChangeEvent<string>) => {
+            <Select label="Fx Select" value={value} onChange={(e : SelectChangeEvent<string>) => {
                 const v = Number.parseInt(e.target.value)
                 setValue(e.target.value)
                 onSubmit(v)
