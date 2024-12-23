@@ -77,7 +77,7 @@ const OFFSET_PATCH_NAME_01 = [0, 0, 0, 0]
 // const OFFSET_PATCH_NAME_10 = [0, 0, 0, 9]
 // const OFFSET_PATCH_NAME_11 = [0, 0, 0, 10]
 // const OFFSET_PATCH_NAME_12 = [0, 0, 0, 11]
-
+const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
 
 export class Jv1080 {
     private readonly midi: Midi;
@@ -182,6 +182,10 @@ export class Jv1080 {
         for (let i = 0; i < 12; i++, offset[3]++) {
             this.set(param(BASE_TEMP_PATCH, offset).concat([name.charCodeAt(i)]))
         }
+    }
+
+    setPatchFx(v: number) {
+        this.set(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE).concat([v]))
     }
 }
 
