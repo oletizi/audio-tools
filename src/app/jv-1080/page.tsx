@@ -15,7 +15,7 @@ import {newClientCommon} from "@/lib/client-common";
 import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
 import IntField, {FixedLengthTextField} from "@/components/type-field";
-import {FxSelect} from "@/components/jv-1080";
+import {FxPanel, FxSelect} from "@/components/jv-1080";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
@@ -152,8 +152,11 @@ export default function Page() {
                               onSubmit={n => jv1080.setPatchGroupId(n - 1)}/>
                     <IntField label="Patch No." defaultValue={1} min={1} max={254}
                               onSubmit={n => jv1080.setPatchNumber(n - 1)}/>
-                    <FixedLengthTextField label="Patch Name" length={12} defaultValue="" onSubmit={(n) => jv1080.setPatchName(n)}/>
-                    <FxSelect onSubmit={(v)=>{jv1080.setPatchFx(v)}}/>
+                    <FixedLengthTextField label="Patch Name" length={12} defaultValue=""
+                                          onSubmit={(n) => jv1080.setPatchName(n)}/>
+                </div>
+                <div className="flex gap-10">
+                    <FxPanel device={jv1080}/>
                 </div>
                 <div className="flex gap-10">
                     <FormGroup>
