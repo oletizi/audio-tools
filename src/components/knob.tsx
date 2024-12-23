@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import * as fabric from "fabric";
 import {Circle, FabricObject, Group, Line} from "fabric";
 import {scale} from "@/lib/lib-core";
