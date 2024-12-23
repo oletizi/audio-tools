@@ -98,7 +98,7 @@ export function StereoEqPanel({device}: { device: Jv1080 }) {
             </Stack>
 
             <Stack>
-                <ControlSlider label="Mid Boost/Cut" min={-15} max={15}
+                <ControlSlider label="Lo Mid Boost/Cut" min={-15} max={15}
                                onChange={v => device.setFxParam(6, v + 15)}/>
                 <ControlSlider label="Q" min={0} max={4}
                                marks={[
