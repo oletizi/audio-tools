@@ -1,5 +1,5 @@
 import FormControl from "@mui/material/FormControl";
-import {Box, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack} from "@mui/material";
+import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack} from "@mui/material";
 import {useState} from "react";
 import {Jv1080} from "@/midi/roland";
 
@@ -64,22 +64,16 @@ export function FxSelect({onSubmit}: { onSubmit: (n: number) => void }) {
 
 export function FxPanel({device}: { device: Jv1080 }) {
     const [fx, setFx] = useState(0)
-    return (<Box className="flex flex-col gap-10">
-        <FxSelect onSubmit={(v) => {
-            device.setPatchFx(v)
-            setFx(v)
-        }}/>
-        {getFxPanel(device, fx)}
-    </Box>)
+    return (
+        <Box className="flex flex-col gap-10 w-full">
+            <FxSelect onSubmit={(v) => {
+                device.setFx(v)
+                setFx(v)
+            }}/>
+            {getFxPanel(device, fx)}
+        </Box>)
 }
 
-export function StereoEqPanel({device}: { device: Jv1080 }) {
-    const marks = [{value: 200, label: '200Hz'}, {value: 400, label: '400Hz'}]
-    return (
-        <Stack>
-            <Slider defaultValue={200} step={null} valueLabelDisplay="auto" marks={marks} min={200} max={400}/>
-        </Stack>)
-}
 
 function getFxPanel(device: Jv1080, fxIndex: number) {
     switch (fxIndex) {
@@ -88,4 +82,20 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
+}
+
+
+export function StereoEqPanel({device}: { device: Jv1080 }) {
+    const marks = [{value: 0, label: '200Hz'}, {value: 1, label: '400Hz'}]
+    return (
+        <Stack>
+            <FormControl>
+                <FormLabel>Low</FormLabel>
+                <Slider onChange={(e) => device.setFxParam(0, e.target.value)} defaultValue={0} step={null} valueLabelDisplay="auto" marks={marks} min={0} max={1}/>
+            </FormControl>
+            <FormControl>
+                <FormLabel>Boost/Cut</FormLabel>
+                <Slider defaultValue={0} step={1} valueLabelDisplay="auto" min={-15} max={15}/>
+            </FormControl>
+        </Stack>)
 }

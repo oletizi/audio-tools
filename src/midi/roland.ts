@@ -78,6 +78,7 @@ const OFFSET_PATCH_NAME_01 = [0, 0, 0, 0]
 // const OFFSET_PATCH_NAME_11 = [0, 0, 0, 10]
 // const OFFSET_PATCH_NAME_12 = [0, 0, 0, 11]
 const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
+const OFFSET_FX_PARAM = [0, 0, 0, 0x0D]
 
 export class Jv1080 {
     private readonly midi: Midi;
@@ -184,8 +185,14 @@ export class Jv1080 {
         }
     }
 
-    setPatchFx(v: number) {
+    setFx(v: number) {
         this.set(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE).concat([v]))
+    }
+
+    setFxParam(index: number, value: number) {
+        const offset = Array.from(OFFSET_FX_PARAM)
+        offset[3] += index
+        this.set(param(BASE_TEMP_PATCH, offset).concat([value]))
     }
 }
 
