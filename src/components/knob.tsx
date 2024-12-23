@@ -79,11 +79,10 @@ export function Knob({
                     yoffset = yref - e.pointer.y
                     yoffset = yoffset > minRotation ? yoffset : minRotation
                     yoffset = yoffset < maxRotation ? yoffset : maxRotation
-                    const value = scale(yoffset, minRotation, maxRotation, min, max)
+
                     knob.rotate(yoffset)
                     canvas.renderAll()
-                    onChange(value)
-
+                    onChange(scale(yoffset, minRotation, maxRotation, min, max))
                 }
             })
         }
@@ -98,7 +97,6 @@ export function Knob({
 function lock<T extends FabricObject>(o: T, b: boolean = true): T {
     o.lockMovementX = b
     o.lockMovementY = b
-    // o.lockRotation = b
     o.lockScalingX = b
     o.lockScalingY = b
     return o
