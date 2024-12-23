@@ -2,6 +2,7 @@ import FormControl from "@mui/material/FormControl";
 import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack} from "@mui/material";
 import {useState} from "react";
 import {Jv1080} from "@/midi/roland";
+import {Mark} from "@mui/material/Slider/useSlider.types";
 
 
 const FX_TYPES = [
@@ -87,15 +88,42 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
 
 export function StereoEqPanel({device}: { device: Jv1080 }) {
     const marks = [{value: 0, label: '200Hz'}, {value: 1, label: '400Hz'}]
+    let paramIndex = 0
     return (
-        <Stack>
-            <FormControl>
-                <FormLabel>Low</FormLabel>
-                <Slider onChange={(e) => device.setFxParam(0, e.target.value)} defaultValue={0} step={null} valueLabelDisplay="auto" marks={marks} min={0} max={1}/>
-            </FormControl>
-            <FormControl>
-                <FormLabel>Boost/Cut</FormLabel>
-                <Slider defaultValue={0} step={1} valueLabelDisplay="auto" min={-15} max={15}/>
-            </FormControl>
-        </Stack>)
+        <div className="flex gap-10">
+            <Stack className="flex-auto">
+                <FormControl>
+                    <FormLabel>Boost/Cut</FormLabel>
+                    <Slider onChange={e => device.setFxParam(paramIndex++, e.target.value + 15)} defaultValue={0}
+                            step={1}
+                            valueLabelDisplay="auto" min={-15} max={15} marks/>
+                </FormControl>
+                <FormControl>
+                    <FormLabel>Low</FormLabel>
+                    <Slider onChange={(e) => device.setFxParam(0, e.target.value)} defaultValue={0} step={null}
+                            valueLabelDisplay="auto" marks={marks} min={0} max={1}/>
+                </FormControl>e
+            </Stack>
+            <Stack className="flex-auto">
+                <ControlSlider label="Hi Freq" min={0} max={1}
+                               marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
+                               onChange={(v) => device.setFxParam(paramIndex++, v)}/>
+            </Stack>
+        </div>)
+}
+
+function ControlSlider({onChange, label, min, max, marks = null}: {
+    onChange: (v: number) => void,
+    label: string,
+    min: number,
+    max: number,
+    marks: null | Mark[]
+}) {
+    return (
+        <FormControl>
+            <FormLabel>{label}</FormLabel>
+            {marks ?
+                <Slider onChange={e => onChange(e.target.value)} min={min} max={max} step={1} marks={marks}/>
+                : <Slider onChange={e => onChange(e.target.value)} min={min} max={max} step={1} marks/>}
+        </FormControl>)
 }
