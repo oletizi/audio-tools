@@ -10,7 +10,10 @@ export function Knob({
                          strokeWidth = 2,
                          minRotation = -150,
                          maxRotation = 150,
-                         onChange = () => {}
+                         min = 0,
+                         max = 1,
+                         onChange = () => {
+                         }
                      }: {
     radius?: number,
     color?: string,
@@ -18,7 +21,9 @@ export function Knob({
     strokeWidth?: number,
     minRotation?: number,
     maxRotation?: number,
-    onChange?: (v:number) => void
+    min?: number,
+    max?: number,
+    onChange?: (v: number) => void
 }) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const height = radius * 2
@@ -69,12 +74,13 @@ export function Knob({
             canvas.on('mouse:move', (e) => {
                 if (dragging) {
                     yoffset = yref - e.pointer.y
-                    if (yoffset >= minRotation && yoffset <= maxRotation) {
-                        const value = scale(yoffset, minRotation, maxRotation, 0, 1)
-                        knob.rotate(yoffset)
-                        canvas.renderAll()
-                        onChange(value)
-                    }
+                    yoffset = yoffset > minRotation ? yoffset : minRotation
+                    yoffset = yoffset < maxRotation ? yoffset : maxRotation
+                    const value = scale(yoffset, minRotation, maxRotation, min, max)
+                    knob.rotate(yoffset)
+                    canvas.renderAll()
+                    onChange(value)
+
                 }
             })
         }
