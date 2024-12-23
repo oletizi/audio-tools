@@ -88,23 +88,49 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
 
 export function StereoEqPanel({device}: { device: Jv1080 }) {
     return (
-        <div className="flex gap-10">
-            <Stack className="flex-auto">
-                <ControlSlider
-                    label="Boost/Cut"
-                    min={-15}
-                    max={15}
-                    onChange={v => device.setFxParam(1, v + 15)}/>
+        <div className="flex flex-col gap-10">
+            <Stack>
+                <ControlSlider label="Hi Boost/Cut" min={-15} max={15}
+                               onChange={v => device.setFxParam(3, v + 15)}/>
+                <ControlSlider label="Freq" min={0} max={1}
+                               marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
+                               onChange={(v) => device.setFxParam(2, v)}/>
+            </Stack>
+
+            <Stack>
+                <ControlSlider label="Mid Boost/Cut" min={-15} max={15}
+                               onChange={v => device.setFxParam(6, v + 15)}/>
+                <ControlSlider label="Q" min={0} max={4}
+                               marks={[
+                                   {label: '0.5', value: 0},
+                                   {label: '1.0', value: 1},
+                                   {label: '2.0', value: 2},
+                                   {label: '4.0', value: 3},
+                                   {label: '9.0', value: 4}
+                               ]}
+                               onChange={v => device.setFxParam(5, v)}/>
+                <ControlSlider label="Freq" min={0} max={15}
+                               marks={[
+                                   {label: 200, value: 0},
+                                   {label: 250, value: 1},
+                                   {label: 350, value: 2},
+                                   {label: 400, value: 3},
+                                   {label: 500, value: 4},
+                                   {label: 630, value: 5},
+                                   {label: 800, value: 6},
+                                   {label: 1000, value: 7},
+                               ]}
+                               onChange={v => device.setFxParam(4, v)}/>
+            </Stack>
+
+            <Stack>
+                <ControlSlider label="Lo Boost/Cut" min={-15} max={15}
+                               onChange={v => device.setFxParam(1, v + 15)}/>
                 <ControlSlider onChange={v => device.setFxParam(0, v)}
-                               label="Lo Freq" min={0} max={1} marks={[{value: 0, label: '200Hz'}, {
+                               label="Freq" min={0} max={1} marks={[{value: 0, label: '200Hz'}, {
                     value: 1,
                     label: '400Hz'
                 }]}/>
-            </Stack>
-            <Stack className="flex-auto">
-                <ControlSlider label="Hi Freq" min={0} max={1}
-                               marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
-                               onChange={(v) => device.setFxParam(2, v)}/>
             </Stack>
         </div>)
 }
