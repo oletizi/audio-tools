@@ -1,16 +1,30 @@
 import {useEffect, useRef} from "react";
 import * as fabric from "fabric";
 import {Circle, FabricObject, Group, Line} from "fabric";
+import {scale} from "@/lib/lib-core";
 
-export function Knob({radius = 30, fillColor = "white", strokeColor = "black", strokeWidth = 2}: {
+export function Knob({
+                         radius = 30,
+                         color = 'black',
+                         backgroundColor = 'white',
+                         strokeWidth = 2,
+                         minRotation = -150,
+                         maxRotation = 150,
+                         onChange = () => {}
+                     }: {
     radius?: number,
-    fillColor?: string,
-    strokeColor?: string,
-    strokeWidth?: number
+    color?: string,
+    backgroundColor?: string,
+    strokeWidth?: number,
+    minRotation?: number,
+    maxRotation?: number,
+    onChange?: (v:number) => void
 }) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const height = radius * 2
     const width = radius * 2
+    const strokeColor = color
+    const fillColor = backgroundColor
     useEffect(() => {
         const c = canvasRef.current;
         if (c) {
@@ -55,8 +69,12 @@ export function Knob({radius = 30, fillColor = "white", strokeColor = "black", s
             canvas.on('mouse:move', (e) => {
                 if (dragging) {
                     yoffset = yref - e.pointer.y
-                    knob.rotate(yoffset)
-                    canvas.renderAll()
+                    if (yoffset >= minRotation && yoffset <= maxRotation) {
+                        const value = scale(yoffset, minRotation, maxRotation, 0, 1)
+                        knob.rotate(yoffset)
+                        canvas.renderAll()
+                        onChange(value)
+                    }
                 }
             })
         }

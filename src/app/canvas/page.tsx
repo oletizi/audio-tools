@@ -2,7 +2,6 @@
 import {Knob} from "@/components/knob";
 
 export default function Page() {
-    return <div className="container"><Knob fillColor="white" strokeColor="#666"
-                                            strokeWidth={3}/></div>
+    return <div className="container"><Knob color="#666" backgroundColor="#aaa" strokeWidth={3}/></div>
 }
 
