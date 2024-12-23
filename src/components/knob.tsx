@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import * as fabric from "fabric";
 import {Circle, FabricObject, Group, Line} from "fabric";
 import {scale} from "@/lib/lib-core";
@@ -12,6 +12,7 @@ export function Knob({
                          maxRotation = 150,
                          min = 0,
                          max = 1,
+                         defaultValue = 0,
                          onChange = () => {
                          }
                      }: {
@@ -23,6 +24,7 @@ export function Knob({
     maxRotation?: number,
     min?: number,
     max?: number,
+    defaultValue?: number,
     onChange?: (v: number) => void
 }) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -60,6 +62,7 @@ export function Knob({
                 selectable: false
             }))
             canvas.add(knob)
+            knob.rotate(scale(defaultValue, min, max, minRotation, maxRotation))
 
             let yref = 0
             let yoffset = 0
@@ -87,7 +90,9 @@ export function Knob({
 
     }, []);
 
-    return <canvas ref={canvasRef} width={width} height={height}/>;
+    return (<div>
+        <canvas ref={canvasRef} width={width} height={height}/>
+    </div>)
 }
 
 function lock<T extends FabricObject>(o: T, b: boolean = true): T {
