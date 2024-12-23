@@ -32,3 +32,27 @@ export default function IntField({
 
 }
 
+export function FixedLengthTextField({label, defaultValue, length = 100, onSubmit}: {
+    label: string,
+    defaultValue: string,
+    length: number,
+    onSubmit: (name: string) => void
+}) {
+    const [value, setValue] = useState<string>(defaultValue)
+
+    function rectify(v: string, length) {
+        const chars = new Array(length)
+        for (let i = 0; i < length; i++) {
+            chars[i] = i < v.length ? v.charAt(i) : ' '
+        }
+        return chars.join('')
+    }
+
+    return (<form onSubmit={(e) => {
+        e.preventDefault()
+        const r = rectify(e.target[0].value, length)
+        setValue(r)
+        onSubmit(r)
+    }}><TextField label={label} value={value} onChange={e => setValue(e.target.value)}/></form>)
+}
+

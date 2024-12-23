@@ -6,7 +6,7 @@ import {
     InputLabel,
     MenuItem, Radio, RadioGroup,
     Select,
-    SelectChangeEvent, Switch,
+    SelectChangeEvent, Switch, TextField,
 } from "@mui/material";
 import {Midi} from "@/midi/midi";
 import {useState} from "react";
@@ -14,7 +14,7 @@ import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
 import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
-import IntField from "@/components/number-field";
+import IntField, {FixedLengthTextField} from "@/components/type-field";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
@@ -151,6 +151,7 @@ export default function Page() {
                               onSubmit={n => jv1080.setPatchGroupId(n - 1)}/>
                     <IntField label="Patch No." defaultValue={1} min={1} max={254}
                               onSubmit={n => jv1080.setPatchNumber(n - 1)}/>
+                    <FixedLengthTextField label="Patch Name" length={12} defaultValue="" onSubmit={(n) => jv1080.setPatchName(n)}/>
                 </div>
                 <div className="flex gap-10">
                     <FormGroup>

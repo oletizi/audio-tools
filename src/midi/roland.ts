@@ -44,6 +44,7 @@ const JV_1080_MODEL_ID = 0x6A
 const CMD_RQ1 = 0x11
 const CMD_DT1 = 0x12
 
+// System parameters
 const BASE_SYSTEM = [0, 0, 0, 0]
 const OFFSET_PANEL_MODE = [0, 0, 0, 0]
 const OFFSET_PERFORMANCE_NUMBER = [0, 0, 0, 1]
@@ -56,7 +57,27 @@ const OFFSET_REVERB_FX_SWITCH = [0, 0, 0, 10]
 const OFFSET_PATCH_REMAIN = [0, 0, 0, 11]
 const OFFSET_CLOCK = [0, 0, 0, 12]
 
-const BASE_TEMP_PERFORMANCE = [0x01, 0, 0, 0]
+// Temp performance parameters
+const BASE_TEMP_PERFORMANCE = [1, 0, 0, 0]
+const BASE_TEMP_PERFORMANCE_PATCH_01 = [2, 0, 0, 0]
+const BASE_TEMP_PERFORMANCE_PATCH_02 = [2, 1, 0, 0]
+const BASE_TEMP_PERFORMANCE_PATCH_03 = [2, 2, 0, 0]
+
+// Temp patch parameters
+const BASE_TEMP_PATCH = [3, 0, 0, 0]
+const OFFSET_PATCH_NAME_01 = [0, 0, 0, 0]
+// const OFFSET_PATCH_NAME_02 = [0, 0, 0, 1]
+// const OFFSET_PATCH_NAME_03 = [0, 0, 0, 2]
+// const OFFSET_PATCH_NAME_04 = [0, 0, 0, 3]
+// const OFFSET_PATCH_NAME_05 = [0, 0, 0, 4]
+// const OFFSET_PATCH_NAME_06 = [0, 0, 0, 5]
+// const OFFSET_PATCH_NAME_07 = [0, 0, 0, 6]
+// const OFFSET_PATCH_NAME_08 = [0, 0, 0, 7]
+// const OFFSET_PATCH_NAME_09 = [0, 0, 0, 8]
+// const OFFSET_PATCH_NAME_10 = [0, 0, 0, 9]
+// const OFFSET_PATCH_NAME_11 = [0, 0, 0, 10]
+// const OFFSET_PATCH_NAME_12 = [0, 0, 0, 11]
+
 
 export class Jv1080 {
     private readonly midi: Midi;
@@ -155,7 +176,15 @@ export class Jv1080 {
     setClockMidi() {
         this.set(param(BASE_SYSTEM, OFFSET_CLOCK).concat([1]))
     }
+
+    setPatchName(name: string) {
+        const offset = Array.from(OFFSET_PATCH_NAME_01)
+        for (let i = 0; i < 12; i++, offset[3]++) {
+            this.set(param(BASE_TEMP_PATCH, offset).concat([name.charCodeAt(i)]))
+        }
+    }
 }
+
 
 function param(base: number[], offset: number[]) {
     return base.map((n, i) => n + offset[i])
