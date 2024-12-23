@@ -28,7 +28,9 @@
     "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts",
     "cli": "tsx src/ts/cli.ts",
-    "clean": "rm -rf ./build/*"
+    "clean": "rm -rf ./build/*",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "author": "",
   "license": "ISC",
@@ -53,6 +55,7 @@
     "commander": "^12.1.0",
     "dayjs": "^1.11.13",
     "express": "^4.21.1",
+    "fabric": "^6.5.3",
     "got": "^14.4.3",
     "jose": "^5.9.6",
     "lodash": "^4.17.21",
@@ -75,6 +78,14 @@
     "webmidi": "^3.1.11"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.3",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/addon-onboarding": "^8.4.7",
+    "@storybook/blocks": "^8.4.7",
+    "@storybook/nextjs": "^8.4.7",
+    "@storybook/react": "^8.4.7",
+    "@storybook/test": "^8.4.7",
     "@tsconfig/recommended": "^1.0.8",
     "@types/blessed": "^0.1.25",
     "@types/chai": "^5.0.0",

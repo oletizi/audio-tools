@@ -1,9 +1,8 @@
 import FormControl from "@mui/material/FormControl";
 import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Jv1080} from "@/midi/roland";
 import {Mark} from "@mui/material/Slider/useSlider.types";
-
 
 const FX_TYPES = [
     'STEREO-EQ',
@@ -88,16 +87,16 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
 
 export function StereoEqPanel({device}: { device: Jv1080 }) {
     return (
-        <div className="flex flex-col gap-10">
-            <Stack>
+        <div className="flex flex-col gap-10 w-1/2">
+            <ControlSection>
                 <ControlSlider label="Hi Boost/Cut" min={-15} max={15}
                                onChange={v => device.setFxParam(3, v + 15)}/>
                 <ControlSlider label="Freq" min={0} max={1}
                                marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
                                onChange={(v) => device.setFxParam(2, v)}/>
-            </Stack>
+            </ControlSection>
 
-            <Stack>
+            <ControlSection>
                 <ControlSlider label="Lo Mid Boost/Cut" min={-15} max={15}
                                onChange={v => device.setFxParam(6, v + 15)}/>
                 <ControlSlider label="Q" min={0} max={4}
@@ -121,18 +120,22 @@ export function StereoEqPanel({device}: { device: Jv1080 }) {
                                    {label: 1000, value: 7},
                                ]}
                                onChange={v => device.setFxParam(4, v)}/>
-            </Stack>
+            </ControlSection>
 
-            <Stack>
+            <ControlSection>
                 <ControlSlider label="Lo Boost/Cut" min={-15} max={15}
                                onChange={v => device.setFxParam(1, v + 15)}/>
                 <ControlSlider onChange={v => device.setFxParam(0, v)}
-                               label="Freq" min={0} max={1} marks={[{value: 0, label: '200Hz'}, {
+                               label="" min={0} max={1} marks={[{value: 0, label: '200Hz'}, {
                     value: 1,
                     label: '400Hz'
                 }]}/>
-            </Stack>
+            </ControlSection>
         </div>)
+}
+
+function ControlSection({children}) {
+    return (<Stack className="border-2 p-10 rounded">{children}</Stack>)
 }
 
 function ControlSlider({onChange, label, min, max, defaultValue = 0, marks = null}: {
