@@ -85,7 +85,7 @@ export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => vo
 }
 
 export function FxPanel({device}: { device: Jv1080 }) {
-    const [fx, setFx] = useState(3)
+    const [fx, setFx] = useState(4)
     return (
         <Box className="flex flex-col gap-10 w-full">
             <FxSelect defaultValue={fx}
@@ -108,9 +108,25 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
             return (<OverdriveDistortion device={device}/>)
         case 3:
             return (<Phaser device={device}/>)
+        case 4:
+            return (<Spectrum device={device}/>)
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
+}
+
+export function Spectrum({device}) {
+    return (
+        <div className="flex gap-10">
+            <ControlSection label="Bands">
+                <div className="flex gap-2">
+                    <ControlKnob onChange={v => device.setFxParam(0, v + 15)} label="Band 1" min={-15} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(1, v + 15)} label="Band 2" min={-15} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(2, v + 15)} label="Band 3" min={-15} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(3, v + 15)} label="Band 4" min={-15} max={15}/>
+                </div>
+            </ControlSection>
+        </div>)
 }
 
 export function Phaser({device}) {
