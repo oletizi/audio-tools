@@ -124,6 +124,13 @@ export function Phaser({device}) {
                     <ControlKnob onChange={v => device.setFxParam(3, v)} label="Res" min={0} max={127}/>
                 </div>
             </ControlSection>
+            <ControlSection label="Mixer">
+                <div className="flx gap-2">
+                    <ControlKnob onChange={v => device.setFxParam(4, v)} label="Mix" min={0} max={127}/>
+                    <ControlKnob onChange={v => device.setFxParam(5, v)} label="Pan" min={0} max={127}/>
+                    <ControlKnob onChange={v => device.setFxParam(6, v)} label="Level" min={0} max={127}/>
+                </div>
+            </ControlSection>
         </div>)
 
 }
