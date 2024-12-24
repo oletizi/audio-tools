@@ -49,6 +49,26 @@ const FX_TYPES = [
     'CHORUS/FLANGER',
 ]
 
+export function SelectControl({label, onSubmit, defaultValue, items}: {
+    label: string,
+    onSubmit: (v: number) => void,
+    defaultValue: number,
+    items: string[]
+}) {
+    const [value, setValue] = useState(defaultValue + "")
+    return (
+        <FormControl>
+            <InputLabel>{label}</InputLabel>
+            <Select label={label} value={value} onChange={(e: SelectChangeEvent<string>) => {
+                const v = Number.parseInt(e.target.value)
+                setValue(e.target.value)
+                onSubmit(v)
+            }}>
+                {items.map((v, i) => (<MenuItem key={label + i} value={i}>{v}</MenuItem>))}
+            </Select>
+        </FormControl>)
+}
+
 export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => void, defaultValue: number }) {
     const [value, setValue] = useState(defaultValue + "")
     return (
@@ -93,13 +113,21 @@ export function Overdrive({device}) {
     return (
         <div className="flex gap-10">
             <ControlSection label="Color">
-                <Stack>
+                <div className="flex gap-2">
                     <ControlKnob onChange={v => device.setFxParam(0, v)} label="Drive" min={0} max={127}/>
                     {/*<ControlKnob onChange={v => device.setFxParam(1, v)} label="Level" min={0} max={127}/>*/}
                     <ControlKnob onChange={v => device.setFxParam(3, v + 15)} label="Lo Gain"
                                  min={-15} max={15}/>
                     <ControlKnob onChange={v => device.setFxParam(4, v + 15)} label="Hi Gain" min={-15} max={15}/>
-                </Stack>
+                </div>
+            </ControlSection>
+            <ControlSection label="Amp">
+                <div className="flex justify-center content-center items-center gap-2">
+                    <SelectControl label="Type" onSubmit={v => device.setFxParam(5, v)}
+                                   defaultValue={0}
+                                   items={['SMALL', 'BUILT-IN', '2-STACK', '3-STACK']}/>
+                    <ControlKnob onChange={ v=> device.setFxParam(6, v + 63)} label="Pan" min={-63} max={64}/>
+                </div>
             </ControlSection>
         </div>)
 }
