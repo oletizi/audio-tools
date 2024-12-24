@@ -125,7 +125,7 @@ export function Phaser({device}) {
                 </div>
             </ControlSection>
             <ControlSection label="Mixer">
-                <div className="flx gap-2">
+                <div className="flex gap-2">
                     <ControlKnob onChange={v => device.setFxParam(4, v)} label="Mix" min={0} max={127}/>
                     <ControlKnob onChange={v => device.setFxParam(5, v)} label="Pan" min={0} max={127}/>
                     <ControlKnob onChange={v => device.setFxParam(6, v)} label="Level" min={0} max={127}/>
@@ -226,7 +226,7 @@ export function StereoEqPanel({device, color = "#777"}: { device: Jv1080, color?
         </div>)
 }
 
-function ControlSection({label = "", children}) {
+export function ControlSection({label = "", children}) {
     return (<LabeledBorder label={label}>{children}</LabeledBorder>)
 }
 

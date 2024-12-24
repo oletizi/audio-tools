@@ -15,7 +15,7 @@ import {newClientCommon} from "@/lib/client-common";
 // import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
 import IntField, {FixedLengthTextField} from "@/components/type-field";
-import {FxPanel, FxSelect} from "@/components/jv-1080";
+import {ControlSection, FxPanel, FxSelect} from "@/components/jv-1080";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
@@ -156,31 +156,34 @@ export default function Page() {
                 <div className="flex gap-10">
                     <FxPanel device={jv1080}/>
                 </div>
-                <div className="flex gap-10">
-                    <FormGroup>
-                        <FormLabel>Effects</FormLabel>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setInsertFx(e.target.checked)}/>}
-                                          label="Insert EFX"/>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setChorusFx(e.target.checked)}/>}
-                                          label="Chorus"/>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setReverbFx(e.target.checked)}/>}
-                                          label="Reverb"/>
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel>Patch Remain</FormLabel>
-                        <FormControlLabel control={<Switch onChange={e => jv1080.setPatchRemain(e.target.checked)}/>}
-                                          label="Patch Remain"/>
-                    </FormGroup>
-                    <FormControl>
-                        <FormLabel>Clock</FormLabel>
-                        <RadioGroup>
-                            <FormControlLabel value={0} control={<Radio onClick={() => jv1080.setClockInternal()}/>}
-                                              label="Internal"/>
-                            <FormControlLabel value={1} control={<Radio onClick={() => jv1080.setClockMidi()}/>}
-                                              label="MIDI"/>
-                        </RadioGroup>
-                    </FormControl>
-                </div>
+                <ControlSection label="System">
+                    <div className="flex gap-10">
+                        <FormGroup>
+                            <FormLabel>Effects</FormLabel>
+                            <FormControlLabel control={<Switch onChange={e => jv1080.setInsertFx(e.target.checked)}/>}
+                                              label="Insert EFX"/>
+                            <FormControlLabel control={<Switch onChange={e => jv1080.setChorusFx(e.target.checked)}/>}
+                                              label="Chorus"/>
+                            <FormControlLabel control={<Switch onChange={e => jv1080.setReverbFx(e.target.checked)}/>}
+                                              label="Reverb"/>
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Patch Remain</FormLabel>
+                            <FormControlLabel
+                                control={<Switch onChange={e => jv1080.setPatchRemain(e.target.checked)}/>}
+                                label="Patch Remain"/>
+                        </FormGroup>
+                        <FormControl>
+                            <FormLabel>Clock</FormLabel>
+                            <RadioGroup>
+                                <FormControlLabel value={0} control={<Radio onClick={() => jv1080.setClockInternal()}/>}
+                                                  label="Internal"/>
+                                <FormControlLabel value={1} control={<Radio onClick={() => jv1080.setClockMidi()}/>}
+                                                  label="MIDI"/>
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
+                </ControlSection>
             </div>
         </div>)
 }
