@@ -85,10 +85,10 @@ export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => vo
 }
 
 export function FxPanel({device}: { device: Jv1080 }) {
-    const [fx, setFx] = useState(1)
+    const [fx, setFx] = useState(3)
     return (
         <Box className="flex flex-col gap-10 w-full">
-            <FxSelect defaultValue={1}
+            <FxSelect defaultValue={fx}
                       onSubmit={(v) => {
                           device.setFx(v)
                           setFx(v)
@@ -103,13 +103,32 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
         case 0:
             return (<StereoEqPanel device={device}/>)
         case 1:
-            return (<Overdrive device={device}/>)
+            return (<OverdriveDistortion device={device}/>)
+        case 2:
+            return (<OverdriveDistortion device={device}/>)
+        case 3:
+            return (<Phaser device={device}/>)
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
 }
 
-export function Overdrive({device}) {
+export function Phaser({device}) {
+    return (
+        <div className="flex gap-10">
+            <ControlSection label="Color">
+                <div className="flex gap-2">
+                    <ControlKnob onChange={v => device.setFxParam(0, v)} label="Manual" min={0} max={127} step={1}/>
+                    <ControlKnob onChange={v => device.setFxParam(1, v)} label="Rate" min={0} max={127} step={1}/>
+                    <ControlKnob onChange={v => device.setFxParam(2, v)} label="Depth" min={0} max={127}/>
+                    <ControlKnob onChange={v => device.setFxParam(3, v)} label="Res" min={0} max={127}/>
+                </div>
+            </ControlSection>
+        </div>)
+
+}
+
+export function OverdriveDistortion({device}) {
     return (
         <div className="flex gap-10">
             <ControlSection label="Color">
@@ -126,7 +145,7 @@ export function Overdrive({device}) {
                     <SelectControl label="Type" onSubmit={v => device.setFxParam(5, v)}
                                    defaultValue={0}
                                    items={['SMALL', 'BUILT-IN', '2-STACK', '3-STACK']}/>
-                    <ControlKnob onChange={ v=> device.setFxParam(6, v + 63)} label="Pan" min={-63} max={64}/>
+                    <ControlKnob onChange={v => device.setFxParam(6, v + 63)} label="Pan" min={-63} max={64}/>
                 </div>
             </ControlSection>
         </div>)
