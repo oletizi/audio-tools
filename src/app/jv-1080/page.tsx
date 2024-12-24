@@ -12,26 +12,24 @@ import {Midi} from "@/midi/midi";
 import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
-import {Message, Note} from "webmidi";
+// import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
 import IntField, {FixedLengthTextField} from "@/components/type-field";
 import {FxPanel, FxSelect} from "@/components/jv-1080";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 
-const midiListener = (e) => {
-    console.log(`Midi Event!!!!`)
-    console.log(e)
-    switch (e.type) {
-        case 'noteon':
-            const m: Message = e.message
-            const note: Note = e.note
-            console.log(`${new Date().getTime()}: ${e.type}, Chan: ${m.channel}, Note: ${note.name}, Vel: ${note.rawAttack}\n`)
-            break
-        default: {
-            console.log(`${new Date().getTime()}: ${e.type}\n`)
-        }
-    }
+const midiListener = () => {
+    // switch (e.type) {
+    //     case 'noteon':
+    //         const m: Message = e.message
+    //         const note: Note = e.note
+    //         console.log(`${new Date().getTime()}: ${e.type}, Chan: ${m.channel}, Note: ${note.name}, Vel: ${note.rawAttack}\n`)
+    //         break
+    //     default: {
+    //         console.log(`${new Date().getTime()}: ${e.type}\n`)
+    //     }
+    // }
 }
 const midi = new Midi()
 const jv1080 = new Jv1080(midi, 16)

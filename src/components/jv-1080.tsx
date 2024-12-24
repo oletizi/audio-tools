@@ -3,6 +3,7 @@ import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Slider,
 import {useEffect, useRef, useState} from "react";
 import {Jv1080} from "@/midi/roland";
 import {Mark} from "@mui/material/Slider/useSlider.types";
+import {Knob} from "@/components/knob";
 
 const FX_TYPES = [
     'STEREO-EQ',
@@ -149,12 +150,13 @@ function ControlSlider({onChange, label, min, max, defaultValue = 0, marks = nul
     return (
         <FormControl>
             <FormLabel>{label}</FormLabel>
-            {marks ?
-                <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}
-                        min={min} max={max} step={1}
-                        marks={marks}/>
-                : <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}
-                          min={min} max={max} step={1}
-                          marks/>}
+            <Knob onChange={onChange} min={min} max={max} defaultValue={defaultValue}></Knob>
+            {/*{marks ?*/}
+            {/*    <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}*/}
+            {/*            min={min} max={max} step={1}*/}
+            {/*            marks={marks}/>*/}
+            {/*    : <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}*/}
+            {/*              min={min} max={max} step={1}*/}
+            {/*              marks/>}*/}
         </FormControl>)
 }

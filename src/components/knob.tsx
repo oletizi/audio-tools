@@ -5,14 +5,15 @@ import {scale} from "@/lib/lib-core";
 
 export function Knob({
                          radius = 30,
-                         color = 'black',
-                         backgroundColor = 'white',
+                         color = 'white',
+                         backgroundColor = '#aaa',
                          strokeWidth = 2,
                          minRotation = -150,
                          maxRotation = 150,
                          min = 0,
                          max = 1,
                          defaultValue = 0,
+                         step = 0,
                          onChange = () => {
                          }
                      }: {
@@ -25,6 +26,7 @@ export function Knob({
     min?: number,
     max?: number,
     defaultValue?: number,
+    step?: number,
     onChange?: (v: number) => void
 }) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -54,19 +56,22 @@ export function Knob({
                 fill: fillColor,
                 selectable: false,
                 hasControls: false
-            });
+            })
+
             const knob = lock<Group>(new Group([dial, indicator], {
                 left: 0,
                 top: 0,
                 hasControls: false,
                 selectable: false
             }))
+
             canvas.add(knob)
             knob.rotate(scale(defaultValue, min, max, minRotation, maxRotation))
 
             let yref = 0
             let yoffset = 0
             let dragging = false
+            let value = defaultValue
             canvas.on('mouse:down', (e) => {
                 yref = e.pointer.y
                 dragging = true
@@ -77,12 +82,18 @@ export function Knob({
             canvas.on('mouse:move', (e) => {
                 if (dragging) {
                     yoffset = yref - e.pointer.y
+                    const direction = yoffset < 0 ? -1 : 1
                     yoffset = yoffset > minRotation ? yoffset : minRotation
                     yoffset = yoffset < maxRotation ? yoffset : maxRotation
 
-                    knob.rotate(yoffset)
-                    canvas.renderAll()
-                    onChange(scale(yoffset, minRotation, maxRotation, min, max))
+                    const v = scale(yoffset, minRotation, maxRotation, min, max);
+                    const diff = Math.abs(v - value)
+                    if (diff >= step) {
+                        knob.rotate(yoffset)
+                        canvas.renderAll()
+                        value = step > 0 ? Math.round(v) : v
+                        onChange(value)
+                    }
                 }
             })
         }

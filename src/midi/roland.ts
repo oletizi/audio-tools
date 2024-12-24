@@ -1,5 +1,5 @@
 import {Midi} from "@/midi/midi";
-// noinspection TypeScriptCheckImport
+
 /**
  * | Byte       | Description       |
  * + ---------- + ----------------- +
@@ -58,25 +58,14 @@ const OFFSET_PATCH_REMAIN = [0, 0, 0, 11]
 const OFFSET_CLOCK = [0, 0, 0, 12]
 
 // Temp performance parameters
-const BASE_TEMP_PERFORMANCE = [1, 0, 0, 0]
-const BASE_TEMP_PERFORMANCE_PATCH_01 = [2, 0, 0, 0]
-const BASE_TEMP_PERFORMANCE_PATCH_02 = [2, 1, 0, 0]
-const BASE_TEMP_PERFORMANCE_PATCH_03 = [2, 2, 0, 0]
+// const BASE_TEMP_PERFORMANCE = [1, 0, 0, 0]
+// const BASE_TEMP_PERFORMANCE_PATCH_01 = [2, 0, 0, 0]
+// const BASE_TEMP_PERFORMANCE_PATCH_02 = [2, 1, 0, 0]
+// const BASE_TEMP_PERFORMANCE_PATCH_03 = [2, 2, 0, 0]
 
 // Temp patch parameters
 const BASE_TEMP_PATCH = [3, 0, 0, 0]
-const OFFSET_PATCH_NAME_01 = [0, 0, 0, 0]
-// const OFFSET_PATCH_NAME_02 = [0, 0, 0, 1]
-// const OFFSET_PATCH_NAME_03 = [0, 0, 0, 2]
-// const OFFSET_PATCH_NAME_04 = [0, 0, 0, 3]
-// const OFFSET_PATCH_NAME_05 = [0, 0, 0, 4]
-// const OFFSET_PATCH_NAME_06 = [0, 0, 0, 5]
-// const OFFSET_PATCH_NAME_07 = [0, 0, 0, 6]
-// const OFFSET_PATCH_NAME_08 = [0, 0, 0, 7]
-// const OFFSET_PATCH_NAME_09 = [0, 0, 0, 8]
-// const OFFSET_PATCH_NAME_10 = [0, 0, 0, 9]
-// const OFFSET_PATCH_NAME_11 = [0, 0, 0, 10]
-// const OFFSET_PATCH_NAME_12 = [0, 0, 0, 11]
+const OFFSET_PATCH_NAME = [0, 0, 0, 0]
 const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
 const OFFSET_FX_PARAM = [0, 0, 0, 0x0D]
 
@@ -98,14 +87,12 @@ export class Jv1080 {
     }
 
     private set(msg: number[]) {
-        console.log(`set msg:`)
-        console.log(msg)
         this.sysex(CMD_DT1, msg)
     }
 
-    private get(msg: number[]) {
-        this.sysex(CMD_RQ1, msg)
-    }
+    // private get(msg: number[]) {
+    //     this.sysex(CMD_RQ1, msg)
+    // }
 
     private sysex(cmd: number, msg) {
         this.midi.sendSysex(this.getIdentifier(), [cmd].concat(msg).concat(this.checksum(msg)))
@@ -179,7 +166,7 @@ export class Jv1080 {
     }
 
     setPatchName(name: string) {
-        const offset = Array.from(OFFSET_PATCH_NAME_01)
+        const offset = Array.from(OFFSET_PATCH_NAME)
         for (let i = 0; i < 12; i++, offset[3]++) {
             this.set(param(BASE_TEMP_PATCH, offset).concat([name.charCodeAt(i)]))
         }

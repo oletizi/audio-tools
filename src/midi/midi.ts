@@ -74,7 +74,7 @@ export class Midi {
 
     async getOutput(name: string) {
         let rv: Output | null = null
-        await (await this.getOutputs()).forEach(output => {
+        await (this.getOutputs()).forEach(output => {
             if (output.name === name) {
                 rv = output
             }
