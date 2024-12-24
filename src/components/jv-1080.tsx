@@ -49,8 +49,8 @@ const FX_TYPES = [
     'CHORUS/FLANGER',
 ]
 
-export function FxSelect({onSubmit}: { onSubmit: (n: number) => void }) {
-    const [value, setValue] = useState("0")
+export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => void, defaultValue: number }) {
+    const [value, setValue] = useState(defaultValue + "")
     return (
         <FormControl>
             <InputLabel>Fx Select</InputLabel>
@@ -65,13 +65,14 @@ export function FxSelect({onSubmit}: { onSubmit: (n: number) => void }) {
 }
 
 export function FxPanel({device}: { device: Jv1080 }) {
-    const [fx, setFx] = useState(0)
+    const [fx, setFx] = useState(1)
     return (
         <Box className="flex flex-col gap-10 w-full">
-            <FxSelect onSubmit={(v) => {
-                device.setFx(v)
-                setFx(v)
-            }}/>
+            <FxSelect defaultValue={1}
+                      onSubmit={(v) => {
+                          device.setFx(v)
+                          setFx(v)
+                      }}/>
             {getFxPanel(device, fx)}
         </Box>)
 }
@@ -81,9 +82,25 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
     switch (fxIndex) {
         case 0:
             return (<StereoEqPanel device={device}/>)
+        case 1:
+            return (<Overdrive device={device}/>)
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
+}
+
+export function Overdrive({device}) {
+    return (
+        <div className="flex gap-10">
+            <ControlSection label="Color">
+                <Stack>
+                    <ControlKnob onChange={v => device.setFxParam(0, v)} label="Drive" min={0} max={127}/>
+                    {/*<ControlKnob onChange={v => device.setFxParam(3, v)} label="Level" min={0} max={127}/>*/}
+                    <ControlKnob onChange={v => device.setFxParam(3, v + 15)} label="Low Gain"
+                                 min={-15} max={15}/>
+                </Stack>
+            </ControlSection>
+        </div>)
 }
 
 export function PeakEq({device, paramIndexOffset = 0, spacing = 2}) {
