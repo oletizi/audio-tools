@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import * as fabric from "fabric";
 import {Circle, FabricObject, Group, Line} from "fabric";
 import {scale} from "@/lib/lib-core";
@@ -29,7 +29,8 @@ export function Knob({
     step?: number,
     onChange?: (v: number) => void
 }) {
-    const canvasRef  = useRef<any>(null);
+    const canvasRef  = useRef<any>(null)
+    const [value, setValue] = useState(defaultValue)
     const height = radius * 2
     const width = radius * 2
     const strokeColor = color
@@ -70,7 +71,6 @@ export function Knob({
             let yref = 0
             let yoffset = 0
             let dragging = false
-            let value = defaultValue
             canvas.on('mouse:down', (e) => {
                 yref = e.pointer.y
                 dragging = true
@@ -90,8 +90,9 @@ export function Knob({
                     if (diff >= step) {
                         knob.rotate(yoffset)
                         canvas.renderAll()
-                        value = step > 0 ? Math.round(v) : v
-                        onChange(value)
+                        const newValue = step > 0 ? Math.round(v) : v
+                        setValue(newValue)
+                        onChange(newValue)
                     }
                 }
             })
