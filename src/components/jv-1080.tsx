@@ -1,20 +1,10 @@
 import FormControl from "@mui/material/FormControl";
-import {
-    Box,
-    FormLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Slider,
-    Stack, Switch,
-    Typography
-} from "@mui/material";
-import {useEffect, useRef, useState} from "react";
+import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography} from "@mui/material";
+import {useState} from "react";
 import {Jv1080} from "@/midi/roland";
-import {Mark} from "@mui/material/Slider/useSlider.types";
 import {Knob} from "@/components/knob";
 import Divider from "@mui/material/Divider";
+import {DoubleThrowSwitch, LabeledBorder} from "@/components/components-core";
 
 const FX_TYPES = [
     'STEREO-EQ',
@@ -94,43 +84,6 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
-}
-
-// TODO: Refactor these to a general component file
-export function DoubleThrowSwitch({color = "#777", aLabel, bLabel, onChange = () => void 0}: {
-    color?: string, aLabel: string, bLabel: string, onChange?: (v: number) => void
-}) {
-    return (
-        <div className="flex justify-center content-center items-center" style={{color: color}}>
-            <div>{aLabel}</div>
-            <Switch onChange={(e) => {
-                onChange(e.target.checked ? 1 : 0)
-            }}/>
-            <div>{bLabel}</div>
-        </div>)
-}
-
-function LabeledBorder({border = 2, borderRadius = 1, label = "", textColor = "#999", color = "#ddd", children}) {
-    return (
-        <Box
-            border={border}
-            borderColor={color}
-            borderRadius={borderRadius}
-            p={2}
-            position="relative"
-        >
-            <Box
-                position="absolute"
-                top={-14}
-                left={10}
-                bgcolor="white"
-                px={1}
-            >
-                <span style={{color: textColor}}>{label}</span>
-            </Box>
-            {children}
-        </Box>
-    )
 }
 
 export function PeakEq({device, paramIndexOffset = 0, spacing = 2}) {

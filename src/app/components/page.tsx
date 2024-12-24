@@ -2,7 +2,8 @@
 import {Knob} from "@/components/knob";
 import {useState} from "react";
 import {Stack} from "@mui/material";
-import {DoubleThrowSwitch} from "@/components/jv-1080";
+
+import {DoubleThrowSwitch} from "@/components/components-core";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
