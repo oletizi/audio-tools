@@ -69,28 +69,6 @@ const OFFSET_PATCH_NAME = [0, 0, 0, 0]
 const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
 const OFFSET_FX_PARAM = [0, 0, 0, 0x0D]
 
-class EventHandler {
-    private listeners = {}
-
-    private static p2n(param: number[]) {
-        return param.reduce((acc, v) => acc + v)
-    }
-
-    handleEvent(e:RolandSysexEvent, value: number) {
-        const n = EventHandler.p2n(e.param)
-        console.log(`Handling event for param ${toHex(e.param)}: ${n}`)
-        console.log(`Listeners:`)
-        console.log(this.listeners)
-        if (this.listeners[n]) {
-            this.listeners[n](value)
-        }
-    }
-
-    setListener(param: number[], listener: (value: number) => void) {
-        console.log(`Setting listener for ${toHex(param)}: ${EventHandler.p2n(param)}`)
-        this.listeners[EventHandler.p2n(param)] = listener
-    }
-}
 
 export const FX_TYPES = [
     'STEREO-EQ',
@@ -147,10 +125,37 @@ interface RolandSysexEvent {
     checksum: number
 }
 
+class RolandSysexEventHandler {
+    private listeners = {}
+
+    private static p2n(param: number[]) {
+        return param.reduce((acc, v) => acc + v)
+    }
+
+    handleEvent(e: RolandSysexEvent, value: number) {
+        const n = RolandSysexEventHandler.p2n(e.param)
+        console.log(`Handling event for param ${toHex(e.param)}: ${n}`)
+        const listener = this.listeners[n]
+        if (listener) {
+            listener(value)
+        }
+    }
+
+    setListener(param: number[], listener: (value: number) => void) {
+        console.log(`Setting listener for ${toHex(param)}: ${RolandSysexEventHandler.p2n(param)}`)
+        this.listeners[RolandSysexEventHandler.p2n(param)] = listener
+    }
+}
+
+export enum Jv1080Event {
+    FxType
+}
+
 export class Jv1080 {
     private readonly midi: Midi;
     private readonly deviceId: number
-    private readonly eh: EventHandler = new EventHandler()
+    private readonly eh: RolandSysexEventHandler = new RolandSysexEventHandler()
+    private listeners = {}
 
     constructor(midi: Midi, deviceId: number) {
         this.midi = midi
@@ -159,30 +164,38 @@ export class Jv1080 {
 
     init() {
         this.midi.addListener('sysex', (e) => this.receiveSysex(e))
-        this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE), v => console.log(`Set FX type: ${FX_TYPES[v]}`))
+        this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE), v => {
+            console.log(`Set FX type: ${FX_TYPES[v]}`)
+            this.listeners[Jv1080Event.FxType]?.forEach(fn => {
+                console.log(`Notifying FxType listener...`)
+                fn(v)
+            })
+        })
+    }
+
+    addListener(type: Jv1080Event, fn: (v: number) => void) {
+        let set = this.listeners[type]
+        if (!set) {
+            set = []
+            this.listeners[type] = set
+        }
+        set.push(fn)
     }
 
     private receiveSysex(e) {
         const data = e.data
         const expectedId = this.getIdentifier()
 
-        console.log(`Sysex received. Raw Data:}`)
-        console.log(toHex(data))
-        console.log(`Expected id:`)
-        console.log(toHex(expectedId))
-        if (data.length < expectedId.length + 5) return
+        if (data.length < 11) return
         // diff the message against the expected identifier bytes. If the diff is zero, this is the device we care about.
         // Otherwise, bail out.
         const diff = expectedId.reduce((accum, val, i) => accum + val - data[i + 1], 0)
         if (diff) return
-        console.log(`We care!`)
-        let cmdId:number = data[4]
-        console.log(`cmd: ${cmdId.toString(16)}`)
-        console.log(`param:`)
-        let param = data.slice(5, 9);
-        console.log(toHex(param))
-        let value = data[9];
-        console.log(`value: ${value}`)
+        const cmdId: number = data[4]
+
+        const param = data.slice(5, 9);
+
+        const value = data[9];
 
         const parsed = {
             id: data.slice(1, 4),

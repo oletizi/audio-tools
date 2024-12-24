@@ -1,13 +1,18 @@
 import FormControl from "@mui/material/FormControl";
 import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography} from "@mui/material";
 import {useState} from "react";
-import {FX_TYPES, Jv1080} from "@/midi/roland-jv-1080";
+import {FX_TYPES, Jv1080, Jv1080Event} from "@/midi/roland-jv-1080";
 import {Knob} from "@/components/knob";
 import Divider from "@mui/material/Divider";
 import {DoubleThrowSwitch, LabeledBorder, SelectControl} from "@/components/components-core";
 
-export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => void, defaultValue: number }) {
+export function FxSelect({device, onSubmit, defaultValue}: {
+    device: Jv1080,
+    onSubmit: (n: number) => void,
+    defaultValue: number
+}) {
     const [value, setValue] = useState(defaultValue + "")
+    device.addListener(Jv1080Event.FxType, (v) => setValue(v + ""))
     return (
         <FormControl>
             <InputLabel>Fx Select</InputLabel>
@@ -25,7 +30,7 @@ export function FxPanel({device}: { device: Jv1080 }) {
     const [fx, setFx] = useState(7)
     return (
         <Box className="flex flex-col gap-10 w-full">
-            <FxSelect defaultValue={fx}
+            <FxSelect device={device} defaultValue={fx}
                       onSubmit={(v) => {
                           device.setFx(v)
                           setFx(v)
