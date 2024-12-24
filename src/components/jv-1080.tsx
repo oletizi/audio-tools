@@ -7,13 +7,14 @@ import {
     Select,
     SelectChangeEvent,
     Slider,
-    Stack,
+    Stack, Switch,
     Typography
 } from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {Jv1080} from "@/midi/roland";
 import {Mark} from "@mui/material/Slider/useSlider.types";
 import {Knob} from "@/components/knob";
+import Divider from "@mui/material/Divider";
 
 const FX_TYPES = [
     'STEREO-EQ',
@@ -95,58 +96,97 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
     }
 }
 
-
-export function StereoEqPanel({device}: { device: Jv1080 }) {
+// TODO: Refactor these to a general component file
+export function DoubleThrowSwitch({color = "#777", aLabel, bLabel, onChange = () => void 0}: {
+    color?: string, aLabel: string, bLabel: string, onChange?: (v: number) => void
+}) {
     return (
-        <div className="flex flex-col gap-10 w-1/2">
-            <ControlSection>
-                <ControlKnob label="Hi Boost/Cut" min={-15} max={15}
-                             onChange={v => device.setFxParam(3, v + 15)}/>
-                <ControlKnob label="Freq" min={0} max={1}
-                             marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
-                             onChange={(v) => device.setFxParam(2, v)}/>
-            </ControlSection>
-
-            <ControlSection>
-                <ControlKnob label="Lo Mid Boost/Cut" min={-15} max={15}
-                             onChange={v => device.setFxParam(6, v + 15)}/>
-                <ControlKnob label="Q" min={0} max={4}
-                             marks={[
-                                 {label: '0.5', value: 0},
-                                 {label: '1.0', value: 1},
-                                 {label: '2.0', value: 2},
-                                 {label: '4.0', value: 3},
-                                 {label: '9.0', value: 4}
-                             ]}
-                             onChange={v => device.setFxParam(5, v)}/>
-                <ControlKnob label="Freq" min={0} max={15}
-                             marks={[
-                                 {label: 200, value: 0},
-                                 {label: 250, value: 1},
-                                 {label: 350, value: 2},
-                                 {label: 400, value: 3},
-                                 {label: 500, value: 4},
-                                 {label: 630, value: 5},
-                                 {label: 800, value: 6},
-                                 {label: 1000, value: 7},
-                             ]}
-                             onChange={v => device.setFxParam(4, v)}/>
-            </ControlSection>
-
-            <ControlSection>
-                <ControlKnob label="Lo Boost/Cut" min={-15} max={15} step={1}
-                             onChange={v => device.setFxParam(1, v + 15)}/>
-                <ControlKnob onChange={v => device.setFxParam(0, v)}
-                             label="" min={0} max={1} step={1} marks={[{value: 0, label: '200Hz'}, {
-                    value: 1,
-                    label: '400Hz'
-                }]}/>
-            </ControlSection>
+        <div className="flex justify-center content-center items-center" style={{color: color}}>
+            <div>{aLabel}</div>
+            <Switch onChange={(e) => {
+                onChange(e.target.checked ? 1 : 0)
+            }}/>
+            <div>{bLabel}</div>
         </div>)
 }
 
-function ControlSection({children}) {
-    return (<Stack className="border-2 p-10 rounded">{children}</Stack>)
+function LabeledBorder({border = 2, borderRadius = 1, label = "", textColor = "#999", color = "#ddd", children}) {
+    return (
+        <Box
+            border={border}
+            borderColor={color}
+            borderRadius={borderRadius}
+            p={2}
+            position="relative"
+        >
+            <Box
+                position="absolute"
+                top={-14}
+                left={10}
+                bgcolor="white"
+                px={1}
+            >
+                <span style={{color: textColor}}>{label}</span>
+            </Box>
+            {children}
+        </Box>
+    )
+}
+
+export function StereoEqPanel({device, color = "#777"}: { device: Jv1080, color?: string }) {
+    const stackGap = 2
+    return (
+        <div className="flex gap-10">
+            <ControlSection label="Hi & Lo Shelf">
+                <Stack spacing={stackGap}>
+
+                    {/*FX Param 3*/}
+                    <ControlKnob color={color} label="Hi Gain" min={-15} max={15}
+                                 onChange={v => device.setFxParam(3, v + 15)}/>
+                    {/* FX Param 2*/}
+                    <DoubleThrowSwitch aLabel="4KHz" bLabel="8KHz"
+                                       onChange={(v) => device.setFxParam(2, v)}/>
+                    <Divider/>
+                    <ControlKnob label="Lo Gain" min={-15} max={15} step={1}
+                                 onChange={v => device.setFxParam(1, v + 15)}/>
+                    <DoubleThrowSwitch aLabel="200Hz" bLabel="400Hz"
+                                       onChange={(v) => device.setFxParam(0, v)}/>
+                </Stack>
+            </ControlSection>
+            <ControlSection label="Lo Mid">
+                <Stack spacing={stackGap}>
+                    <ControlKnob label="Gain" min={-15} max={15}
+                                 onChange={v => device.setFxParam(6, v + 15)}/>
+                    <ControlKnob label="Q" min={0} max={4}
+                                 marks={[
+                                     {label: '0.5', value: 0},
+                                     {label: '1.0', value: 1},
+                                     {label: '2.0', value: 2},
+                                     {label: '4.0', value: 3},
+                                     {label: '9.0', value: 4}
+                                 ]}
+                                 onChange={v => device.setFxParam(5, v)}/>
+                    <ControlKnob label="Freq" min={0} max={15}
+                                 marks={[
+                                     {label: 200, value: 0},
+                                     {label: 250, value: 1},
+                                     {label: 350, value: 2},
+                                     {label: 400, value: 3},
+                                     {label: 500, value: 4},
+                                     {label: 630, value: 5},
+                                     {label: 800, value: 6},
+                                     {label: 1000, value: 7},
+                                 ]}
+                                 onChange={v => device.setFxParam(4, v)}/>
+                </Stack>
+            </ControlSection>
+
+        </div>)
+}
+
+function ControlSection({label = "", children}) {
+    // return (<div className="border-2 p-10 rounded">{children}</div>)
+    return (<LabeledBorder label={label}>{children}</LabeledBorder>)
 }
 
 function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, marks = [], color = "#777777"}: {
@@ -156,7 +196,7 @@ function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, mar
     max: number,
     defaultValue?: number,
     step?: number,
-    marks?: { label: string, value: number }[],
+    marks?: { label: string | number, value: number }[],
     color?: string
 }) {
     const [value, setValue] = useState(defaultValue)

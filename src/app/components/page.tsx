@@ -2,6 +2,7 @@
 import {Knob} from "@/components/knob";
 import {useState} from "react";
 import {Stack} from "@mui/material";
+import {DoubleThrowSwitch} from "@/components/jv-1080";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
@@ -19,6 +20,7 @@ export default function Page() {
                   defaultValue={value}/>
             <div style={{color: mainColor}}>{value}</div>
         </Stack>
+        <DoubleThrowSwitch aLabel="A Label" bLabel="B Label" onChange={(v) => console.log(`Double throw switch value: ${v}`)}/>
     </div>
 }
 
