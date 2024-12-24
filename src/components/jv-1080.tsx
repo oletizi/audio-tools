@@ -1,5 +1,15 @@
 import FormControl from "@mui/material/FormControl";
-import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography} from "@mui/material";
+import {
+    Box, Button,
+    ButtonGroup,
+    FormLabel,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Stack,
+    Typography
+} from "@mui/material";
 import {useState} from "react";
 import {Jv1080} from "@/midi/roland";
 import {Knob} from "@/components/knob";
@@ -85,7 +95,7 @@ export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => vo
 }
 
 export function FxPanel({device}: { device: Jv1080 }) {
-    const [fx, setFx] = useState(5)
+    const [fx, setFx] = useState(6)
     return (
         <Box className="flex flex-col gap-10 w-full">
             <FxSelect defaultValue={fx}
@@ -112,9 +122,25 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
             return (<Spectrum device={device}/>)
         case 5:
             return (<Enhancer device={device}/>)
+        case 6:
+            return (<AutoWah device={device}/>)
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
+}
+
+export function AutoWah({device}) {
+    return (
+        <div className={"flex gap-10"}>
+            <ControlSection label="Control">
+                <div className="flex gap-2">
+                    <DoubleThrowSwitch aLabel="LPF" bLabel="BPF" onChange={v => device.setFxParam(0, v)}/>
+                    <ControlKnob onChange={v => device.setFxParam(3, v)} label="Sens" min={0} max={127}/>
+                    <ControlKnob onChange={v=>device.setFxParam(4, v)} label="Manual" min={0} max={127} defaultValue={64}/>
+                    <ControlKnob onChange={v => device.setFxParam(5, v)} label="Peak" min={0} max={127} defaultValue={100}/>
+                </div>
+            </ControlSection>
+        </div>)
 }
 
 export function Enhancer({device}) {
