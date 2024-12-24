@@ -136,8 +136,15 @@ export function AutoWah({device}) {
                 <div className="flex gap-2">
                     <DoubleThrowSwitch aLabel="LPF" bLabel="BPF" onChange={v => device.setFxParam(0, v)}/>
                     <ControlKnob onChange={v => device.setFxParam(3, v)} label="Sens" min={0} max={127}/>
-                    <ControlKnob onChange={v=>device.setFxParam(4, v)} label="Manual" min={0} max={127} defaultValue={64}/>
-                    <ControlKnob onChange={v => device.setFxParam(5, v)} label="Peak" min={0} max={127} defaultValue={100}/>
+                    <ControlKnob onChange={v => device.setFxParam(4, v)} label="Manual" min={0} max={127}
+                                 defaultValue={64}/>
+                    <ControlKnob onChange={v => device.setFxParam(5, v)} label="Peak" min={0} max={127}
+                                 defaultValue={100}/>
+                    <ControlKnob onChange={v => device.setFxParam(1, v)} label="Rate" min={0} max={125}/>
+                    <ControlKnob onChange={v => device.setFxParam(2, v)} label="Depth" min={0} max={127}
+                                 defaultValue={64}/>
+                    <ControlKnob onChange={v => device.setFxParam(6, v)} label="Level" min={0} max={127}
+                                 defaultValue={64}/>
                 </div>
             </ControlSection>
         </div>)
