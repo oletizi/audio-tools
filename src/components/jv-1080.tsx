@@ -156,9 +156,11 @@ function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, mar
     max: number,
     defaultValue?: number,
     step?: number,
+    marks?: { label: string, value: number }[],
     color?: string
 }) {
     const [value, setValue] = useState(defaultValue)
+    const mark = marks.filter(i => i.value === value)
     return (
         <FormControl>
             <div className="flex flex-col items-center">
@@ -173,7 +175,7 @@ function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, mar
                     max={max}
                     defaultValue={defaultValue}
                     step={step}></Knob>
-                <Typography sx={{color: color}}>{value}</Typography>
+                <Typography sx={{color: color}}>{mark.length > 0 ? mark[0].label : value}</Typography>
             </div>
         </FormControl>)
 }
