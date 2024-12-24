@@ -14,8 +14,8 @@ import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
 // import {Message, Note} from "webmidi";
 import {Jv1080} from "@/midi/roland";
-import IntField, {FixedLengthTextField} from "@/components/type-field";
 import {ControlSection, FxPanel, FxSelect} from "@/components/jv-1080";
+import IntField, {FixedLengthTextField} from "@/components/components-core";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
 

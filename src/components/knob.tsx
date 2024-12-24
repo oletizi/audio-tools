@@ -29,15 +29,14 @@ export function Knob({
     step?: number,
     onChange?: (v: number) => void
 }) {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const canvasRef  = useRef<any>(null);
     const height = radius * 2
     const width = radius * 2
     const strokeColor = color
     const fillColor = backgroundColor
     useEffect(() => {
-        const c = canvasRef.current;
-        if (c) {
-            const canvas = new fabric.Canvas(c, {selection: false})
+        if (canvasRef.current) {
+            const canvas = new fabric.Canvas(canvasRef.current, {selection: false})
             const indicatorX = (width - (strokeWidth * 2)) / 2
             const indicator = new Line([indicatorX, height / 3, indicatorX, 0],
                 {
@@ -96,8 +95,10 @@ export function Knob({
                     }
                 }
             })
+            return () => {
+                canvas.dispose().then(canvasRef.current = null)
+            }
         }
-
     }, []);
 
     return (<div>
