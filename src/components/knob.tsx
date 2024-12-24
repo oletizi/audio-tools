@@ -29,8 +29,8 @@ export function Knob({
     step?: number,
     onChange?: (v: number) => void
 }) {
-    const canvasRef  = useRef<any>(null)
     const [value, setValue] = useState(defaultValue)
+    const canvasRef  = useRef<any>(null)
     const height = radius * 2
     const width = radius * 2
     const strokeColor = color
@@ -66,7 +66,7 @@ export function Knob({
             }))
 
             canvas.add(knob)
-            knob.rotate(scale(defaultValue, min, max, minRotation, maxRotation))
+            knob.rotate(scale(value, min, max, minRotation, maxRotation))
 
             let yref = 0
             let yoffset = 0
@@ -81,7 +81,6 @@ export function Knob({
             canvas.on('mouse:move', (e) => {
                 if (dragging) {
                     yoffset = yref - e.pointer.y
-                    const direction = yoffset < 0 ? -1 : 1
                     yoffset = yoffset > minRotation ? yoffset : minRotation
                     yoffset = yoffset < maxRotation ? yoffset : maxRotation
 
