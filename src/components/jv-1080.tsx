@@ -95,7 +95,7 @@ export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => vo
 }
 
 export function FxPanel({device}: { device: Jv1080 }) {
-    const [fx, setFx] = useState(6)
+    const [fx, setFx] = useState(7)
     return (
         <Box className="flex flex-col gap-10 w-full">
             <FxSelect defaultValue={fx}
@@ -124,9 +124,32 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
             return (<Enhancer device={device}/>)
         case 6:
             return (<AutoWah device={device}/>)
+        case 7:
+            return (<Rotary device={device}/>)
         default:
             return (<div>Unsupported effect: {fxIndex}</div>)
     }
+}
+
+export function Rotary({device}) {
+    return (
+        <div className={"flex gap-10"}>
+            <ControlSection label="Control">
+                <div className="flex gap-2">
+                    <ControlKnob onChange={v => device.setFxParam(1, v)} label="Lo Slow" min={0} max={125}/>
+                    <ControlKnob onChange={v => device.setFxParam(3, v)} label="Lo Fast" min={0} max={125}/>
+                    <ControlKnob onChange={v => device.setFxParam(6, v)} label="Lo Accl" min={0} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(0, v)} label="Hi Slow" min={0} max={125}/>
+                    <ControlKnob onChange={v => device.setFxParam(2, v)} label="Hi Fast" min={0} max={125}/>
+                    <ControlKnob onChange={v => device.setFxParam(5, v)} label="Hi Accl" min={0} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(7, v)} label="Hi Lvl" min={0} max={127}/>
+                    {/*<ControlKnob onChange={v => device.setFxParam(4, v)} label="Speed" min={0} max={1}/>*/}
+                    <ControlKnob onChange={v => device.setFxParam(9, v)} label="Sep" min={0} max={127}/>
+                    <DoubleThrowSwitch aLabel="Slow" bLabel="Fast" onChange={v => device.setFxParam(4, v)}/>
+                    <ControlKnob onChange={v => device.setFxParam(10, v)} label="Level" min={0} max={127}/>
+                </div>
+            </ControlSection>
+        </div>)
 }
 
 export function AutoWah({device}) {
