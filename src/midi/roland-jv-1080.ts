@@ -69,6 +69,29 @@ const OFFSET_PATCH_NAME = [0, 0, 0, 0]
 const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
 const OFFSET_FX_PARAM = [0, 0, 0, 0x0D]
 
+class EventHandler {
+    private listeners = {}
+
+    private static p2n(param: number[]) {
+        return param.reduce((acc, v) => acc + v)
+    }
+
+    handleEvent(e:RolandSysexEvent, value: number) {
+        const n = EventHandler.p2n(e.param)
+        console.log(`Handling event for param ${toHex(e.param)}: ${n}`)
+        console.log(`Listeners:`)
+        console.log(this.listeners)
+        if (this.listeners[n]) {
+            this.listeners[n](value)
+        }
+    }
+
+    setListener(param: number[], listener: (value: number) => void) {
+        console.log(`Setting listener for ${toHex(param)}: ${EventHandler.p2n(param)}`)
+        this.listeners[EventHandler.p2n(param)] = listener
+    }
+}
+
 export const FX_TYPES = [
     'STEREO-EQ',
     'OVERDRIVE',
@@ -112,9 +135,22 @@ export const FX_TYPES = [
     'CHORUS/FLANGER',
 ]
 
+function toHex(a: number[]) {
+    return `(${a.length}) [` + a.map(i => '0x' + i.toString(16)).join(', ') + ']'
+}
+
+interface RolandSysexEvent {
+    id: number[]
+    cmd: number
+    param: number[]
+    value: number
+    checksum: number
+}
+
 export class Jv1080 {
     private readonly midi: Midi;
     private readonly deviceId: number
+    private readonly eh: EventHandler = new EventHandler()
 
     constructor(midi: Midi, deviceId: number) {
         this.midi = midi
@@ -123,19 +159,39 @@ export class Jv1080 {
 
     init() {
         this.midi.addListener('sysex', (e) => this.receiveSysex(e))
+        this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE), v => console.log(`Set FX type: ${FX_TYPES[v]}`))
     }
 
     private receiveSysex(e) {
         const data = e.data
         const expectedId = this.getIdentifier()
-        console.log(`Sysex received. Raw Data:`)
-        console.log(data)
-        if (data.length < expectedId.length + 1) return
+
+        console.log(`Sysex received. Raw Data:}`)
+        console.log(toHex(data))
+        console.log(`Expected id:`)
+        console.log(toHex(expectedId))
+        if (data.length < expectedId.length + 5) return
         // diff the message against the expected identifier bytes. If the diff is zero, this is the device we care about.
         // Otherwise, bail out.
         const diff = expectedId.reduce((accum, val, i) => accum + val - data[i + 1], 0)
         if (diff) return
         console.log(`We care!`)
+        let cmdId:number = data[4]
+        console.log(`cmd: ${cmdId.toString(16)}`)
+        console.log(`param:`)
+        let param = data.slice(5, 9);
+        console.log(toHex(param))
+        let value = data[9];
+        console.log(`value: ${value}`)
+
+        const parsed = {
+            id: data.slice(1, 4),
+            cmd: cmdId,
+            param: param,
+            value: value,
+            checksum: data[10]
+        }
+        this.eh.handleEvent(parsed, value)
     }
 
     private checksum(msg: number[]) {
@@ -234,7 +290,6 @@ export class Jv1080 {
     setFx(v: number) {
         this.set(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE).concat([v]))
     }
-
 
     setFxParam(index: number, value: number) {
         const offset = Array.from(OFFSET_FX_PARAM)
