@@ -1,83 +1,10 @@
 import FormControl from "@mui/material/FormControl";
-import {
-    Box, Button,
-    ButtonGroup,
-    FormLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Stack,
-    Typography
-} from "@mui/material";
+import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography} from "@mui/material";
 import {useState} from "react";
-import {Jv1080} from "@/midi/roland";
+import {FX_TYPES, Jv1080} from "@/midi/roland-jv-1080";
 import {Knob} from "@/components/knob";
 import Divider from "@mui/material/Divider";
-import {DoubleThrowSwitch, LabeledBorder} from "@/components/components-core";
-
-const FX_TYPES = [
-    'STEREO-EQ',
-    'OVERDRIVE',
-    'DISTORTION',
-    'PHASER',
-    'SPECTRUM',
-    'ENHANCER',
-    'AUTO-WAH',
-    'ROTARY',
-    'COMPRESSOR',
-    'LIMITER',
-    'HEXA-CHORUS',
-    'TREMOLO-CHORUS',
-    'SPACE-D',
-    'STEREO-CHORUS',
-    'STEREO-FLANGER',
-    'STEP-FLANGER',
-    'STEREO-DELAY',
-    'MODULATION-DELAY',
-    'TRIPLE-TAP-DELAY',
-    'QUADRUPLE-TAP-DELAY',
-    'TIME-CONTROL-DELAY',
-    'VOICE-PITCH-SHIFTER',
-    'FBK-PITCH-SHIFTER',
-    'REVERB',
-    'GATE-REVERB',
-    'OVERDRIVE->CHORUS',
-    'OVERDRIVE->FLANGER',
-    'OVERDRIVE->DELAY',
-    'DISTORTION->CHORUS',
-    'DISTORTION->FLANGER',
-    'DISTORTION->DELAY',
-    'ENHANCER->CHORUS',
-    'ENHANCER->FLANGER',
-    'ENHANCER->DELAY',
-    'CHORUS->DELAY',
-    'FLANGER->DELAY',
-    'CHORUS->FLANGER',
-    'CHORUS/DELAY',
-    'FLANGER/DELAY',
-    'CHORUS/FLANGER',
-]
-
-export function SelectControl({label, onSubmit, defaultValue, items}: {
-    label: string,
-    onSubmit: (v: number) => void,
-    defaultValue: number,
-    items: string[]
-}) {
-    const [value, setValue] = useState(defaultValue + "")
-    return (
-        <FormControl>
-            <InputLabel>{label}</InputLabel>
-            <Select label={label} value={value} onChange={(e: SelectChangeEvent<string>) => {
-                const v = Number.parseInt(e.target.value)
-                setValue(e.target.value)
-                onSubmit(v)
-            }}>
-                {items.map((v, i) => (<MenuItem key={label + i} value={i}>{v}</MenuItem>))}
-            </Select>
-        </FormControl>)
-}
+import {DoubleThrowSwitch, LabeledBorder, SelectControl} from "@/components/components-core";
 
 export function FxSelect({onSubmit, defaultValue}: { onSubmit: (n: number) => void, defaultValue: number }) {
     const [value, setValue] = useState(defaultValue + "")

@@ -13,24 +13,11 @@ import {useState} from "react";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {newClientCommon} from "@/lib/client-common";
 // import {Message, Note} from "webmidi";
-import {Jv1080} from "@/midi/roland";
+import {Jv1080} from "@/midi/roland-jv-1080";
 import {ControlSection, FxPanel, FxSelect} from "@/components/jv-1080";
 import IntField, {FixedLengthTextField} from "@/components/components-core";
 
 const clientCommon = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
-
-const midiListener = () => {
-    // switch (e.type) {
-    //     case 'noteon':
-    //         const m: Message = e.message
-    //         const note: Note = e.note
-    //         console.log(`${new Date().getTime()}: ${e.type}, Chan: ${m.channel}, Note: ${note.name}, Vel: ${note.rawAttack}\n`)
-    //         break
-    //     default: {
-    //         console.log(`${new Date().getTime()}: ${e.type}\n`)
-    //     }
-    // }
-}
 const midi = new Midi()
 const jv1080 = new Jv1080(midi, 16)
 midi.start(() => {
@@ -39,9 +26,7 @@ midi.start(() => {
                 const cfg = r.data
                 midi.setInputByName(cfg.midiInput)
                 midi.setOutputByName(cfg.midiOutput)
-
-                midi.addListener('noteon', midiListener)
-                midi.addListener('sysex', midiListener)
+                jv1080.init()
 
             } else {
                 console.error(r.errors)

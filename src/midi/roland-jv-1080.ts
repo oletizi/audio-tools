@@ -69,13 +69,73 @@ const OFFSET_PATCH_NAME = [0, 0, 0, 0]
 const OFFSET_FX_TYPE = [0, 0, 0, 0x0C]
 const OFFSET_FX_PARAM = [0, 0, 0, 0x0D]
 
+export const FX_TYPES = [
+    'STEREO-EQ',
+    'OVERDRIVE',
+    'DISTORTION',
+    'PHASER',
+    'SPECTRUM',
+    'ENHANCER',
+    'AUTO-WAH',
+    'ROTARY',
+    'COMPRESSOR',
+    'LIMITER',
+    'HEXA-CHORUS',
+    'TREMOLO-CHORUS',
+    'SPACE-D',
+    'STEREO-CHORUS',
+    'STEREO-FLANGER',
+    'STEP-FLANGER',
+    'STEREO-DELAY',
+    'MODULATION-DELAY',
+    'TRIPLE-TAP-DELAY',
+    'QUADRUPLE-TAP-DELAY',
+    'TIME-CONTROL-DELAY',
+    'VOICE-PITCH-SHIFTER',
+    'FBK-PITCH-SHIFTER',
+    'REVERB',
+    'GATE-REVERB',
+    'OVERDRIVE->CHORUS',
+    'OVERDRIVE->FLANGER',
+    'OVERDRIVE->DELAY',
+    'DISTORTION->CHORUS',
+    'DISTORTION->FLANGER',
+    'DISTORTION->DELAY',
+    'ENHANCER->CHORUS',
+    'ENHANCER->FLANGER',
+    'ENHANCER->DELAY',
+    'CHORUS->DELAY',
+    'FLANGER->DELAY',
+    'CHORUS->FLANGER',
+    'CHORUS/DELAY',
+    'FLANGER/DELAY',
+    'CHORUS/FLANGER',
+]
+
 export class Jv1080 {
     private readonly midi: Midi;
-    private readonly deviceId: number;
+    private readonly deviceId: number
 
     constructor(midi: Midi, deviceId: number) {
         this.midi = midi
         this.deviceId = deviceId
+    }
+
+    init() {
+        this.midi.addListener('sysex', (e) => this.receiveSysex(e))
+    }
+
+    private receiveSysex(e) {
+        const data = e.data
+        const expectedId = this.getIdentifier()
+        console.log(`Sysex received. Raw Data:`)
+        console.log(data)
+        if (data.length < expectedId.length + 1) return
+        // diff the message against the expected identifier bytes. If the diff is zero, this is the device we care about.
+        // Otherwise, bail out.
+        const diff = expectedId.reduce((accum, val, i) => accum + val - data[i + 1], 0)
+        if (diff) return
+        console.log(`We care!`)
     }
 
     private checksum(msg: number[]) {
@@ -101,7 +161,6 @@ export class Jv1080 {
     testSysex() {
         this.set([0x01, 0x00, 0x00, 0x28, 0x06])
     }
-
 
     panelModePerformance() {
         this.set(param(BASE_SYSTEM, OFFSET_PANEL_MODE).concat([0x00]))
@@ -176,6 +235,7 @@ export class Jv1080 {
         this.set(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE).concat([v]))
     }
 
+
     setFxParam(index: number, value: number) {
         const offset = Array.from(OFFSET_FX_PARAM)
         offset[3] += index
@@ -187,3 +247,4 @@ export class Jv1080 {
 function param(base: number[], offset: number[]) {
     return base.map((n, i) => n + offset[i])
 }
+

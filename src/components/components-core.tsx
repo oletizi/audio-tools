@@ -1,5 +1,6 @@
-import {Box, Switch, TextField} from "@mui/material";
+import {Box, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, TextField} from "@mui/material";
 import {useState} from "react";
+import FormControl from "@mui/material/FormControl";
 
 export function DoubleThrowSwitch({color = "#777", aLabel, bLabel, onChange = () => void 0}: {
     color?: string, aLabel: string, bLabel: string, onChange?: (v: number) => void
@@ -97,4 +98,24 @@ export function FixedLengthTextField({label, defaultValue, length = 100, onSubmi
         setValue(r)
         onSubmit(r)
     }}><TextField label={label} value={value} onChange={e => setValue(e.target.value)}/></form>)
+}
+
+export function SelectControl({label, onSubmit, defaultValue, items}: {
+    label: string,
+    onSubmit: (v: number) => void,
+    defaultValue: number,
+    items: string[]
+}) {
+    const [value, setValue] = useState(defaultValue + "")
+    return (
+        <FormControl>
+            <InputLabel>{label}</InputLabel>
+            <Select label={label} value={value} onChange={(e: SelectChangeEvent<string>) => {
+                const v = Number.parseInt(e.target.value)
+                setValue(e.target.value)
+                onSubmit(v)
+            }}>
+                {items.map((v, i) => (<MenuItem key={label + i} value={i}>{v}</MenuItem>))}
+            </Select>
+        </FormControl>)
 }
