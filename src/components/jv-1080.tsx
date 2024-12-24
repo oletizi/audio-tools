@@ -133,12 +133,50 @@ function LabeledBorder({border = 2, borderRadius = 1, label = "", textColor = "#
     )
 }
 
+export function PeakEq({device, paramIndexOffset = 0, spacing = 2}) {
+    return (
+        <Stack spacing={spacing}>
+            <ControlKnob label="Gain" min={-15} max={15}
+                         onChange={v => device.setFxParam(6 + paramIndexOffset * 3, v + 15)}/>
+            <ControlKnob label="Q" min={0} max={4}
+                         marks={[
+                             {label: '0.5', value: 0},
+                             {label: '1.0', value: 1},
+                             {label: '2.0', value: 2},
+                             {label: '4.0', value: 3},
+                             {label: '9.0', value: 4}
+                         ]}
+                         onChange={v => device.setFxParam(5 + paramIndexOffset * 3, v)}/>
+            <ControlKnob label="Freq" min={0} max={16}
+                         marks={[
+                             {label: 200, value: 0},
+                             {label: 250, value: 1},
+                             {label: 315, value: 2},
+                             {label: 400, value: 3},
+                             {label: 500, value: 4},
+                             {label: 630, value: 5},
+                             {label: 800, value: 6},
+                             {label: 1000, value: 7},
+                             {label: 1250, value: 8},
+                             {label: 1600, value: 9},
+                             {label: 2000, value: 10},
+                             {label: 2500, value: 11},
+                             {label: 3150, value: 12},
+                             {label: 4000, value: 13},
+                             {label: 5000, value: 14},
+                             {label: 6300, value: 15},
+                             {label: 8000, value: 16}
+                         ]}
+                         onChange={v => device.setFxParam(4 + paramIndexOffset * 3, v)}/>
+        </Stack>)
+}
+
 export function StereoEqPanel({device, color = "#777"}: { device: Jv1080, color?: string }) {
-    const stackGap = 2
+    const stackSpacing = 2
     return (
         <div className="flex gap-10">
             <ControlSection label="Hi & Lo Shelf">
-                <Stack spacing={stackGap}>
+                <Stack spacing={stackSpacing}>
 
                     {/*FX Param 3*/}
                     <ControlKnob color={color} label="Hi Gain" min={-15} max={15}
@@ -153,39 +191,17 @@ export function StereoEqPanel({device, color = "#777"}: { device: Jv1080, color?
                                        onChange={(v) => device.setFxParam(0, v)}/>
                 </Stack>
             </ControlSection>
-            <ControlSection label="Lo Mid">
-                <Stack spacing={stackGap}>
-                    <ControlKnob label="Gain" min={-15} max={15}
-                                 onChange={v => device.setFxParam(6, v + 15)}/>
-                    <ControlKnob label="Q" min={0} max={4}
-                                 marks={[
-                                     {label: '0.5', value: 0},
-                                     {label: '1.0', value: 1},
-                                     {label: '2.0', value: 2},
-                                     {label: '4.0', value: 3},
-                                     {label: '9.0', value: 4}
-                                 ]}
-                                 onChange={v => device.setFxParam(5, v)}/>
-                    <ControlKnob label="Freq" min={0} max={15}
-                                 marks={[
-                                     {label: 200, value: 0},
-                                     {label: 250, value: 1},
-                                     {label: 350, value: 2},
-                                     {label: 400, value: 3},
-                                     {label: 500, value: 4},
-                                     {label: 630, value: 5},
-                                     {label: 800, value: 6},
-                                     {label: 1000, value: 7},
-                                 ]}
-                                 onChange={v => device.setFxParam(4, v)}/>
-                </Stack>
+            <ControlSection label="Mid Peak">
+                <div className="flex gap-5">
+                    <PeakEq device={device} paramIndexOffset={0} spacing={stackSpacing}/>
+                    <PeakEq device={device} paramIndexOffset={1} spacing={stackSpacing}/>
+                </div>
             </ControlSection>
 
         </div>)
 }
 
 function ControlSection({label = "", children}) {
-    // return (<div className="border-2 p-10 rounded">{children}</div>)
     return (<LabeledBorder label={label}>{children}</LabeledBorder>)
 }
 
