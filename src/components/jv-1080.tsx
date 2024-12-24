@@ -95,9 +95,10 @@ export function Overdrive({device}) {
             <ControlSection label="Color">
                 <Stack>
                     <ControlKnob onChange={v => device.setFxParam(0, v)} label="Drive" min={0} max={127}/>
-                    {/*<ControlKnob onChange={v => device.setFxParam(3, v)} label="Level" min={0} max={127}/>*/}
-                    <ControlKnob onChange={v => device.setFxParam(3, v + 15)} label="Low Gain"
+                    {/*<ControlKnob onChange={v => device.setFxParam(1, v)} label="Level" min={0} max={127}/>*/}
+                    <ControlKnob onChange={v => device.setFxParam(3, v + 15)} label="Lo Gain"
                                  min={-15} max={15}/>
+                    <ControlKnob onChange={v => device.setFxParam(4, v + 15)} label="Hi Gain" min={-15} max={15}/>
                 </Stack>
             </ControlSection>
         </div>)
