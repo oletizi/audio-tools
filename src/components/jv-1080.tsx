@@ -143,7 +143,6 @@ export function Rotary({device}) {
                     <ControlKnob onChange={v => device.setFxParam(2, v)} label="Hi Fast" min={0} max={125}/>
                     <ControlKnob onChange={v => device.setFxParam(5, v)} label="Hi Accl" min={0} max={15}/>
                     <ControlKnob onChange={v => device.setFxParam(7, v)} label="Hi Lvl" min={0} max={127}/>
-                    {/*<ControlKnob onChange={v => device.setFxParam(4, v)} label="Speed" min={0} max={1}/>*/}
                     <ControlKnob onChange={v => device.setFxParam(9, v)} label="Sep" min={0} max={127}/>
                     <DoubleThrowSwitch aLabel="Slow" bLabel="Fast" onChange={v => device.setFxParam(4, v)}/>
                     <ControlKnob onChange={v => device.setFxParam(10, v)} label="Level" min={0} max={127}/>
