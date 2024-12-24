@@ -1,5 +1,15 @@
 import FormControl from "@mui/material/FormControl";
-import {Box, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack} from "@mui/material";
+import {
+    Box,
+    FormLabel,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Slider,
+    Stack,
+    Typography
+} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {Jv1080} from "@/midi/roland";
 import {Mark} from "@mui/material/Slider/useSlider.types";
@@ -90,44 +100,44 @@ export function StereoEqPanel({device}: { device: Jv1080 }) {
     return (
         <div className="flex flex-col gap-10 w-1/2">
             <ControlSection>
-                <ControlSlider label="Hi Boost/Cut" min={-15} max={15}
-                               onChange={v => device.setFxParam(3, v + 15)}/>
-                <ControlSlider label="Freq" min={0} max={1}
-                               marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
-                               onChange={(v) => device.setFxParam(2, v)}/>
+                <ControlKnob label="Hi Boost/Cut" min={-15} max={15}
+                             onChange={v => device.setFxParam(3, v + 15)}/>
+                <ControlKnob label="Freq" min={0} max={1}
+                             marks={[{value: 0, label: '4KHz'}, {value: 1, label: '8KHz'}]}
+                             onChange={(v) => device.setFxParam(2, v)}/>
             </ControlSection>
 
             <ControlSection>
-                <ControlSlider label="Lo Mid Boost/Cut" min={-15} max={15}
-                               onChange={v => device.setFxParam(6, v + 15)}/>
-                <ControlSlider label="Q" min={0} max={4}
-                               marks={[
-                                   {label: '0.5', value: 0},
-                                   {label: '1.0', value: 1},
-                                   {label: '2.0', value: 2},
-                                   {label: '4.0', value: 3},
-                                   {label: '9.0', value: 4}
-                               ]}
-                               onChange={v => device.setFxParam(5, v)}/>
-                <ControlSlider label="Freq" min={0} max={15}
-                               marks={[
-                                   {label: 200, value: 0},
-                                   {label: 250, value: 1},
-                                   {label: 350, value: 2},
-                                   {label: 400, value: 3},
-                                   {label: 500, value: 4},
-                                   {label: 630, value: 5},
-                                   {label: 800, value: 6},
-                                   {label: 1000, value: 7},
-                               ]}
-                               onChange={v => device.setFxParam(4, v)}/>
+                <ControlKnob label="Lo Mid Boost/Cut" min={-15} max={15}
+                             onChange={v => device.setFxParam(6, v + 15)}/>
+                <ControlKnob label="Q" min={0} max={4}
+                             marks={[
+                                 {label: '0.5', value: 0},
+                                 {label: '1.0', value: 1},
+                                 {label: '2.0', value: 2},
+                                 {label: '4.0', value: 3},
+                                 {label: '9.0', value: 4}
+                             ]}
+                             onChange={v => device.setFxParam(5, v)}/>
+                <ControlKnob label="Freq" min={0} max={15}
+                             marks={[
+                                 {label: 200, value: 0},
+                                 {label: 250, value: 1},
+                                 {label: 350, value: 2},
+                                 {label: 400, value: 3},
+                                 {label: 500, value: 4},
+                                 {label: 630, value: 5},
+                                 {label: 800, value: 6},
+                                 {label: 1000, value: 7},
+                             ]}
+                             onChange={v => device.setFxParam(4, v)}/>
             </ControlSection>
 
             <ControlSection>
-                <ControlSlider label="Lo Boost/Cut" min={-15} max={15}
-                               onChange={v => device.setFxParam(1, v + 15)}/>
-                <ControlSlider onChange={v => device.setFxParam(0, v)}
-                               label="" min={0} max={1} marks={[{value: 0, label: '200Hz'}, {
+                <ControlKnob label="Lo Boost/Cut" min={-15} max={15} step={1}
+                             onChange={v => device.setFxParam(1, v + 15)}/>
+                <ControlKnob onChange={v => device.setFxParam(0, v)}
+                             label="" min={0} max={1} step={1} marks={[{value: 0, label: '200Hz'}, {
                     value: 1,
                     label: '400Hz'
                 }]}/>
@@ -139,24 +149,31 @@ function ControlSection({children}) {
     return (<Stack className="border-2 p-10 rounded">{children}</Stack>)
 }
 
-function ControlSlider({onChange, label, min, max, defaultValue = 0, marks = null}: {
+function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, marks = [], color = "#777777"}: {
     onChange: (v: number) => void,
     label: string,
     min: number,
     max: number,
-    defaultValue?: number
-    marks?: null | Mark[]
+    defaultValue?: number,
+    step?: number,
+    color?: string
 }) {
+    const [value, setValue] = useState(defaultValue)
     return (
         <FormControl>
-            <FormLabel>{label}</FormLabel>
-            <Knob onChange={onChange} min={min} max={max} defaultValue={defaultValue}></Knob>
-            {/*{marks ?*/}
-            {/*    <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}*/}
-            {/*            min={min} max={max} step={1}*/}
-            {/*            marks={marks}/>*/}
-            {/*    : <Slider onChange={e => onChange(e.target.value)} valueLabelDisplay="auto" defaultValue={defaultValue}*/}
-            {/*              min={min} max={max} step={1}*/}
-            {/*              marks/>}*/}
+            <div className="flex flex-col items-center">
+                <FormLabel>{label}</FormLabel>
+                <Knob
+                    backgroundColor={color}
+                    onChange={(v) => {
+                        onChange(v)
+                        setValue(v)
+                    }}
+                    min={min}
+                    max={max}
+                    defaultValue={defaultValue}
+                    step={step}></Knob>
+                <Typography sx={{color: color}}>{value}</Typography>
+            </div>
         </FormControl>)
 }
