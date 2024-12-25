@@ -257,6 +257,7 @@ export function ControlSection({label = "", children}) {
 function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, marks = [], color = "#777777"}: {
     onChange: (v: number) => void,
     label: string,
+    value: number
     min: number,
     max: number,
     defaultValue?: number,

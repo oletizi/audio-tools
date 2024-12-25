@@ -148,7 +148,8 @@ class RolandSysexEventHandler {
 }
 
 export enum Jv1080Event {
-    FxType
+    FxType,
+    FxParam01,
 }
 
 export class Jv1080 {
@@ -166,10 +167,11 @@ export class Jv1080 {
         this.midi.addListener('sysex', (e) => this.receiveSysex(e))
         this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_TYPE), v => {
             console.log(`Set FX type: ${FX_TYPES[v]}`)
-            this.listeners[Jv1080Event.FxType]?.forEach(fn => {
-                console.log(`Notifying FxType listener...`)
-                fn(v)
-            })
+            this.listeners[Jv1080Event.FxType]?.forEach(fn => fn(v))
+        })
+        this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_PARAM), v => {
+            console.log(`Set FX Param 01: ${v}`)
+            this.listeners[Jv1080Event.FxParam01]?.forEach(fn => fn(v))
         })
     }
 
