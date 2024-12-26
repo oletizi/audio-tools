@@ -175,13 +175,15 @@ export class Jv1080 {
         })
     }
 
-    addListener(type: Jv1080Event, fn: (v: number) => void) {
+    subscribe(type: Jv1080Event, fn: (v: number) => void) {
         let set = this.listeners[type]
         if (!set) {
-            set = []
+            set = new Set()
             this.listeners[type] = set
         }
-        set.push(fn)
+        //set.push(fn)
+        set.add(fn)
+        return (() => {set.delete(fn)})
     }
 
     private receiveSysex(e) {

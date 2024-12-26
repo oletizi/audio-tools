@@ -12,7 +12,7 @@ export function FxSelect({device, onSubmit, defaultValue}: {
     defaultValue: number
 }) {
     const [value, setValue] = useState(defaultValue + "")
-    device.addListener(Jv1080Event.FxType, (v) => setValue(v + ""))
+    device.subscribe(Jv1080Event.FxType, (v) => setValue(v + ""))
     return (
         <FormControl>
             <InputLabel>Fx Select</InputLabel>
