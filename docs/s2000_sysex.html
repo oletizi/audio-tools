@@ -1,0 +1,285 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>S2000/S3000XL/S3200XL MIDI System Exclusive Extensions</title>
+</head>
+<body bgcolor="#ffffff">
+
+<font color="#ff0000">Foreword: I typed this in from the SysEx implementation
+printout I still had. While typing it all in, I found some odd points in
+there and marked them with "FN" to express I believe something is wrong
+there. I didn't verify this, though. No waranty of any kind for correctness
+of this information. - Frank</font><p>
+
+<h1>S2000/S3000XL/S3200XL MIDI System Exclusive Extensions</h1>
+
+This family of samplers comprises three models:
+
+<ul>
+<li>S2000
+<li>S3000XL
+<li>S3200XL
+</ul>
+
+The modes (as represented by the Mode buttons) have been redefined and there
+are now eleven modes available from the eight mode keys.
+
+<p>
+The disk pages have been separated into two separate LOAD and SAVE modes. A new
+GLOBAL mode contains MIDI and other system parameters (such as SCSI
+assignments, tuning/level, format utilities etc).
+
+<p>
+An EDIT key can operate in association with the remaining four modes (SINGLE,
+MULTI, SAMPLE and EFFECTS), to provide EDIT SINGLE, EDIT MULTI, EDIT SAMPLE and
+EDIT EFFECTS modes.
+
+<p>
+Much of the S3000 SysEx system will be valid for the S2000. Additional commands
+will be provided to reflect the new functions.
+
+<hr>
+
+<h2>Multi Mode</h2>
+
+This is a major change over the S3000 family, intended to help with
+multi-timbral operation. Sixteen multi parts are provided. Each part contains a
+parameter to point to a convention "program" and another parameter to associate
+this part with a MIDI channel. By default, multi part 1 is associated with MIDI
+channel 1, part 2 with channel 2 etc., but this need not be the case. A multi
+part contains a number of other parameters (PRIORT, PLAYLO, PLAYHI, OUTPUT,
+STEREO, PANPOS, VOSCL, TRANSPOSE) similar to those found in programs which
+override their corresponding parameters in the associated programs.
+
+<p>
+Multi parts numbers would be arbitrary if it were not for one point. Incoming
+MIDI program change commands can be used to assign programs to multi parts. In
+this case, the MIDI channel number specified by the MIDI program change command
+is used to specify a multi part number, irrespective of the MIDI channel
+associated with that part. To avoid confusion, it is advisable that programs in
+memory be assigned unique program numbers.
+
+<p>
+The previous operation of MIDI program change commands (as on S3000) is no
+longer valid.
+
+<p>
+0x41 REQUEST MULTI DATA<br>
+0x42 MULTI DATA<br>
+
+<p>
+<b>Request for Multi Bytes</b><br>
+
+0xF0 MIDI System Exclusive identifier<br>
+0x47 Akai Manufacturer code<br>
+cc MIDI Exclusive channel<br>
+0x41 Operation code<br>
+0x48 S1000 Model identity<br>
+mm,mm Multi part number<br>
+ss Selector (0=header, 1=multi part)<br>
+oo,oo Byte offset into structure<br>
+nn,nn Number of bytes of data<br>
+0xF7 End of Exclusive message<br>
+
+<p>
+<b>Receive Multi Bytes</b><br>
+
+0xF0 MIDI System Exclusive identifier<br>
+0x47 Akai Manufacturer code<br>
+cc MIDI Exclusive channel<br>
+0x42 Operation code<br>
+0x48 S1000 Model identity<br>
+mm,mm Multi part number<br>
+ss Selector (0=header, 1=multi part)<br>
+oo,oo Byte offset into header<br>
+nn,nn Number of bytes of data<br>
+ln,hn First byte (nibbled)<br>
+..,.. further data<br>
+0xF7 End of Exclusive message<br>
+
+<h2>Structure of the Multi File</h2>
+
+The MULTI file comprises two sections, the header and the multi parts. The type
+of data accessed by this command is determined by byte 7 of the message (the
+Selector). A value of 0 will access the header of the multi file. This header
+currently holds little useful information. A value of 1 will access data in
+individual multi parts. In this case bytes 5 and 6 indicate the multi part
+being referenced.<br>
+Unlike some S3000 structures, it is not possible to obtain the whole multi file
+in one access. However, the whole header can be obtained in one operation, and
+all the data regarding the multi parts can be obtained in another.
+
+<p>
+<b>Accessing Multi File Header</b><br>
+
+0xF0 MIDI System Exclusive identifier<br>
+0x47 Akai Manufacturer code<br>
+cc MIDI Exclusive channel<br>
+?? Operation code (request=0x41, data=0x42)<br>
+0x48 S1000 Model identity<br>
+0,0 Reserved<br>
+0 Selector (0=header)<br>
+oo,oo Byte offset into header<br>
+nn,nn Number of bytes of data<br>
+0xF7 End of Exclusive message<br>
+
+<p>
+<b>Structure of Multi File Header</b><br>
+Parameter: Multiname<br>
+Offset: 3 bytes<br>
+Field size: 12 bytes<br>
+Description: The filename of the multifile<br>
+
+<p>
+Parameter: fx1<br>
+Offset: 16 bytes<br>
+Field size: 1 byte<br>
+Description: The fx setup assigned to fx channel 1<br>
+
+<p>
+Parameter: fx2<br>
+Offset: 17 bytes<br>
+Field size: 1 byte<br>
+Description: The fx setup assigned to fx channel 2<br>
+
+<p>
+Parameter: fx3<br>
+Offset: 18 bytes<br>
+Field size: 1 byte<br>
+Description: The fx setup assigned to fx channel 3<br>
+
+<p>
+Parameter: fx4<br>
+Offset: 19 bytes<br>
+Field size: 1 byte<br>
+Description: The fx setup assigned to fx channel 4<br>
+
+<p>
+Parameter: fxfilename<br>
+Offset: 20 bytes<br>
+Field size: 12 bytes<br>
+Description: The filename of the associated fx file<br>
+
+<p>
+<b>Accessing Multi Parts Data</b><br>
+
+0xF0 MIDI System Exclusive identifier<br>
+0x47 Akai Manufacturer code<br>
+cc MIDI Exclusive channel<br>
+?? Operation code (request=0x41, data=0x42)<br>
+0x48 S1000 Model identity<br>
+mm,mm Multi part number<br>
+1 Selector (1=multi part)<br>
+0,0 Reserved<br>
+nn,nn Number of bytes of data<br>
+0xF7 End of Exclusive message<br>
+
+<p>
+<b>Structure of Multi Parts</b><br>
+Parameter: PRNAME<br>
+Offset: 3 bytes<br>
+Field size: 12 bytes<br>
+Range: String of characters (read-only)<br>
+Description: Name of program used for this multi part. To assign programs to
+multi parts it is better to use MIDI program change commands, specifying the
+program number of the desired program.<br>
+
+<p>
+Parameter: PMCHAN<br>
+Offset: 16 bytes<br>
+Field size: 1 byte<br>
+Range: 255 signifies OMNI, 0 to 15 indicate MIDI channel<br>
+Description: MIDI channel. MIDI messages arriving on this specified channel
+will be responded to by this part, irrespective of the part number.<br>
+
+<p>
+Parameter: PRIORT<br>
+Offset: 18 bytes<br>
+Field size: 1 byte<br>
+Range: 0=low 1=norm 2=high 3=hold<br>
+Description: Priority of voices playing this part.<br>
+
+<p>
+Parameter: PLAYLO<br>
+Offset: 19 bytes<br>
+Field size: 1 byte<br>
+Range: 21 to 127 represents A1 to G8.<br>
+Description: Lower limit of play range.<br>
+
+<p>
+Parameter: PLAYHI<br>
+Offset: 20 bytes<br>
+Field size: 1 byte<br>
+Range: 21 to 127 represents A1 to G8<br>
+Description: Upper limit of play range.<br>
+
+<p>
+Parameter: OUTPUT<br>
+Offset: 22 bytes<br>
+Field size: 1 byte<br>
+Range:<br>
+Description: Individual output routing.<br>
+
+<p>
+Parameter: STEREO<br>
+Offset: 23 bytes<br>
+Field size: 1 byte<br>
+Range: 0 to 99<br>
+Description: Left and right output levels.<br>
+
+<p>
+Parameter: PANPOS<br>
+Offset: 24 bytes<br>
+Field size: 1 byte<br>
+Range: -50 to +50<br>
+Description: Balance between left and right outputs.<br>
+
+<p>
+Parameter: VOSCL<br>
+Offset: 70 bytes<br>
+Field size: 1 byte<br>
+Range: 0 to 99<br>
+Description: Level sent to individual outputs.<br>
+
+<p>
+Parameter: TRANSPOSE<br>
+Offset: 75 bytes<br>
+Field size: 1 byte<br>
+Range: -50 to +50 semitones<br>
+Description: Shift pitch of incoming MIDI.<br>
+
+<p>
+Parameter: PFXCHAN<br>
+Offset: 113 bytes<br>
+Field size: 1 byte<br>
+Range: 0 to 4<br>
+Description: Effects Bus Select:<br>
+0 = off<br>
+1 = FX1<br>
+2 = FX2<br>
+3 = RV3<br>
+4 = RV4<br>
+
+<p>
+Parameter: PFXSLEV<br>
+Offset: 114 bytes<br>
+Field size: 1 byte<br>
+Range: 0 to 99<br>
+Description: Effects Send level<br>
+
+<p>
+Parameter: PTUNOCM<br>
+Offset: 115 bytes<br>
+Field size: 1 byte<br>
+Range: -50 to +50<br>
+Description: Tune Offset Cents used in MULTI-mode only
+
+<p align="center"><font color="#808080">Frank Neumann, January 26th, 2002
+</font></p>
+
+</body>
+
+</body>
+</html>
+

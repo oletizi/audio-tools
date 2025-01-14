@@ -63,12 +63,15 @@ function getFxPanel(device: Jv1080, fxIndex: number) {
     }
 }
 
-export function Rotary({device}) {
+export function Rotary({device}: { device: Jv1080 }) {
     return (
         <div className={"flex gap-10"}>
             <ControlSection label="Control">
                 <div className="flex gap-2">
-                    <ControlKnob onChange={v => device.setFxParam(1, v)} label="Lo Slow" min={0} max={125}/>
+                    <ControlKnob
+                        dataSource={{ subscribe}}
+                        onChange={v => device.setFxParam(1, v)} label="Lo Slow"
+                        value={device.getFxParameter(0)} min={0} max={125}/>
                     <ControlKnob onChange={v => device.setFxParam(3, v)} label="Lo Fast" min={0} max={125}/>
                     <ControlKnob onChange={v => device.setFxParam(6, v)} label="Lo Accl" min={0} max={15}/>
                     <ControlKnob onChange={v => device.setFxParam(0, v)} label="Hi Slow" min={0} max={125}/>
@@ -254,7 +257,22 @@ export function ControlSection({label = "", children}) {
     return (<LabeledBorder label={label}>{children}</LabeledBorder>)
 }
 
-function ControlKnob({onChange, label, min, max, defaultValue = 0, step = 1, marks = [], color = "#777777"}: {
+function ControlKnob({
+                         dataSource,
+                         onChange,
+                         label,
+                         min,
+                         max,
+                         defaultValue = 0,
+                         step = 1,
+                         marks = [],
+                         color = "#777777"
+                     }: {
+    dataSource: {
+        subscribe: (onStoreChange: () => void) => () => void,
+        getSnapshot: () => number,
+        getServerSnapshot: () => number
+    }
     onChange: (v: number) => void,
     label: string,
     value: number

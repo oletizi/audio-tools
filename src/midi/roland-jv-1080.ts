@@ -152,11 +152,13 @@ export enum Jv1080Event {
     FxParam01,
 }
 
+
 export class Jv1080 {
     private readonly midi: Midi;
     private readonly deviceId: number
     private readonly eh: RolandSysexEventHandler = new RolandSysexEventHandler()
     private listeners = {}
+    private fxParams: number[] = new Array<number>(12)
 
     constructor(midi: Midi, deviceId: number) {
         this.midi = midi
@@ -171,8 +173,13 @@ export class Jv1080 {
         })
         this.eh.setListener(param(BASE_TEMP_PATCH, OFFSET_FX_PARAM), v => {
             console.log(`Set FX Param 01: ${v}`)
+            this.fxParams[0] = v
             this.listeners[Jv1080Event.FxParam01]?.forEach(fn => fn(v))
         })
+    }
+
+    getFxParameter(parameterIndex: number): number {
+        return this.fxParams[parameterIndex]
     }
 
     subscribe(type: Jv1080Event, fn: (v: number) => void) {
@@ -183,7 +190,9 @@ export class Jv1080 {
         }
         //set.push(fn)
         set.add(fn)
-        return (() => {set.delete(fn)})
+        return (() => {
+            set.delete(fn)
+        })
     }
 
     private receiveSysex(e) {

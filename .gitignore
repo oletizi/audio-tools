@@ -6,3 +6,4 @@
 /.next/
 
 *storybook.log
+/.DS_Store
