@@ -34,7 +34,7 @@ class BasicOutput implements ProcessOutput {
 
     log(msg: string | Buffer) {
         if (this.debug) {
-            this.writeFunction(timestamp() + this.prefix + ': ' + msg + this.newline)
+            this.writeFunction(timestamp() + ': ' + this.prefix + ': ' + msg + this.newline)
         }
     }
 }

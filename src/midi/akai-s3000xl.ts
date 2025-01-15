@@ -55,6 +55,8 @@ export interface Device {
     getSampleNames(names: any[])
 
     getSampleHeader(sampleNumber: number, header: SampleHeader)
+
+    getProgramNames(names: any[])
 }
 
 export function newDevice(input: midi.Input, output: midi.Output): Device {
@@ -123,6 +125,20 @@ class s3000xl implements Device {
     constructor(input: midi.Input, output: midi.Output) {
         this.in = input
         this.out = output
+    }
+
+    async getProgramNames(names: any[]) {
+        const out = newClientOutput(true, 'getProgramNames')
+        let offset = 5
+
+        out.log(`opcode: ${Opcode.RPLIST}`)
+        const m = await this.send(Opcode.RPLIST, [])
+        let b = m.slice(offset, offset + 2)
+        offset += 2
+        const programCount = bytes2numberLE(b)
+        for (let i = 0; i < programCount; i++, offset += 12) {
+            names.push(akaiByte2String(m.slice(offset, offset + 12)))
+        }
     }
 
     async getSampleNames(names: any[]) {
