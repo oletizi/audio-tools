@@ -1,6 +1,6 @@
 import * as midi from 'midi'
 import {expect} from "chai";
-import {newDevice, SampleHeader} from "../src/midi/akai-s3000xl";
+import {newDevice, ProgramHeader, SampleHeader} from "../src/midi/akai-s3000xl";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -47,7 +47,7 @@ describe('akai-s3000xl tests', () => {
         expect(names).not.empty
     })
 
-    it ('fetches sample header', async () => {
+    it('fetches sample header', async () => {
         const device = newDevice(input, output)
         const header = {} as SampleHeader
         const sampleNumber = 8
@@ -58,13 +58,21 @@ describe('akai-s3000xl tests', () => {
         console.log(header)
     })
 
-    it('fetches resident program names', async() =>{
+    it('fetches resident program names', async () => {
         const device = newDevice(input, output)
         const names = []
         await device.getProgramNames(names)
         console.log(`Sample names:`)
         console.log(names)
         expect(names).not.empty
+    })
+
+    it('fetches program header', async () => {
+        const device = newDevice(input, output)
+        const programNumber = 3
+        const header = {} as ProgramHeader
+        await device.getProgramHeader(programNumber, header)
+        console.log(header)
     })
 })
 

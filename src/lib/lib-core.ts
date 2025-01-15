@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import {randomInt} from "crypto";
 
 export function newSequence(base: string = 'seq'): () => string {
     let s = 0
@@ -124,7 +123,7 @@ export function bytes2numberBE(b: number[]) {
     return rv
 }
 
-export function byte2NibblesLE(byte) {
+export function byte2nibblesLE(byte) {
     // Ensure the input is a valid byte (0-255)
     if (byte < 0 || byte > 255) {
         throw new Error("Input must be a valid byte (0-255).");

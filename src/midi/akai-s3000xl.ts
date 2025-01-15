@@ -1,6 +1,38 @@
 import * as midi from 'midi'
-import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
+import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput} from "@/lib/process-output";
+
+export interface ProgramHeader {
+    VELDEP: number;
+    PRSDEP: number;
+    MWLDEP: number;
+    LFODEL: number;
+    LFODEP: number;
+    LFORAT: number;
+    K_PANP: number;
+    PANDEL: number;
+    PANDEP: number;
+    PANRAT: number;
+    P_LOUD: number;
+    K_LOUD: number;
+    V_LOUD: number;
+    PRLOUD: number;
+    PANPOS: number;
+    STEREO: number;
+    OUTPUT: number;
+    OSHIFT: number;
+    PLAYHI: number;
+    PLAYLO: number;
+    PRIORT: number;
+    POLYPH: number;
+    PMCHAN: number;
+    PRGNUM: number;
+    PRNAME: string;
+    KGRP1: number;
+    PRIDENT: number;
+    PNUMBER: number;
+
+}
 
 export interface SampleHeader {
     // Loop 1
@@ -57,6 +89,8 @@ export interface Device {
     getSampleHeader(sampleNumber: number, header: SampleHeader)
 
     getProgramNames(names: any[])
+
+    getProgramHeader(programNumber: number, header: ProgramHeader)
 }
 
 export function newDevice(input: midi.Input, output: midi.Output): Device {
@@ -128,10 +162,7 @@ class s3000xl implements Device {
     }
 
     async getProgramNames(names: any[]) {
-        const out = newClientOutput(true, 'getProgramNames')
         let offset = 5
-
-        out.log(`opcode: ${Opcode.RPLIST}`)
         const m = await this.send(Opcode.RPLIST, [])
         let b = m.slice(offset, offset + 2)
         offset += 2
@@ -142,13 +173,6 @@ class s3000xl implements Device {
     }
 
     async getSampleNames(names: any[]) {
-        // Response:
-        // F0,47,cc,SLIST,48,\
-        // ss,ss number of resident samples\
-        // 12 bytes sample 1 name\
-        // 12 bytes sample 2 name\
-        //   \... etc.\
-        // F7 eox\
         let offset = 5
         const m = await this.send(Opcode.RLIST, [])
         let b = m.slice(offset, offset + 2);
@@ -159,85 +183,111 @@ class s3000xl implements Device {
         }
     }
 
+    async getProgramHeader(programNumber: number, header: ProgramHeader) {
+        // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
+        const out = newClientOutput(true, 'getProgramHeader')
+        const m = await this.send(Opcode.RPDATA, byte2nibblesLE(programNumber))
+        const v = {value: 0, offset: 5}
+        out.log(`PNUMBER: offset: ${v.offset}`)
+        header.PNUMBER = nextByte(m, v).value
+
+        out.log(`PRIDENT: offset: ${v.offset}`)
+        const header_start = v.offset
+
+        function reloff() {
+            return (v.offset - header_start) / 2
+        }
+
+        out.log(`PRIDENT: rel off: ${reloff()}`)
+        header.PRIDENT = nextByte(m, v).value
+
+        out.log(`KGRP1: rel off: ${reloff()}`)
+        header.KGRP1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`PRNAME: rel off: ${reloff()}`)
+        header.PRNAME = ''
+        for (let i = 0; i < 12; i++) {
+            nextByte(m, v)
+            header.PRNAME += akaiByte2String([v.value])
+        }
+
+        out.log(`PRGNUM: rel off: ${reloff()}`)
+        header.PRGNUM = nextByte(m, v).value
+
+        out.log(`PMCHAN: rel off: ${reloff()}`)
+        header.PMCHAN = nextByte(m, v).value
+
+        out.log(`POLYPH: rel off: ${reloff()}`)
+        header.POLYPH = nextByte(m, v).value
+
+        out.log(`PRIORT: rel off: ${reloff()}`)
+        header.PRIORT = nextByte(m, v).value
+
+        out.log(`PLAYLO: rel off: ${reloff()}`)
+        header.PLAYLO = nextByte(m, v).value
+
+        out.log(`PLAYHI: rel off: ${reloff()}`)
+        header.PLAYHI = nextByte(m, v).value
+
+        out.log(`OSHIFT: rel off: ${reloff()}`)
+        header.OSHIFT = nextByte(m, v).value
+
+        out.log(`OUTPUT: rel off: ${reloff()}`)
+        header.OUTPUT = nextByte(m, v).value
+
+        out.log(`STEREO: rel off: ${reloff()}`)
+        header.STEREO = nextByte(m, v).value
+
+        out.log(`PANPOS: rel off: ${reloff()}`)
+        header.PANPOS = nextByte(m, v).value
+
+        out.log(`PRLOUD: rel off: ${reloff()}`)
+        header.PRLOUD = nextByte(m, v).value
+
+        out.log(`V_LOUD: rel off: ${reloff()}`)
+        header.V_LOUD = nextByte(m, v).value
+
+        out.log(`K_LOUD: rel off: ${reloff()}`)
+        header.K_LOUD = nextByte(m, v).value
+
+        out.log(`P_LOUD: rel off: ${reloff()}`)
+        header.P_LOUD = nextByte(m, v).value
+
+        out.log(`PANRAT: rel off: ${reloff()}`)
+        header.PANRAT = nextByte(m, v).value
+
+        out.log(`PANDEP: rel off: ${reloff()}`)
+        header.PANDEP = nextByte(m, v).value
+
+        out.log(`PANDEL: rel off: ${reloff()}`)
+        header.PANDEL = nextByte(m, v).value
+
+        out.log(`K_PANP: rel off: ${reloff()}`)
+        header.K_PANP = nextByte(m, v).value
+
+        out.log(`LFORAT: rel off: ${reloff()}`)
+        header.LFORAT = nextByte(m, v).value
+
+        out.log(`LFODEP: rel off: ${reloff()}`)
+        header.LFODEP = nextByte(m, v).value
+
+        out.log(`LFODEL: rel off: ${reloff()}`)
+        header.LFODEL = nextByte(m, v).value
+
+        out.log(`MWLDEP: rel off: ${reloff()}`)
+        header.MWLDEP = nextByte(m, v).value
+
+        out.log(`PRSDEP: rel off: ${reloff()}`)
+        header.PRSDEP = nextByte(m, v).value
+
+        out.log(`VELDEP: rel off: ${reloff()}`)
+        header.VELDEP = nextByte(m, v).value
+    }
+
     async getSampleHeader(sampleNumber: number, header: SampleHeader) {
-        // Response
-        // F0,47,SDATA,48,
-        // ss,ss sample number
-        // ln,hn first byte of data in low/high nibble form (see below)
-        // ln,hn second byte
-        // ... etc. F7 eox
-        //
-        // Header spec from S1000 docs, which are fairly obtuse
-        //
-        // Sample Header Block (SDATA)
-        // SHIDENT  DB 3         ;3=sample header block identifier
-        // SBANDW   DB ?         ;Bandwidth (0=10kHz 1=20kHz)
-        // SPITCH   DB ?         ;Original pitch (24-127 = C0-G8)
-        // SHNAME   DB 12 DUP(?) ;Name (same position as program)
-        // SSRVLD   DB ?         ;Sample rate ssrate valid (80H=yes)
-        // SLOOPS   DB ?         ;Number of loops (internal use)
-        // SALOOP   DB ?         ;First active loop (internal use)
-        //          DB ?         ;Spare byte
-        // SPTYPE   DB ?         ;Playback type (see below)
-        // STUNO    DW ?         ;Tune offset cent:semi (+/-50.00)
-        // SLOCAT   DW ?,?       ;Data absolute start address
-        // SLNGTH   DW ?,?       ;Data length (number of samples)
-        // SSTART   DW ?,?       ;Play relative start address
-        // SMPEND   DW ?,?       ;Play relative end address
-        //
-        // ;First loop
-        // LOOPAT   DW ?,?       ;Relative loop point (bits 0-5 are treated as 1)
-        // LLNGTH   DW ?,?,?     ;Loop length (binary) fraction:INT.LOW:INT.HIGH
-        // LDWELL   DW ?         ;Dwell time (0=no loop 1-9998=mSec 9999=hold)
-        //
-        // LBYTES   EQU $-LOOPAT ;Bytes per loop
-        //
-        // ;Loops 2-8
-        // LOOP2    DW LBYTES*7 DUP(0) ;same as Loop1
-        //
-        // ;more sample common
-        // SSPARE   DB ?,?       ;Spare bytes used internally
-        // SSPAIR   DW ?         ;Address of stereo partner (internal use)
-        // SSRATE   DW ?         ;Sample rate in Hz
-        // SHLTO    DB ?         ;Hold loop tune offset (+/-50 cents)
-        //
-        // ;Type of playback values:-
-        // ;0 = normal looping
-        // ;1 = Loop until release
-        // ;2 = No looping
-        // ;3 = Play to sample end
-        //
-        // ;Drum trigger unit block (data is for 2 units) (DDATA)
-        // ;Unit 1
-        //
-        // D1OPER   DB ?         ;Unit 1 in operation (0=off 1=on)
-        // D1EXCH   DB ?         ;Unit 1 exclusive channel (0-15)
-        // D1THRU   DB ?         ;Unit 1 MIDI thru enable (0=off 1=on)
-        // DRNAME   DB 12 DUP(?) ;Name in same place as programs/samples
-        //
-        // ;Input 1 of unit 1
-        // ; DU1TAB(?)
-        // DCHAN    DB ?         ;Drum MIDI channel (0-15)
-        // DNOTE    DB ?         ;Drum MIDI note (24-127 = C0-G8)
-        // DSENS    DB ?         ;Drum sensitivity (0-127)
-        // DTRIG    DB ?         ;Drum trigger threshold (0-127)
-        // DVCRV    DB ?         ;Drum velocity curve (0-7)
-        // DCATP    DB ?         ;Drum capture time (0-20mS)
-        // DRCVR    DB ?         ;Drum recovery time (0-20mS)
-        // DONTM    DW ?         ;Drum on-time (0-999mS)
-        //
-        // DRBYTES  EQU $-DU1TAB ;Bytes per input
-        //
-        // ;Input 2-8
-        //          DB DRBYTES*7 DUP (?) ;same as input 1
-        //
-        // DUBYTES  EQU $-D1OPER ;bytes per unit
-        //
-        // ;Unit 2
-        //          DB DUBYTES DUP(?)  ;same as unit 1
-        // More helpful header spec is here: https://lakai.sourceforge.net/docs/s2800_sysex.html
+        // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
         const out = newClientOutput(true, 'getSampleHeader')
-        const m = await this.send(Opcode.RSDATA, byte2NibblesLE(sampleNumber))
+        const m = await this.send(Opcode.RSDATA, byte2nibblesLE(sampleNumber))
         const v = {value: 0, offset: 5}
         out.log(`SNUMBER: offset: ${v.offset}`)
         header.SNUMBER = nextByte(m, v).value
