@@ -1,5 +1,8 @@
 import * as midi from 'midi'
 import {bytes2numberLE} from "@/lib/lib-core";
+import {newServerOutput} from "@/lib/process-output";
+
+const term = newServerOutput(true, 's3000xl')
 
 export interface Device {
 
@@ -88,13 +91,14 @@ class s3000xl implements Device {
         // 12 bytes sample 2 name\
         //   \... etc.\
         // F7 eox\
+        let offset = 5
         const m = await this.send(Opcode.RLIST, [])
-        let b = m.slice(5,7);
-        console.log(`sample count bytes:`)
-        console.log(b)
+        let b = m.slice(offset, offset + 2);
+        offset += 2
         const sampleCount = bytes2numberLE(b)
-        console.log(`Sample count: ${sampleCount}`)
-
+        for (let i = 0; i < sampleCount; i++, offset += 12) {
+            names.push(akaiByte2String(m.slice(offset, offset + 12)))
+        }
     }
 
     private async send(opcode: Opcode, data: number[]) {
@@ -119,6 +123,19 @@ class s3000xl implements Device {
         })
 
         output.sendMessage(message)
-        return await response
+        const rv = await response
+        return rv
     }
+}
+
+const ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+    'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#', '+', '-', '.']
+
+function akaiByte2String(bytes: number[]) {
+    let rv = ''
+    for (let v of bytes) {
+        rv += ALPHABET[v]
+    }
+    return rv
+
 }

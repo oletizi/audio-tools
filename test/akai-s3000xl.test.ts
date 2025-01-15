@@ -42,9 +42,18 @@ describe('akai-s3000xl tests', () => {
 
     it('fetches resident sample names', async () => {
         const device = newDevice(input, output)
-
         const names = []
         await device.getSampleNames(names)
+        expect(names).not.empty
+    })
+
+    it ('fetches sample header', async () => {
+        const device = newDevice(input, output)
+        const names = []
+        await device.getSampleNames(names)
+        expect(names).not.empty
+
+        names.forEach(item => console.log(item))
     })
 })
 
