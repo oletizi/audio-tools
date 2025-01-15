@@ -123,3 +123,22 @@ export function bytes2numberBE(b: number[]) {
     }
     return rv
 }
+
+export function byte2NibblesLE(byte) {
+    // Ensure the input is a valid byte (0-255)
+    if (byte < 0 || byte > 255) {
+        throw new Error("Input must be a valid byte (0-255).");
+    }
+    // Extract the high and low nibbles
+    const highNibble = (byte >> 4) & 0x0F; // Shift right 4 bits and mask with 0x0F
+    const lowNibble = byte & 0x0F;         // Mask with 0x0F to get the lower nibble
+    return [lowNibble, highNibble]
+}
+
+export function nibbles2byte(lowNibble, highNibble) {
+    if (highNibble < 0 || highNibble > 15 || lowNibble < 0 || lowNibble > 15) {
+        throw new Error("Both nibbles must be between 0 and 15.");
+    }
+    // Combine the nibbles into a byte
+    return (highNibble << 4) | lowNibble;
+}

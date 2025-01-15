@@ -1,18 +1,15 @@
 import * as midi from 'midi'
-import {bytes2numberLE} from "@/lib/lib-core";
-import {newServerOutput} from "@/lib/process-output";
-
-const term = newServerOutput(true, 's3000xl')
-
-export interface Device {
-
-    getSampleNames(names: any[]): void;
-
-}
-
+import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 
 export interface SampleHeader {
 
+}
+
+export interface Device {
+
+    getSampleNames(names: any[])
+
+    getSampleHeader(sampleNumber: number, header: SampleHeader)
 }
 
 export function newDevice(input: midi.Input, output: midi.Output): Device {
@@ -101,6 +98,92 @@ class s3000xl implements Device {
         }
     }
 
+    async getSampleHeader(sampleNumber: number, header: SampleHeader) {
+        // Response
+        // F0,47,SDATA,48,
+        // ss,ss sample number
+        // ln,hn first byte of data in low/high nibble form (see below)
+        // ln,hn second byte
+        // ... etc. F7 eox
+        //
+        //
+        // Sample Header Block (SDATA)
+        // SHIDENT  DB 3         ;3=sample header block identifier
+        // SBANDW   DB ?         ;Bandwidth (0=10kHz 1=20kHz)
+        // SPITCH   DB ?         ;Original pitch (24-127 = C0-G8)
+        // SHNAME   DB 12 DUP(?) ;Name (same position as program)
+        // SSRVLD   DB ?         ;Sample rate ssrate valid (80H=yes)
+        // SLOOPS   DB ?         ;Number of loops (internal use)
+        // SALOOP   DB ?         ;First active loop (internal use)
+        //          DB ?         ;Spare byte
+        // SPTYPE   DB ?         ;Playback type (see below)
+        // STUNO    DW ?         ;Tune offset cent:semi (+/-50.00)
+        // SLOCAT   DW ?,?       ;Data absolute start address
+        // SLNGTH   DW ?,?       ;Data length (number of samples)
+        // SSTART   DW ?,?       ;Play relative start address
+        // SMPEND   DW ?,?       ;Play relative end address
+        //
+        // ;First loop
+        // LOOPAT   DW ?,?       ;Relative loop point (bits 0-5 are treated as 1)
+        // LLNGTH   DW ?,?,?     ;Loop length (binary) fraction:INT.LOW:INT.HIGH
+        // LDWELL   DW ?         ;Dwell time (0=no loop 1-9998=mSec 9999=hold)
+        //
+        // LBYTES   EQU $-LOOPAT ;Bytes per loop
+        //
+        // ;Loops 2-8
+        // LOOP2    DW LBYTES*7 DUP(0) ;same as Loop1
+        //
+        // ;more sample common
+        // SSPARE   DB ?,?       ;Spare bytes used internally
+        // SSPAIR   DW ?         ;Address of stereo partner (internal use)
+        // SSRATE   DW ?         ;Sample rate in Hz
+        // SHLTO    DB ?         ;Hold loop tune offset (+/-50 cents)
+        //
+        // ;Type of playback values:-
+        // ;0 = normal looping
+        // ;1 = Loop until release
+        // ;2 = No looping
+        // ;3 = Play to sample end
+        //
+        // ;Drum trigger unit block (data is for 2 units) (DDATA)
+        // ;Unit 1
+        //
+        // D1OPER   DB ?         ;Unit 1 in operation (0=off 1=on)
+        // D1EXCH   DB ?         ;Unit 1 exclusive channel (0-15)
+        // D1THRU   DB ?         ;Unit 1 MIDI thru enable (0=off 1=on)
+        // DRNAME   DB 12 DUP(?) ;Name in same place as programs/samples
+        //
+        // ;Input 1 of unit 1
+        // ; DU1TAB(?)
+        // DCHAN    DB ?         ;Drum MIDI channel (0-15)
+        // DNOTE    DB ?         ;Drum MIDI note (24-127 = C0-G8)
+        // DSENS    DB ?         ;Drum sensitivity (0-127)
+        // DTRIG    DB ?         ;Drum trigger threshold (0-127)
+        // DVCRV    DB ?         ;Drum velocity curve (0-7)
+        // DCATP    DB ?         ;Drum capture time (0-20mS)
+        // DRCVR    DB ?         ;Drum recovery time (0-20mS)
+        // DONTM    DW ?         ;Drum on-time (0-999mS)
+        //
+        // DRBYTES  EQU $-DU1TAB ;Bytes per input
+        //
+        // ;Input 2-8
+        //          DB DRBYTES*7 DUP (?) ;same as input 1
+        //
+        // DUBYTES  EQU $-D1OPER ;bytes per unit
+        //
+        // ;Unit 2
+        //          DB DUBYTES DUP(?)  ;same as unit 1
+        const m = await this.send(Opcode.RSDATA, byte2NibblesLE(sampleNumber))
+        let offset = 5
+        const num = bytes2numberLE(m.slice(offset, offset + 2))
+        offset += 2
+        console.log(`Sample number received: ${num}`)
+        for (; offset < m.length - 1; offset += 2) {
+            console.log(`offset: ${offset}: lsn: ${m[offset]}, msn: ${m[offset + 1]}`)
+            console.log(`  byte: ${nibbles2byte(m[offset], m[offset + 1])}`)
+        }
+    }
+
     private async send(opcode: Opcode, data: number[]) {
         const input = this.in
         const output = this.out
@@ -123,9 +206,9 @@ class s3000xl implements Device {
         })
 
         output.sendMessage(message)
-        const rv = await response
-        return rv
+        return await response
     }
+
 }
 
 const ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',

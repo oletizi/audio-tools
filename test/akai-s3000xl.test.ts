@@ -54,6 +54,7 @@ describe('akai-s3000xl tests', () => {
         expect(names).not.empty
 
         names.forEach(item => console.log(item))
+        await device.getSampleHeader(3, {})
     })
 })
 
