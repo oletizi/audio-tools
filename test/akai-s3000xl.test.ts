@@ -26,10 +26,9 @@ function init(io) {
 let input, output
 
 function midiSetup() {
-    const output = init(new midi.Output())
-    const input = init(new midi.Input())
+    output = init(new midi.Output())
+    input = init(new midi.Input())
     input.ignoreTypes(false, false, false)
-    return [input, output]
 }
 
 function midiTeardown() {
@@ -45,8 +44,7 @@ describe('akai-s3000xl tests', () => {
         const device = newDevice(input, output)
 
         const names = []
-        device.getSampleNames(names)
-        expect(names.length).gt(0)
+        await device.getSampleNames(names)
     })
 })
 

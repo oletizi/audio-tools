@@ -33,7 +33,7 @@ export function newDevice(input: midi.Input, output: midi.Output): Device {
 // 0x36 Volume List item (only used in response to request)
 // 0x37 Request Harddisk Directory entry
 // 0x38 Harddisk Directory entry (only used in response to request)
-enum Opcodes {
+enum Opcode {
     // ID	Mnemonic	Direction	Description
     // 00h	RSTAT	<	request S1000 status
     RSTAT = 0x00,
@@ -87,19 +87,40 @@ enum Opcodes {
 
 
 class s3000xl implements Device {
-    private in: midi.Input;
-    private out: midi.Output;
+    private readonly in: midi.Input;
+    private readonly out: midi.Output;
 
     constructor(input: midi.Input, output: midi.Output) {
         this.in = input
         this.out = output
     }
 
-    getSampleNames(names: any[]) {
-
+    async getSampleNames(names: any[]) {
+        const m = await this.send(Opcode.RLIST, [])
+        console.log(m)
     }
 
-    private send(opcode: number, data: number[]) {
+    private async send(opcode: Opcode, data: number[]) {
+        const input = this.in
+        const output = this.out
+        const message = [
+            0xf0, // 00: (240) SYSEX_START
+            0x47, // 01: ( 71) AKAI
+            0x00, // 02: (  0) CHANNEL
+            opcode,
+            0x48, // 04: ( 72) DEVICE ID
+        ].concat(data)
+        message.push(0xf7)  // 21: (247) SYSEX_END)
+        const l = new Promise((resolve) => {
+            function listener(delta: number, message: midi.MidiMessage) {
+                input.removeListener('message', listener)
+                resolve(message)
+            }
 
+            input.on('message', listener)
+        })
+
+        output.sendMessage(message)
+        return await l
     }
 }
