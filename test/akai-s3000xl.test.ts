@@ -49,17 +49,33 @@ describe('akai-s3000xl tests', () => {
 
     it ('fetches sample header', async () => {
         const device = newDevice(input, output)
-        const names = []
-        await device.getSampleNames(names)
-        expect(names).not.empty
-
-        names.forEach(item => console.log(item))
         const header = {} as SampleHeader;
-        const sampleNumber = 3
+        const sampleNumber = 8
         await device.getSampleHeader(sampleNumber, header)
         expect(header.SNUMBER).eq(sampleNumber)
         expect(header.SHIDENT).eq(3) // Akai magic value
-
+        // expect(header.SBANDW).eq(1)  // (0=10kHz 1=20kHz)`)
+        console.log(`pitch: ${header.SPITCH}`)
+        // expect(header.SPITCH).eq(60)
+        console.log(`name: <${header.SHNAME}>`)
+        console.log(`sample rate ssrate valid (0x80 = yes): ${header.SSRVLD}`)
+        expect(header.SSRVLD).eq(0x80) // Akai magic value
+        // console.log(`number of sample loops: ${header.SLOOPS}`)
+        // console.log(`active loop: ${header.SALOOP}`)
+        // // ;Type of playback values:-
+        // ;0 = normal looping
+        // ;1 = Loop until release
+        // ;2 = No looping
+        // ;3 = Play to sample end
+        // console.log(`playback type: ${header.SPTYPE}`)
+        // console.log(`tune offset: ${header.STUNO}`)
+        // console.log(`absolute start address: ${header.SLOCAT}`)
+        // console.log(`sample length: ${header.SLNGTH}`)
+        // console.log(`relative start address: ${header.SSTART}`)
+        // console.log(`relative end address: ${header.SMPEND}`)
+        console.log(`loop 1 at: ${header.LOOPAT_1}`)
+        console.log(`loop 1 length: ${header.LLNGTH_1}`)
+        console.log(`loop 1 dwell: ${header.LDWELL_1}`)
     })
 })
 

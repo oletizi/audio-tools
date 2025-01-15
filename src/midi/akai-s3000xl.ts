@@ -2,6 +2,21 @@ import * as midi from 'midi'
 import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 
 export interface SampleHeader {
+    LDWELL_1: number;
+    LLNGTH_1: number;
+    LOOPAT_1: number;
+    SMPEND: number;
+    SSTART: number;
+    SLNGTH: number;
+    SLOCAT: number;
+    STUNO: number;
+    SPTYPE: number;
+    SALOOP: number;
+    SLOOPS: number;
+    SSRVLD: number;
+    SHNAME: string
+    SPITCH: number;
+    SBANDW: number;
     SNUMBER: number;
     SHIDENT: number;
 
@@ -177,16 +192,42 @@ class s3000xl implements Device {
         //          DB DUBYTES DUP(?)  ;same as unit 1
         const m = await this.send(Opcode.RSDATA, byte2NibblesLE(sampleNumber))
         let v = {value: 0, offset: 5}
-        nextByte(m, v)
-        header.SNUMBER = v.value
+        header.SNUMBER = nextByte(m, v).value
+        header.SHIDENT = nextByte(m, v).value
+        header.SBANDW = nextByte(m, v).value
+        header.SPITCH = nextByte(m, v).value
 
-        nextByte(m, v)
-        header.SHIDENT = v.value
-
-        for (; v.offset < m.length - 1; v.offset += 2) {
-            console.log(`offset: ${v.offset}: lsn: ${m[v.offset]}, msn: ${m[v.offset + 1]}`)
-            console.log(`  byte: ${nibbles2byte(m[v.offset], m[v.offset + 1])}`)
+        header.SHNAME = ''
+        for (let i = 0; i < 12; i++) {
+            nextByte(m, v)
+            header.SHNAME += akaiByte2String([v.value])
         }
+
+        header.SSRVLD = nextByte(m, v).value
+        header.SLOOPS = nextByte(m, v).value
+        header.SALOOP = nextByte(m, v).value
+
+        nextByte(m, v) // spare byte
+
+        header.SPTYPE = nextByte(m, v).value
+        header.STUNO = nextByte(m, v).value
+
+        // 2 bytes (4 nibbles)
+        header.SLOCAT =  bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        // 2 bytes (4 nibbles)
+        header.SLNGTH = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        // 2 bytes (4 nibbles)
+        header.SSTART = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        // 2 bytes (4 nibbles)
+        header.SMPEND = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        // 2 bytes (4 nibbles)
+        header.LOOPAT_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        // 3 bytes (6 nibbles)
+        header.LLNGTH_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        header.LDWELL_1 = nextByte(m, v).value
     }
 
     private async send(opcode: Opcode, data: number[]) {
@@ -231,4 +272,5 @@ function akaiByte2String(bytes: number[]) {
 function nextByte(nibbles, v: { value: number, offset: number }) {
     v.value = nibbles2byte(nibbles[v.offset], nibbles[v.offset + 1])
     v.offset += 2
+    return v
 }
