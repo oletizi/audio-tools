@@ -76,6 +76,7 @@ describe('akai-s3000xl tests', () => {
         console.log(`loop 1 at: ${header.LOOPAT_1}`)
         console.log(`loop 1 length: ${header.LLNGTH_1}`)
         console.log(`loop 1 dwell: ${header.LDWELL_1}`)
+        console.log(header)
     })
 })
 

@@ -1,15 +1,43 @@
 import * as midi from 'midi'
 import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
+import {newClientOutput, newServerOutput} from "@/lib/process-output";
 
 export interface SampleHeader {
+    // Loop 1
     LDWELL_1: number;
     LLNGTH_1: number;
     LOOPAT_1: number;
+    // Loop 2
+    LDWELL_2: number;
+    LLNGTH_2: number;
+    LOOPAT_2: number;
+    // Loop 3
+    LDWELL_3: number;
+    LLNGTH_3: number;
+    LOOPAT_3: number;
+    // Loop 4
+    LDWELL_4: number;
+    LLNGTH_4: number;
+    LOOPAT_4: number;
+
+    // Relative loop factors
+    SLXY_1: number
+    SLXY_2: number
+    SLXY_3: number
+    SLXY_4: number
+
+    SSPARE: number
+    SWCOMM: number
+    SSPAIR: number
+
+    SSRATE: number
+    SHLTO: number
+
     SMPEND: number;
     SSTART: number;
     SLNGTH: number;
     SLOCAT: number;
-    STUNO: number;
+    STUNO: { cent: number, semi: number };
     SPTYPE: number;
     SALOOP: number;
     SLOOPS: number;
@@ -123,6 +151,7 @@ class s3000xl implements Device {
         // ln,hn second byte
         // ... etc. F7 eox
         //
+        // Header spec from S1000 docs, which are fairly obtuse
         //
         // Sample Header Block (SDATA)
         // SHIDENT  DB 3         ;3=sample header block identifier
@@ -190,44 +219,108 @@ class s3000xl implements Device {
         //
         // ;Unit 2
         //          DB DUBYTES DUP(?)  ;same as unit 1
+        // More helpful header spec is here: https://lakai.sourceforge.net/docs/s2800_sysex.html
+        const out = newClientOutput(true, 'getSampleHeader')
         const m = await this.send(Opcode.RSDATA, byte2NibblesLE(sampleNumber))
-        let v = {value: 0, offset: 5}
+        const v = {value: 0, offset: 5}
+        out.log(`SNUMBER: offset: ${v.offset}`)
         header.SNUMBER = nextByte(m, v).value
+
+        out.log(`SHIDENT: offset: ${v.offset}`)
+        const header_start = v.offset
+
+        function reloff() {
+            return (v.offset - header_start) / 2
+        }
+
+        out.log(`  relative offset: ${reloff()}`)
         header.SHIDENT = nextByte(m, v).value
+
+        out.log(`SBANDW: rel off: ${reloff()}`)
         header.SBANDW = nextByte(m, v).value
+
+        out.log(`SPITCH: rel off: ${reloff()}`)
         header.SPITCH = nextByte(m, v).value
 
+        out.log(`SHNAME: rel off: ${reloff()}`)
         header.SHNAME = ''
         for (let i = 0; i < 12; i++) {
             nextByte(m, v)
             header.SHNAME += akaiByte2String([v.value])
         }
 
+        out.log(`SSRVLD: rel off: ${reloff()}`)
         header.SSRVLD = nextByte(m, v).value
+
+        out.log(`SLOOPS: rel off: ${reloff()}`)
         header.SLOOPS = nextByte(m, v).value
+
+        out.log(`SALOOP: rel off: ${reloff()}`)
         header.SALOOP = nextByte(m, v).value
 
+        out.log(`SHLOOP: rel off: ${reloff()}`)
         nextByte(m, v) // spare byte
 
+        out.log(`SPTYPE: rel off: ${reloff()}`)
         header.SPTYPE = nextByte(m, v).value
-        header.STUNO = nextByte(m, v).value
 
-        // 2 bytes (4 nibbles)
-        header.SLOCAT =  bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-        // 2 bytes (4 nibbles)
-        header.SLNGTH = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-        // 2 bytes (4 nibbles)
-        header.SSTART = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-        // 2 bytes (4 nibbles)
-        header.SMPEND = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        // 2 bytes
+        out.log(`STUNO : rel off: ${reloff()}`)
+        header.STUNO = {cent: nextByte(m, v).value, semi: nextByte(m, v).value}
 
-        // 2 bytes (4 nibbles)
-        header.LOOPAT_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        out.log(`SLOCAT: rel off: ${reloff()}`)
+        header.SLOCAT = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
 
-        // 3 bytes (6 nibbles)
-        header.LLNGTH_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        out.log(`SLNGTH: rel off; ${reloff()}`)
+        header.SLNGTH = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
 
-        header.LDWELL_1 = nextByte(m, v).value
+        out.log(`SSTART: rel off: ${reloff()}`)
+        header.SSTART = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SMPEND: rel off: ${reloff()}`)
+        header.SMPEND = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        // First loop
+        for (let i = 0; i < 4; i++) {
+            let field = `LOOPAT_${i + 1}`
+            out.log(`${field}: rel off: ${reloff()}`)
+            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+            field = `LLNGTH_${i + 1}`
+            out.log(`${field}: rel off: ${reloff()}`)
+            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+            field = `LDWELL_${i + 1}`
+            out.log(`${field}: rel off: ${reloff()}`)
+            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        }
+
+        out.log(`SLXY_1: rel off: ${reloff()}`)
+        header.SLXY_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SLXY_2: rel off: ${reloff()}`)
+        header.SLXY_2 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SLXY_3: rel off: ${reloff()}`)
+        header.SLXY_3 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SLXY_4: rel off: ${reloff()}`)
+        header.SLXY_4 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SSPARE: rel off: ${reloff()}`)
+        header.SSPARE = bytes2numberLE([nextByte(m, v).value])
+
+        out.log(`SWCOMM: rel off: ${reloff()}`)
+        header.SWCOMM = bytes2numberLE([nextByte(m, v).value])
+
+        out.log(`SSPAIR: rel off: ${reloff()}`)
+        header.SSPAIR = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SSRATE: rel off: ${reloff()}`)
+        header.SSRATE = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`SHLTO : rel off: ${reloff()}`)
+        header.SHLTO = bytes2numberLE([nextByte(m, v).value])
     }
 
     private async send(opcode: Opcode, data: number[]) {
