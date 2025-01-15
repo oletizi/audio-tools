@@ -1,5 +1,6 @@
 import * as midi from 'midi'
-import {assert, expect} from "chai";
+import {expect} from "chai";
+import {newDevice} from "../src/midi/akai-s3000xl";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -7,33 +8,53 @@ function listenForMessage(input) {
             resolve(message)
         })
         setTimeout(() => reject(), 2 * 1000)
-    });
+    })
 }
 
-describe('akai s3000xl sysex tests', () => {
-    let output, input
-
-    before(() => {
-        output = init(new midi.Output())
-        input = init(new midi.Input())
-        input.ignoreTypes(false, false, false)
-
-        function init(io) {
-            for (let i = 0; i < io.getPortCount(); i++) {
-                if (io.getPortName(i).startsWith('IAC')) {
-                    continue
-                }
-                console.log(`Opening port ${io.getPortName(i)}`)
-                io.openPort(i)
-                break
-            }
-            return io
+function init(io) {
+    for (let i = 0; i < io.getPortCount(); i++) {
+        if (io.getPortName(i).startsWith('IAC')) {
+            continue
         }
-    })
+        console.log(`Opening port ${io.getPortName(i)}`)
+        io.openPort(i)
+        break
+    }
+    return io
+}
 
-    after(() => {
-        output.closePort()
+let input, output
+
+function midiSetup() {
+    const output = init(new midi.Output())
+    const input = init(new midi.Input())
+    input.ignoreTypes(false, false, false)
+    return [input, output]
+}
+
+function midiTeardown() {
+    input?.closePort()
+    output?.closePort()
+}
+
+describe('akai-s3000xl tests', () => {
+    before(midiSetup)
+    after(midiTeardown)
+
+    it('fetches resident sample names', async () => {
+        const device = newDevice(input, output)
+
+        const names = []
+        device.getSampleNames(names)
+        expect(names.length).gt(0)
     })
+})
+
+describe('basic sysex tests', () => {
+
+    before(midiSetup)
+    after(midiTeardown)
+
 
     it('Initializes midi', () => {
         expect(output).to.exist
@@ -41,6 +62,7 @@ describe('akai s3000xl sysex tests', () => {
     })
 
     it(`Sends sysex`, async () => {
+        let data
         /*
         Byte 0: 0xF0 MIDI System Exclusive Identifier
         Byte 1: 0x47 Akai Manufacturer code
@@ -58,26 +80,10 @@ describe('akai s3000xl sysex tests', () => {
         Bytes 10 &11: ?, ? Number of bytes of data
 
         OPCODES:
-            0x27 Request for Program Header bytes
-            0x28 Program Header bytes
-            0x29 Request for Keygroup Header bytes
-            0x2A Keygroup Header bytes
-            0x2B Request for Sample Header bytes
-            0x2C Sample Header bytes
-            0x2D Request for FX/Reverb bytes
-            0x2E FX/Reverb bytes
-            0x2F Request for Cue-List bytes
-            0x30 Cue-List bytes
-            0x31 Request for Take List bytes
-            0x32 Take List bytes
-            0x33 Request for Miscellaneous bytes
-            0x34 Miscellaneous bytes
-            0x35 Request Volume List item
-            0x36 Volume List item (only used in response to request)
-            0x37 Request Harddisk Directory entry
-            0x38 Harddisk Directory entry (only used in response to request)
+
         */
 
+        /*
         let data = [
             0xf0, // 00: (240) SYSEX_START
             0x47, // 01: ( 71) AKAI
@@ -102,11 +108,11 @@ describe('akai s3000xl sysex tests', () => {
             0x00, // 20: (  0) Data *
             0xf7  // 21: (247) SYSEX_END
         ]
-
-
-        // set trim start to 0
-        data = [0xF0, 0x47, 0x00, 0x2C, 0x48, 0x09, 0x00, 0x00, 0x1E, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7]
-
+*/
+        /*
+                // set trim start to 0
+                data = [0xF0, 0x47, 0x00, 0x2C, 0x48, 0x09, 0x00, 0x00, 0x1E, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7]
+        */
         // set trim start to 0, 1, ...
         //  b: 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
         //      A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U
