@@ -2,6 +2,8 @@ import * as midi from 'midi'
 import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 
 export interface SampleHeader {
+    SNUMBER: number;
+    SHIDENT: number;
 
 }
 
@@ -174,13 +176,16 @@ class s3000xl implements Device {
         // ;Unit 2
         //          DB DUBYTES DUP(?)  ;same as unit 1
         const m = await this.send(Opcode.RSDATA, byte2NibblesLE(sampleNumber))
-        let offset = 5
-        const num = bytes2numberLE(m.slice(offset, offset + 2))
-        offset += 2
-        console.log(`Sample number received: ${num}`)
-        for (; offset < m.length - 1; offset += 2) {
-            console.log(`offset: ${offset}: lsn: ${m[offset]}, msn: ${m[offset + 1]}`)
-            console.log(`  byte: ${nibbles2byte(m[offset], m[offset + 1])}`)
+        let v = {value: 0, offset: 5}
+        nextByte(m, v)
+        header.SNUMBER = v.value
+
+        nextByte(m, v)
+        header.SHIDENT = v.value
+
+        for (; v.offset < m.length - 1; v.offset += 2) {
+            console.log(`offset: ${v.offset}: lsn: ${m[v.offset]}, msn: ${m[v.offset + 1]}`)
+            console.log(`  byte: ${nibbles2byte(m[v.offset], m[v.offset + 1])}`)
         }
     }
 
@@ -221,4 +226,9 @@ function akaiByte2String(bytes: number[]) {
     }
     return rv
 
+}
+
+function nextByte(nibbles, v: { value: number, offset: number }) {
+    v.value = nibbles2byte(nibbles[v.offset], nibbles[v.offset + 1])
+    v.offset += 2
 }

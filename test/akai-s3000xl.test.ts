@@ -1,6 +1,6 @@
 import * as midi from 'midi'
 import {expect} from "chai";
-import {newDevice} from "../src/midi/akai-s3000xl";
+import {newDevice, SampleHeader} from "../src/midi/akai-s3000xl";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -54,7 +54,12 @@ describe('akai-s3000xl tests', () => {
         expect(names).not.empty
 
         names.forEach(item => console.log(item))
-        await device.getSampleHeader(3, {})
+        const header = {} as SampleHeader;
+        const sampleNumber = 3
+        await device.getSampleHeader(sampleNumber, header)
+        expect(header.SNUMBER).eq(sampleNumber)
+        expect(header.SHIDENT).eq(3) // Akai magic value
+
     })
 })
 
