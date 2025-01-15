@@ -1,6 +1,6 @@
 import * as midi from 'midi'
 import {byte2NibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
-import {newClientOutput, newServerOutput} from "@/lib/process-output";
+import {newClientOutput} from "@/lib/process-output";
 
 export interface SampleHeader {
     // Loop 1
@@ -337,6 +337,7 @@ class s3000xl implements Device {
 
         const response = new Promise((resolve) => {
             function listener(delta: number, message: midi.MidiMessage) {
+                // TODO: make sure the opcode in the response message is correct
                 input.removeListener('message', listener)
                 resolve(message)
             }
