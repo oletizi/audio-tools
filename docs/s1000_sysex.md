@@ -199,7 +199,9 @@ ff mnem. direction\
 </table>
 
 **Request S1000 Status**\
-F0,47,cc,RSTAT,48,F7\
+```
+  F0,47,cc,RSTAT,48,F7\
+```
 
 **S1000 Status Report**\
 ```
@@ -214,41 +216,55 @@ F0,47,cc,RSTAT,48,F7\
 ```
 
 **Request List of Resident Program Names**\
-F0,47,cc,RPLIST,48,F7\
+```
+  F0,47,cc,RPLIST,48,F7\
+```
 
-**List of Resident Program Names**\
-F0,47,cc,PLIST,48,\
-pp,pp number of resident programs\
-12 bytes program 1 name (in non-ascii form - see below)\
-12 bytes program 2 name\
-\... etc.\
-F7 eox\
+**List of Resident Program Names**
 
-**Request List of Resident Sample Names**\
-```F0,47,cc,RSLIST,48,F7\```
+```
+  F0,47,cc,PLIST,48,\
+  pp,pp number of resident programs\
+  12 bytes program 1 name (in non-ascii form - see below)\
+  12 bytes program 2 name\
+  \... etc.\
+  F7 eox\
+```
+**Request List of Resident Sample Names**
+```
+  F0,47,cc,RSLIST,48,F7
+```
 
 **List of Resident Sample Names**\
-F0,47,cc,SLIST,48,\
-ss,ss number of resident samples\
-12 bytes sample 1 name\
-12 bytes sample 2 name\
-\... etc.\
-F7 eox\
+```
+  F0,47,cc,SLIST,48,\
+  ss,ss number of resident samples\
+  12 bytes sample 1 name\
+  12 bytes sample 2 name\
+  \... etc.\
+  F7 eox\
+```
 
 **Request Program Common Data**\
-F0,47,cc,RPDATA,48,\
-pp,pp program number\
-F7 eox\
+```
+  F0,47,cc,RPDATA,48,\
+  pp,pp program number\
+  F7 eox\
+```
+
 If the program number is higher than the highest program in the S1000,
 an error message will be given instead of data.\
 
 **Program Common Data**\
-F0,47,cc,PDATA,48,\
-pp,pp program number\
-ln,hn first byte of data in low/high nibble form (see below)\
-ln,hn second byte\
-\... etc.\
-F7 eox\
+```
+  F0,47,cc,PDATA,48,\
+  pp,pp program number\
+  ln,hn first byte of data in low/high nibble form (see below)\
+  ln,hn second byte\
+  \... etc.\
+  F7 eox\
+```
+
 This is a bidirectional message. In the case of transmitting to the
 S1000, if the program number is above the highest existing program
 number, a new program will be created (if sufficient blocks are free -
@@ -264,14 +280,17 @@ should be avoided. If either error situation occurs, an error message
 will be given, otherwise an OK message will be given.
 
 **Request Keygroup Data**\
-F0,47,cc,RKDATA,48,\
-pp,pp program number\
-kk keygroup number\
-F7 eox\
+```
+  F0,47,cc,RKDATA,48,\
+  pp,pp program number\
+  kk keygroup number\
+  F7 eox\
+```
 If the keygroup number is higher than the highest keygroup in the
 program, an error message will be given instead of data.
 
 **Keygroup Data**\
+```
 F0,47,cc,KDATA,48,\
 pp,pp program number\
 kk keygroup number\
@@ -279,6 +298,8 @@ ln,hn first byte of data in low/high nibble form (see below)\
 ln,hn second byte\
 \... etc.\
 F7 eox\
+```
+
 This is a bidirectional message. In the case of transmitting to the
 S1000, if the keygroup number is above the highest existing keygroup
 number, a new keygroup will be created if a block is free, otherwise the
@@ -324,6 +345,7 @@ should follow immediately. Alternatively, the data can be delivered
 after an ACCEPT PACKETS command which gives greater flexibility.
 
 **Request Sample Data Packet(s)**\
+```
 F0,47,cc,RSPACK,48,\
 ss,ss sample number\
 oo,oo,oo,oo address offset from start of sample\
@@ -334,6 +356,7 @@ if interval function:\
 1 = average\
 2 = peak\
 F7 eox\
+```
 If the sample number is higher than the highest sample in the S1000, an
 error message will be given instead of data. Otherwise data packet
 transmission will commence and continue as per standard MIDI dump. If
@@ -342,24 +365,30 @@ of groups of that number of samples, according to the interval function.
 The number of samples transmitted will be nn/ii.\
 
 **Accept Sample Data Packet(s)**\
+```
 F0,47,cc,ASPACK,48,\
 ss,ss sample number\
 oo,oo,oo,oo address offset from start of sample\
 nn,nn,nn,nn number of samples to be delivered\
 F7 eox\
+```
 If the sample number is higher than the highest sample in the S1000, an
 error message will be given. Otherwise a standard MIDI dump ACK message
 will be given and data packet transmission can commence and continue as
 per standard MIDI dump.
 
 **Request Drum Input Data**\
+```
 F0,47,cc,RDDATA,48,F7
+```
 
 **Drum Input Data**\
+```
 F0,47,cc,DDATA,48,\
 ln,hn first byte of data in low/high nibble form (see below)\
 ln,hn second byte\
 \... etc. F7 eox\
+```
 This is a bidirectional message.
 
 **Request Miscellaneous Data**\

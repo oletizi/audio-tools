@@ -1,5 +1,6 @@
-import {natural2real, parseNote, real2natural, scale} from "@/lib/lib-core"
+import {bytes2numberBE, bytes2numberLE, natural2real, parseNote, real2natural, scale} from "@/lib/lib-core"
 import {expect} from "chai";
+import {bytes2Number} from "../src/lib/lib-akai-s56k";
 
 describe('Core lib', () => {
     it('scale', () => {
@@ -20,5 +21,11 @@ describe('Core lib', () => {
     })
     it('parses note as scale', () => {
         expect(parseNote('C3')).eq(60)
+    })
+
+    it('byte2number', () => {
+        let b = [1, 0]
+        expect(bytes2numberLE(b)).to.eq(1)
+        expect(bytes2numberBE(b)).to.eq(256)
     })
 })

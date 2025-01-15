@@ -1,4 +1,5 @@
 import * as midi from 'midi'
+import {bytes2numberLE} from "@/lib/lib-core";
 
 export interface Device {
 
@@ -15,24 +16,8 @@ export function newDevice(input: midi.Input, output: midi.Output): Device {
     return new s3000xl(input, output)
 }
 
-// 0x27 Request for Program Header bytes
-// 0x28 Program Header bytes
-// 0x29 Request for Keygroup Header bytes
-// 0x2A Keygroup Header bytes
-// 0x2B Request for Sample Header bytes
-// 0x2C Sample Header bytes
-// 0x2D Request for FX/Reverb bytes
-// 0x2E FX/Reverb bytes
-// 0x2F Request for Cue-List bytes
-// 0x30 Cue-List bytes
-// 0x31 Request for Take List bytes
-// 0x32 Take List bytes
-// 0x33 Request for Miscellaneous bytes
-// 0x34 Miscellaneous bytes
-// 0x35 Request Volume List item
-// 0x36 Volume List item (only used in response to request)
-// 0x37 Request Harddisk Directory entry
-// 0x38 Harddisk Directory entry (only used in response to request)
+
+// noinspection JSUnusedGlobalSymbols
 enum Opcode {
     // ID	Mnemonic	Direction	Description
     // 00h	RSTAT	<	request S1000 status
@@ -96,8 +81,20 @@ class s3000xl implements Device {
     }
 
     async getSampleNames(names: any[]) {
+        // Response:
+        // F0,47,cc,SLIST,48,\
+        // ss,ss number of resident samples\
+        // 12 bytes sample 1 name\
+        // 12 bytes sample 2 name\
+        //   \... etc.\
+        // F7 eox\
         const m = await this.send(Opcode.RLIST, [])
-        console.log(m)
+        let b = m.slice(5,7);
+        console.log(`sample count bytes:`)
+        console.log(b)
+        const sampleCount = bytes2numberLE(b)
+        console.log(`Sample count: ${sampleCount}`)
+
     }
 
     private async send(opcode: Opcode, data: number[]) {
@@ -111,7 +108,8 @@ class s3000xl implements Device {
             0x48, // 04: ( 72) DEVICE ID
         ].concat(data)
         message.push(0xf7)  // 21: (247) SYSEX_END)
-        const l = new Promise((resolve) => {
+
+        const response = new Promise((resolve) => {
             function listener(delta: number, message: midi.MidiMessage) {
                 input.removeListener('message', listener)
                 resolve(message)
@@ -121,6 +119,6 @@ class s3000xl implements Device {
         })
 
         output.sendMessage(message)
-        return await l
+        return await response
     }
 }

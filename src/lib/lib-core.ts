@@ -111,3 +111,15 @@ export function real2natural(value: number | string, min: number | string, max: 
 export function natural2real(value: number | string, min: number | string, max: number | string) {
     return scale(Number(value), 0, Number(max) - Number(min), Number(min), Number(max))
 }
+
+export function bytes2numberLE(b: number[]) {
+    return bytes2numberBE(Array.from(b).reverse())
+}
+
+export function bytes2numberBE(b: number[]) {
+    let rv = 0;
+    for (let i = 0; i < b.length; i++) {
+        rv = (rv << 8) | b[i];
+    }
+    return rv
+}
