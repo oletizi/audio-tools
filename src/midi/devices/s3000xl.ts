@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 08:54:55 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 09:13:03 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -775,6 +775,28 @@ export interface SampleHeader {
   SPITCH: number    // Original pitch; Range: 21 to 127 represents A1 to G8
   SHNAME: string    // Sample name
   SSRVLD: number    // Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid
+  SLOOPS: number    // Number of loops
+  SALOOP: number    // First active loop (internal use)
+  SHLOOP: number    // Highest loop (internal use)
+  SPTYPE: number    // Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end
+  STUNO: number    // Sample tuning offset cent:semi
+  SLOCAT: number    // Absolute start address in memory of sample
+  SLNGTH: number    // Length of sample
+  SSTART: number    // Offset from start of sample from which playback commences
+  SMPEND: number    // Offset from start of sample from which playback ceases
+  LOOPAT1: number    // Position in sample of first loop point
+  LLNGTH1: number    // First loop length
+  LDWELL1: number    // Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+  LOOPAT2: number    // Position in sample of second loop point
+  LLNGTH2: number    // Second loop length
+  LDWELL2: number    // Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+  LOOPAT3: number    // Position in sample of third loop point
+  LLNGTH3: number    // Third loop length
+  LDWELL3: number    // Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+  LOOPAT4: number    // Position in sample of fourth loop point
+  LLNGTH4: number    // Fourth loop length
+  LDWELL4: number    // Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+  SLXY1: number    // Relative loop factors for loop 1
 }
 
 export function parseSampleHeader(data: number[], offset: number, o: SampleHeader) {
@@ -828,6 +850,182 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
         b.push(nextByte(data, v).value)
     }
     o.SSRVLD = bytes2numberLE(b)
+
+    // Number of loops
+    out.log('SLOOPS: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLOOPS = bytes2numberLE(b)
+
+    // First active loop (internal use)
+    out.log('SALOOP: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SALOOP = bytes2numberLE(b)
+
+    // Highest loop (internal use)
+    out.log('SHLOOP: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SHLOOP = bytes2numberLE(b)
+
+    // Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end
+    out.log('SPTYPE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SPTYPE = bytes2numberLE(b)
+
+    // Sample tuning offset cent:semi
+    out.log('STUNO: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.STUNO = bytes2numberLE(b)
+
+    // Absolute start address in memory of sample
+    out.log('SLOCAT: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLOCAT = bytes2numberLE(b)
+
+    // Length of sample
+    out.log('SLNGTH: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLNGTH = bytes2numberLE(b)
+
+    // Offset from start of sample from which playback commences
+    out.log('SSTART: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SSTART = bytes2numberLE(b)
+
+    // Offset from start of sample from which playback ceases
+    out.log('SMPEND: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SMPEND = bytes2numberLE(b)
+
+    // Position in sample of first loop point
+    out.log('LOOPAT1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOOPAT1 = bytes2numberLE(b)
+
+    // First loop length
+    out.log('LLNGTH1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<6; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LLNGTH1 = bytes2numberLE(b)
+
+    // Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+    out.log('LDWELL1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LDWELL1 = bytes2numberLE(b)
+
+    // Position in sample of second loop point
+    out.log('LOOPAT2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOOPAT2 = bytes2numberLE(b)
+
+    // Second loop length
+    out.log('LLNGTH2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<6; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LLNGTH2 = bytes2numberLE(b)
+
+    // Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+    out.log('LDWELL2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LDWELL2 = bytes2numberLE(b)
+
+    // Position in sample of third loop point
+    out.log('LOOPAT3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOOPAT3 = bytes2numberLE(b)
+
+    // Third loop length
+    out.log('LLNGTH3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<6; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LLNGTH3 = bytes2numberLE(b)
+
+    // Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+    out.log('LDWELL3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LDWELL3 = bytes2numberLE(b)
+
+    // Position in sample of fourth loop point
+    out.log('LOOPAT4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOOPAT4 = bytes2numberLE(b)
+
+    // Fourth loop length
+    out.log('LLNGTH4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<6; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LLNGTH4 = bytes2numberLE(b)
+
+    // Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
+    out.log('LDWELL4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LDWELL4 = bytes2numberLE(b)
+
+    // Relative loop factors for loop 1
+    out.log('SLXY1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<4; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLXY1 = bytes2numberLE(b)
 
 }
 

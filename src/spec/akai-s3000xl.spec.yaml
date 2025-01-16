@@ -275,3 +275,87 @@ specs:
 
       - n: 'SSRVLD'
         d: 'Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid'
+
+      - n: 'SLOOPS'
+        d: 'Number of loops'
+
+      - n: 'SALOOP'
+        d: 'First active loop (internal use)'
+
+      - n: 'SHLOOP'
+        d: 'Highest loop (internal use)'
+
+      - n: 'SPTYPE'
+        d: 'Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end'
+
+      - n: 'STUNO'
+        d: 'Sample tuning offset cent:semi'
+        s: 2
+
+      - n: 'SLOCAT'
+        d: 'Absolute start address in memory of sample'
+        s: 4
+
+      - n: 'SLNGTH'
+        d: 'Length of sample'
+        s: 4
+
+      - n: 'SSTART'
+        d: 'Offset from start of sample from which playback commences'
+        s: 4
+
+      - n: 'SMPEND'
+        d: 'Offset from start of sample from which playback ceases'
+        s: 4
+
+      - n: 'LOOPAT1'
+        d: 'Position in sample of first loop point'
+        s: 4
+
+      - n: 'LLNGTH1'
+        d: 'First loop length'
+        s: 6
+
+      - n: 'LDWELL1'
+        d: 'Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
+        s: 2
+
+      - n: 'LOOPAT2'
+        d: 'Position in sample of second loop point'
+        s: 4
+
+      - n: 'LLNGTH2'
+        d: 'Second loop length'
+        s: 6
+
+      - n: 'LDWELL2'
+        d: 'Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
+        s: 2
+
+      - n: 'LOOPAT3'
+        d: 'Position in sample of third loop point'
+        s: 4
+
+      - n: 'LLNGTH3'
+        d: 'Third loop length'
+        s: 6
+
+      - n: 'LDWELL3'
+        d: 'Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
+        s: 2
+
+      - n: 'LOOPAT4'
+        d: 'Position in sample of fourth loop point'
+        s: 4
+
+      - n: 'LLNGTH4'
+        d: 'Fourth loop length'
+        s: 6
+
+      - n: 'LDWELL4'
+        d: 'Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
+        s: 2
+
+      - n: 'SLXY1'
+        d: 'Relative loop factors for loop 1'
+        s: 4
