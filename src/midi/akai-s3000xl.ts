@@ -525,7 +525,7 @@ class s3000xl implements Device {
 const ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
     'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#', '+', '-', '.']
 
-function akaiByte2String(bytes: number[]) {
+export function akaiByte2String(bytes: number[]) {
     let rv = ''
     for (let v of bytes) {
         rv += ALPHABET[v]
@@ -534,7 +534,7 @@ function akaiByte2String(bytes: number[]) {
 
 }
 
-function nextByte(nibbles, v: { value: number, offset: number }) {
+export function nextByte(nibbles, v: { value: number, offset: number }) {
     v.value = nibbles2byte(nibbles[v.offset], nibbles[v.offset + 1])
     v.offset += 2
     return v

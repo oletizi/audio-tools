@@ -15,8 +15,19 @@ export async function readSpecs(file: string) {
     return parse((await fs.readFile(file)).toString())
 }
 
+export function genImports() {
+    return `//
+// GENERATED ${new Date()}. DO NOT EDIT.
+//    
+import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
+import {newClientOutput} from "@/lib/process-output"
+import {nextByte, akaiByte2String} from "@/midi/akai-s3000xl"
+    
+`
+}
+
 export async function genInterface(spec: Spec) {
-    let rv = `interface ${spec.name} {\n`
+    let rv = `export interface ${spec.name} {\n`
     for (const field of spec.fields) {
         rv += `  ${field.n}: ${field.t ? field.t : 'number'}    // ${field.d}\n`
     }
@@ -25,26 +36,24 @@ export async function genInterface(spec: Spec) {
 }
 
 export async function genParser(spec: Spec) {
-    let rv = `function parse${spec.name}(data: byte[], o: ${spec.name}) {\n`
-    rv += `  const out = newClientOutput(true, 'parse${spec.name}')\n`
-    rv += `  const v = {value: 0, offset: 0}\n\n`
-    rv += '  let b: byte[]\n'
+    let rv = `export function parse${spec.name}(data: number[], o: ${spec.name}) {\n`
+    rv += `    const out = newClientOutput(true, 'parse${spec.name}')\n`
+    rv += `    const v = {value: 0, offset: 0}\n\n`
+    rv += '    let b: number[]\n'
     for (const field of spec.fields) {
-        rv += `  // ${field.d}\n`
-        rv += `  out.log(${field.n} + ': offset: ' + v.offset')\n`
+        rv += `    // ${field.d}\n`
+        rv += `    out.log('${field.n}: offset: ' + v.offset)\n`
         if (field.t) {
-            rv += '  // string parse here\n'
-            rv += '  for (let i = 0; i < 12; i++) {\n' +
-                '      nextByte(m, v)\n' +
-                `      o.${field.n} += akaiByte2String([v.value])\n` +
-                '  }\n'
+            rv += '    for (let i = 0; i < 12; i++) {\n' +
+                '          nextByte(data, v)\n' +
+                `          o.${field.n} += akaiByte2String([v.value])\n` +
+                '    }\n'
         } else {
-            rv += `  b = []\n`
-            rv += `  for (let i=0; i<${field.s ? field.s : 1}; i++) {\n`
-            rv += '    b.push(nextByte(m, v))\n'
-            rv += `  }\n`
-            rv += `  o.${field.n} = bytes2numberLE(b)\n`
-            rv += '  // number parse here\n'
+            rv += `    b = []\n`
+            rv += `    for (let i=0; i<${field.s ? field.s : 1}; i++) {\n`
+            rv += '        b.push(nextByte(data, v).value)\n'
+            rv += `    }\n`
+            rv += `    o.${field.n} = bytes2numberLE(b)\n`
         }
         rv += '\n'
     }
