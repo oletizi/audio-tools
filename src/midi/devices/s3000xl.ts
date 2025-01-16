@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 09:39:16 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 09:43:16 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1103,6 +1103,11 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
 export interface KeygroupHeader {
   KGIDENT: number    // Block identifier (internal use); Should equal 2
+  NXTKG: number    // Next keygroup block address (internal use)
+  LONOTE: number    // Lower limit of keyrange; Range: 21 to 127 represents A1 to G8
+  HINOTE: number    // Upper limit of keyrange
+  KGTUNO: number    // Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+  FILFRQ: number    // Basic filter frequency; Range: 0 to 99
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -1124,6 +1129,46 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
         b.push(nextByte(data, v).value)
     }
     o.KGIDENT = bytes2numberLE(b)
+
+    // Next keygroup block address (internal use)
+    out.log('NXTKG: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.NXTKG = bytes2numberLE(b)
+
+    // Lower limit of keyrange; Range: 21 to 127 represents A1 to G8
+    out.log('LONOTE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LONOTE = bytes2numberLE(b)
+
+    // Upper limit of keyrange
+    out.log('HINOTE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HINOTE = bytes2numberLE(b)
+
+    // Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+    out.log('KGTUNO: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KGTUNO = bytes2numberLE(b)
+
+    // Basic filter frequency; Range: 0 to 99
+    out.log('FILFRQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FILFRQ = bytes2numberLE(b)
 
 }
 

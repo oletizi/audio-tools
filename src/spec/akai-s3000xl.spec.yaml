@@ -392,3 +392,22 @@ specs:
     fields:
       - n: 'KGIDENT'
         d: 'Block identifier (internal use); Should equal 2'
+
+      - n: 'NXTKG'
+        d: 'Next keygroup block address (internal use)'
+        s: 2
+
+      - n: 'LONOTE'
+        d: 'Lower limit of keyrange; Range: 21 to 127 represents A1 to G8'
+
+      - n: 'HINOTE'
+        d: 'Upper limit of keyrange'
+
+      - n: 'KGTUNO'
+        d: 'Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)'
+        s: 2
+
+      - n: 'FILFRQ'
+        d: 'Basic filter frequency; Range: 0 to 99'
+
+
