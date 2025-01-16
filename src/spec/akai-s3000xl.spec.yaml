@@ -511,3 +511,16 @@ specs:
 
       - n: 'VPANO1'
         d: 'Velocity zone 1 pan offset'
+
+      - n: 'ZPLAY1'
+        d: 'Type of sample playback in velocity zone 1; 0 = As sample, 1 = Loop in release, 2 = Loop til release, 3 = No loops, 4 = Play to sample end'
+
+      - n: 'LVXF1'
+        d: 'Low velocity crossfade factor (internal use)'
+
+      - n: 'HVXF1'
+        d: 'High velocity crossfade factor (internal use)'
+
+      - n: 'SBADD1'
+        d: 'Calculated sample header block address (internal)'
+        s: 2

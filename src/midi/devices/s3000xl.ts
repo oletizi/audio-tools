@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 10:07:57 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 10:10:21 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1141,6 +1141,10 @@ export interface KeygroupHeader {
   VLOUD1: number    // Velocity zone 1 loudness offset; Range: -50 to +50
   VFREQ1: number    // Velocity zone 1 filter frequency offset
   VPANO1: number    // Velocity zone 1 pan offset
+  ZPLAY1: number    // Type of sample playback in velocity zone 1; 0 = As sample, 1 = Loop in release, 2 = Loop til release, 3 = No loops, 4 = Play to sample end
+  LVXF1: number    // Low velocity crossfade factor (internal use)
+  HVXF1: number    // High velocity crossfade factor (internal use)
+  SBADD1: number    // Calculated sample header block address (internal)
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -1466,6 +1470,38 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
         b.push(nextByte(data, v).value)
     }
     o.VPANO1 = bytes2numberLE(b)
+
+    // Type of sample playback in velocity zone 1; 0 = As sample, 1 = Loop in release, 2 = Loop til release, 3 = No loops, 4 = Play to sample end
+    out.log('ZPLAY1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ZPLAY1 = bytes2numberLE(b)
+
+    // Low velocity crossfade factor (internal use)
+    out.log('LVXF1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LVXF1 = bytes2numberLE(b)
+
+    // High velocity crossfade factor (internal use)
+    out.log('HVXF1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HVXF1 = bytes2numberLE(b)
+
+    // Calculated sample header block address (internal)
+    out.log('SBADD1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SBADD1 = bytes2numberLE(b)
 
 }
 
