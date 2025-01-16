@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 11:25:40 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 11:26:54 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1167,7 +1167,7 @@ export interface KeygroupHeader {
   LVXF3: number    // Low velocity crossfade factor (internal use)
   HVXF3: number    // High velocity crossfade factor (internal use)
   SBADD3: number    // Calculated sample header block address (internal)
-  SNAME4: s    // Sample name used in velocity zone 4
+  SNAME4: string    // Sample name used in velocity zone 4
   LOVEL4: number    // Lower limit of velocity range 4
   HIVEL4: number    // Upper limit of velocity range 4
   VTUNO4: number    // Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)

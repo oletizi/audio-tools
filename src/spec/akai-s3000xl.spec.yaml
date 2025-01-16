@@ -602,7 +602,7 @@ specs:
       - n: 'SNAME4'
         d: 'Sample name used in velocity zone 4'
         s: 12
-        t: s
+        t: 'string'
 
       - n: 'LOVEL4'
         d: 'Lower limit of velocity range 4'
