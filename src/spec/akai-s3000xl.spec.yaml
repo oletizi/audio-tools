@@ -1,2 +1,14 @@
-spec:
-    name: ProgramHeader
+specs:
+  - name: ProgramHeader
+    fields:
+      - n: 'KGRP1'
+        d: "Block address of first keygroup (internal use)"
+        s: 2
+      - n: 'PRNAME'
+        t: 'string'
+        d: "Name of program"
+        s: 12
+      - n: 'PRGNUM'
+        d: "MIDI program number"
+      - n: 'PMCHAN'
+        d: "MIDI channel"

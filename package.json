@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "gen:devices": "tsx ./gen-devices.ts src/ts/midi/devices",
+    "gen:devices": "tsx gen-s56k.ts src/ts/midi/devices",
+    "gen:s3000xl": "tsx gen-s3000xl.ts src/ts/midi/devices",
     "chakra:snippets": "npx @chakra-ui/cli snippet add --outdir src/ts/components/chakra",
     "watch:build": "nodemon --watch 'src/*' -e css,scss,html,js,jsx,ts,tsx -x \"npm run build\"",
     "watch:translator": "nodemon --watch 'src/*' -e css,scss,html,js,jsx,ts.tsx -x \"npm run build:translator\"",

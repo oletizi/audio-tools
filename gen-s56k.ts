@@ -1,13 +1,6 @@
 import {DeviceSpec, getDeviceSpecs} from "@/midi/devices/specs";
-import {newServerOutput} from "@/process-output";
 import fs from "fs";
 import path from "path";
-import {timestamp} from "./src/ts/lib/lib-core";
-
-// <Device>InfoResult
-// <Device>Info
-// <Device>
-// Constructor
 
 const out = fs.createWriteStream(path.join('src','ts', 'midi', 'devices', 'devices.ts'))
 
