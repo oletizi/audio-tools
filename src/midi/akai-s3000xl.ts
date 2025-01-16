@@ -1,64 +1,64 @@
 import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput} from "@/lib/process-output";
-import {parseProgramHeader} from "@/midi/devices/s3000xl";
+import {parseProgramHeader, ProgramHeader} from "@/midi/devices/s3000xl";
 
-export interface ProgramHeader {
-    TRANSPOSE: number;
-    B_MODE: number;
-    B_PTCHD: number;
-    LEGATO: number;
-    VSSCL: number;
-    VOSCL: number;
-    K_LDEL: number;
-    K_LDEP: number;
-    K_LRAT: number;
-    PTUNO: number;
-    SPFILT: number;
-    SPATT: number;
-    SPLOUD: number;
-    VASSOQ: number;
-    PLAW: number;
-    DESYNC: number;
-    COHERE: number;
-    MW_PAN: number;
-    ECHOUT: number;
-    TEMPER: string;
-    TPNUM: number;
-    GROUPS: number;
-    KXFADE: number;
-    P_PTCH: number;
-    B_PTCH: number;
-    VELDEP: number;
-    PRSDEP: number;
-    MWLDEP: number;
-    LFODEL: number;
-    LFODEP: number;
-    LFORAT: number;
-    K_PANP: number;
-    PANDEL: number;
-    PANDEP: number;
-    PANRAT: number;
-    P_LOUD: number;
-    K_LOUD: number;
-    V_LOUD: number;
-    PRLOUD: number;
-    PANPOS: number;
-    STEREO: number;
-    OUTPUT: number;
-    OSHIFT: number;
-    PLAYHI: number;
-    PLAYLO: number;
-    PRIORT: number;
-    POLYPH: number;
-    PMCHAN: number;
-    PRGNUM: number;
-    PRNAME: string;
-    KGRP1: number;
-    PRIDENT: number;
-    PNUMBER: number;
-
-}
+// export interface ProgramHeader {
+//     TRANSPOSE: number;
+//     B_MODE: number;
+//     B_PTCHD: number;
+//     LEGATO: number;
+//     VSSCL: number;
+//     VOSCL: number;
+//     K_LDEL: number;
+//     K_LDEP: number;
+//     K_LRAT: number;
+//     PTUNO: number;
+//     SPFILT: number;
+//     SPATT: number;
+//     SPLOUD: number;
+//     VASSOQ: number;
+//     PLAW: number;
+//     DESYNC: number;
+//     COHERE: number;
+//     MW_PAN: number;
+//     ECHOUT: number;
+//     TEMPER: string;
+//     TPNUM: number;
+//     GROUPS: number;
+//     KXFADE: number;
+//     P_PTCH: number;
+//     B_PTCH: number;
+//     VELDEP: number;
+//     PRSDEP: number;
+//     MWLDEP: number;
+//     LFODEL: number;
+//     LFODEP: number;
+//     LFORAT: number;
+//     K_PANP: number;
+//     PANDEL: number;
+//     PANDEP: number;
+//     PANRAT: number;
+//     P_LOUD: number;
+//     K_LOUD: number;
+//     V_LOUD: number;
+//     PRLOUD: number;
+//     PANPOS: number;
+//     STEREO: number;
+//     OUTPUT: number;
+//     OSHIFT: number;
+//     PLAYHI: number;
+//     PLAYLO: number;
+//     PRIORT: number;
+//     POLYPH: number;
+//     PMCHAN: number;
+//     PRGNUM: number;
+//     PRNAME: string;
+//     KGRP1: number;
+//     PRIDENT: number;
+//     PNUMBER: number;
+//
+// }
 
 export interface SampleHeader {
     // Loop 1
@@ -215,186 +215,13 @@ class s3000xl implements Device {
         const m = await this.send(Opcode.RPDATA, byte2nibblesLE(programNumber))
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
-        header.PNUMBER = nextByte(m, v).value
+        header['PNUMBER'] = nextByte(m, v).value
+
+        nextByte(m, v) // Byte offset into header ?
 
         const headerData = m.slice(v.offset, m.length -1)
         parseProgramHeader(headerData, header)
         out.log(header)
-
-        if (true) {
-            return
-        }
-        out.log(`PRIDENT: offset: ${v.offset}`)
-        const header_start = v.offset
-
-        function reloff() {
-            return (v.offset - header_start) / 2
-        }
-
-        out.log(`PRIDENT: rel off: ${reloff()}`)
-        header.PRIDENT = nextByte(m, v).value
-
-        out.log(`KGRP1: rel off: ${reloff()}`)
-        header.KGRP1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`PRNAME: rel off: ${reloff()}`)
-        header.PRNAME = ''
-        for (let i = 0; i < 12; i++) {
-            nextByte(m, v)
-            header.PRNAME += akaiByte2String([v.value])
-        }
-
-        out.log(`PRGNUM: rel off: ${reloff()}`)
-        header.PRGNUM = nextByte(m, v).value
-
-        out.log(`PMCHAN: rel off: ${reloff()}`)
-        header.PMCHAN = nextByte(m, v).value
-
-        out.log(`POLYPH: rel off: ${reloff()}`)
-        header.POLYPH = nextByte(m, v).value
-
-        out.log(`PRIORT: rel off: ${reloff()}`)
-        header.PRIORT = nextByte(m, v).value
-
-        out.log(`PLAYLO: rel off: ${reloff()}`)
-        header.PLAYLO = nextByte(m, v).value
-
-        out.log(`PLAYHI: rel off: ${reloff()}`)
-        header.PLAYHI = nextByte(m, v).value
-
-        out.log(`OSHIFT: rel off: ${reloff()}`)
-        header.OSHIFT = nextByte(m, v).value
-
-        out.log(`OUTPUT: rel off: ${reloff()}`)
-        header.OUTPUT = nextByte(m, v).value
-
-        out.log(`STEREO: rel off: ${reloff()}`)
-        header.STEREO = nextByte(m, v).value
-
-        out.log(`PANPOS: rel off: ${reloff()}`)
-        header.PANPOS = nextByte(m, v).value
-
-        out.log(`PRLOUD: rel off: ${reloff()}`)
-        header.PRLOUD = nextByte(m, v).value
-
-        out.log(`V_LOUD: rel off: ${reloff()}`)
-        header.V_LOUD = nextByte(m, v).value
-
-        out.log(`K_LOUD: rel off: ${reloff()}`)
-        header.K_LOUD = nextByte(m, v).value
-
-        out.log(`P_LOUD: rel off: ${reloff()}`)
-        header.P_LOUD = nextByte(m, v).value
-
-        out.log(`PANRAT: rel off: ${reloff()}`)
-        header.PANRAT = nextByte(m, v).value
-
-        out.log(`PANDEP: rel off: ${reloff()}`)
-        header.PANDEP = nextByte(m, v).value
-
-        out.log(`PANDEL: rel off: ${reloff()}`)
-        header.PANDEL = nextByte(m, v).value
-
-        out.log(`K_PANP: rel off: ${reloff()}`)
-        header.K_PANP = nextByte(m, v).value
-
-        out.log(`LFORAT: rel off: ${reloff()}`)
-        header.LFORAT = nextByte(m, v).value
-
-        out.log(`LFODEP: rel off: ${reloff()}`)
-        header.LFODEP = nextByte(m, v).value
-
-        out.log(`LFODEL: rel off: ${reloff()}`)
-        header.LFODEL = nextByte(m, v).value
-
-        out.log(`MWLDEP: rel off: ${reloff()}`)
-        header.MWLDEP = nextByte(m, v).value
-
-        out.log(`PRSDEP: rel off: ${reloff()}`)
-        header.PRSDEP = nextByte(m, v).value
-
-        out.log(`VELDEP: rel off: ${reloff()}`)
-        header.VELDEP = nextByte(m, v).value
-
-        out.log(`B_PTCH: rel off: ${reloff()}`)
-        header.B_PTCH = nextByte(m, v).value
-
-        out.log(`P_PTCH: rel off: ${reloff()}`)
-        header.P_PTCH = nextByte(m, v).value
-
-        out.log(`KXFADE: rel off: ${reloff()}`)
-        header.KXFADE = nextByte(m, v).value
-
-        out.log(`GROUPS: rel off: ${reloff()}`)
-        header.GROUPS = nextByte(m, v).value
-
-        out.log(`TPNUM: rel off: ${reloff()}`)
-        header.TPNUM = nextByte(m, v).value
-
-        out.log(`TEMPER: rel off: ${reloff()}`)
-        header.TEMPER = ''
-        for (let i = 0; i < 12; i++) {
-            nextByte(m, v)
-            header.TEMPER += akaiByte2String([v.value])
-        }
-
-        out.log(`ECHOUT: rel off: ${reloff()}`)
-        header.ECHOUT = nextByte(m, v).value
-
-        out.log(`MW_PAN: rel off: ${reloff()}`)
-        header.MW_PAN = nextByte(m, v).value
-
-        out.log(`COHERE: rel off: ${reloff()}`)
-        header.COHERE = nextByte(m, v).value
-
-        out.log(`DESYNC: rel off: ${reloff()}`)
-        header.DESYNC = nextByte(m, v).value
-
-        out.log(`PLAW: rel off: ${reloff()}`)
-        header.PLAW = nextByte(m, v).value
-
-        out.log(`VASSOQ: rel off: ${reloff()}`)
-        header.VASSOQ = nextByte(m, v).value
-
-        out.log(`SPATT: rel off: ${reloff()}`)
-        header.SPATT = nextByte(m, v).value
-
-        out.log(`SPFILT: rel off: ${reloff()}`)
-        header.SPFILT = nextByte(m, v).value
-
-        out.log(`PTUNO: rel off: ${reloff()}`)
-        header.PTUNO = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`K_LRAT: rel off: ${reloff()}`)
-        header.K_LRAT = nextByte(m, v).value
-
-        out.log(`K_LDEP: rel off: ${reloff()}`)
-        header.K_LDEP = nextByte(m, v).value
-
-        out.log(`K_LDEL: rel off: ${reloff()}`)
-        header.K_LDEL = nextByte(m, v).value
-
-        out.log(`VOSCL: rel off: ${reloff()}`)
-        header.VOSCL = nextByte(m, v).value
-
-        out.log(`VSSCL: rel off: ${reloff()}`)
-        header.VSSCL = nextByte(m, v).value
-
-        out.log(`LEGATO: rel off: ${reloff()}`)
-        header.LEGATO = nextByte(m, v).value
-
-        out.log(`B_PTCHD: rel off: ${reloff()}`)
-        header.B_PTCHD = nextByte(m, v).value
-
-        out.log(`B_MODE: rel off: ${reloff()}`)
-        header.B_MODE = nextByte(m, v).value
-
-        out.log(`B_MODE: rel off: ${reloff()}`)
-        header.B_MODE = nextByte(m, v).value
-
-        out.log(`TRANSPOSE: rel off: ${reloff()}`)
-        header.TRANSPOSE = nextByte(m, v).value
-
     }
 
     async getSampleHeader(sampleNumber: number, header: SampleHeader) {

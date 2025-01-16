@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 07:27:45 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 07:40:53 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -117,7 +117,7 @@ export function parseProgramHeader(data: number[], o: ProgramHeader) {
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
           o.PRNAME += akaiByte2String([v.value])
-    }
+          out.log('PRNAME at ' + i + ': ' + o.PRNAME)    }
 
     // MIDI program number; Range: 0 to 128; After sending data to this parameter, Miscellaneous function BTSORT should be triggered to resort the list of programs into order and to flag active programs.
     out.log('PRGNUM: offset: ' + reloff())
@@ -357,7 +357,7 @@ export function parseProgramHeader(data: number[], o: ProgramHeader) {
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
           o.TEMPER += akaiByte2String([v.value])
-    }
+          out.log('TEMPER at ' + i + ': ' + o.TEMPER)    }
 
     // Not used
     out.log('ECHOUT: offset: ' + reloff())

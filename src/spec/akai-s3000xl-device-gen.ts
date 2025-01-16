@@ -55,6 +55,7 @@ export async function genParser(spec: Spec) {
                 '    for (let i = 0; i < 12; i++) {\n' +
                 '          nextByte(data, v)\n' +
                 `          o.${field.n} += akaiByte2String([v.value])\n` +
+                `          out.log('${field.n} at ' + i + ': ' + o.${field.n})` +
                 '    }\n'
         } else {
             rv += `    b = []\n`
