@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 09:13:03 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 09:20:22 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -797,6 +797,14 @@ export interface SampleHeader {
   LLNGTH4: number    // Fourth loop length
   LDWELL4: number    // Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
   SLXY1: number    // Relative loop factors for loop 1
+  SLXY2: number    // Relative loop factors for loop 2
+  SLXY3: number    // Relative loop factors for loop 3
+  SLXY4: number    // Relative loop factors for loop 4
+  SSPARE: number    // Used internally
+  SWCOMM: number    // Not used
+  SSPAIR: number    // Address of stereo partner (internal use)
+  SSRATE: number    // Sample rate
+  SHLTO: number    // Tuning offset of hold loop; Range: -50 to +50
 }
 
 export function parseSampleHeader(data: number[], offset: number, o: SampleHeader) {
@@ -1022,10 +1030,74 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
     // Relative loop factors for loop 1
     out.log('SLXY1: offset: ' + reloff())
     b = []
-    for (let i=0; i<4; i++) {
+    for (let i=0; i<12; i++) {
         b.push(nextByte(data, v).value)
     }
     o.SLXY1 = bytes2numberLE(b)
+
+    // Relative loop factors for loop 2
+    out.log('SLXY2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<12; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLXY2 = bytes2numberLE(b)
+
+    // Relative loop factors for loop 3
+    out.log('SLXY3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<12; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLXY3 = bytes2numberLE(b)
+
+    // Relative loop factors for loop 4
+    out.log('SLXY4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<12; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SLXY4 = bytes2numberLE(b)
+
+    // Used internally
+    out.log('SSPARE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SSPARE = bytes2numberLE(b)
+
+    // Not used
+    out.log('SWCOMM: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SWCOMM = bytes2numberLE(b)
+
+    // Address of stereo partner (internal use)
+    out.log('SSPAIR: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SSPAIR = bytes2numberLE(b)
+
+    // Sample rate
+    out.log('SSRATE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SSRATE = bytes2numberLE(b)
+
+    // Tuning offset of hold loop; Range: -50 to +50
+    out.log('SHLTO: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SHLTO = bytes2numberLE(b)
 
 }
 

@@ -358,4 +358,33 @@ specs:
 
       - n: 'SLXY1'
         d: 'Relative loop factors for loop 1'
-        s: 4
+        s: 12
+
+      - n: 'SLXY2'
+        d: 'Relative loop factors for loop 2'
+        s: 12
+
+      - n: 'SLXY3'
+        d: 'Relative loop factors for loop 3'
+        s: 12
+
+      - n: 'SLXY4'
+        d: 'Relative loop factors for loop 4'
+        s: 12
+
+      - n: 'SSPARE'
+        d: 'Used internally'
+
+      - n: 'SWCOMM'
+        d: 'Not used'
+
+      - n: 'SSPAIR'
+        d: 'Address of stereo partner (internal use)'
+        s: 2
+
+      - n: 'SSRATE'
+        d: 'Sample rate'
+        s: 2
+
+      - n: 'SHLTO'
+        d: 'Tuning offset of hold loop; Range: -50 to +50'
