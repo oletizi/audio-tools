@@ -524,3 +524,251 @@ specs:
       - n: 'SBADD1'
         d: 'Calculated sample header block address (internal)'
         s: 2
+
+      - n: 'SNAME2'
+        d: 'Sample name used in velocity zone 2'
+        s: 12
+        t: 'string'
+
+      - n: 'LOVEL2'
+        d: 'Lower limit of velocity range 2'
+
+      - n: 'HIVEL2'
+        d: 'Upper limit of velocity range 2'
+
+      - n: 'VTUNO2'
+        d: 'Velocity zone 2 tuning offset; Range: -50.00 to +50.00 (fraction is binary)'
+        s: 2
+
+      - n: 'VLOUD2'
+        d: 'Velocity zone 2 loudness offset'
+
+      - n: 'VFREQ2'
+        d: 'Velocity zone 2 filter frequency offset'
+
+      - n: 'VPANO2'
+        d: 'Velocity zone 2 pan offset'
+
+      - n: 'ZPLAY2'
+        d: 'Type of sample playback in velocity zone 2; see ZPLAY1'
+
+      - n: 'LVXF2'
+        d: 'Low velocity crossfade factor (internal use)'
+
+      - n: 'HVXF2'
+        d: 'High velocity crossfade factor (internal use)'
+
+      - n: 'SBADD2'
+        d: 'Calculated sample header block address (internal)'
+        s: 2
+
+      - n: 'SNAME3'
+        d: 'Sample name used in velocity zone 3'
+        s: 12
+        t: 'string'
+
+      - n: 'LOVEL3'
+        d: 'Lower limit of velocity range 3'
+
+      - n: 'HIVEL3'
+        d: 'Upper limit of velocity range 3'
+
+      - n: 'VTUNO3'
+        d: 'Velocity zone 3 tuning offset; Range: -50.00 to +50.00 (fraction is binary)'
+        s: 2
+
+      - n: 'VLOUD3'
+        d: 'Velocity zone 3 loudness offset; -50 to +50'
+
+      - n: 'VFREQ3'
+        d: 'Velocity zone 3 filter frequency offset'
+
+      - n: 'VPANO3'
+        d: 'Velocity zone 3 pan offset'
+
+      - n: 'ZPLAY3'
+        d: 'Type of sample playback in velocity zone 3; See ZPLAY1'
+
+      - n: 'LVXF3'
+        d: 'Low velocity crossfade factor (internal use)'
+
+      - n: 'HVXF3'
+        d: 'High velocity crossfade factor (internal use)'
+
+      - n: 'SBADD3'
+        d: 'Calculated sample header block address (internal)'
+        s: 2
+
+      - n: 'SNAME4'
+        d: 'Sample name used in velocity zone 4'
+        s: 12
+        t: s
+
+      - n: 'LOVEL4'
+        d: 'Lower limit of velocity range 4'
+
+      - n: 'HIVEL4'
+        d: 'Upper limit of velocity range 4'
+
+      - n: 'VTUNO4'
+        d: 'Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)'
+        s: 2
+
+      - n: 'VLOUD4'
+        d: 'Velocity zone 4 loudness offset'
+
+      - n: 'VFREQ4'
+        d: 'Velocity zone 4 filter frequency offset'
+
+      - n: 'VPANO4'
+        d: 'Velocity zone 4 pan offset'
+
+      - n: 'ZPLAY4'
+        d: 'Type of sample playback in velocity zone 4; See ZPLAY1'
+
+      - n: 'LVXF4'
+        d: 'Low velocity crossfade factor (internal use)'
+
+      - n: 'HVXF4'
+        d: 'High velocity crossfade factor (internal use)'
+
+      - n: 'SBADD4'
+        d: 'Calculated sample header block address (internal)'
+        s: 2
+
+      - n: 'KBEAT'
+        d: 'Fixed rate detune; -50 to 50'
+
+      - n: 'AHOLD'
+        d: 'Remain in attack phase until first loop encountered; Range: 0 represents OFF, 1 represents ON'
+
+      - n: 'CP1'
+        d: 'Constant pitch flag for velocity zone 1; 0 represents TRACK, 1 represents CONST'
+
+      - n: 'CP2'
+        d: 'Constant pitch flag for velocity zone 2'
+
+      - n: 'CP3'
+        d: 'Constant pitch flag for velocity zone 3'
+
+      - n: 'CP4'
+        d: 'Constant pitch flag for velocity zone 4'
+
+      - n: 'VZOUT1'
+        d: 'Individual output offset for velocity zone 1'
+
+      - n: 'VZOUT2'
+        d: 'Individual output offset for velocity zone 2'
+
+      - n: 'VZOUT3'
+        d: 'Individual output offset for velocity zone 3'
+
+      - n: 'VZOUT4'
+        d: 'Individual output offset for velocity zone 4'
+
+      - n: 'VSS1'
+        d: 'Start point dependence on note-on velocity for sample in velocity zone 1; Range: -9999 to +9999 data points'
+        s: 2
+
+      - n: 'VSS2'
+        d: 'Start point dependence on note-on velocity for sample in velocity zone 2'
+        s: 2
+
+      - n: 'VSS3'
+        d: 'Start point dependence on note-on velocity for sample in velocity zone 3'
+        s: 2
+
+      - n: 'VSS4'
+        d: 'Start point dependence on note-on velocity for sample in velocity zone 4'
+        s: 2
+
+      - n: 'KV_LO'
+        d: 'Not used'
+
+      - n: 'FILQ'
+        d: 'Resonance of filter 1; Range: 0 to 15'
+
+      - n: 'L_PTCH'
+        d: 'Amount of control of pitch by LFO1; -50 to +50'
+
+      - n: 'MODVFILT1'
+        d: 'Amount of control of filter frequency by assignable source 1'
+
+      - n: 'MODVFILT2'
+        d: 'Amount of control of filter frequency by assignable source 2'
+
+      - n: 'MODVFILT3'
+        d: 'Amount of control of filter frequency by assignable source 3'
+
+      - n: 'MODVPITCH'
+        d: 'Amount of control of pitch by assignable source'
+
+      - n: 'MODVAMP3'
+        d: 'Amount of control of loudness by assignable keygroup source'
+
+      - n: 'ENV2L1'
+        d: 'Level of envelope 2 at end attack phase (phase 1); 0-99'
+
+      - n: 'ENV2R2'
+        d: 'Rate during phase 2 of envelope 2'
+
+      - n: 'ENV2L2'
+        d: 'Level of envelope 2 at end of phase 1'
+
+      - n: 'ENV2L4'
+        d: 'Final envelope 2 level'
+
+      - n: 'KGMUTE'
+        d: 'Keygroup mute group; Range: 0ffh = off, mute groups 0 to 31'
+
+      - n: 'PFXCHAN'
+        d: 'Effects bus select'
+
+      - n: 'PFXSLEV'
+        d: 'Effects send level'
+
+      - n: 'Reserved_1'
+        d: 'Not used'
+        s: 5
+
+      - n: 'LSI2_ON'
+        d: 'Route audio through second LSI; Range: 0 = -6dB, 1 = 0dB'
+
+      - n: 'FLT2GAIN'
+        d: 'Make-up gain of second filter; Range: 0 = -6dB, 1 = 0dB'
+
+      - n: 'FLT2MODE'
+        d: 'Mode of second filter; Range: 0 = Low-pass, 1 = Band-pass, 2 = High-pass, 3 = EQ'
+
+      - n: 'FLT2Q'
+        d: 'Resonance of second filter; Range: 0 to 31'
+
+      - n: 'TONEFREQ'
+        d: 'Center frequency of tone section'
+
+      - n: 'TONESLOP'
+        d: 'Slope of tone section'
+
+      - n: 'MODVFLT2_1'
+        d: 'Amount of control of second filter frequency by source 1'
+
+      - n: 'MODVFLT2_2'
+        d: 'Amount of control of second filter frequency by source 2'
+
+      - n: 'MODVFLT2_3'
+        d: 'Amount of control of second filter frequency by source 3'
+
+      - n: 'FIL2FR'
+        d: 'Basic second filter frequency; 0-99'
+
+      - n: 'K_FRQ2'
+        d: 'Second filter key follow; Range: -24 to +24 semitones'
+
+      - n: 'ATTAK3'
+        d: 'Attack rate of envelope 3'
+
+      - n: 'ENV3L1'
+        d: 'Final level of attack phase (phase 1) of envelope 3'
+
+      - n: 'ENV3R2'
+        d: 'Rate of phase 2 of envelope 3'

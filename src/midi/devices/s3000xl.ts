@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 10:10:21 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 11:20:42 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1145,6 +1145,83 @@ export interface KeygroupHeader {
   LVXF1: number    // Low velocity crossfade factor (internal use)
   HVXF1: number    // High velocity crossfade factor (internal use)
   SBADD1: number    // Calculated sample header block address (internal)
+  SNAME2: string    // Sample name used in velocity zone 2
+  LOVEL2: number    // Lower limit of velocity range 2
+  HIVEL2: number    // Upper limit of velocity range 2
+  VTUNO2: number    // Velocity zone 2 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+  VLOUD2: number    // Velocity zone 2 loudness offset
+  VFREQ2: number    // Velocity zone 2 filter frequency offset
+  VPANO2: number    // Velocity zone 2 pan offset
+  ZPLAY2: number    // Type of sample playback in velocity zone 2; see ZPLAY1
+  LVXF2: number    // Low velocity crossfade factor (internal use)
+  HVXF2: number    // High velocity crossfade factor (internal use)
+  SBADD2: number    // Calculated sample header block address (internal)
+  SNAME3: string    // Sample name used in velocity zone 3
+  LOVEL3: number    // Lower limit of velocity range 3
+  HIVEL3: number    // Upper limit of velocity range 3
+  VTUNO3: number    // Velocity zone 3 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+  VLOUD3: number    // Velocity zone 3 loudness offset; -50 to +50
+  VFREQ3: number    // Velocity zone 3 filter frequency offset
+  VPANO3: number    // Velocity zone 3 pan offset
+  ZPLAY3: number    // Type of sample playback in velocity zone 3; See ZPLAY1
+  LVXF3: number    // Low velocity crossfade factor (internal use)
+  HVXF3: number    // High velocity crossfade factor (internal use)
+  SBADD3: number    // Calculated sample header block address (internal)
+  SNAME4: s    // Sample name used in velocity zone 4
+  LOVEL4: number    // Lower limit of velocity range 4
+  HIVEL4: number    // Upper limit of velocity range 4
+  VTUNO4: number    // Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+  VLOUD4: number    // Velocity zone 4 loudness offset
+  VFREQ4: number    // Velocity zone 4 filter frequency offset
+  VPANO4: number    // Velocity zone 4 pan offset
+  ZPLAY4: number    // Type of sample playback in velocity zone 4; See ZPLAY1
+  LVXF4: number    // Low velocity crossfade factor (internal use)
+  HVXF4: number    // High velocity crossfade factor (internal use)
+  SBADD4: number    // Calculated sample header block address (internal)
+  KBEAT: number    // Fixed rate detune; -50 to 50
+  AHOLD: number    // Remain in attack phase until first loop encountered; Range: 0 represents OFF, 1 represents ON
+  CP1: number    // Constant pitch flag for velocity zone 1; 0 represents TRACK, 1 represents CONST
+  CP2: number    // Constant pitch flag for velocity zone 2
+  CP3: number    // Constant pitch flag for velocity zone 3
+  CP4: number    // Constant pitch flag for velocity zone 4
+  VZOUT1: number    // Individual output offset for velocity zone 1
+  VZOUT2: number    // Individual output offset for velocity zone 2
+  VZOUT3: number    // Individual output offset for velocity zone 3
+  VZOUT4: number    // Individual output offset for velocity zone 4
+  VSS1: number    // Start point dependence on note-on velocity for sample in velocity zone 1; Range: -9999 to +9999 data points
+  VSS2: number    // Start point dependence on note-on velocity for sample in velocity zone 2
+  VSS3: number    // Start point dependence on note-on velocity for sample in velocity zone 3
+  VSS4: number    // Start point dependence on note-on velocity for sample in velocity zone 4
+  KV_LO: number    // Not used
+  FILQ: number    // Resonance of filter 1; Range: 0 to 15
+  L_PTCH: number    // Amount of control of pitch by LFO1; -50 to +50
+  MODVFILT1: number    // Amount of control of filter frequency by assignable source 1
+  MODVFILT2: number    // Amount of control of filter frequency by assignable source 2
+  MODVFILT3: number    // Amount of control of filter frequency by assignable source 3
+  MODVPITCH: number    // Amount of control of pitch by assignable source
+  MODVAMP3: number    // Amount of control of loudness by assignable keygroup source
+  ENV2L1: number    // Level of envelope 2 at end attack phase (phase 1); 0-99
+  ENV2R2: number    // Rate during phase 2 of envelope 2
+  ENV2L2: number    // Level of envelope 2 at end of phase 1
+  ENV2L4: number    // Final envelope 2 level
+  KGMUTE: number    // Keygroup mute group; Range: 0ffh = off, mute groups 0 to 31
+  PFXCHAN: number    // Effects bus select
+  PFXSLEV: number    // Effects send level
+  Reserved_1: number    // Not used
+  LSI2_ON: number    // Route audio through second LSI; Range: 0 = -6dB, 1 = 0dB
+  FLT2GAIN: number    // Make-up gain of second filter; Range: 0 = -6dB, 1 = 0dB
+  FLT2MODE: number    // Mode of second filter; Range: 0 = Low-pass, 1 = Band-pass, 2 = High-pass, 3 = EQ
+  FLT2Q: number    // Resonance of second filter; Range: 0 to 31
+  TONEFREQ: number    // Center frequency of tone section
+  TONESLOP: number    // Slope of tone section
+  MODVFLT2_1: number    // Amount of control of second filter frequency by source 1
+  MODVFLT2_2: number    // Amount of control of second filter frequency by source 2
+  MODVFLT2_3: number    // Amount of control of second filter frequency by source 3
+  FIL2FR: number    // Basic second filter frequency; 0-99
+  K_FRQ2: number    // Second filter key follow; Range: -24 to +24 semitones
+  ATTAK3: number    // Attack rate of envelope 3
+  ENV3L1: number    // Final level of attack phase (phase 1) of envelope 3
+  ENV3R2: number    // Rate of phase 2 of envelope 3
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -1502,6 +1579,622 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
         b.push(nextByte(data, v).value)
     }
     o.SBADD1 = bytes2numberLE(b)
+
+    // Sample name used in velocity zone 2
+    out.log('SNAME2: offset: ' + reloff())
+    o.SNAME2 = ''
+    for (let i = 0; i < 12; i++) {
+          nextByte(data, v)
+          o.SNAME2 += akaiByte2String([v.value])
+          out.log('SNAME2 at ' + i + ': ' + o.SNAME2)    }
+
+    // Lower limit of velocity range 2
+    out.log('LOVEL2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOVEL2 = bytes2numberLE(b)
+
+    // Upper limit of velocity range 2
+    out.log('HIVEL2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HIVEL2 = bytes2numberLE(b)
+
+    // Velocity zone 2 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+    out.log('VTUNO2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VTUNO2 = bytes2numberLE(b)
+
+    // Velocity zone 2 loudness offset
+    out.log('VLOUD2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VLOUD2 = bytes2numberLE(b)
+
+    // Velocity zone 2 filter frequency offset
+    out.log('VFREQ2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VFREQ2 = bytes2numberLE(b)
+
+    // Velocity zone 2 pan offset
+    out.log('VPANO2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VPANO2 = bytes2numberLE(b)
+
+    // Type of sample playback in velocity zone 2; see ZPLAY1
+    out.log('ZPLAY2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ZPLAY2 = bytes2numberLE(b)
+
+    // Low velocity crossfade factor (internal use)
+    out.log('LVXF2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LVXF2 = bytes2numberLE(b)
+
+    // High velocity crossfade factor (internal use)
+    out.log('HVXF2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HVXF2 = bytes2numberLE(b)
+
+    // Calculated sample header block address (internal)
+    out.log('SBADD2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SBADD2 = bytes2numberLE(b)
+
+    // Sample name used in velocity zone 3
+    out.log('SNAME3: offset: ' + reloff())
+    o.SNAME3 = ''
+    for (let i = 0; i < 12; i++) {
+          nextByte(data, v)
+          o.SNAME3 += akaiByte2String([v.value])
+          out.log('SNAME3 at ' + i + ': ' + o.SNAME3)    }
+
+    // Lower limit of velocity range 3
+    out.log('LOVEL3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOVEL3 = bytes2numberLE(b)
+
+    // Upper limit of velocity range 3
+    out.log('HIVEL3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HIVEL3 = bytes2numberLE(b)
+
+    // Velocity zone 3 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+    out.log('VTUNO3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VTUNO3 = bytes2numberLE(b)
+
+    // Velocity zone 3 loudness offset; -50 to +50
+    out.log('VLOUD3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VLOUD3 = bytes2numberLE(b)
+
+    // Velocity zone 3 filter frequency offset
+    out.log('VFREQ3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VFREQ3 = bytes2numberLE(b)
+
+    // Velocity zone 3 pan offset
+    out.log('VPANO3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VPANO3 = bytes2numberLE(b)
+
+    // Type of sample playback in velocity zone 3; See ZPLAY1
+    out.log('ZPLAY3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ZPLAY3 = bytes2numberLE(b)
+
+    // Low velocity crossfade factor (internal use)
+    out.log('LVXF3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LVXF3 = bytes2numberLE(b)
+
+    // High velocity crossfade factor (internal use)
+    out.log('HVXF3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HVXF3 = bytes2numberLE(b)
+
+    // Calculated sample header block address (internal)
+    out.log('SBADD3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SBADD3 = bytes2numberLE(b)
+
+    // Sample name used in velocity zone 4
+    out.log('SNAME4: offset: ' + reloff())
+    o.SNAME4 = ''
+    for (let i = 0; i < 12; i++) {
+          nextByte(data, v)
+          o.SNAME4 += akaiByte2String([v.value])
+          out.log('SNAME4 at ' + i + ': ' + o.SNAME4)    }
+
+    // Lower limit of velocity range 4
+    out.log('LOVEL4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOVEL4 = bytes2numberLE(b)
+
+    // Upper limit of velocity range 4
+    out.log('HIVEL4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HIVEL4 = bytes2numberLE(b)
+
+    // Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+    out.log('VTUNO4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VTUNO4 = bytes2numberLE(b)
+
+    // Velocity zone 4 loudness offset
+    out.log('VLOUD4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VLOUD4 = bytes2numberLE(b)
+
+    // Velocity zone 4 filter frequency offset
+    out.log('VFREQ4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VFREQ4 = bytes2numberLE(b)
+
+    // Velocity zone 4 pan offset
+    out.log('VPANO4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VPANO4 = bytes2numberLE(b)
+
+    // Type of sample playback in velocity zone 4; See ZPLAY1
+    out.log('ZPLAY4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ZPLAY4 = bytes2numberLE(b)
+
+    // Low velocity crossfade factor (internal use)
+    out.log('LVXF4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LVXF4 = bytes2numberLE(b)
+
+    // High velocity crossfade factor (internal use)
+    out.log('HVXF4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HVXF4 = bytes2numberLE(b)
+
+    // Calculated sample header block address (internal)
+    out.log('SBADD4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SBADD4 = bytes2numberLE(b)
+
+    // Fixed rate detune; -50 to 50
+    out.log('KBEAT: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KBEAT = bytes2numberLE(b)
+
+    // Remain in attack phase until first loop encountered; Range: 0 represents OFF, 1 represents ON
+    out.log('AHOLD: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.AHOLD = bytes2numberLE(b)
+
+    // Constant pitch flag for velocity zone 1; 0 represents TRACK, 1 represents CONST
+    out.log('CP1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.CP1 = bytes2numberLE(b)
+
+    // Constant pitch flag for velocity zone 2
+    out.log('CP2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.CP2 = bytes2numberLE(b)
+
+    // Constant pitch flag for velocity zone 3
+    out.log('CP3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.CP3 = bytes2numberLE(b)
+
+    // Constant pitch flag for velocity zone 4
+    out.log('CP4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.CP4 = bytes2numberLE(b)
+
+    // Individual output offset for velocity zone 1
+    out.log('VZOUT1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VZOUT1 = bytes2numberLE(b)
+
+    // Individual output offset for velocity zone 2
+    out.log('VZOUT2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VZOUT2 = bytes2numberLE(b)
+
+    // Individual output offset for velocity zone 3
+    out.log('VZOUT3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VZOUT3 = bytes2numberLE(b)
+
+    // Individual output offset for velocity zone 4
+    out.log('VZOUT4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VZOUT4 = bytes2numberLE(b)
+
+    // Start point dependence on note-on velocity for sample in velocity zone 1; Range: -9999 to +9999 data points
+    out.log('VSS1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VSS1 = bytes2numberLE(b)
+
+    // Start point dependence on note-on velocity for sample in velocity zone 2
+    out.log('VSS2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VSS2 = bytes2numberLE(b)
+
+    // Start point dependence on note-on velocity for sample in velocity zone 3
+    out.log('VSS3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VSS3 = bytes2numberLE(b)
+
+    // Start point dependence on note-on velocity for sample in velocity zone 4
+    out.log('VSS4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VSS4 = bytes2numberLE(b)
+
+    // Not used
+    out.log('KV_LO: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KV_LO = bytes2numberLE(b)
+
+    // Resonance of filter 1; Range: 0 to 15
+    out.log('FILQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FILQ = bytes2numberLE(b)
+
+    // Amount of control of pitch by LFO1; -50 to +50
+    out.log('L_PTCH: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.L_PTCH = bytes2numberLE(b)
+
+    // Amount of control of filter frequency by assignable source 1
+    out.log('MODVFILT1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFILT1 = bytes2numberLE(b)
+
+    // Amount of control of filter frequency by assignable source 2
+    out.log('MODVFILT2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFILT2 = bytes2numberLE(b)
+
+    // Amount of control of filter frequency by assignable source 3
+    out.log('MODVFILT3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFILT3 = bytes2numberLE(b)
+
+    // Amount of control of pitch by assignable source
+    out.log('MODVPITCH: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVPITCH = bytes2numberLE(b)
+
+    // Amount of control of loudness by assignable keygroup source
+    out.log('MODVAMP3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVAMP3 = bytes2numberLE(b)
+
+    // Level of envelope 2 at end attack phase (phase 1); 0-99
+    out.log('ENV2L1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2L1 = bytes2numberLE(b)
+
+    // Rate during phase 2 of envelope 2
+    out.log('ENV2R2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2R2 = bytes2numberLE(b)
+
+    // Level of envelope 2 at end of phase 1
+    out.log('ENV2L2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2L2 = bytes2numberLE(b)
+
+    // Final envelope 2 level
+    out.log('ENV2L4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2L4 = bytes2numberLE(b)
+
+    // Keygroup mute group; Range: 0ffh = off, mute groups 0 to 31
+    out.log('KGMUTE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KGMUTE = bytes2numberLE(b)
+
+    // Effects bus select
+    out.log('PFXCHAN: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.PFXCHAN = bytes2numberLE(b)
+
+    // Effects send level
+    out.log('PFXSLEV: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.PFXSLEV = bytes2numberLE(b)
+
+    // Not used
+    out.log('Reserved_1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<5; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.Reserved_1 = bytes2numberLE(b)
+
+    // Route audio through second LSI; Range: 0 = -6dB, 1 = 0dB
+    out.log('LSI2_ON: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LSI2_ON = bytes2numberLE(b)
+
+    // Make-up gain of second filter; Range: 0 = -6dB, 1 = 0dB
+    out.log('FLT2GAIN: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FLT2GAIN = bytes2numberLE(b)
+
+    // Mode of second filter; Range: 0 = Low-pass, 1 = Band-pass, 2 = High-pass, 3 = EQ
+    out.log('FLT2MODE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FLT2MODE = bytes2numberLE(b)
+
+    // Resonance of second filter; Range: 0 to 31
+    out.log('FLT2Q: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FLT2Q = bytes2numberLE(b)
+
+    // Center frequency of tone section
+    out.log('TONEFREQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.TONEFREQ = bytes2numberLE(b)
+
+    // Slope of tone section
+    out.log('TONESLOP: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.TONESLOP = bytes2numberLE(b)
+
+    // Amount of control of second filter frequency by source 1
+    out.log('MODVFLT2_1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFLT2_1 = bytes2numberLE(b)
+
+    // Amount of control of second filter frequency by source 2
+    out.log('MODVFLT2_2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFLT2_2 = bytes2numberLE(b)
+
+    // Amount of control of second filter frequency by source 3
+    out.log('MODVFLT2_3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.MODVFLT2_3 = bytes2numberLE(b)
+
+    // Basic second filter frequency; 0-99
+    out.log('FIL2FR: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.FIL2FR = bytes2numberLE(b)
+
+    // Second filter key follow; Range: -24 to +24 semitones
+    out.log('K_FRQ2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.K_FRQ2 = bytes2numberLE(b)
+
+    // Attack rate of envelope 3
+    out.log('ATTAK3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ATTAK3 = bytes2numberLE(b)
+
+    // Final level of attack phase (phase 1) of envelope 3
+    out.log('ENV3L1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3L1 = bytes2numberLE(b)
+
+    // Rate of phase 2 of envelope 3
+    out.log('ENV3R2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3R2 = bytes2numberLE(b)
 
 }
 
