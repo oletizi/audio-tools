@@ -1,7 +1,7 @@
 import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput} from "@/lib/process-output";
-import {parseProgramHeader, ProgramHeader} from "@/midi/devices/s3000xl";
+import {parseProgramHeader, parseSampleHeader, ProgramHeader, SampleHeader} from "@/midi/devices/s3000xl";
 
 // export interface ProgramHeader {
 //     TRANSPOSE: number;
@@ -60,53 +60,53 @@ import {parseProgramHeader, ProgramHeader} from "@/midi/devices/s3000xl";
 //
 // }
 
-export interface SampleHeader {
-    // Loop 1
-    LDWELL_1: number;
-    LLNGTH_1: number;
-    LOOPAT_1: number;
-    // Loop 2
-    LDWELL_2: number;
-    LLNGTH_2: number;
-    LOOPAT_2: number;
-    // Loop 3
-    LDWELL_3: number;
-    LLNGTH_3: number;
-    LOOPAT_3: number;
-    // Loop 4
-    LDWELL_4: number;
-    LLNGTH_4: number;
-    LOOPAT_4: number;
-
-    // Relative loop factors
-    SLXY_1: number
-    SLXY_2: number
-    SLXY_3: number
-    SLXY_4: number
-
-    SSPARE: number
-    SWCOMM: number
-    SSPAIR: number
-
-    SSRATE: number
-    SHLTO: number
-
-    SMPEND: number;
-    SSTART: number;
-    SLNGTH: number;
-    SLOCAT: number;
-    STUNO: { cent: number, semi: number };
-    SPTYPE: number;
-    SALOOP: number;
-    SLOOPS: number;
-    SSRVLD: number;
-    SHNAME: string
-    SPITCH: number;
-    SBANDW: number;
-    SNUMBER: number;
-    SHIDENT: number;
-
-}
+// export interface SampleHeader {
+//     // Loop 1
+//     LDWELL_1: number;
+//     LLNGTH_1: number;
+//     LOOPAT_1: number;
+//     // Loop 2
+//     LDWELL_2: number;
+//     LLNGTH_2: number;
+//     LOOPAT_2: number;
+//     // Loop 3
+//     LDWELL_3: number;
+//     LLNGTH_3: number;
+//     LOOPAT_3: number;
+//     // Loop 4
+//     LDWELL_4: number;
+//     LLNGTH_4: number;
+//     LOOPAT_4: number;
+//
+//     // Relative loop factors
+//     SLXY_1: number
+//     SLXY_2: number
+//     SLXY_3: number
+//     SLXY_4: number
+//
+//     SSPARE: number
+//     SWCOMM: number
+//     SSPAIR: number
+//
+//     SSRATE: number
+//     SHLTO: number
+//
+//     SMPEND: number;
+//     SSTART: number;
+//     SLNGTH: number;
+//     SLOCAT: number;
+//     STUNO: { cent: number, semi: number };
+//     SPTYPE: number;
+//     SALOOP: number;
+//     SLOOPS: number;
+//     SSRVLD: number;
+//     SHNAME: string
+//     SPITCH: number;
+//     SBANDW: number;
+//     SNUMBER: number;
+//     SHIDENT: number;
+//
+// }
 
 export interface Device {
 
@@ -216,11 +216,8 @@ class s3000xl implements Device {
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
         header['PNUMBER'] = nextByte(m, v).value
-
-        nextByte(m, v) // Byte offset into header ?
-
         const headerData = m.slice(v.offset, m.length -1)
-        parseProgramHeader(headerData, header)
+        parseProgramHeader(headerData, 1, header)
         out.log(header)
     }
 
@@ -230,103 +227,108 @@ class s3000xl implements Device {
         const m = await this.send(Opcode.RSDATA, byte2nibblesLE(sampleNumber))
         const v = {value: 0, offset: 5}
         out.log(`SNUMBER: offset: ${v.offset}`)
-        header.SNUMBER = nextByte(m, v).value
+        header['SNUMBER'] = nextByte(m, v).value
 
-        out.log(`SHIDENT: offset: ${v.offset}`)
-        const header_start = v.offset
-
-        function reloff() {
-            return (v.offset - header_start) / 2
-        }
-
-        out.log(`  relative offset: ${reloff()}`)
-        header.SHIDENT = nextByte(m, v).value
-
-        out.log(`SBANDW: rel off: ${reloff()}`)
-        header.SBANDW = nextByte(m, v).value
-
-        out.log(`SPITCH: rel off: ${reloff()}`)
-        header.SPITCH = nextByte(m, v).value
-
-        out.log(`SHNAME: rel off: ${reloff()}`)
-        header.SHNAME = ''
-        for (let i = 0; i < 12; i++) {
-            nextByte(m, v)
-            header.SHNAME += akaiByte2String([v.value])
-        }
-
-        out.log(`SSRVLD: rel off: ${reloff()}`)
-        header.SSRVLD = nextByte(m, v).value
-
-        out.log(`SLOOPS: rel off: ${reloff()}`)
-        header.SLOOPS = nextByte(m, v).value
-
-        out.log(`SALOOP: rel off: ${reloff()}`)
-        header.SALOOP = nextByte(m, v).value
-
-        out.log(`SHLOOP: rel off: ${reloff()}`)
-        nextByte(m, v) // spare byte
-
-        out.log(`SPTYPE: rel off: ${reloff()}`)
-        header.SPTYPE = nextByte(m, v).value
-
-        // 2 bytes
-        out.log(`STUNO : rel off: ${reloff()}`)
-        header.STUNO = {cent: nextByte(m, v).value, semi: nextByte(m, v).value}
-
-        out.log(`SLOCAT: rel off: ${reloff()}`)
-        header.SLOCAT = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SLNGTH: rel off; ${reloff()}`)
-        header.SLNGTH = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SSTART: rel off: ${reloff()}`)
-        header.SSTART = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SMPEND: rel off: ${reloff()}`)
-        header.SMPEND = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        // First loop
-        for (let i = 0; i < 4; i++) {
-            let field = `LOOPAT_${i + 1}`
-            out.log(`${field}: rel off: ${reloff()}`)
-            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-            field = `LLNGTH_${i + 1}`
-            out.log(`${field}: rel off: ${reloff()}`)
-            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-            field = `LDWELL_${i + 1}`
-            out.log(`${field}: rel off: ${reloff()}`)
-            header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-        }
-
-        out.log(`SLXY_1: rel off: ${reloff()}`)
-        header.SLXY_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SLXY_2: rel off: ${reloff()}`)
-        header.SLXY_2 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SLXY_3: rel off: ${reloff()}`)
-        header.SLXY_3 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SLXY_4: rel off: ${reloff()}`)
-        header.SLXY_4 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SSPARE: rel off: ${reloff()}`)
-        header.SSPARE = bytes2numberLE([nextByte(m, v).value])
-
-        out.log(`SWCOMM: rel off: ${reloff()}`)
-        header.SWCOMM = bytes2numberLE([nextByte(m, v).value])
-
-        out.log(`SSPAIR: rel off: ${reloff()}`)
-        header.SSPAIR = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SSRATE: rel off: ${reloff()}`)
-        header.SSRATE = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
-
-        out.log(`SHLTO : rel off: ${reloff()}`)
-        header.SHLTO = bytes2numberLE([nextByte(m, v).value])
+        parseSampleHeader(m.slice(v.offset, m.length - 1), 0, header)
+        out.log(header)
+        // if (true) {
+        //     return
+        // }
+        // out.log(`SHIDENT: offset: ${v.offset}`)
+        // const header_start = v.offset
+        //
+        // function reloff() {
+        //     return (v.offset - header_start) / 2
+        // }
+        //
+        // out.log(`  relative offset: ${reloff()}`)
+        // header.SHIDENT = nextByte(m, v).value
+        //
+        // out.log(`SBANDW: rel off: ${reloff()}`)
+        // header.SBANDW = nextByte(m, v).value
+        //
+        // out.log(`SPITCH: rel off: ${reloff()}`)
+        // header.SPITCH = nextByte(m, v).value
+        //
+        // out.log(`SHNAME: rel off: ${reloff()}`)
+        // header.SHNAME = ''
+        // for (let i = 0; i < 12; i++) {
+        //     nextByte(m, v)
+        //     header.SHNAME += akaiByte2String([v.value])
+        // }
+        //
+        // out.log(`SSRVLD: rel off: ${reloff()}`)
+        // header.SSRVLD = nextByte(m, v).value
+        //
+        // out.log(`SLOOPS: rel off: ${reloff()}`)
+        // header.SLOOPS = nextByte(m, v).value
+        //
+        // out.log(`SALOOP: rel off: ${reloff()}`)
+        // header.SALOOP = nextByte(m, v).value
+        //
+        // out.log(`SHLOOP: rel off: ${reloff()}`)
+        // nextByte(m, v) // spare byte
+        //
+        // out.log(`SPTYPE: rel off: ${reloff()}`)
+        // header.SPTYPE = nextByte(m, v).value
+        //
+        // // 2 bytes
+        // out.log(`STUNO : rel off: ${reloff()}`)
+        // header.STUNO = {cent: nextByte(m, v).value, semi: nextByte(m, v).value}
+        //
+        // out.log(`SLOCAT: rel off: ${reloff()}`)
+        // header.SLOCAT = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SLNGTH: rel off; ${reloff()}`)
+        // header.SLNGTH = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SSTART: rel off: ${reloff()}`)
+        // header.SSTART = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SMPEND: rel off: ${reloff()}`)
+        // header.SMPEND = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // // First loop
+        // for (let i = 0; i < 4; i++) {
+        //     let field = `LOOPAT_${i + 1}`
+        //     out.log(`${field}: rel off: ${reloff()}`)
+        //     header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        //     field = `LLNGTH_${i + 1}`
+        //     out.log(`${field}: rel off: ${reloff()}`)
+        //     header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        //     field = `LDWELL_${i + 1}`
+        //     out.log(`${field}: rel off: ${reloff()}`)
+        //     header[field] = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        // }
+        //
+        // out.log(`SLXY_1: rel off: ${reloff()}`)
+        // header.SLXY_1 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SLXY_2: rel off: ${reloff()}`)
+        // header.SLXY_2 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SLXY_3: rel off: ${reloff()}`)
+        // header.SLXY_3 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SLXY_4: rel off: ${reloff()}`)
+        // header.SLXY_4 = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SSPARE: rel off: ${reloff()}`)
+        // header.SSPARE = bytes2numberLE([nextByte(m, v).value])
+        //
+        // out.log(`SWCOMM: rel off: ${reloff()}`)
+        // header.SWCOMM = bytes2numberLE([nextByte(m, v).value])
+        //
+        // out.log(`SSPAIR: rel off: ${reloff()}`)
+        // header.SSPAIR = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SSRATE: rel off: ${reloff()}`)
+        // header.SSRATE = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+        //
+        // out.log(`SHLTO : rel off: ${reloff()}`)
+        // header.SHLTO = bytes2numberLE([nextByte(m, v).value])
     }
 
     private async send(opcode: Opcode, data: number[]) {

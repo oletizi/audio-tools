@@ -261,3 +261,17 @@ specs:
     fields:
       - n: 'SHIDENT'
         d: 'Block identifier; Range: 3 (Fixed)'
+
+      - n: 'SBANDW'
+        d: 'Sample bandwidth; Range: 0 represents 10kHz, 1 represents 20kHz'
+
+      - n: 'SPITCH'
+        d: 'Original pitch; Range: 21 to 127 represents A1 to G8'
+
+      - n: 'SHNAME'
+        d: 'Sample name'
+        t: 'string'
+        s: 12
+
+      - n: 'SSRVLD'
+        d: 'Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid'

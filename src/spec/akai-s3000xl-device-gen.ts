@@ -36,16 +36,15 @@ export async function genInterface(spec: Spec) {
 }
 
 export async function genParser(spec: Spec) {
-    let rv = `export function parse${spec.name}(data: number[], o: ${spec.name}) {\n`
+    let rv = `export function parse${spec.name}(data: number[], offset: number, o: ${spec.name}) {\n`
     rv += `    const out = newClientOutput(true, 'parse${spec.name}')\n`
-    rv += `    const v = {value: 0, offset: 0}\n\n`
+    rv += `    const v = {value: 0, offset: offset * 2}\n\n`
     rv += '    let b: number[]\n'
     rv += '    function reloff() {\n' +
         '        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking. See https://lakai.sourceforge.net/docs/s2800_sysex.html\n' +
         '        // As such, The math here is weird: \n' +
         '        // * Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--hence v.offset /2 \n' +
-        '        // * Offsets in the docs start counting at 1, hence +1.\n' +
-        '        return (v.offset / 2) + 1\n' +
+        '        return (v.offset / 2)\n' +
         '    }\n\n'
     for (const field of spec.fields) {
         rv += `    // ${field.d}\n`
