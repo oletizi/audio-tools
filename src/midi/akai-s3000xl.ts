@@ -3,6 +3,31 @@ import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput} from "@/lib/process-output";
 
 export interface ProgramHeader {
+    TRANSPOSE: number;
+    B_MODE: number;
+    B_PTCHD: number;
+    LEGATO: number;
+    VSSCL: number;
+    VOSCL: number;
+    K_LDEL: number;
+    K_LDEP: number;
+    K_LRAT: number;
+    PTUNO: number;
+    SPFILT: number;
+    SPATT: number;
+    SPLOUD: number;
+    VASSOQ: number;
+    PLAW: number;
+    DESYNC: number;
+    COHERE: number;
+    MW_PAN: number;
+    ECHOUT: number;
+    TEMPER: string;
+    TPNUM: number;
+    GROUPS: number;
+    KXFADE: number;
+    P_PTCH: number;
+    B_PTCH: number;
     VELDEP: number;
     PRSDEP: number;
     MWLDEP: number;
@@ -282,6 +307,86 @@ class s3000xl implements Device {
 
         out.log(`VELDEP: rel off: ${reloff()}`)
         header.VELDEP = nextByte(m, v).value
+
+        out.log(`B_PTCH: rel off: ${reloff()}`)
+        header.B_PTCH = nextByte(m, v).value
+
+        out.log(`P_PTCH: rel off: ${reloff()}`)
+        header.P_PTCH = nextByte(m, v).value
+
+        out.log(`KXFADE: rel off: ${reloff()}`)
+        header.KXFADE = nextByte(m, v).value
+
+        out.log(`GROUPS: rel off: ${reloff()}`)
+        header.GROUPS = nextByte(m, v).value
+
+        out.log(`TPNUM: rel off: ${reloff()}`)
+        header.TPNUM = nextByte(m, v).value
+
+        out.log(`TEMPER: rel off: ${reloff()}`)
+        header.TEMPER = ''
+        for (let i = 0; i < 12; i++) {
+            nextByte(m, v)
+            header.TEMPER += akaiByte2String([v.value])
+        }
+
+        out.log(`ECHOUT: rel off: ${reloff()}`)
+        header.ECHOUT = nextByte(m, v).value
+
+        out.log(`MW_PAN: rel off: ${reloff()}`)
+        header.MW_PAN = nextByte(m, v).value
+
+        out.log(`COHERE: rel off: ${reloff()}`)
+        header.COHERE = nextByte(m, v).value
+
+        out.log(`DESYNC: rel off: ${reloff()}`)
+        header.DESYNC = nextByte(m, v).value
+
+        out.log(`PLAW: rel off: ${reloff()}`)
+        header.PLAW = nextByte(m, v).value
+
+        out.log(`VASSOQ: rel off: ${reloff()}`)
+        header.VASSOQ = nextByte(m, v).value
+
+        out.log(`SPATT: rel off: ${reloff()}`)
+        header.SPATT = nextByte(m, v).value
+
+        out.log(`SPFILT: rel off: ${reloff()}`)
+        header.SPFILT = nextByte(m, v).value
+
+        out.log(`PTUNO: rel off: ${reloff()}`)
+        header.PTUNO = bytes2numberLE([nextByte(m, v).value, nextByte(m, v).value])
+
+        out.log(`K_LRAT: rel off: ${reloff()}`)
+        header.K_LRAT = nextByte(m, v).value
+
+        out.log(`K_LDEP: rel off: ${reloff()}`)
+        header.K_LDEP = nextByte(m, v).value
+
+        out.log(`K_LDEL: rel off: ${reloff()}`)
+        header.K_LDEL = nextByte(m, v).value
+
+        out.log(`VOSCL: rel off: ${reloff()}`)
+        header.VOSCL = nextByte(m, v).value
+
+        out.log(`VSSCL: rel off: ${reloff()}`)
+        header.VSSCL = nextByte(m, v).value
+
+        out.log(`LEGATO: rel off: ${reloff()}`)
+        header.LEGATO = nextByte(m, v).value
+
+        out.log(`B_PTCHD: rel off: ${reloff()}`)
+        header.B_PTCHD = nextByte(m, v).value
+
+        out.log(`B_MODE: rel off: ${reloff()}`)
+        header.B_MODE = nextByte(m, v).value
+
+        out.log(`B_MODE: rel off: ${reloff()}`)
+        header.B_MODE = nextByte(m, v).value
+
+        out.log(`TRANSPOSE: rel off: ${reloff()}`)
+        header.TRANSPOSE = nextByte(m, v).value
+
     }
 
     async getSampleHeader(sampleNumber: number, header: SampleHeader) {
