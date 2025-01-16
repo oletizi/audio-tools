@@ -388,3 +388,7 @@ specs:
 
       - n: 'SHLTO'
         d: 'Tuning offset of hold loop; Range: -50 to +50'
+  - name: KeygroupHeader
+    fields:
+      - n: 'KGIDENT'
+        d: 'Block identifier (internal use); Should equal 2'

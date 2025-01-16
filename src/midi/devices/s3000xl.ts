@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 09:20:22 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 09:39:16 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1098,6 +1098,32 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
         b.push(nextByte(data, v).value)
     }
     o.SHLTO = bytes2numberLE(b)
+
+}
+
+export interface KeygroupHeader {
+  KGIDENT: number    // Block identifier (internal use); Should equal 2
+}
+
+export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
+    const out = newClientOutput(true, 'parseKeygroupHeader')
+    const v = {value: 0, offset: offset * 2}
+
+    let b: number[]
+    function reloff() {
+        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking. See https://lakai.sourceforge.net/docs/s2800_sysex.html
+        // As such, The math here is weird: 
+        // * Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--hence v.offset /2 
+        return (v.offset / 2)
+    }
+
+    // Block identifier (internal use); Should equal 2
+    out.log('KGIDENT: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KGIDENT = bytes2numberLE(b)
 
 }
 

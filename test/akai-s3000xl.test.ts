@@ -1,7 +1,7 @@
 import * as midi from 'midi'
 import {expect} from "chai";
 import {newDevice} from "../src/midi/akai-s3000xl";
-import {ProgramHeader, SampleHeader} from "../src/midi/devices/s3000xl";
+import {KeygroupHeader, ProgramHeader, SampleHeader} from "../src/midi/devices/s3000xl";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -73,6 +73,18 @@ describe('akai-s3000xl tests', () => {
         const programNumber = 3
         const header = {} as ProgramHeader
         await device.getProgramHeader(programNumber, header)
+        console.log(header)
+    })
+
+    it( 'fetches keygroup header', async () => {
+        const device = newDevice(input, output)
+        const programNumber = 3
+        const keygroupNumber = 1
+        const header = {} as KeygroupHeader
+        await device.getKeygroupHeader(programNumber, keygroupNumber, header)
+        expect(header['PNUMBER']).equal(programNumber)
+        expect(header['KNUMBER']).equal(keygroupNumber)
+        expect(header.KGIDENT).equal(2) // magic Akai number
         console.log(header)
     })
 })
