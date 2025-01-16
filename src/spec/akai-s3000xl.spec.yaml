@@ -4,11 +4,23 @@ specs:
       - n: 'KGRP1'
         d: "Block address of first keygroup (internal use)"
         s: 2
+
       - n: 'PRNAME'
         t: 'string'
         d: "Name of program"
         s: 12
+
       - n: 'PRGNUM'
-        d: "MIDI program number"
+        d: "MIDI program number; Range: 0 to 128; After sending data to this parameter, Miscellaneous function BTSORT should be triggered to resort the list of programs into order and to flag active programs."
+
       - n: 'PMCHAN'
-        d: "MIDI channel"
+        d: "MIDI channel; Range: 255 signifies OMNI, 0 to 15 indicate MIDI channel"
+
+      - n: 'POLYPH'
+        d: "Depth of polyphony; Range: 0 to 31 (these represent polyphony values of 1 to 32)"
+
+      - n: 'PRIORT'
+        d: 'Priority of voices playing this program; Range: 0=low, 1=norm, 2=high, 3=hold'
+
+      - n: 'PLAYLO'
+        d: 'Lower limit of play range; Range: 21 to 127 represents A1 to G8'
