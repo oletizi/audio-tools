@@ -1,6 +1,7 @@
 import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput} from "@/lib/process-output";
+import {parseProgramHeader} from "@/midi/devices/s3000xl";
 
 export interface ProgramHeader {
     TRANSPOSE: number;
@@ -216,6 +217,13 @@ class s3000xl implements Device {
         out.log(`PNUMBER: offset: ${v.offset}`)
         header.PNUMBER = nextByte(m, v).value
 
+        const headerData = m.slice(v.offset, m.length -1)
+        parseProgramHeader(headerData, header)
+        out.log(header)
+
+        if (true) {
+            return
+        }
         out.log(`PRIDENT: offset: ${v.offset}`)
         const header_start = v.offset
 

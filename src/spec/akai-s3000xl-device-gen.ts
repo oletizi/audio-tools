@@ -40,11 +40,19 @@ export async function genParser(spec: Spec) {
     rv += `    const out = newClientOutput(true, 'parse${spec.name}')\n`
     rv += `    const v = {value: 0, offset: 0}\n\n`
     rv += '    let b: number[]\n'
+    rv += '    function reloff() {\n' +
+        '        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking.' +
+        '        // Math here is weird. It\'s to agree with offsets in Akai sysex docs: https://lakai.sourceforge.net/docs/s2800_sysex.html\n' +
+        '        // Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--\n' +
+        '        // hence v.offset /2 . And, the offsets start counting at 1, hence +1.\n' +
+        '        return (v.offset / 2) + 1\n' +
+        '    }\n\n'
     for (const field of spec.fields) {
         rv += `    // ${field.d}\n`
-        rv += `    out.log('${field.n}: offset: ' + v.offset)\n`
+        rv += `    out.log('${field.n}: offset: ' + reloff())\n`
         if (field.t) {
-            rv += '    for (let i = 0; i < 12; i++) {\n' +
+            rv += `    o.${field.n} = ''\n` +
+                '    for (let i = 0; i < 12; i++) {\n' +
                 '          nextByte(data, v)\n' +
                 `          o.${field.n} += akaiByte2String([v.value])\n` +
                 '    }\n'
