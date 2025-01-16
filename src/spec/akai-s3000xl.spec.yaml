@@ -493,4 +493,21 @@ specs:
         s: 12
         t: 'string'
 
+      - n: 'LOVEL1'
+        d: 'Lower limit of velocity range; 0-127'
 
+      - n: 'HIVEL1'
+        d: 'Upper limit of velocity range'
+
+      - n: 'VTUNO1'
+        d: 'Velocity zone 1 tuning offset; Range: -50.00 to +50.00 (fraction is binary)'
+        s: 2
+
+      - n: 'VLOUD1'
+        d: 'Velocity zone 1 loudness offset; Range: -50 to +50'
+
+      - n: 'VFREQ1'
+        d: 'Velocity zone 1 filter frequency offset'
+
+      - n: 'VPANO1'
+        d: 'Velocity zone 1 pan offset'

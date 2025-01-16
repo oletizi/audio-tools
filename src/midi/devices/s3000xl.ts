@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 10:04:49 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 10:07:57 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1135,6 +1135,12 @@ export interface KeygroupHeader {
   LKXF: number    // Calculated left keygroup crossfade factor (internal)
   RKXF: number    // Calculated right keygroup crossfade factor (internal)
   SNAME1: string    // Sample name used in velocity zone 1
+  LOVEL1: number    // Lower limit of velocity range; 0-127
+  HIVEL1: number    // Upper limit of velocity range
+  VTUNO1: number    // Velocity zone 1 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+  VLOUD1: number    // Velocity zone 1 loudness offset; Range: -50 to +50
+  VFREQ1: number    // Velocity zone 1 filter frequency offset
+  VPANO1: number    // Velocity zone 1 pan offset
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -1412,6 +1418,54 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
           nextByte(data, v)
           o.SNAME1 += akaiByte2String([v.value])
           out.log('SNAME1 at ' + i + ': ' + o.SNAME1)    }
+
+    // Lower limit of velocity range; 0-127
+    out.log('LOVEL1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LOVEL1 = bytes2numberLE(b)
+
+    // Upper limit of velocity range
+    out.log('HIVEL1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.HIVEL1 = bytes2numberLE(b)
+
+    // Velocity zone 1 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
+    out.log('VTUNO1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<2; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VTUNO1 = bytes2numberLE(b)
+
+    // Velocity zone 1 loudness offset; Range: -50 to +50
+    out.log('VLOUD1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VLOUD1 = bytes2numberLE(b)
+
+    // Velocity zone 1 filter frequency offset
+    out.log('VFREQ1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VFREQ1 = bytes2numberLE(b)
+
+    // Velocity zone 1 pan offset
+    out.log('VPANO1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VPANO1 = bytes2numberLE(b)
 
 }
 
