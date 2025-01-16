@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 07:40:53 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 07:49:15 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -97,9 +97,10 @@ export function parseProgramHeader(data: number[], o: ProgramHeader) {
 
     let b: number[]
     function reloff() {
-        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking.        // Math here is weird. It's to agree with offsets in Akai sysex docs: https://lakai.sourceforge.net/docs/s2800_sysex.html
-        // Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--
-        // hence v.offset /2 . And, the offsets start counting at 1, hence +1.
+        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking. See https://lakai.sourceforge.net/docs/s2800_sysex.html
+        // As such, The math here is weird: 
+        // * Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--hence v.offset /2 
+        // * Offsets in the docs start counting at 1, hence +1.
         return (v.offset / 2) + 1
     }
 
@@ -768,3 +769,31 @@ export function parseProgramHeader(data: number[], o: ProgramHeader) {
     o.PFXCHAN = bytes2numberLE(b)
 
 }
+
+export interface SampleHeader {
+  SHIDENT: number    // Block identifier; Range: 3 (Fixed)
+}
+
+export function parseSampleHeader(data: number[], o: SampleHeader) {
+    const out = newClientOutput(true, 'parseSampleHeader')
+    const v = {value: 0, offset: 0}
+
+    let b: number[]
+    function reloff() {
+        // This calculates the current offset into the header data so it will match with the Akai sysex docs for sanity checking. See https://lakai.sourceforge.net/docs/s2800_sysex.html
+        // As such, The math here is weird: 
+        // * Each offset "byte" in the docs is actually two little-endian nibbles, each of which take up a slot in the midi data array--hence v.offset /2 
+        // * Offsets in the docs start counting at 1, hence +1.
+        return (v.offset / 2) + 1
+    }
+
+    // Block identifier; Range: 3 (Fixed)
+    out.log('SHIDENT: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SHIDENT = bytes2numberLE(b)
+
+}
+

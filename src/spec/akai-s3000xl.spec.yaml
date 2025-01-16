@@ -256,3 +256,8 @@ specs:
 
       - n: 'PFXCHAN'
         d: 'Effects Bus Select; 0 to 4'
+
+  - name: SampleHeader
+    fields:
+      - n: 'SHIDENT'
+        d: 'Block identifier; Range: 3 (Fixed)'
