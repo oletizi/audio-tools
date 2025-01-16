@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 09:43:16 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 10:04:49 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1108,6 +1108,33 @@ export interface KeygroupHeader {
   HINOTE: number    // Upper limit of keyrange
   KGTUNO: number    // Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   FILFRQ: number    // Basic filter frequency; Range: 0 to 99
+  K_FREQ: number    // Key follow of filter frequency
+  V_FREQ: number    // Not used
+  P_FREQ: number    // Note used
+  E_FREQ: number    // Not used
+  ATTAK1: number    // Attack rate of envelope 1; 0-99
+  DECAY1: number    // Decay rate of envelope 1; 0-99
+  SUSTN1: number    // Sustain level of envelope 1
+  RELSE1: number    // Release rate of envelope 1
+  V_ATT1: number    // Note-on velocity dependence of envelope 1 attack rate; Range: -50 to +50
+  V_REL1: number    // Note-on velocity dependence of envelope 1 release rate
+  O_REL1: number    // Note-off velocity dependence of envelope 1 release rate
+  K_DAR1: number    // Dependence of envelope 2 decay and release rates on key
+  ENV2R1: number    // Attack rate of envelope 2: 0-99
+  ENV2R3: number    // Decay rate of envelope 2
+  ENV2L3: number    // Sustain level of envelope 2
+  ENV2R4: number    // Release rate of envelope 2
+  V_ATT2: number    // Dependence of envelope 2 attack on note-on velocity; Range: -50 to 50
+  V_REL2: number    // Dependence of envelope 2 release on note-on velocity
+  O_REL2: number    // Dependence of envelope 2 release on note-off velocity
+  K_DAR2: number    // Dependence of envelope 2 decay and release rates on key
+  V_ENV2: number    // Scaling of envelope 2 by note-on velocity
+  E_PTCH: number    // Not used
+  VXFADE: number    // Velocity zone crossfade; Range: 0 represents OFF, 1 represents ON
+  VZONES: number    // Not used
+  LKXF: number    // Calculated left keygroup crossfade factor (internal)
+  RKXF: number    // Calculated right keygroup crossfade factor (internal)
+  SNAME1: string    // Sample name used in velocity zone 1
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -1169,6 +1196,222 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
         b.push(nextByte(data, v).value)
     }
     o.FILFRQ = bytes2numberLE(b)
+
+    // Key follow of filter frequency
+    out.log('K_FREQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.K_FREQ = bytes2numberLE(b)
+
+    // Not used
+    out.log('V_FREQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_FREQ = bytes2numberLE(b)
+
+    // Note used
+    out.log('P_FREQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.P_FREQ = bytes2numberLE(b)
+
+    // Not used
+    out.log('E_FREQ: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.E_FREQ = bytes2numberLE(b)
+
+    // Attack rate of envelope 1; 0-99
+    out.log('ATTAK1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ATTAK1 = bytes2numberLE(b)
+
+    // Decay rate of envelope 1; 0-99
+    out.log('DECAY1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.DECAY1 = bytes2numberLE(b)
+
+    // Sustain level of envelope 1
+    out.log('SUSTN1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.SUSTN1 = bytes2numberLE(b)
+
+    // Release rate of envelope 1
+    out.log('RELSE1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.RELSE1 = bytes2numberLE(b)
+
+    // Note-on velocity dependence of envelope 1 attack rate; Range: -50 to +50
+    out.log('V_ATT1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_ATT1 = bytes2numberLE(b)
+
+    // Note-on velocity dependence of envelope 1 release rate
+    out.log('V_REL1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_REL1 = bytes2numberLE(b)
+
+    // Note-off velocity dependence of envelope 1 release rate
+    out.log('O_REL1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.O_REL1 = bytes2numberLE(b)
+
+    // Dependence of envelope 2 decay and release rates on key
+    out.log('K_DAR1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.K_DAR1 = bytes2numberLE(b)
+
+    // Attack rate of envelope 2: 0-99
+    out.log('ENV2R1: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2R1 = bytes2numberLE(b)
+
+    // Decay rate of envelope 2
+    out.log('ENV2R3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2R3 = bytes2numberLE(b)
+
+    // Sustain level of envelope 2
+    out.log('ENV2L3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2L3 = bytes2numberLE(b)
+
+    // Release rate of envelope 2
+    out.log('ENV2R4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV2R4 = bytes2numberLE(b)
+
+    // Dependence of envelope 2 attack on note-on velocity; Range: -50 to 50
+    out.log('V_ATT2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_ATT2 = bytes2numberLE(b)
+
+    // Dependence of envelope 2 release on note-on velocity
+    out.log('V_REL2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_REL2 = bytes2numberLE(b)
+
+    // Dependence of envelope 2 release on note-off velocity
+    out.log('O_REL2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.O_REL2 = bytes2numberLE(b)
+
+    // Dependence of envelope 2 decay and release rates on key
+    out.log('K_DAR2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.K_DAR2 = bytes2numberLE(b)
+
+    // Scaling of envelope 2 by note-on velocity
+    out.log('V_ENV2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_ENV2 = bytes2numberLE(b)
+
+    // Not used
+    out.log('E_PTCH: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.E_PTCH = bytes2numberLE(b)
+
+    // Velocity zone crossfade; Range: 0 represents OFF, 1 represents ON
+    out.log('VXFADE: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VXFADE = bytes2numberLE(b)
+
+    // Not used
+    out.log('VZONES: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.VZONES = bytes2numberLE(b)
+
+    // Calculated left keygroup crossfade factor (internal)
+    out.log('LKXF: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.LKXF = bytes2numberLE(b)
+
+    // Calculated right keygroup crossfade factor (internal)
+    out.log('RKXF: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.RKXF = bytes2numberLE(b)
+
+    // Sample name used in velocity zone 1
+    out.log('SNAME1: offset: ' + reloff())
+    o.SNAME1 = ''
+    for (let i = 0; i < 12; i++) {
+          nextByte(data, v)
+          o.SNAME1 += akaiByte2String([v.value])
+          out.log('SNAME1 at ' + i + ': ' + o.SNAME1)    }
 
 }
 

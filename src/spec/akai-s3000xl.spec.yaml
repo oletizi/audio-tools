@@ -410,4 +410,87 @@ specs:
       - n: 'FILFRQ'
         d: 'Basic filter frequency; Range: 0 to 99'
 
+      - n: 'K_FREQ'
+        d: 'Key follow of filter frequency'
+
+      - n: 'V_FREQ'
+        d: 'Not used'
+
+      - n: 'P_FREQ'
+        d: 'Note used'
+
+      - n: 'E_FREQ'
+        d: 'Not used'
+
+      - n: 'ATTAK1'
+        d: 'Attack rate of envelope 1; 0-99'
+
+      - n: 'DECAY1'
+        d: 'Decay rate of envelope 1; 0-99'
+
+      - n: 'SUSTN1'
+        d: 'Sustain level of envelope 1'
+
+      - n: 'RELSE1'
+        d: 'Release rate of envelope 1'
+
+      - n: 'V_ATT1'
+        d: 'Note-on velocity dependence of envelope 1 attack rate; Range: -50 to +50'
+
+      - n: 'V_REL1'
+        d: 'Note-on velocity dependence of envelope 1 release rate'
+
+      - n: 'O_REL1'
+        d: 'Note-off velocity dependence of envelope 1 release rate'
+
+      - n: 'K_DAR1'
+        d: 'Dependence of envelope 2 decay and release rates on key'
+
+      - n: 'ENV2R1'
+        d: 'Attack rate of envelope 2: 0-99'
+
+      - n: 'ENV2R3'
+        d: 'Decay rate of envelope 2'
+
+      - n: 'ENV2L3'
+        d: 'Sustain level of envelope 2'
+
+      - n: 'ENV2R4'
+        d: 'Release rate of envelope 2'
+
+      - n: 'V_ATT2'
+        d: 'Dependence of envelope 2 attack on note-on velocity; Range: -50 to 50'
+
+      - n: 'V_REL2'
+        d: 'Dependence of envelope 2 release on note-on velocity'
+
+      - n: 'O_REL2'
+        d: 'Dependence of envelope 2 release on note-off velocity'
+
+      - n: 'K_DAR2'
+        d: 'Dependence of envelope 2 decay and release rates on key'
+
+      - n: 'V_ENV2'
+        d: 'Scaling of envelope 2 by note-on velocity'
+
+      - n: 'E_PTCH'
+        d: 'Not used'
+
+      - n: 'VXFADE'
+        d: 'Velocity zone crossfade; Range: 0 represents OFF, 1 represents ON'
+
+      - n: 'VZONES'
+        d: 'Not used'
+
+      - n: 'LKXF'
+        d: 'Calculated left keygroup crossfade factor (internal)'
+
+      - n: 'RKXF'
+        d: 'Calculated right keygroup crossfade factor (internal)'
+
+      - n: 'SNAME1'
+        d: 'Sample name used in velocity zone 1'
+        s: 12
+        t: 'string'
+
 
