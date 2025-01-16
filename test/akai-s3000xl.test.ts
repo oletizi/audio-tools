@@ -1,4 +1,4 @@
-import * as midi from 'midi'
+import midi from 'midi'
 import {expect} from "chai";
 import {newDevice} from "../src/midi/akai-s3000xl";
 import {KeygroupHeader, ProgramHeader, SampleHeader} from "../src/midi/devices/s3000xl";
