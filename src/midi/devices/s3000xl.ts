@@ -1,5 +1,5 @@
 //
-// GENERATED Thu Jan 16 2025 11:20:42 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Thu Jan 16 2025 11:25:40 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -1222,6 +1222,18 @@ export interface KeygroupHeader {
   ATTAK3: number    // Attack rate of envelope 3
   ENV3L1: number    // Final level of attack phase (phase 1) of envelope 3
   ENV3R2: number    // Rate of phase 2 of envelope 3
+  ENV3L2: number    // Final level of phase 2 of envelope 3
+  ENV3R3: number    // Rate of phase 3 of envelope 3
+  ENV3L3: number    // Final level of phase 3 of envelope 3
+  ENV3R4: number    // Rate of release phase (phase 4) of envelope 3
+  ENV3L4: number    // Final target level of envelope 3
+  V_ATT3: number    // Dependence of envelope 3 attack rate on note-on velocity
+  V_REL3: number    // Dependence of envelope 3 release rate on note-on velocity
+  O_REL3: number    // Dependence of envelope 3 release rate on note-off velocity
+  K_DAR3: number    // Dependence of envelope 3 release and decay rate on key
+  V_ENV3: number    // Scaling of envelope 3 by note-on velocity
+  KFXCHAN: number    // Keygroup override Effects Bus select; Range: 0 to 5
+  KFXSLEV: number    // Keygroup override Effects Send level; Range: 0 to 99
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
@@ -2195,6 +2207,102 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
         b.push(nextByte(data, v).value)
     }
     o.ENV3R2 = bytes2numberLE(b)
+
+    // Final level of phase 2 of envelope 3
+    out.log('ENV3L2: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3L2 = bytes2numberLE(b)
+
+    // Rate of phase 3 of envelope 3
+    out.log('ENV3R3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3R3 = bytes2numberLE(b)
+
+    // Final level of phase 3 of envelope 3
+    out.log('ENV3L3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3L3 = bytes2numberLE(b)
+
+    // Rate of release phase (phase 4) of envelope 3
+    out.log('ENV3R4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3R4 = bytes2numberLE(b)
+
+    // Final target level of envelope 3
+    out.log('ENV3L4: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.ENV3L4 = bytes2numberLE(b)
+
+    // Dependence of envelope 3 attack rate on note-on velocity
+    out.log('V_ATT3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_ATT3 = bytes2numberLE(b)
+
+    // Dependence of envelope 3 release rate on note-on velocity
+    out.log('V_REL3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_REL3 = bytes2numberLE(b)
+
+    // Dependence of envelope 3 release rate on note-off velocity
+    out.log('O_REL3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.O_REL3 = bytes2numberLE(b)
+
+    // Dependence of envelope 3 release and decay rate on key
+    out.log('K_DAR3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.K_DAR3 = bytes2numberLE(b)
+
+    // Scaling of envelope 3 by note-on velocity
+    out.log('V_ENV3: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.V_ENV3 = bytes2numberLE(b)
+
+    // Keygroup override Effects Bus select; Range: 0 to 5
+    out.log('KFXCHAN: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KFXCHAN = bytes2numberLE(b)
+
+    // Keygroup override Effects Send level; Range: 0 to 99
+    out.log('KFXSLEV: offset: ' + reloff())
+    b = []
+    for (let i=0; i<1; i++) {
+        b.push(nextByte(data, v).value)
+    }
+    o.KFXSLEV = bytes2numberLE(b)
 
 }
 

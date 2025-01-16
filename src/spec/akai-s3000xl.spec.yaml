@@ -772,3 +772,39 @@ specs:
 
       - n: 'ENV3R2'
         d: 'Rate of phase 2 of envelope 3'
+
+      - n: 'ENV3L2'
+        d: 'Final level of phase 2 of envelope 3'
+
+      - n: 'ENV3R3'
+        d: 'Rate of phase 3 of envelope 3'
+
+      - n: 'ENV3L3'
+        d: 'Final level of phase 3 of envelope 3'
+
+      - n: 'ENV3R4'
+        d: 'Rate of release phase (phase 4) of envelope 3'
+
+      - n: 'ENV3L4'
+        d: 'Final target level of envelope 3'
+
+      - n: 'V_ATT3'
+        d: 'Dependence of envelope 3 attack rate on note-on velocity'
+
+      - n: 'V_REL3'
+        d: 'Dependence of envelope 3 release rate on note-on velocity'
+
+      - n: 'O_REL3'
+        d: 'Dependence of envelope 3 release rate on note-off velocity'
+
+      - n: 'K_DAR3'
+        d: 'Dependence of envelope 3 release and decay rate on key'
+
+      - n: 'V_ENV3'
+        d: 'Scaling of envelope 3 by note-on velocity'
+
+      - n: 'KFXCHAN'
+        d: 'Keygroup override Effects Bus select; Range: 0 to 5'
+
+      - n: 'KFXSLEV'
+        d: 'Keygroup override Effects Send level; Range: 0 to 99'
