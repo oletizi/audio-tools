@@ -1,6 +1,6 @@
 import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
-import {newClientOutput} from "@/lib/process-output";
+import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 import {
     KeygroupHeader, parseKeygroupHeader,
     parseProgramHeader,
@@ -8,127 +8,25 @@ import {
     ProgramHeader,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-
-// export interface ProgramHeader {
-//     TRANSPOSE: number;
-//     B_MODE: number;
-//     B_PTCHD: number;
-//     LEGATO: number;
-//     VSSCL: number;
-//     VOSCL: number;
-//     K_LDEL: number;
-//     K_LDEP: number;
-//     K_LRAT: number;
-//     PTUNO: number;
-//     SPFILT: number;
-//     SPATT: number;
-//     SPLOUD: number;
-//     VASSOQ: number;
-//     PLAW: number;
-//     DESYNC: number;
-//     COHERE: number;
-//     MW_PAN: number;
-//     ECHOUT: number;
-//     TEMPER: string;
-//     TPNUM: number;
-//     GROUPS: number;
-//     KXFADE: number;
-//     P_PTCH: number;
-//     B_PTCH: number;
-//     VELDEP: number;
-//     PRSDEP: number;
-//     MWLDEP: number;
-//     LFODEL: number;
-//     LFODEP: number;
-//     LFORAT: number;
-//     K_PANP: number;
-//     PANDEL: number;
-//     PANDEP: number;
-//     PANRAT: number;
-//     P_LOUD: number;
-//     K_LOUD: number;
-//     V_LOUD: number;
-//     PRLOUD: number;
-//     PANPOS: number;
-//     STEREO: number;
-//     OUTPUT: number;
-//     OSHIFT: number;
-//     PLAYHI: number;
-//     PLAYLO: number;
-//     PRIORT: number;
-//     POLYPH: number;
-//     PMCHAN: number;
-//     PRGNUM: number;
-//     PRNAME: string;
-//     KGRP1: number;
-//     PRIDENT: number;
-//     PNUMBER: number;
-//
-// }
-
-// export interface SampleHeader {
-//     // Loop 1
-//     LDWELL_1: number;
-//     LLNGTH_1: number;
-//     LOOPAT_1: number;
-//     // Loop 2
-//     LDWELL_2: number;
-//     LLNGTH_2: number;
-//     LOOPAT_2: number;
-//     // Loop 3
-//     LDWELL_3: number;
-//     LLNGTH_3: number;
-//     LOOPAT_3: number;
-//     // Loop 4
-//     LDWELL_4: number;
-//     LLNGTH_4: number;
-//     LOOPAT_4: number;
-//
-//     // Relative loop factors
-//     SLXY_1: number
-//     SLXY_2: number
-//     SLXY_3: number
-//     SLXY_4: number
-//
-//     SSPARE: number
-//     SWCOMM: number
-//     SSPAIR: number
-//
-//     SSRATE: number
-//     SHLTO: number
-//
-//     SMPEND: number;
-//     SSTART: number;
-//     SLNGTH: number;
-//     SLOCAT: number;
-//     STUNO: { cent: number, semi: number };
-//     SPTYPE: number;
-//     SALOOP: number;
-//     SLOOPS: number;
-//     SSRVLD: number;
-//     SHNAME: string
-//     SPITCH: number;
-//     SBANDW: number;
-//     SNUMBER: number;
-//     SHIDENT: number;
-//
-// }
+import {MidiMessage} from "midi";
 
 export interface Device {
 
-    getSampleNames(names: any[])
+    fetchSampleNames(names: any[]): Promise<String[]>
 
-    getSampleHeader(sampleNumber: number, header: SampleHeader)
+    fetchSampleHeader(sampleNumber: number, header: SampleHeader): Promise<SampleHeader>
 
-    getProgramNames(names: any[])
+    fetchProgramNames(names: string[]): Promise<string[]>
 
-    getProgramHeader(programNumber: number, header: ProgramHeader)
+    getProgramNames(names: string[]): string[]
 
-    getKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader)
+    fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
+
+    fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 }
 
-export function newDevice(input: midi.Input, output: midi.Output): Device {
-    return new s3000xl(input, output)
+export function newDevice(input: midi.Input, output: midi.Output, out: ProcessOutput = newClientOutput()): Device {
+    return new s3000xl(input, output, out)
 }
 
 
@@ -187,40 +85,63 @@ enum Opcode {
 
 
 class s3000xl implements Device {
-    private readonly in: midi.Input;
-    private readonly out: midi.Output;
+    private readonly midiInput: midi.Input;
+    private readonly midiOutput: midi.Output;
+    private readonly programNames: string[] = []
+    private readonly sampleNames: string[] = []
+    private readonly out: ProcessOutput
+    private readonly q = []
 
-    constructor(input: midi.Input, output: midi.Output) {
-        this.in = input
-        this.out = output
+    constructor(input: midi.Input, output: midi.Output, out: ProcessOutput) {
+        this.midiInput = input
+        this.midiOutput = output
+        this.out = out
     }
 
-    async getProgramNames(names: any[]) {
+    getProgramNames(names: string[]) {
+        this.programNames.forEach(n => names.push(n))
+        return names
+    }
+
+    async fetchProgramNames(names: string[]) {
+        const out = this.out
+        this.programNames.length = 0
         let offset = 5
+
+        out.log(`Request program names...`)
         const m = await this.send(Opcode.RPLIST, [])
+        out.log(`Received program names.`)
+
         let b = m.slice(offset, offset + 2)
         offset += 2
         const programCount = bytes2numberLE(b)
+
         for (let i = 0; i < programCount; i++, offset += 12) {
-            names.push(akaiByte2String(m.slice(offset, offset + 12)))
+            let n = akaiByte2String(m.slice(offset, offset + 12));
+            this.programNames.push(n)
+            names.push(n)
         }
         return names
     }
 
-    async getSampleNames(names: any[]) {
+    async fetchSampleNames(names: string[]) {
+        this.sampleNames.length = 0
         let offset = 5
         const m = await this.send(Opcode.RLIST, [])
         let b = m.slice(offset, offset + 2);
         offset += 2
         const sampleCount = bytes2numberLE(b)
         for (let i = 0; i < sampleCount; i++, offset += 12) {
-            names.push(akaiByte2String(m.slice(offset, offset + 12)))
+            const n = akaiByte2String(m.slice(offset, offset + 12));
+            this.sampleNames.push(n)
+            names.push(n)
         }
+        return names
     }
 
-    async getProgramHeader(programNumber: number, header: ProgramHeader) {
+    async fetchProgramHeader(programNumber: number, header: ProgramHeader) {
         // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
-        const out = newClientOutput(true, 'getProgramHeader')
+        const out = this.out//newClientOutput(true, 'getProgramHeader')
         const m = await this.send(Opcode.RPDATA, byte2nibblesLE(programNumber))
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
@@ -228,10 +149,11 @@ class s3000xl implements Device {
         const headerData = m.slice(v.offset, m.length - 1)
         parseProgramHeader(headerData, 1, header)
         out.log(header)
+        return header
     }
 
-    async getKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader) {
-        const out = newClientOutput(true, 'getKeygroupHeader')
+    async fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader) {
+        const out = this.out //newClientOutput(true, 'getKeygroupHeader')
         const m = await this.send(Opcode.RKDATA, byte2nibblesLE(programNumber).concat(keygroupNumber))
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
@@ -244,11 +166,12 @@ class s3000xl implements Device {
         const headerData = m.slice(v.offset, m.length - 1)
         parseKeygroupHeader(headerData, 0, header)
         out.log(header)
+        return header
     }
 
-    async getSampleHeader(sampleNumber: number, header: SampleHeader) {
+    async fetchSampleHeader(sampleNumber: number, header: SampleHeader) {
         // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
-        const out = newClientOutput(true, 'getSampleHeader')
+        const out = this.out // newClientOutput(true, 'getSampleHeader')
         const m = await this.send(Opcode.RSDATA, byte2nibblesLE(sampleNumber))
         const v = {value: 0, offset: 5}
         out.log(`SNUMBER: offset: ${v.offset}`)
@@ -256,11 +179,13 @@ class s3000xl implements Device {
 
         parseSampleHeader(m.slice(v.offset, m.length - 1), 0, header)
         out.log(header)
+        return header
     }
 
     private async send(opcode: Opcode, data: number[]) {
-        const input = this.in
-        const output = this.out
+        const out = this.out
+        const input = this.midiInput
+        const output = this.midiOutput
         const message = [
             0xf0, // 00: (240) SYSEX_START
             0x47, // 01: ( 71) AKAI
@@ -280,6 +205,7 @@ class s3000xl implements Device {
             input.on('message', listener)
         })
 
+        out.log(`Sending message...`)
         output.sendMessage(message)
         return await response
     }

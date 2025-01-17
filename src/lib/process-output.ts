@@ -1,4 +1,6 @@
 import {timestamp} from "@/lib/lib-core";
+import {Object} from "fabric/dist-extensions/fabric.js";
+import {Buffer} from "buffer/";
 
 export interface ProcessOutput {
     log(msg: string | Buffer | Object)
@@ -39,11 +41,16 @@ class BasicOutput implements ProcessOutput {
     }
 }
 
-export function newServerOutput(debug = true, prefix = '') : ProcessOutput {
-    return new BasicOutput((msg) => process.stdout.write(msg), (msg) => console.error(msg),'\n', debug, prefix)
+
+export function newStreamOutput(outstream, errstream, debug = true, prefix = ''): ProcessOutput {
+    return new BasicOutput((msg) => outstream.write(msg), (msg) => errstream.write(msg), '\n', debug, prefix)
 }
 
-export function newClientOutput(debug = true, prefix = '') : ProcessOutput {
+export function newServerOutput(debug = true, prefix = ''): ProcessOutput {
+    return new BasicOutput((msg) => process.stdout.write(msg), (msg) => console.error(msg), '\n', debug, prefix)
+}
+
+export function newClientOutput(debug = true, prefix = ''): ProcessOutput {
     return new BasicOutput(console.info, console.error, '', debug, prefix)
 }
 

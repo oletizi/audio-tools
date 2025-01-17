@@ -1,18 +1,26 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {render, Box, Text, useApp, useFocus, useInput, useStdout, useStderr} from 'ink';
 import {Select} from '@inkjs/ui'
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
-import {loadClientConfig, saveClientConfig} from "@/lib/config-server.js";
+import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
+import {newStreamOutput} from "@/lib/process-output.js";
+import fs from "fs";
 
-const midiInput = new midi.Input()
-const midiOutput = new midi.Output()
-const device = newDevice(midiInput, midiOutput)
+const serverConfig = await newServerConfig()
+const logstream = fs.createWriteStream(serverConfig.logfile)
+const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl')
 const config = await loadClientConfig()
 
+const midiInput = new midi.Input()
+midiInput.ignoreTypes(false, false, false)
+const midiOutput = new midi.Output()
+
+
+out.log(`startup`)
 await updateMidiInput(config.midiInput)
 await updateMidiOutput(config.midiOutput)
-
+const device = newDevice(midiInput, midiOutput, out)
 
 async function updateMidiInput(v: string) {
     if (openMidiPort(midiInput, v)) {
@@ -29,11 +37,15 @@ async function updateMidiOutput(v: string) {
 }
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
+    out.log(`Opening midi port: ${name}`)
     for (let i = 0; i < midiHandle.getPortCount(); i++) {
         const portName = midiHandle.getPortName(i)
         if (portName === name) {
+            out.log(`Closing midi port: ${name}`)
             midiHandle.closePort()
+            out.log(`Opening midi port: ${name}`)
             midiHandle.openPort(i)
+            out.log(`Midi port open: ${name}`)
             return true
         }
     }
@@ -89,10 +101,12 @@ function StartScreen() {
 function ProgramScreen() {
     const {stderr} = useStderr()
     const [names, setNames] = useState([])
-    stderr.write("Fetching program names...")
-    device.getProgramNames([]).then((n) => {
-        stderr.write(`NAMES: ${n}`)
-        setNames(n)
+    out.log("Fetching program names...")
+    useEffect(()=>{
+        device.fetchProgramNames([]).then((n) => {
+            stderr.write(`NAMES: ${n}`)
+            setNames(n)
+        })
     })
     return (<Text>Program Names: {names.join('\n')}</Text>)
 }

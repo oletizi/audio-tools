@@ -44,7 +44,7 @@ describe('akai-s3000xl tests', () => {
     it('fetches resident sample names', async () => {
         const device = newDevice(input, output)
         const names = []
-        await device.getSampleNames(names)
+        await device.fetchSampleNames(names)
         expect(names).not.empty
     })
 
@@ -52,7 +52,7 @@ describe('akai-s3000xl tests', () => {
         const device = newDevice(input, output)
         const header = {} as SampleHeader
         const sampleNumber = 8
-        await device.getSampleHeader(sampleNumber, header)
+        await device.fetchSampleHeader(sampleNumber, header)
         console.log(header)
         expect(header['SNUMBER']).eq(sampleNumber)
         expect(header.SHIDENT).eq(3) // Akai magic value
@@ -61,27 +61,30 @@ describe('akai-s3000xl tests', () => {
 
     it('fetches resident program names', async () => {
         const device = newDevice(input, output)
+
         const names = []
-        await device.getProgramNames(names)
+        await device.fetchProgramNames(names)
         console.log(`Sample names:`)
         console.log(names)
         expect(names).not.empty
+
+        expect(names).deep.eq(device.getProgramNames([]))
     })
 
     it('fetches program header', async () => {
         const device = newDevice(input, output)
         const programNumber = 3
         const header = {} as ProgramHeader
-        await device.getProgramHeader(programNumber, header)
+        await device.fetchProgramHeader(programNumber, header)
         console.log(header)
     })
 
-    it( 'fetches keygroup header', async () => {
+    it('fetches keygroup header', async () => {
         const device = newDevice(input, output)
         const programNumber = 3
         const keygroupNumber = 1
         const header = {} as KeygroupHeader
-        await device.getKeygroupHeader(programNumber, keygroupNumber, header)
+        await device.fetchKeygroupHeader(programNumber, keygroupNumber, header)
         expect(header['PNUMBER']).equal(programNumber)
         expect(header['KNUMBER']).equal(keygroupNumber)
         expect(header.KGIDENT).equal(2) // magic Akai number
