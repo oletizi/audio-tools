@@ -3,30 +3,59 @@ import {render, Box, Text, useApp, useFocus, useInput, useStdout} from 'ink';
 import {Select} from '@inkjs/ui'
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
-import {loadClientConfig} from "@/lib/config-server.js";
+import {loadClientConfig, saveClientConfig} from "@/lib/config-server.js";
 
 const midiInput = new midi.Input()
 const midiOutput = new midi.Output()
 const device = newDevice(midiInput, midiOutput)
 const config = await loadClientConfig()
 
+await updateMidiInput(config.midiInput)
+await updateMidiOutput(config.midiOutput)
+
+
+async function updateMidiInput(v: string) {
+    if (openMidiPort(midiInput, v)) {
+        config.midiInput = v
+        await saveClientConfig(config)
+    }
+}
+
+async function updateMidiOutput(v: string) {
+    if (openMidiPort(midiOutput, v)) {
+        config.midiOutput = v
+        await saveClientConfig(config)
+    }
+}
+
+function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
+    for (let i = 0; i < midiHandle.getPortCount(); i++) {
+        const portName = midiHandle.getPortName(i)
+        if (portName === name) {
+            midiHandle.closePort()
+            midiHandle.openPort(i)
+            return true
+        }
+    }
+    return false
+}
+
+function shutdown() {
+    [midiInput, midiOutput].forEach(i => i.closePort())
+}
 
 function Button(props) {
     return (<Box borderStyle="single" paddingLeft={1} paddingRight={1}><Text>{props.children}</Text></Box>)
 }
 
 function StartScreen() {
-    const [midiInputValue, setMidiInputValue] = useState(null)
-    const [midiOutputValue, setMidiOutputValue] = useState(null)
     return (
         <Box flexDirection="column" gap={1} width="100%">
             <Box width="100%" justifyContent="space-around">
-                <MidiSelect label="MIDI Input" defaultValue={config.midiInput} midiHandle={midiInput} onChange={(v) => setMidiInputValue(v)}/>
-                <MidiSelect label="MIDI Output" defaultValue={config.midiOutput} midiHandle={midiOutput} onChange={(v) => setMidiOutputValue(v)}/>
-            </Box>
-            <Box gap={2}>
-                <Text>Selected input: {midiInputValue}</Text>
-                <Text>Selected output: {midiOutputValue}</Text>
+                <MidiSelect label="MIDI Input" defaultValue={config.midiInput} midiHandle={midiInput}
+                            onChange={(v) => updateMidiInput(v)}/>
+                <MidiSelect label="MIDI Output" defaultValue={config.midiOutput} midiHandle={midiOutput}
+                            onChange={(v) => updateMidiOutput(v)}/>
             </Box>
         </Box>)
 }
@@ -48,7 +77,7 @@ function MidiSelect({defaultValue, midiHandle, label, onChange}: {
     </Box>)
 }
 
-function Thingy() {
+function App() {
     const {exit} = useApp();
     const {stdout} = useStdout()
     const [screen, setScreen] = useState(<StartScreen/>)
@@ -56,9 +85,11 @@ function Thingy() {
     useInput((input: string, key) => {
         if (input.toUpperCase() === 'Q') {
             setMessage('You quit')
+            shutdown()
             exit()
         } else if (input.toUpperCase() === 'M') {
             setMessage('Do MIDI!')
+            setScreen(<StartScreen/>)
         } else {
             setMessage(input)
         }
@@ -74,4 +105,4 @@ function Thingy() {
     )
 }
 
-render(<StartScreen/>);
+render(<App/>);

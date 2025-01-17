@@ -74,5 +74,5 @@ function ensureDataDir(dataDir = DEFAULT_DATA_DIR) {
                 throw new Error(`${dataDir} is not a directory`)
             }
         })
-        .catch(err => fs.mkdir(dataDir))
+        .catch(() => fs.mkdir(dataDir))
 }
