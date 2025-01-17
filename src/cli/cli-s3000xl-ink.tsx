@@ -45,7 +45,14 @@ function shutdown() {
 }
 
 function Button(props) {
-    return (<Box borderStyle="single" paddingLeft={1} paddingRight={1}><Text>{props.children}</Text></Box>)
+    const {isFocused} = useFocus()
+    useInput((input, key) => {
+        if (props.onClick && isFocused && key.return) {
+            props.onClick()
+        }
+    })
+    return (<Box borderStyle="single" paddingLeft={1}
+                 paddingRight={1}><Text inverse={isFocused}>{props.children}</Text></Box>)
 }
 
 function StartScreen() {
@@ -81,25 +88,29 @@ function App() {
     const {exit} = useApp();
     const {stdout} = useStdout()
     const [screen, setScreen] = useState(<StartScreen/>)
-    const [msg, setMessage] = useState('Display here?')
+
+    function quit() {
+        shutdown()
+        exit()
+    }
+
+    function doMidi() {
+        setScreen(<StartScreen/>)
+    }
+
     useInput((input: string, key) => {
         if (input.toUpperCase() === 'Q') {
-            setMessage('You quit')
-            shutdown()
-            exit()
+            quit()
         } else if (input.toUpperCase() === 'M') {
-            setMessage('Do MIDI!')
-            setScreen(<StartScreen/>)
-        } else {
-            setMessage(input)
+            doMidi()
         }
     })
     return (
         <>
             <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
             <Box>
-                <Button>M: MIDI</Button>
-                <Button>Q: Quit</Button>
+                <Button onClick={doMidi}>M: MIDI</Button>
+                <Button onClick={quit}>Q: Quit</Button>
             </Box>
         </>
     )
