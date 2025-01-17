@@ -99,10 +99,13 @@ function App() {
     }
 
     useInput((input: string, key) => {
-        if (input.toUpperCase() === 'Q') {
-            quit()
-        } else if (input.toUpperCase() === 'M') {
-            doMidi()
+        switch (input.toUpperCase()) {
+            case 'Q':
+                quit()
+                break
+            case 'M':
+                doMidi()
+                break
         }
     })
     return (
