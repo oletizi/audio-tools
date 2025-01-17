@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {render, Box, Text, useApp, useFocus, useInput, useStdout} from 'ink';
+import {render, Box, Text, useApp, useFocus, useInput, useStdout, useStderr} from 'ink';
 import {Select} from '@inkjs/ui'
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
@@ -55,17 +55,7 @@ function Button(props) {
                  paddingRight={1}><Text inverse={isFocused}>{props.children}</Text></Box>)
 }
 
-function StartScreen() {
-    return (
-        <Box flexDirection="column" gap={1} width="100%">
-            <Box width="100%" justifyContent="space-around">
-                <MidiSelect label="MIDI Input" defaultValue={config.midiInput} midiHandle={midiInput}
-                            onChange={(v) => updateMidiInput(v)}/>
-                <MidiSelect label="MIDI Output" defaultValue={config.midiOutput} midiHandle={midiOutput}
-                            onChange={(v) => updateMidiOutput(v)}/>
-            </Box>
-        </Box>)
-}
+
 
 function MidiSelect({defaultValue, midiHandle, label, onChange}: {
     defaultValue: string,
@@ -84,10 +74,33 @@ function MidiSelect({defaultValue, midiHandle, label, onChange}: {
     </Box>)
 }
 
+function StartScreen() {
+    return (
+        <Box flexDirection="column" gap={1} width="100%">
+            <Box width="100%" justifyContent="space-around">
+                <MidiSelect label="MIDI Input" defaultValue={config.midiInput} midiHandle={midiInput}
+                            onChange={(v) => updateMidiInput(v)}/>
+                <MidiSelect label="MIDI Output" defaultValue={config.midiOutput} midiHandle={midiOutput}
+                            onChange={(v) => updateMidiOutput(v)}/>
+            </Box>
+        </Box>)
+}
+
+function ProgramScreen() {
+    const {stderr} = useStderr()
+    const [names, setNames] = useState([])
+    stderr.write("Fetching program names...")
+    device.getProgramNames([]).then((n) => {
+        stderr.write(`NAMES: ${n}`)
+        setNames(n)
+    })
+    return (<Text>Program Names: {names.join('\n')}</Text>)
+}
+
 function App() {
     const {exit} = useApp();
-    const {stdout} = useStdout()
     const [screen, setScreen] = useState(<StartScreen/>)
+    const {stdout} = useStdout()
 
     function quit() {
         shutdown()
@@ -98,13 +111,20 @@ function App() {
         setScreen(<StartScreen/>)
     }
 
+    function doProgram() {
+        setScreen(<ProgramScreen/>)
+    }
+
     useInput((input: string, key) => {
         switch (input.toUpperCase()) {
-            case 'Q':
-                quit()
-                break
             case 'M':
                 doMidi()
+                break
+            case 'P':
+                doProgram()
+                break
+            case 'Q':
+                quit()
                 break
         }
     })
@@ -112,6 +132,7 @@ function App() {
         <>
             <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
             <Box>
+                <Button onClick={doProgram}>P: Program</Button>
                 <Button onClick={doMidi}>M: MIDI</Button>
                 <Button onClick={quit}>Q: Quit</Button>
             </Box>

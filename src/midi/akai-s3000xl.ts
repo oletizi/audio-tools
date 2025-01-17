@@ -204,6 +204,7 @@ class s3000xl implements Device {
         for (let i = 0; i < programCount; i++, offset += 12) {
             names.push(akaiByte2String(m.slice(offset, offset + 12)))
         }
+        return names
     }
 
     async getSampleNames(names: any[]) {
