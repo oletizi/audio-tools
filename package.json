@@ -31,7 +31,7 @@
     "translate": "tsx src/ts/translate.ts",
     "info": "tsx src/ts/info.ts",
     "cli": "tsx src/ts/cli.ts",
-    "cli:s3000xl": "tsx src/cli/cli-s3000xl.tsx",
+    "cli:s3000xl": "tsx src/cli/cli-s3000xl.ts",
     "clean": "rm -rf ./build/*",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

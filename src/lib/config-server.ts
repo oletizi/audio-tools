@@ -8,7 +8,7 @@ import {mkdir} from "@/lib/lib-fs-server";
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
 const DEFAULT_SOURCE_DIR = path.join(DEFAULT_DATA_DIR, 'source')
 const DEFAULT_TARGET_DIR = path.join(DEFAULT_DATA_DIR, 'target')
-const out: ProcessOutput = newServerOutput()
+const out: ProcessOutput = newServerOutput(false)
 
 export interface ServerConfig {
     sourceRoot: string
