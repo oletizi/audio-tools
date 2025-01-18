@@ -8,9 +8,10 @@ import {
     ProgramHeader,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-import {MidiMessage} from "midi";
 
 export interface Device {
+
+    init(): Promise<void>
 
     fetchSampleNames(names: any[]): Promise<String[]>
 
@@ -19,6 +20,8 @@ export interface Device {
     fetchProgramNames(names: string[]): Promise<string[]>
 
     getProgramNames(names: string[]): string[]
+
+    getProgramHeader(programName: string) : ProgramHeader
 
     fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
 
@@ -88,9 +91,10 @@ class s3000xl implements Device {
     private readonly midiInput: midi.Input;
     private readonly midiOutput: midi.Output;
     private readonly programNames: string[] = []
+    private readonly programs = {}
     private readonly sampleNames: string[] = []
+
     private readonly out: ProcessOutput
-    private readonly q = []
 
     constructor(input: midi.Input, output: midi.Output, out: ProcessOutput) {
         this.midiInput = input
@@ -98,12 +102,22 @@ class s3000xl implements Device {
         this.out = out
     }
 
+    async init() {
+        const names = await this.fetchProgramNames([])
+        for (let i=0; i<names.length; i++) {
+            const header = {} as ProgramHeader
+            await this.fetchProgramHeader(i, header)
+            this.programs[names[i]] = header
+        }
+    }
+
+
     getProgramNames(names: string[]) {
         this.programNames.forEach(n => names.push(n))
         return names
     }
 
-    async fetchProgramNames(names: string[]) {
+    async fetchProgramNames(names: string[] = []) {
         const out = this.out
         this.programNames.length = 0
         let offset = 5
@@ -137,6 +151,10 @@ class s3000xl implements Device {
             names.push(n)
         }
         return names
+    }
+
+    getProgramHeader(programName: string) : ProgramHeader {
+        return this.programs[programName]
     }
 
     async fetchProgramHeader(programNumber: number, header: ProgramHeader) {
@@ -207,7 +225,7 @@ class s3000xl implements Device {
 
         out.log(`Sending message...`)
         output.sendMessage(message)
-        return await response
+        return response
     }
 
 }

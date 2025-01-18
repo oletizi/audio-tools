@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {render, Box, Text, useApp, useFocus, useInput, useStdout, useStderr} from 'ink';
 import {Select} from '@inkjs/ui'
 import midi from "midi";
@@ -6,6 +6,7 @@ import {newDevice} from "@/midi/akai-s3000xl.js";
 import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
 import {newStreamOutput} from "@/lib/process-output.js";
 import fs from "fs";
+import {ProgramHeader} from "@/midi/devices/s3000xl.js";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
@@ -21,6 +22,7 @@ out.log(`startup`)
 await updateMidiInput(config.midiInput)
 await updateMidiOutput(config.midiOutput)
 const device = newDevice(midiInput, midiOutput, out)
+await device.init()
 
 async function updateMidiInput(v: string) {
     if (openMidiPort(midiInput, v)) {
@@ -68,7 +70,6 @@ function Button(props) {
 }
 
 
-
 function MidiSelect({defaultValue, midiHandle, label, onChange}: {
     defaultValue: string,
     midiHandle: midi.Input | midi.Output,
@@ -98,17 +99,31 @@ function StartScreen() {
         </Box>)
 }
 
-function ProgramScreen() {
-    const {stderr} = useStderr()
-    const [names, setNames] = useState([])
-    out.log("Fetching program names...")
-    useEffect(()=>{
-        device.fetchProgramNames([]).then((n) => {
-            stderr.write(`NAMES: ${n}`)
-            setNames(n)
-        })
+function ProgramDetailScreen({programName}: { programName: string }) {
+    const header = device.getProgramHeader(programName)
+    return (
+        <Box flexDirection="column">
+            <Text>Program        : {header.PRNAME}</Text>
+            <Text>Number         : {header.PRGNUM}</Text>
+            <Text>Channel        : {header.PMCHAN}</Text>
+            <Text>Polyphony      : {header.POLYPH}</Text>
+            <Text>Priority       : {header.PRIORT}</Text>
+            <Text>Note range     : {header.PLAYLO}-{header.PLAYHI}</Text>
+            <Text>Output         : {header.OUTPUT}</Text>
+            <Text>Stereo level   : {header.STEREO}</Text>
+            <Text>Pan            : {header.PANPOS}</Text>
+        </Box>)
+}
+
+function ProgramScreen({names, setScreen}: { names: string[], setScreen: (any) => void }) {
+    const options = names.map((programName) => {
+        return {label: programName, value: programName}
     })
-    return (<Text>Program Names: {names.join('\n')}</Text>)
+    return (
+        <Box>
+            <Select options={options} onChange={(v) => setScreen(<ProgramDetailScreen programName={v}/>)}/>
+        </Box>
+    )
 }
 
 function App() {
@@ -126,7 +141,7 @@ function App() {
     }
 
     function doProgram() {
-        setScreen(<ProgramScreen/>)
+        setScreen(<ProgramScreen names={device.getProgramNames([])} setScreen={setScreen}/>)
     }
 
     useInput((input: string, key) => {
