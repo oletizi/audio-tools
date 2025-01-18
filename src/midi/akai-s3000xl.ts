@@ -184,11 +184,29 @@ class s3000xl implements Device {
     }
 
     async updateProgramName(header: ProgramHeader, name: string) {
-        const offset = 6
-        // this.out.log(`current name: ${akaiByte2String(header.raw.slice(offset, offset + 12))}`)
-        // for (let i = offset; i < offset + 12; i++) {
-        // this.out.log(akaiByte2String(header.raw[i]))
-        // }
+        const offset = 13 // offset into raw sysex message for start of program name
+        let v = ''
+        for (let i = offset; i < offset + 12 * 2; i += 2) {
+            const b = nibbles2byte(header.raw[i], header.raw[i + 1])
+            v += akaiByte2String([b])
+        }
+        this.out.log(`current name: ${v}`)
+
+
+        const data = string2AkaiBytes(name)
+        for (let i = offset, j = 0; i < offset + 12 * 2; i += 2, j++) {
+            const nibbles = byte2nibblesLE(data[j])
+            header.raw[i] = nibbles[0]
+            header.raw[i + 1] = nibbles[1]
+        }
+
+        v = ''
+        for (let i = offset; i < offset + 12 * 2; i += 2) {
+            const b = nibbles2byte(header.raw[i], header.raw[i + 1])
+            v += akaiByte2String([b])
+        }
+        this.out.log(`new name: ${v}`)
+        await this.send(Opcode.PDATA, header.raw)
     }
 
     async fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader) {
