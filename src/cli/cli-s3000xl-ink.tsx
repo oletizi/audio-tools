@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {render, Box, Text, useApp, useFocus, useInput, useStdout, useStderr} from 'ink';
+import {render, Box, Text, useApp, useFocus, useInput, useStdout} from 'ink';
 import {Select} from '@inkjs/ui'
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
 import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
 import {newStreamOutput} from "@/lib/process-output.js";
 import fs from "fs";
-import {ProgramHeader} from "@/midi/devices/s3000xl.js";
+import {maxHeaderSize} from "http";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
@@ -99,19 +99,44 @@ function StartScreen() {
         </Box>)
 }
 
+
 function ProgramDetailScreen({programName}: { programName: string }) {
     const header = device.getProgramHeader(programName)
+    const fields = []
+    let maxLabel = 0
+    for (const prop of Object.getOwnPropertyNames(header)) {
+        out.log(`prop: ${prop}`)
+        if (!prop.endsWith('Label')) {
+            const labelField = prop + 'Label'
+            const label = header[labelField] ? header[labelField] : prop
+            const value = header[prop]
+            out.log(`  val: ${value}`)
+            maxLabel = label.length > maxLabel ? label.length : maxLabel
+            fields.push({Name: label, Value: value})
+        }
+    }
+
+    function pad(v: string, l: number, p: string = ' ') {
+        while (v.length < l) {
+            v += p
+        }
+        return v
+    }
+
     return (
         <Box flexDirection="column">
-            <Text>Program        : {header.PRNAME}</Text>
-            <Text>Number         : {header.PRGNUM}</Text>
-            <Text>Channel        : {header.PMCHAN}</Text>
-            <Text>Polyphony      : {header.POLYPH}</Text>
-            <Text>Priority       : {header.PRIORT}</Text>
-            <Text>Note range     : {header.PLAYLO}-{header.PLAYHI}</Text>
-            <Text>Output         : {header.OUTPUT}</Text>
-            <Text>Stereo level   : {header.STEREO}</Text>
-            <Text>Pan            : {header.PANPOS}</Text>
+            {/*<Text>Program : {header.PRNAME}</Text>*/}
+            {/*<Text>Number : {header.PRGNUM}</Text>*/}
+            {/*<Text>Channel : {header.PMCHAN}</Text>*/}
+            {/*<Text>Polyphony : {header.POLYPH}</Text>*/}
+            {/*<Text>Priority : {header.PRIORT}</Text>*/}
+            {/*<Text>Note range : {header.PLAYLO}-{header.PLAYHI}</Text>*/}
+            {/*<Text>Output : {header.OUTPUT}</Text>*/}
+            {/*<Text>Stereo level : {header.STEREO}</Text>*/}
+            {/*<Text>Pan : {header.PANPOS}</Text>*/}
+            {fields.map(f => {
+                return (<Box><Text>{pad(f.Name, maxHeaderSize)}:</Text><Text>{f.Value}</Text></Box>)
+            })}
         </Box>)
 }
 

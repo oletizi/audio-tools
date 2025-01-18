@@ -5,6 +5,7 @@ interface Spec {
     name: string
     fields: {
         n: string,  // name
+        l?: string, // label
         d: string,  // description
         s?: number, // size in bytes; 1 if undefined
         t?: number   // type; number if undefined
@@ -30,6 +31,7 @@ export async function genInterface(spec: Spec) {
     let rv = `export interface ${spec.name} {\n`
     for (const field of spec.fields) {
         rv += `  ${field.n}: ${field.t ? field.t : 'number'}    // ${field.d}\n`
+        rv += `  ${field.n}Label: string\n`
     }
     rv += '}'
     return rv
@@ -49,6 +51,7 @@ export async function genParser(spec: Spec) {
     for (const field of spec.fields) {
         rv += `    // ${field.d}\n`
         rv += `    out.log('${field.n}: offset: ' + reloff())\n`
+        rv += `    o["${field.n}Label"] = "${field.l ? field.l : field.n}"\n`
         if (field.t) {
             rv += `    o.${field.n} = ''\n` +
                 '    for (let i = 0; i < 12; i++) {\n' +

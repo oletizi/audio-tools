@@ -1,4 +1,4 @@
-import {genInterface, genParser, readSpecs} from "@/spec/akai-s3000xl-device-gen";
+import {genInterface, genParser, readSpecs} from "../src/spec/gen-s3000xl-device";
 import {expect} from "chai";
 
 describe('device-gen', () => {

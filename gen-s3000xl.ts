@@ -1,4 +1,4 @@
-import {genImports, genInterface, genParser, readSpecs} from "./src/spec/akai-s3000xl-device-gen";
+import {genImports, genInterface, genParser, readSpecs} from "./src/spec/gen-s3000xl-device";
 import fs from "fs";
 import path from "path";
 
