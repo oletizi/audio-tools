@@ -118,7 +118,7 @@ function ProgramDetailScreen({programName}: { programName: string }) {
     out.log(`Max label: ${maxLabel}`)
 
     return (
-        <Box justifyContent="flex-start" flexDirection="column" width={24}>
+        <Box justifyContent="flex-start" flexDirection="column" width={32}>
             {fields.map(f => {
                 return (<Box justifyContent="space-between"><Text>{f.Name}</Text><Text>{f.Value}</Text></Box>)
             })}

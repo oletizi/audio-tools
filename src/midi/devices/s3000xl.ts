@@ -1,5 +1,5 @@
 //
-// GENERATED Fri Jan 17 2025 17:39:10 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Fri Jan 17 2025 18:00:15 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -196,7 +196,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Name of program
     out.log('PRNAME: offset: ' + reloff())
-    o["PRNAMELabel"] = "Name"
+    o["PRNAMELabel"] = "Program Name"
     o.PRNAME = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -241,6 +241,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Lower limit of play range; Range: 21 to 127 represents A1 to G8
     out.log('PLAYLO: offset: ' + reloff())
+    o["PLAYLOLabel"] = "Low Note"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -249,6 +250,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Upper limit of play range
     out.log('PLAYHI: offset: ' + reloff())
+    o["PLAYHILabel"] = "High Note"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -265,6 +267,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Individual output routing. This parameter also controls send to effects section.
     out.log('OUTPUT: offset: ' + reloff())
+    o["OUTPUTLabel"] = "Output"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -273,6 +276,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Left and right output levels; Range: 0 to 99
     out.log('STEREO: offset: ' + reloff())
+    o["STEREOLabel"] = "Stereo Output Lvl"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -281,6 +285,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Balance between left and right outputs; Range: -50 to +50
     out.log('PANPOS: offset: ' + reloff())
+    o["PANPOSLabel"] = "Pan"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -289,6 +294,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Basic loudness of this program; Range: 0 to 99
     out.log('PRLOUD: offset: ' + reloff())
+    o["PRLOUDLabel"] = "Program Level"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -297,6 +303,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Note-on velocity dependence of loudness; Range: -50 to +50
     out.log('V_LOUD: offset: ' + reloff())
+    o["V_LOUDLabel"] = "Vel -> Amp"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -321,6 +328,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Speed of LFO2; 0 to 99
     out.log('PANRAT: offset: ' + reloff())
+    o["PANRATLabel"] = "Pan (LFO2) Rate"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -329,6 +337,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Depth of LFO2
     out.log('PANDEP: offset: ' + reloff())
+    o["PANDEPLabel"] = "Pan (LFO2) Depth"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -337,6 +346,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Delay in growth of LFO2
     out.log('PANDEL: offset: ' + reloff())
+    o["PANDELLabel"] = "Pan (LFO2) Delay"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -353,6 +363,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Speed of LFO1
     out.log('LFORAT: offset: ' + reloff())
+    o["LFORATLabel"] = "LFO1 Rate"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -361,6 +372,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Depth of LFO1
     out.log('LFODEP: offset: ' + reloff())
+    o["LFODEPLabel"] = "LFO1 Depth"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -369,6 +381,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Delay in growth of LFO1
     out.log('LFODEL: offset: ' + reloff())
+    o["LFODELLabel"] = "LFO1 Delay"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -377,6 +390,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Modwheel
     out.log('MWLDEP: offset: ' + reloff())
+    o["MWLDEPLabel"] = "Modwheel -> LFO1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -385,6 +399,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Aftertouch
     out.log('PRSDEP: offset: ' + reloff())
+    o["PRSDEPLabel"] = "After -> LFO1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)

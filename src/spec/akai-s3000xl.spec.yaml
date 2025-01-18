@@ -6,7 +6,7 @@ specs:
         s: 2
 
       - n: 'PRNAME'
-        l: 'Name'
+        l: 'Program Name'
         t: 'string'
         d: "Name of program"
         s: 12
@@ -28,27 +28,34 @@ specs:
         d: 'Priority of voices playing this program; Range: 0=low, 1=norm, 2=high, 3=hold'
 
       - n: 'PLAYLO'
+        l: 'Low Note'
         d: 'Lower limit of play range; Range: 21 to 127 represents A1 to G8'
 
       - n: 'PLAYHI'
+        l: 'High Note'
         d: 'Upper limit of play range'
 
       - n: 'OSHIFT'
         d: 'Not used'
 
       - n: 'OUTPUT'
+        l: 'Output'
         d: 'Individual output routing. This parameter also controls send to effects section.'
 
       - n: 'STEREO'
+        l: 'Stereo Output Lvl'
         d: 'Left and right output levels; Range: 0 to 99'
 
       - n: 'PANPOS'
+        l: 'Pan'
         d: 'Balance between left and right outputs; Range: -50 to +50'
 
       - n: 'PRLOUD'
+        l: 'Program Level'
         d: 'Basic loudness of this program; Range: 0 to 99'
 
       - n: 'V_LOUD'
+        l: 'Vel -> Amp'
         d: 'Note-on velocity dependence of loudness; Range: -50 to +50'
 
       - n: 'K_LOUD'
@@ -58,51 +65,65 @@ specs:
         d: 'Not used'
 
       - n: 'PANRAT'
+        l: 'Pan (LFO2) Rate'
         d: 'Speed of LFO2; 0 to 99'
 
       - n: 'PANDEP'
+        l: 'Pan (LFO2) Depth'
         d: 'Depth of LFO2'
 
       - n: 'PANDEL'
+        l: 'Pan (LFO2) Delay'
         d: 'Delay in growth of LFO2'
 
       - n: 'K_PANP'
         d: 'Not used'
 
       - n: 'LFORAT'
+        l: 'LFO1 Rate'
         d: 'Speed of LFO1'
 
       - n: 'LFODEP'
+        l: 'LFO1 Depth'
         d: 'Depth of LFO1'
 
       - n: 'LFODEL'
+        l: 'LFO1 Delay'
         d: 'Delay in growth of LFO1'
 
       - n: 'MWLDEP'
+        l: 'Modwheel -> LFO1'
         d: 'Amount of control of LFO1 depth by Modwheel'
 
       - n: 'PRSDEP'
+        l: 'After -> LFO1'
         d: 'Amount of control of LFO1 depth by Aftertouch'
 
       - n: 'VELDEP'
+        l: 'Vel -> LFO1'
         d: 'Amount of control of LFO1 depth by Note-On velocity'
 
       - n: 'B_PTCH'
+        l: 'Bend Up -> Pitch'
         d: 'Range of increase of Pitch by bendwheel'
 
       - n: 'P_PTCH'
+        l: 'Pressure -> Pitch'
         d: 'Amount of control of Pitch by Pressure'
 
       - n: 'KXFADE'
+        l: 'Crossfade [on | off]'
         d: 'Keygroup crossfade enable'
 
       - n: 'GROUPS'
+        l: 'Keygroup Count'
         d: 'Number of keygroups. To change the number of keygroups in a program, the KDATA and DELK commands should be used.'
 
       - n: 'TPNUM'
         d: 'Temporary program number (internal use)'
 
       - n: 'TEMPER'
+        l: 'Key'
         d: 'Key temperament C, C#, D, D# etc.'
         t: 'string'
         s: 12
@@ -117,24 +138,30 @@ specs:
         d: 'Not used'
 
       - n: 'DESYNC'
+        l: 'LFO desync [on | off]'
         d: 'Enable de-synchronisation of LFO1 across notes;  0 represents OFF, 1 represents ON'
 
       - n: 'PLAW'
         d: 'Not used'
 
       - n: 'VASSOQ'
+        l: 'Stealing [age | vel]'
         d: 'Criterion by which voices are stolen; 0 represents OLDEST, 1 represents QUIETEST'
 
       - n: 'SPLOUD'
+        l: 'Pedal -> Amp'
         d: 'Reduction in loudness due to soft pedal'
 
       - n: 'SPATT'
+        l: 'Pedal -> Attack'
         d: 'Stretch of attack due to soft pedal'
 
       - n: 'SPFILT'
+        l: 'Pedal -> Cutoff'
         d: 'Reduction of filter frequency due to soft pedal'
 
       - n: 'PTUNO'
+        l: 'Tuning'
         d: 'Tuning offset of program; -50.00 to +50.00 (fraction is binary)'
         s: 2
 
@@ -148,15 +175,18 @@ specs:
         d: 'Not used'
 
       - n: 'VOSCL'
+        l: 'VOSCL'
         d: 'Level sent to Individual outputs/effects'
 
       - n: 'VSSCL'
         d: 'Not used'
 
       - n: 'LEGATO'
+        l: 'Legato [on | off]'
         d: 'Mono legato mode enable; 0 represents OFF, 1 represents ON'
 
       - n: 'B_PTCHD'
+        l: 'Bend Down -> Pitch'
         d: 'Range of decrease of Pitch by bendwheel'
 
       - n: 'B_MODE'
