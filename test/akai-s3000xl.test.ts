@@ -2,6 +2,7 @@ import midi from 'midi'
 import {expect} from "chai";
 import {akaiByte2String, newDevice, string2AkaiBytes} from "../src/midi/akai-s3000xl";
 import {KeygroupHeader, ProgramHeader, SampleHeader} from "../src/midi/devices/s3000xl";
+import {nibbles2byte} from "../src/lib/lib-core";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -43,13 +44,12 @@ describe('akai-s3000xl tests', () => {
 
     it('Reads and writes akai-formatted strings', () => {
         let v = 'a nice strin' // max 12 chars
-        let data = new Array(12)
-        string2AkaiBytes(v, data, 0)
+        let data = string2AkaiBytes(v)
         let vv = akaiByte2String(data)
         expect(vv).eq(v.toUpperCase())
 
         v = 'shorty'
-        string2AkaiBytes(v, data, 0)
+        data = string2AkaiBytes(v)
         vv = akaiByte2String(data)
         console.log(`vv: <${vv}>`)
         expect(vv).eq(v.toUpperCase() + '      ')
@@ -100,6 +100,14 @@ describe('akai-s3000xl tests', () => {
         await device.fetchProgramHeader(programNumber, header)
         console.log(header)
         await device.writeProgram(header)
+    })
+
+    it(`updates program name`, async () => {
+        const device = newDevice(input, output)
+        const programNumber = 0
+        const header = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, header)
+        await device.updateProgramName(header, 'new name')
     })
 
     it('fetches keygroup header', async () => {

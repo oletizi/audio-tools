@@ -184,7 +184,11 @@ class s3000xl implements Device {
     }
 
     async updateProgramName(header: ProgramHeader, name: string) {
-
+        const offset = 6
+        // this.out.log(`current name: ${akaiByte2String(header.raw.slice(offset, offset + 12))}`)
+        // for (let i = offset; i < offset + 12; i++) {
+        // this.out.log(akaiByte2String(header.raw[i]))
+        // }
     }
 
     async fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader) {
@@ -260,8 +264,9 @@ export function akaiByte2String(bytes: number[]) {
 
 }
 
-export function string2AkaiBytes(s: string, data: number[], offset) {
+export function string2AkaiBytes(s: string) {
     s = s.toUpperCase()
+    const data = []
     for (let i = 0; i < 12; i++) {
         let akaiValue = 10 // default value is ' '
         if (s.length > i) {
@@ -272,8 +277,9 @@ export function string2AkaiBytes(s: string, data: number[], offset) {
                 }
             }
         }
-        data[i + offset] = akaiValue
+        data.push(akaiValue)
     }
+    return data
 }
 
 export function nextByte(nibbles, v: { value: number, offset: number }) {
