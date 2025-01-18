@@ -65,8 +65,15 @@ function Button(props) {
             props.onClick()
         }
     })
-    return (<Box borderStyle="single" paddingLeft={1}
-                 paddingRight={1}><Text inverse={isFocused}>{props.children}</Text></Box>)
+    let border : string | undefined = 'single'
+    let padding = 1
+
+    if (props.variant && props.variant === 'plain'){
+        border = undefined
+        padding = 0
+    }
+    return (<Box borderStyle={border} paddingLeft={padding}
+                 paddingRight={padding}><Text inverse={isFocused}>{props.children}</Text></Box>)
 }
 
 
@@ -120,7 +127,7 @@ function ProgramDetailScreen({programName}: { programName: string }) {
     return (
         <Box justifyContent="flex-start" flexDirection="column" width={32}>
             {fields.map(f => {
-                return (<Box justifyContent="space-between"><Text>{f.Name}</Text><Text>{f.Value}</Text></Box>)
+                return (<Box justifyContent="space-between"><Button variant="plain">{f.Name}</Button><Text>{f.Value}</Text></Box>)
             })}
         </Box>)
 }
