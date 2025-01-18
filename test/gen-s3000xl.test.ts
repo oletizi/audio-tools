@@ -1,9 +1,9 @@
-import {genInterface, genParser, readSpecs} from "../src/spec/gen-s3000xl-device";
+import {genInterface, genParser, readSpecs} from "../src/gen/gen-s3000xl-device";
 import {expect} from "chai";
 
 describe('device-gen', () => {
     it('parses spec', async () => {
-        const file = 'src/spec/akai-s3000xl.spec.yaml'
+        const file = 'src/gen/akai-s3000xl.spec.yaml'
         const def: any = await readSpecs(file)
         // console.log(JSON.stringify(def, null, 2))
         expect(def).exist

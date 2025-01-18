@@ -3,6 +3,7 @@ import * as fs from 'fs/promises'
 
 interface Spec {
     name: string
+    headerOffset: number
     fields: {
         n: string,  // name
         l?: string, // label
@@ -32,9 +33,35 @@ export async function genInterface(spec: Spec) {
     for (const field of spec.fields) {
         rv += `  ${field.n}: ${field.t ? field.t : 'number'}    // ${field.d}\n`
         rv += `  ${field.n}Label: string\n`
+        // rv += `  set${field.n}(header: ${spec.name}, v: ${field.t ? field.t : 'number'})\n`
+        rv += `\n`
     }
     rv += '  raw: number[] // Raw sysex message data\n'
-    rv += '}'
+    rv += '}\n'
+    return rv
+}
+
+export async function genSetters(spec: Spec) {
+    let rv = ''
+    let offset = 8 + spec.headerOffset
+    for (const field of spec.fields) {
+        const fname = `${spec.name}_write${field.n}`
+        rv += `export function ${fname}(header: ${spec.name}, v: ${field.t ? field.t : 'number'}) {\n`
+        rv += `    const out = newClientOutput(true, '${fname}')\n`
+        rv += `    out.log('Offset: ' + ${offset})\n`
+        if (field.t) {
+            rv += `    // IMPLEMENT ME!\n`
+        } else {
+            //         const d = byte2nibblesLE(polyphony)
+            //         header.raw[offset] = d[0]
+            //         header.raw[offset + 1] = d[1]
+            rv += `    const d = byte2nibblesLE(v)\n`
+            rv += `    header.raw[${offset}] = d[0]\n`
+            rv += `    header.raw[${offset} + 1] = d[1]\n`
+        }
+        rv += `}\n\n`
+        offset += field.s ? field.s * 2 : 2
+    }
     return rv
 }
 

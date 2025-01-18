@@ -1,5 +1,5 @@
 //
-// GENERATED Fri Jan 17 2025 19:28:17 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Sat Jan 18 2025 11:15:01 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -8,172 +8,256 @@ import {nextByte, akaiByte2String} from "@/midi/akai-s3000xl"
 export interface ProgramHeader {
   KGRP1: number    // Block address of first keygroup (internal use)
   KGRP1Label: string
+
   PRNAME: string    // Name of program
   PRNAMELabel: string
+
   PRGNUM: number    // MIDI program number; Range: 0 to 128; After sending data to this parameter, Miscellaneous function BTSORT should be triggered to resort the list of programs into order and to flag active programs.
   PRGNUMLabel: string
+
   PMCHAN: number    // MIDI channel; Range: 255 signifies OMNI, 0 to 15 indicate MIDI channel
   PMCHANLabel: string
+
   POLYPH: number    // Depth of polyphony; Range: 0 to 31 (these represent polyphony values of 1 to 32)
   POLYPHLabel: string
+
   PRIORT: number    // Priority of voices playing this program; Range: 0=low, 1=norm, 2=high, 3=hold
   PRIORTLabel: string
+
   PLAYLO: number    // Lower limit of play range; Range: 21 to 127 represents A1 to G8
   PLAYLOLabel: string
+
   PLAYHI: number    // Upper limit of play range
   PLAYHILabel: string
+
   OSHIFT: number    // Not used
   OSHIFTLabel: string
+
   OUTPUT: number    // Individual output routing. This parameter also controls send to effects section.
   OUTPUTLabel: string
+
   STEREO: number    // Left and right output levels; Range: 0 to 99
   STEREOLabel: string
+
   PANPOS: number    // Balance between left and right outputs; Range: -50 to +50
   PANPOSLabel: string
+
   PRLOUD: number    // Basic loudness of this program; Range: 0 to 99
   PRLOUDLabel: string
+
   V_LOUD: number    // Note-on velocity dependence of loudness; Range: -50 to +50
   V_LOUDLabel: string
+
   K_LOUD: number    // Not used
   K_LOUDLabel: string
+
   P_LOUD: number    // Not used
   P_LOUDLabel: string
+
   PANRAT: number    // Speed of LFO2; 0 to 99
   PANRATLabel: string
+
   PANDEP: number    // Depth of LFO2
   PANDEPLabel: string
+
   PANDEL: number    // Delay in growth of LFO2
   PANDELLabel: string
+
   K_PANP: number    // Not used
   K_PANPLabel: string
+
   LFORAT: number    // Speed of LFO1
   LFORATLabel: string
+
   LFODEP: number    // Depth of LFO1
   LFODEPLabel: string
+
   LFODEL: number    // Delay in growth of LFO1
   LFODELLabel: string
+
   MWLDEP: number    // Amount of control of LFO1 depth by Modwheel
   MWLDEPLabel: string
+
   PRSDEP: number    // Amount of control of LFO1 depth by Aftertouch
   PRSDEPLabel: string
+
   VELDEP: number    // Amount of control of LFO1 depth by Note-On velocity
   VELDEPLabel: string
+
   B_PTCH: number    // Range of increase of Pitch by bendwheel
   B_PTCHLabel: string
+
   P_PTCH: number    // Amount of control of Pitch by Pressure
   P_PTCHLabel: string
+
   KXFADE: number    // Keygroup crossfade enable
   KXFADELabel: string
+
   GROUPS: number    // Number of keygroups. To change the number of keygroups in a program, the KDATA and DELK commands should be used.
   GROUPSLabel: string
+
   TPNUM: number    // Temporary program number (internal use)
   TPNUMLabel: string
+
   TEMPER: string    // Key temperament C, C#, D, D# etc.
   TEMPERLabel: string
+
   ECHOUT: number    // Not used
   ECHOUTLabel: string
+
   MW_PAN: number    // Not used
   MW_PANLabel: string
+
   COHERE: number    // Not used
   COHERELabel: string
+
   DESYNC: number    // Enable de-synchronisation of LFO1 across notes;  0 represents OFF, 1 represents ON
   DESYNCLabel: string
+
   PLAW: number    // Not used
   PLAWLabel: string
+
   VASSOQ: number    // Criterion by which voices are stolen; 0 represents OLDEST, 1 represents QUIETEST
   VASSOQLabel: string
+
   SPLOUD: number    // Reduction in loudness due to soft pedal
   SPLOUDLabel: string
+
   SPATT: number    // Stretch of attack due to soft pedal
   SPATTLabel: string
+
   SPFILT: number    // Reduction of filter frequency due to soft pedal
   SPFILTLabel: string
+
   PTUNO: number    // Tuning offset of program; -50.00 to +50.00 (fraction is binary)
   PTUNOLabel: string
+
   K_LRAT: number    // Not used
   K_LRATLabel: string
+
   K_LDEP: number    // Not used
   K_LDEPLabel: string
+
   K_LDEL: number    // Not used
   K_LDELLabel: string
+
   VOSCL: number    // Level sent to Individual outputs/effects
   VOSCLLabel: string
+
   VSSCL: number    // Not used
   VSSCLLabel: string
+
   LEGATO: number    // Mono legato mode enable; 0 represents OFF, 1 represents ON
   LEGATOLabel: string
+
   B_PTCHD: number    // Range of decrease of Pitch by bendwheel
   B_PTCHDLabel: string
+
   B_MODE: number    // Bending of held notes; 0 represents NORMAL mode, 1 represents HELD mode
   B_MODELabel: string
+
   TRANSPOSE: number    // Shift pitch of incoming MIDI
   TRANSPOSELabel: string
+
   MODSPAN1: number    // First source of assignable modulation of pan position
   MODSPAN1Label: string
+
   MODSPAN2: number    // Second source of assignable modulation of pan
   MODSPAN2Label: string
+
   MODSPAN3: number    // Third source of assignable modulation of pan
   MODSPAN3Label: string
+
   MODSAMP1: number    // First source of assignable modulation of loudness
   MODSAMP1Label: string
+
   MODSAMP2: number    // Second source of assignable modulation of loudness
   MODSAMP2Label: string
+
   MODSLFOT: number    // Source of assignable modulation of LFO1 speed
   MODSLFOTLabel: string
+
   MODSLFOL: number    // Source of assignable modulation of LFO1 depth
   MODSLFOLLabel: string
+
   MODSLFOD: number    // Source of assignable modulation of LFO1 delay
   MODSLFODLabel: string
+
   MODSFILT1: number    // First source of assignable modulation of filter frequency
   MODSFILT1Label: string
+
   MODSFILT2: number    // Second source of assignable modulation of filter frequency
   MODSFILT2Label: string
+
   MODSFILT3: number    // Third source of assignable modulation of filter frequency
   MODSFILT3Label: string
+
   MODSPITCH: number    // Source of assignable modulation of pitch
   MODSPITCHLabel: string
+
   MODSAMP3: number    // Third source of assignable modulation of loudness
   MODSAMP3Label: string
+
   MODVPAN1: number    // Amount of control of pan by assignable source 1
   MODVPAN1Label: string
+
   MODVPAN2: number    // Amount of control of pan by assignable source 2
   MODVPAN2Label: string
+
   MODVPAN3: number    // Amount of control of pan by assignable source 3
   MODVPAN3Label: string
+
   MODVAMP1: number    // Amount of control of loudness by assignable source 1
   MODVAMP1Label: string
+
   MODVAMP2: number    // Amount of control of loudness by assignable source 2
   MODVAMP2Label: string
+
   MODVLFOR: number    // Amount of control of LFO1 speed
   MODVLFORLabel: string
+
   MODVLVOL: number    // Amount of control of LFO1 depth
   MODVLVOLLabel: string
+
   MODVLFOD: number    // Amount of control of LFO1 delay
   MODVLFODLabel: string
+
   LFO1WAVE: number    // LFO1 waveform; 0 represents Triangle, 1 represents Sawtooth, 2 represents Square
   LFO1WAVELabel: string
+
   LFO2WAVE: number    // LFO2 waveform
   LFO2WAVELabel: string
+
   MODSLFLT2_1: number    // First source of assignable modulation of filter 2 frequency (only used on S3200).
   MODSLFLT2_1Label: string
+
   MODSLFLT2_2: number    // Second source of assignable modulation of filter 2 frequency (only used on S3200).
   MODSLFLT2_2Label: string
+
   MODSLFLT2_3: number    // Third source of assignable modulation of filter 2 frequency (only used on S3200).
   MODSLFLT2_3Label: string
+
   LFO2TRIG: number    // Retrigger mode for LFO2
   LFO2TRIGLabel: string
+
   RESERVED_1: number    // Not used
   RESERVED_1Label: string
+
   PORTIME: number    // PORTAMENTO TIME
   PORTIMELabel: string
+
   PORTYPE: number    // PORTAMENTO TYPE
   PORTYPELabel: string
+
   PORTEN: number    // PORTAMENTO ON/OFF
   PORTENLabel: string
+
   PFXCHAN: number    // Effects Bus Select; 0 to 4
   PFXCHANLabel: string
+
   raw: number[] // Raw sysex message data
 }
+
 
 export function parseProgramHeader(data: number[], offset: number, o: ProgramHeader) {
     const out = newClientOutput(true, 'parseProgramHeader')
@@ -888,79 +972,777 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
 }
 
+export function ProgramHeader_writeKGRP1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeKGRP1')
+    out.log('Offset: ' + 9)
+    const d = byte2nibblesLE(v)
+    header.raw[9] = d[0]
+    header.raw[9 + 1] = d[1]
+}
+
+export function ProgramHeader_writePRNAME(header: ProgramHeader, v: string) {
+    const out = newClientOutput(true, 'ProgramHeader_writePRNAME')
+    out.log('Offset: ' + 13)
+    // IMPLEMENT ME!
+}
+
+export function ProgramHeader_writePRGNUM(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePRGNUM')
+    out.log('Offset: ' + 37)
+    const d = byte2nibblesLE(v)
+    header.raw[37] = d[0]
+    header.raw[37 + 1] = d[1]
+}
+
+export function ProgramHeader_writePMCHAN(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePMCHAN')
+    out.log('Offset: ' + 39)
+    const d = byte2nibblesLE(v)
+    header.raw[39] = d[0]
+    header.raw[39 + 1] = d[1]
+}
+
+export function ProgramHeader_writePOLYPH(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePOLYPH')
+    out.log('Offset: ' + 41)
+    const d = byte2nibblesLE(v)
+    header.raw[41] = d[0]
+    header.raw[41 + 1] = d[1]
+}
+
+export function ProgramHeader_writePRIORT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePRIORT')
+    out.log('Offset: ' + 43)
+    const d = byte2nibblesLE(v)
+    header.raw[43] = d[0]
+    header.raw[43 + 1] = d[1]
+}
+
+export function ProgramHeader_writePLAYLO(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePLAYLO')
+    out.log('Offset: ' + 45)
+    const d = byte2nibblesLE(v)
+    header.raw[45] = d[0]
+    header.raw[45 + 1] = d[1]
+}
+
+export function ProgramHeader_writePLAYHI(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePLAYHI')
+    out.log('Offset: ' + 47)
+    const d = byte2nibblesLE(v)
+    header.raw[47] = d[0]
+    header.raw[47 + 1] = d[1]
+}
+
+export function ProgramHeader_writeOSHIFT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeOSHIFT')
+    out.log('Offset: ' + 49)
+    const d = byte2nibblesLE(v)
+    header.raw[49] = d[0]
+    header.raw[49 + 1] = d[1]
+}
+
+export function ProgramHeader_writeOUTPUT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeOUTPUT')
+    out.log('Offset: ' + 51)
+    const d = byte2nibblesLE(v)
+    header.raw[51] = d[0]
+    header.raw[51 + 1] = d[1]
+}
+
+export function ProgramHeader_writeSTEREO(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeSTEREO')
+    out.log('Offset: ' + 53)
+    const d = byte2nibblesLE(v)
+    header.raw[53] = d[0]
+    header.raw[53 + 1] = d[1]
+}
+
+export function ProgramHeader_writePANPOS(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePANPOS')
+    out.log('Offset: ' + 55)
+    const d = byte2nibblesLE(v)
+    header.raw[55] = d[0]
+    header.raw[55 + 1] = d[1]
+}
+
+export function ProgramHeader_writePRLOUD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePRLOUD')
+    out.log('Offset: ' + 57)
+    const d = byte2nibblesLE(v)
+    header.raw[57] = d[0]
+    header.raw[57 + 1] = d[1]
+}
+
+export function ProgramHeader_writeV_LOUD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeV_LOUD')
+    out.log('Offset: ' + 59)
+    const d = byte2nibblesLE(v)
+    header.raw[59] = d[0]
+    header.raw[59 + 1] = d[1]
+}
+
+export function ProgramHeader_writeK_LOUD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeK_LOUD')
+    out.log('Offset: ' + 61)
+    const d = byte2nibblesLE(v)
+    header.raw[61] = d[0]
+    header.raw[61 + 1] = d[1]
+}
+
+export function ProgramHeader_writeP_LOUD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeP_LOUD')
+    out.log('Offset: ' + 63)
+    const d = byte2nibblesLE(v)
+    header.raw[63] = d[0]
+    header.raw[63 + 1] = d[1]
+}
+
+export function ProgramHeader_writePANRAT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePANRAT')
+    out.log('Offset: ' + 65)
+    const d = byte2nibblesLE(v)
+    header.raw[65] = d[0]
+    header.raw[65 + 1] = d[1]
+}
+
+export function ProgramHeader_writePANDEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePANDEP')
+    out.log('Offset: ' + 67)
+    const d = byte2nibblesLE(v)
+    header.raw[67] = d[0]
+    header.raw[67 + 1] = d[1]
+}
+
+export function ProgramHeader_writePANDEL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePANDEL')
+    out.log('Offset: ' + 69)
+    const d = byte2nibblesLE(v)
+    header.raw[69] = d[0]
+    header.raw[69 + 1] = d[1]
+}
+
+export function ProgramHeader_writeK_PANP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeK_PANP')
+    out.log('Offset: ' + 71)
+    const d = byte2nibblesLE(v)
+    header.raw[71] = d[0]
+    header.raw[71 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFORAT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFORAT')
+    out.log('Offset: ' + 73)
+    const d = byte2nibblesLE(v)
+    header.raw[73] = d[0]
+    header.raw[73 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFODEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFODEP')
+    out.log('Offset: ' + 75)
+    const d = byte2nibblesLE(v)
+    header.raw[75] = d[0]
+    header.raw[75 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFODEL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFODEL')
+    out.log('Offset: ' + 77)
+    const d = byte2nibblesLE(v)
+    header.raw[77] = d[0]
+    header.raw[77 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMWLDEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMWLDEP')
+    out.log('Offset: ' + 79)
+    const d = byte2nibblesLE(v)
+    header.raw[79] = d[0]
+    header.raw[79 + 1] = d[1]
+}
+
+export function ProgramHeader_writePRSDEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePRSDEP')
+    out.log('Offset: ' + 81)
+    const d = byte2nibblesLE(v)
+    header.raw[81] = d[0]
+    header.raw[81 + 1] = d[1]
+}
+
+export function ProgramHeader_writeVELDEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeVELDEP')
+    out.log('Offset: ' + 83)
+    const d = byte2nibblesLE(v)
+    header.raw[83] = d[0]
+    header.raw[83 + 1] = d[1]
+}
+
+export function ProgramHeader_writeB_PTCH(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeB_PTCH')
+    out.log('Offset: ' + 85)
+    const d = byte2nibblesLE(v)
+    header.raw[85] = d[0]
+    header.raw[85 + 1] = d[1]
+}
+
+export function ProgramHeader_writeP_PTCH(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeP_PTCH')
+    out.log('Offset: ' + 87)
+    const d = byte2nibblesLE(v)
+    header.raw[87] = d[0]
+    header.raw[87 + 1] = d[1]
+}
+
+export function ProgramHeader_writeKXFADE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeKXFADE')
+    out.log('Offset: ' + 89)
+    const d = byte2nibblesLE(v)
+    header.raw[89] = d[0]
+    header.raw[89 + 1] = d[1]
+}
+
+export function ProgramHeader_writeGROUPS(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeGROUPS')
+    out.log('Offset: ' + 91)
+    const d = byte2nibblesLE(v)
+    header.raw[91] = d[0]
+    header.raw[91 + 1] = d[1]
+}
+
+export function ProgramHeader_writeTPNUM(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeTPNUM')
+    out.log('Offset: ' + 93)
+    const d = byte2nibblesLE(v)
+    header.raw[93] = d[0]
+    header.raw[93 + 1] = d[1]
+}
+
+export function ProgramHeader_writeTEMPER(header: ProgramHeader, v: string) {
+    const out = newClientOutput(true, 'ProgramHeader_writeTEMPER')
+    out.log('Offset: ' + 95)
+    // IMPLEMENT ME!
+}
+
+export function ProgramHeader_writeECHOUT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeECHOUT')
+    out.log('Offset: ' + 119)
+    const d = byte2nibblesLE(v)
+    header.raw[119] = d[0]
+    header.raw[119 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMW_PAN(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMW_PAN')
+    out.log('Offset: ' + 121)
+    const d = byte2nibblesLE(v)
+    header.raw[121] = d[0]
+    header.raw[121 + 1] = d[1]
+}
+
+export function ProgramHeader_writeCOHERE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeCOHERE')
+    out.log('Offset: ' + 123)
+    const d = byte2nibblesLE(v)
+    header.raw[123] = d[0]
+    header.raw[123 + 1] = d[1]
+}
+
+export function ProgramHeader_writeDESYNC(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeDESYNC')
+    out.log('Offset: ' + 125)
+    const d = byte2nibblesLE(v)
+    header.raw[125] = d[0]
+    header.raw[125 + 1] = d[1]
+}
+
+export function ProgramHeader_writePLAW(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePLAW')
+    out.log('Offset: ' + 127)
+    const d = byte2nibblesLE(v)
+    header.raw[127] = d[0]
+    header.raw[127 + 1] = d[1]
+}
+
+export function ProgramHeader_writeVASSOQ(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeVASSOQ')
+    out.log('Offset: ' + 129)
+    const d = byte2nibblesLE(v)
+    header.raw[129] = d[0]
+    header.raw[129 + 1] = d[1]
+}
+
+export function ProgramHeader_writeSPLOUD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeSPLOUD')
+    out.log('Offset: ' + 131)
+    const d = byte2nibblesLE(v)
+    header.raw[131] = d[0]
+    header.raw[131 + 1] = d[1]
+}
+
+export function ProgramHeader_writeSPATT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeSPATT')
+    out.log('Offset: ' + 133)
+    const d = byte2nibblesLE(v)
+    header.raw[133] = d[0]
+    header.raw[133 + 1] = d[1]
+}
+
+export function ProgramHeader_writeSPFILT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeSPFILT')
+    out.log('Offset: ' + 135)
+    const d = byte2nibblesLE(v)
+    header.raw[135] = d[0]
+    header.raw[135 + 1] = d[1]
+}
+
+export function ProgramHeader_writePTUNO(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePTUNO')
+    out.log('Offset: ' + 137)
+    const d = byte2nibblesLE(v)
+    header.raw[137] = d[0]
+    header.raw[137 + 1] = d[1]
+}
+
+export function ProgramHeader_writeK_LRAT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeK_LRAT')
+    out.log('Offset: ' + 141)
+    const d = byte2nibblesLE(v)
+    header.raw[141] = d[0]
+    header.raw[141 + 1] = d[1]
+}
+
+export function ProgramHeader_writeK_LDEP(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeK_LDEP')
+    out.log('Offset: ' + 143)
+    const d = byte2nibblesLE(v)
+    header.raw[143] = d[0]
+    header.raw[143 + 1] = d[1]
+}
+
+export function ProgramHeader_writeK_LDEL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeK_LDEL')
+    out.log('Offset: ' + 145)
+    const d = byte2nibblesLE(v)
+    header.raw[145] = d[0]
+    header.raw[145 + 1] = d[1]
+}
+
+export function ProgramHeader_writeVOSCL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeVOSCL')
+    out.log('Offset: ' + 147)
+    const d = byte2nibblesLE(v)
+    header.raw[147] = d[0]
+    header.raw[147 + 1] = d[1]
+}
+
+export function ProgramHeader_writeVSSCL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeVSSCL')
+    out.log('Offset: ' + 149)
+    const d = byte2nibblesLE(v)
+    header.raw[149] = d[0]
+    header.raw[149 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLEGATO(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLEGATO')
+    out.log('Offset: ' + 151)
+    const d = byte2nibblesLE(v)
+    header.raw[151] = d[0]
+    header.raw[151 + 1] = d[1]
+}
+
+export function ProgramHeader_writeB_PTCHD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeB_PTCHD')
+    out.log('Offset: ' + 153)
+    const d = byte2nibblesLE(v)
+    header.raw[153] = d[0]
+    header.raw[153 + 1] = d[1]
+}
+
+export function ProgramHeader_writeB_MODE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeB_MODE')
+    out.log('Offset: ' + 155)
+    const d = byte2nibblesLE(v)
+    header.raw[155] = d[0]
+    header.raw[155 + 1] = d[1]
+}
+
+export function ProgramHeader_writeTRANSPOSE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeTRANSPOSE')
+    out.log('Offset: ' + 157)
+    const d = byte2nibblesLE(v)
+    header.raw[157] = d[0]
+    header.raw[157 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSPAN1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSPAN1')
+    out.log('Offset: ' + 159)
+    const d = byte2nibblesLE(v)
+    header.raw[159] = d[0]
+    header.raw[159 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSPAN2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSPAN2')
+    out.log('Offset: ' + 161)
+    const d = byte2nibblesLE(v)
+    header.raw[161] = d[0]
+    header.raw[161 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSPAN3(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSPAN3')
+    out.log('Offset: ' + 163)
+    const d = byte2nibblesLE(v)
+    header.raw[163] = d[0]
+    header.raw[163 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSAMP1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSAMP1')
+    out.log('Offset: ' + 165)
+    const d = byte2nibblesLE(v)
+    header.raw[165] = d[0]
+    header.raw[165 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSAMP2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSAMP2')
+    out.log('Offset: ' + 167)
+    const d = byte2nibblesLE(v)
+    header.raw[167] = d[0]
+    header.raw[167 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFOT(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFOT')
+    out.log('Offset: ' + 169)
+    const d = byte2nibblesLE(v)
+    header.raw[169] = d[0]
+    header.raw[169 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFOL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFOL')
+    out.log('Offset: ' + 171)
+    const d = byte2nibblesLE(v)
+    header.raw[171] = d[0]
+    header.raw[171 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFOD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFOD')
+    out.log('Offset: ' + 173)
+    const d = byte2nibblesLE(v)
+    header.raw[173] = d[0]
+    header.raw[173 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSFILT1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSFILT1')
+    out.log('Offset: ' + 175)
+    const d = byte2nibblesLE(v)
+    header.raw[175] = d[0]
+    header.raw[175 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSFILT2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSFILT2')
+    out.log('Offset: ' + 177)
+    const d = byte2nibblesLE(v)
+    header.raw[177] = d[0]
+    header.raw[177 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSFILT3(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSFILT3')
+    out.log('Offset: ' + 179)
+    const d = byte2nibblesLE(v)
+    header.raw[179] = d[0]
+    header.raw[179 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSPITCH(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSPITCH')
+    out.log('Offset: ' + 181)
+    const d = byte2nibblesLE(v)
+    header.raw[181] = d[0]
+    header.raw[181 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSAMP3(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSAMP3')
+    out.log('Offset: ' + 183)
+    const d = byte2nibblesLE(v)
+    header.raw[183] = d[0]
+    header.raw[183 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVPAN1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVPAN1')
+    out.log('Offset: ' + 185)
+    const d = byte2nibblesLE(v)
+    header.raw[185] = d[0]
+    header.raw[185 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVPAN2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVPAN2')
+    out.log('Offset: ' + 187)
+    const d = byte2nibblesLE(v)
+    header.raw[187] = d[0]
+    header.raw[187 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVPAN3(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVPAN3')
+    out.log('Offset: ' + 189)
+    const d = byte2nibblesLE(v)
+    header.raw[189] = d[0]
+    header.raw[189 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVAMP1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVAMP1')
+    out.log('Offset: ' + 191)
+    const d = byte2nibblesLE(v)
+    header.raw[191] = d[0]
+    header.raw[191 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVAMP2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVAMP2')
+    out.log('Offset: ' + 193)
+    const d = byte2nibblesLE(v)
+    header.raw[193] = d[0]
+    header.raw[193 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVLFOR(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVLFOR')
+    out.log('Offset: ' + 195)
+    const d = byte2nibblesLE(v)
+    header.raw[195] = d[0]
+    header.raw[195 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVLVOL(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVLVOL')
+    out.log('Offset: ' + 197)
+    const d = byte2nibblesLE(v)
+    header.raw[197] = d[0]
+    header.raw[197 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODVLFOD(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODVLFOD')
+    out.log('Offset: ' + 199)
+    const d = byte2nibblesLE(v)
+    header.raw[199] = d[0]
+    header.raw[199 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFO1WAVE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFO1WAVE')
+    out.log('Offset: ' + 201)
+    const d = byte2nibblesLE(v)
+    header.raw[201] = d[0]
+    header.raw[201 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFO2WAVE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFO2WAVE')
+    out.log('Offset: ' + 203)
+    const d = byte2nibblesLE(v)
+    header.raw[203] = d[0]
+    header.raw[203 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFLT2_1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFLT2_1')
+    out.log('Offset: ' + 205)
+    const d = byte2nibblesLE(v)
+    header.raw[205] = d[0]
+    header.raw[205 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFLT2_2(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFLT2_2')
+    out.log('Offset: ' + 207)
+    const d = byte2nibblesLE(v)
+    header.raw[207] = d[0]
+    header.raw[207 + 1] = d[1]
+}
+
+export function ProgramHeader_writeMODSLFLT2_3(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeMODSLFLT2_3')
+    out.log('Offset: ' + 209)
+    const d = byte2nibblesLE(v)
+    header.raw[209] = d[0]
+    header.raw[209 + 1] = d[1]
+}
+
+export function ProgramHeader_writeLFO2TRIG(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeLFO2TRIG')
+    out.log('Offset: ' + 211)
+    const d = byte2nibblesLE(v)
+    header.raw[211] = d[0]
+    header.raw[211 + 1] = d[1]
+}
+
+export function ProgramHeader_writeRESERVED_1(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writeRESERVED_1')
+    out.log('Offset: ' + 213)
+    const d = byte2nibblesLE(v)
+    header.raw[213] = d[0]
+    header.raw[213 + 1] = d[1]
+}
+
+export function ProgramHeader_writePORTIME(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePORTIME')
+    out.log('Offset: ' + 227)
+    const d = byte2nibblesLE(v)
+    header.raw[227] = d[0]
+    header.raw[227 + 1] = d[1]
+}
+
+export function ProgramHeader_writePORTYPE(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePORTYPE')
+    out.log('Offset: ' + 229)
+    const d = byte2nibblesLE(v)
+    header.raw[229] = d[0]
+    header.raw[229 + 1] = d[1]
+}
+
+export function ProgramHeader_writePORTEN(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePORTEN')
+    out.log('Offset: ' + 231)
+    const d = byte2nibblesLE(v)
+    header.raw[231] = d[0]
+    header.raw[231 + 1] = d[1]
+}
+
+export function ProgramHeader_writePFXCHAN(header: ProgramHeader, v: number) {
+    const out = newClientOutput(true, 'ProgramHeader_writePFXCHAN')
+    out.log('Offset: ' + 233)
+    const d = byte2nibblesLE(v)
+    header.raw[233] = d[0]
+    header.raw[233 + 1] = d[1]
+}
+
+
+
 export interface SampleHeader {
   SHIDENT: number    // Block identifier; Range: 3 (Fixed)
   SHIDENTLabel: string
+
   SBANDW: number    // Sample bandwidth; Range: 0 represents 10kHz, 1 represents 20kHz
   SBANDWLabel: string
+
   SPITCH: number    // Original pitch; Range: 21 to 127 represents A1 to G8
   SPITCHLabel: string
+
   SHNAME: string    // Sample name
   SHNAMELabel: string
+
   SSRVLD: number    // Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid
   SSRVLDLabel: string
+
   SLOOPS: number    // Number of loops
   SLOOPSLabel: string
+
   SALOOP: number    // First active loop (internal use)
   SALOOPLabel: string
+
   SHLOOP: number    // Highest loop (internal use)
   SHLOOPLabel: string
+
   SPTYPE: number    // Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end
   SPTYPELabel: string
+
   STUNO: number    // Sample tuning offset cent:semi
   STUNOLabel: string
+
   SLOCAT: number    // Absolute start address in memory of sample
   SLOCATLabel: string
+
   SLNGTH: number    // Length of sample
   SLNGTHLabel: string
+
   SSTART: number    // Offset from start of sample from which playback commences
   SSTARTLabel: string
+
   SMPEND: number    // Offset from start of sample from which playback ceases
   SMPENDLabel: string
+
   LOOPAT1: number    // Position in sample of first loop point
   LOOPAT1Label: string
+
   LLNGTH1: number    // First loop length
   LLNGTH1Label: string
+
   LDWELL1: number    // Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
   LDWELL1Label: string
+
   LOOPAT2: number    // Position in sample of second loop point
   LOOPAT2Label: string
+
   LLNGTH2: number    // Second loop length
   LLNGTH2Label: string
+
   LDWELL2: number    // Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
   LDWELL2Label: string
+
   LOOPAT3: number    // Position in sample of third loop point
   LOOPAT3Label: string
+
   LLNGTH3: number    // Third loop length
   LLNGTH3Label: string
+
   LDWELL3: number    // Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
   LDWELL3Label: string
+
   LOOPAT4: number    // Position in sample of fourth loop point
   LOOPAT4Label: string
+
   LLNGTH4: number    // Fourth loop length
   LLNGTH4Label: string
+
   LDWELL4: number    // Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
   LDWELL4Label: string
+
   SLXY1: number    // Relative loop factors for loop 1
   SLXY1Label: string
+
   SLXY2: number    // Relative loop factors for loop 2
   SLXY2Label: string
+
   SLXY3: number    // Relative loop factors for loop 3
   SLXY3Label: string
+
   SLXY4: number    // Relative loop factors for loop 4
   SLXY4Label: string
+
   SSPARE: number    // Used internally
   SSPARELabel: string
+
   SWCOMM: number    // Not used
   SWCOMMLabel: string
+
   SSPAIR: number    // Address of stereo partner (internal use)
   SSPAIRLabel: string
+
   SSRATE: number    // Sample rate
   SSRATELabel: string
+
   SHLTO: number    // Tuning offset of hold loop; Range: -50 to +50
   SHLTOLabel: string
+
   raw: number[] // Raw sysex message data
 }
+
 
 export function parseSampleHeader(data: number[], offset: number, o: SampleHeader) {
     const out = newClientOutput(true, 'parseSampleHeader')
@@ -1256,273 +2038,686 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
 }
 
+export function SampleHeader_writeSHIDENT(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSHIDENT')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSBANDW(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSBANDW')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSPITCH(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSPITCH')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSHNAME(header: SampleHeader, v: string) {
+    const out = newClientOutput(true, 'SampleHeader_writeSHNAME')
+    out.log('Offset: ' + NaN)
+    // IMPLEMENT ME!
+}
+
+export function SampleHeader_writeSSRVLD(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSSRVLD')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLOOPS(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLOOPS')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSALOOP(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSALOOP')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSHLOOP(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSHLOOP')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSPTYPE(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSPTYPE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSTUNO(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSTUNO')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLOCAT(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLOCAT')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLNGTH(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLNGTH')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSSTART(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSSTART')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSMPEND(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSMPEND')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLOOPAT1(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLOOPAT1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLLNGTH1(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLLNGTH1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLDWELL1(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLDWELL1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLOOPAT2(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLOOPAT2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLLNGTH2(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLLNGTH2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLDWELL2(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLDWELL2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLOOPAT3(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLOOPAT3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLLNGTH3(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLLNGTH3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLDWELL3(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLDWELL3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLOOPAT4(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLOOPAT4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLLNGTH4(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLLNGTH4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeLDWELL4(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeLDWELL4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLXY1(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLXY1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLXY2(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLXY2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLXY3(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLXY3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSLXY4(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSLXY4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSSPARE(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSSPARE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSWCOMM(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSWCOMM')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSSPAIR(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSSPAIR')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSSRATE(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSSRATE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function SampleHeader_writeSHLTO(header: SampleHeader, v: number) {
+    const out = newClientOutput(true, 'SampleHeader_writeSHLTO')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+
+
 export interface KeygroupHeader {
   KGIDENT: number    // Block identifier (internal use); Should equal 2
   KGIDENTLabel: string
+
   NXTKG: number    // Next keygroup block address (internal use)
   NXTKGLabel: string
+
   LONOTE: number    // Lower limit of keyrange; Range: 21 to 127 represents A1 to G8
   LONOTELabel: string
+
   HINOTE: number    // Upper limit of keyrange
   HINOTELabel: string
+
   KGTUNO: number    // Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   KGTUNOLabel: string
+
   FILFRQ: number    // Basic filter frequency; Range: 0 to 99
   FILFRQLabel: string
+
   K_FREQ: number    // Key follow of filter frequency
   K_FREQLabel: string
+
   V_FREQ: number    // Not used
   V_FREQLabel: string
+
   P_FREQ: number    // Note used
   P_FREQLabel: string
+
   E_FREQ: number    // Not used
   E_FREQLabel: string
+
   ATTAK1: number    // Attack rate of envelope 1; 0-99
   ATTAK1Label: string
+
   DECAY1: number    // Decay rate of envelope 1; 0-99
   DECAY1Label: string
+
   SUSTN1: number    // Sustain level of envelope 1
   SUSTN1Label: string
+
   RELSE1: number    // Release rate of envelope 1
   RELSE1Label: string
+
   V_ATT1: number    // Note-on velocity dependence of envelope 1 attack rate; Range: -50 to +50
   V_ATT1Label: string
+
   V_REL1: number    // Note-on velocity dependence of envelope 1 release rate
   V_REL1Label: string
+
   O_REL1: number    // Note-off velocity dependence of envelope 1 release rate
   O_REL1Label: string
+
   K_DAR1: number    // Dependence of envelope 2 decay and release rates on key
   K_DAR1Label: string
+
   ENV2R1: number    // Attack rate of envelope 2: 0-99
   ENV2R1Label: string
+
   ENV2R3: number    // Decay rate of envelope 2
   ENV2R3Label: string
+
   ENV2L3: number    // Sustain level of envelope 2
   ENV2L3Label: string
+
   ENV2R4: number    // Release rate of envelope 2
   ENV2R4Label: string
+
   V_ATT2: number    // Dependence of envelope 2 attack on note-on velocity; Range: -50 to 50
   V_ATT2Label: string
+
   V_REL2: number    // Dependence of envelope 2 release on note-on velocity
   V_REL2Label: string
+
   O_REL2: number    // Dependence of envelope 2 release on note-off velocity
   O_REL2Label: string
+
   K_DAR2: number    // Dependence of envelope 2 decay and release rates on key
   K_DAR2Label: string
+
   V_ENV2: number    // Scaling of envelope 2 by note-on velocity
   V_ENV2Label: string
+
   E_PTCH: number    // Not used
   E_PTCHLabel: string
+
   VXFADE: number    // Velocity zone crossfade; Range: 0 represents OFF, 1 represents ON
   VXFADELabel: string
+
   VZONES: number    // Not used
   VZONESLabel: string
+
   LKXF: number    // Calculated left keygroup crossfade factor (internal)
   LKXFLabel: string
+
   RKXF: number    // Calculated right keygroup crossfade factor (internal)
   RKXFLabel: string
+
   SNAME1: string    // Sample name used in velocity zone 1
   SNAME1Label: string
+
   LOVEL1: number    // Lower limit of velocity range; 0-127
   LOVEL1Label: string
+
   HIVEL1: number    // Upper limit of velocity range
   HIVEL1Label: string
+
   VTUNO1: number    // Velocity zone 1 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   VTUNO1Label: string
+
   VLOUD1: number    // Velocity zone 1 loudness offset; Range: -50 to +50
   VLOUD1Label: string
+
   VFREQ1: number    // Velocity zone 1 filter frequency offset
   VFREQ1Label: string
+
   VPANO1: number    // Velocity zone 1 pan offset
   VPANO1Label: string
+
   ZPLAY1: number    // Type of sample playback in velocity zone 1; 0 = As sample, 1 = Loop in release, 2 = Loop til release, 3 = No loops, 4 = Play to sample end
   ZPLAY1Label: string
+
   LVXF1: number    // Low velocity crossfade factor (internal use)
   LVXF1Label: string
+
   HVXF1: number    // High velocity crossfade factor (internal use)
   HVXF1Label: string
+
   SBADD1: number    // Calculated sample header block address (internal)
   SBADD1Label: string
+
   SNAME2: string    // Sample name used in velocity zone 2
   SNAME2Label: string
+
   LOVEL2: number    // Lower limit of velocity range 2
   LOVEL2Label: string
+
   HIVEL2: number    // Upper limit of velocity range 2
   HIVEL2Label: string
+
   VTUNO2: number    // Velocity zone 2 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   VTUNO2Label: string
+
   VLOUD2: number    // Velocity zone 2 loudness offset
   VLOUD2Label: string
+
   VFREQ2: number    // Velocity zone 2 filter frequency offset
   VFREQ2Label: string
+
   VPANO2: number    // Velocity zone 2 pan offset
   VPANO2Label: string
+
   ZPLAY2: number    // Type of sample playback in velocity zone 2; see ZPLAY1
   ZPLAY2Label: string
+
   LVXF2: number    // Low velocity crossfade factor (internal use)
   LVXF2Label: string
+
   HVXF2: number    // High velocity crossfade factor (internal use)
   HVXF2Label: string
+
   SBADD2: number    // Calculated sample header block address (internal)
   SBADD2Label: string
+
   SNAME3: string    // Sample name used in velocity zone 3
   SNAME3Label: string
+
   LOVEL3: number    // Lower limit of velocity range 3
   LOVEL3Label: string
+
   HIVEL3: number    // Upper limit of velocity range 3
   HIVEL3Label: string
+
   VTUNO3: number    // Velocity zone 3 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   VTUNO3Label: string
+
   VLOUD3: number    // Velocity zone 3 loudness offset; -50 to +50
   VLOUD3Label: string
+
   VFREQ3: number    // Velocity zone 3 filter frequency offset
   VFREQ3Label: string
+
   VPANO3: number    // Velocity zone 3 pan offset
   VPANO3Label: string
+
   ZPLAY3: number    // Type of sample playback in velocity zone 3; See ZPLAY1
   ZPLAY3Label: string
+
   LVXF3: number    // Low velocity crossfade factor (internal use)
   LVXF3Label: string
+
   HVXF3: number    // High velocity crossfade factor (internal use)
   HVXF3Label: string
+
   SBADD3: number    // Calculated sample header block address (internal)
   SBADD3Label: string
+
   SNAME4: string    // Sample name used in velocity zone 4
   SNAME4Label: string
+
   LOVEL4: number    // Lower limit of velocity range 4
   LOVEL4Label: string
+
   HIVEL4: number    // Upper limit of velocity range 4
   HIVEL4Label: string
+
   VTUNO4: number    // Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
   VTUNO4Label: string
+
   VLOUD4: number    // Velocity zone 4 loudness offset
   VLOUD4Label: string
+
   VFREQ4: number    // Velocity zone 4 filter frequency offset
   VFREQ4Label: string
+
   VPANO4: number    // Velocity zone 4 pan offset
   VPANO4Label: string
+
   ZPLAY4: number    // Type of sample playback in velocity zone 4; See ZPLAY1
   ZPLAY4Label: string
+
   LVXF4: number    // Low velocity crossfade factor (internal use)
   LVXF4Label: string
+
   HVXF4: number    // High velocity crossfade factor (internal use)
   HVXF4Label: string
+
   SBADD4: number    // Calculated sample header block address (internal)
   SBADD4Label: string
+
   KBEAT: number    // Fixed rate detune; -50 to 50
   KBEATLabel: string
+
   AHOLD: number    // Remain in attack phase until first loop encountered; Range: 0 represents OFF, 1 represents ON
   AHOLDLabel: string
+
   CP1: number    // Constant pitch flag for velocity zone 1; 0 represents TRACK, 1 represents CONST
   CP1Label: string
+
   CP2: number    // Constant pitch flag for velocity zone 2
   CP2Label: string
+
   CP3: number    // Constant pitch flag for velocity zone 3
   CP3Label: string
+
   CP4: number    // Constant pitch flag for velocity zone 4
   CP4Label: string
+
   VZOUT1: number    // Individual output offset for velocity zone 1
   VZOUT1Label: string
+
   VZOUT2: number    // Individual output offset for velocity zone 2
   VZOUT2Label: string
+
   VZOUT3: number    // Individual output offset for velocity zone 3
   VZOUT3Label: string
+
   VZOUT4: number    // Individual output offset for velocity zone 4
   VZOUT4Label: string
+
   VSS1: number    // Start point dependence on note-on velocity for sample in velocity zone 1; Range: -9999 to +9999 data points
   VSS1Label: string
+
   VSS2: number    // Start point dependence on note-on velocity for sample in velocity zone 2
   VSS2Label: string
+
   VSS3: number    // Start point dependence on note-on velocity for sample in velocity zone 3
   VSS3Label: string
+
   VSS4: number    // Start point dependence on note-on velocity for sample in velocity zone 4
   VSS4Label: string
+
   KV_LO: number    // Not used
   KV_LOLabel: string
+
   FILQ: number    // Resonance of filter 1; Range: 0 to 15
   FILQLabel: string
+
   L_PTCH: number    // Amount of control of pitch by LFO1; -50 to +50
   L_PTCHLabel: string
+
   MODVFILT1: number    // Amount of control of filter frequency by assignable source 1
   MODVFILT1Label: string
+
   MODVFILT2: number    // Amount of control of filter frequency by assignable source 2
   MODVFILT2Label: string
+
   MODVFILT3: number    // Amount of control of filter frequency by assignable source 3
   MODVFILT3Label: string
+
   MODVPITCH: number    // Amount of control of pitch by assignable source
   MODVPITCHLabel: string
+
   MODVAMP3: number    // Amount of control of loudness by assignable keygroup source
   MODVAMP3Label: string
+
   ENV2L1: number    // Level of envelope 2 at end attack phase (phase 1); 0-99
   ENV2L1Label: string
+
   ENV2R2: number    // Rate during phase 2 of envelope 2
   ENV2R2Label: string
+
   ENV2L2: number    // Level of envelope 2 at end of phase 1
   ENV2L2Label: string
+
   ENV2L4: number    // Final envelope 2 level
   ENV2L4Label: string
+
   KGMUTE: number    // Keygroup mute group; Range: 0ffh = off, mute groups 0 to 31
   KGMUTELabel: string
+
   PFXCHAN: number    // Effects bus select
   PFXCHANLabel: string
+
   PFXSLEV: number    // Effects send level
   PFXSLEVLabel: string
+
   Reserved_1: number    // Not used
   Reserved_1Label: string
+
   LSI2_ON: number    // Route audio through second LSI; Range: 0 = -6dB, 1 = 0dB
   LSI2_ONLabel: string
+
   FLT2GAIN: number    // Make-up gain of second filter; Range: 0 = -6dB, 1 = 0dB
   FLT2GAINLabel: string
+
   FLT2MODE: number    // Mode of second filter; Range: 0 = Low-pass, 1 = Band-pass, 2 = High-pass, 3 = EQ
   FLT2MODELabel: string
+
   FLT2Q: number    // Resonance of second filter; Range: 0 to 31
   FLT2QLabel: string
+
   TONEFREQ: number    // Center frequency of tone section
   TONEFREQLabel: string
+
   TONESLOP: number    // Slope of tone section
   TONESLOPLabel: string
+
   MODVFLT2_1: number    // Amount of control of second filter frequency by source 1
   MODVFLT2_1Label: string
+
   MODVFLT2_2: number    // Amount of control of second filter frequency by source 2
   MODVFLT2_2Label: string
+
   MODVFLT2_3: number    // Amount of control of second filter frequency by source 3
   MODVFLT2_3Label: string
+
   FIL2FR: number    // Basic second filter frequency; 0-99
   FIL2FRLabel: string
+
   K_FRQ2: number    // Second filter key follow; Range: -24 to +24 semitones
   K_FRQ2Label: string
+
   ATTAK3: number    // Attack rate of envelope 3
   ATTAK3Label: string
+
   ENV3L1: number    // Final level of attack phase (phase 1) of envelope 3
   ENV3L1Label: string
+
   ENV3R2: number    // Rate of phase 2 of envelope 3
   ENV3R2Label: string
+
   ENV3L2: number    // Final level of phase 2 of envelope 3
   ENV3L2Label: string
+
   ENV3R3: number    // Rate of phase 3 of envelope 3
   ENV3R3Label: string
+
   ENV3L3: number    // Final level of phase 3 of envelope 3
   ENV3L3Label: string
+
   ENV3R4: number    // Rate of release phase (phase 4) of envelope 3
   ENV3R4Label: string
+
   ENV3L4: number    // Final target level of envelope 3
   ENV3L4Label: string
+
   V_ATT3: number    // Dependence of envelope 3 attack rate on note-on velocity
   V_ATT3Label: string
+
   V_REL3: number    // Dependence of envelope 3 release rate on note-on velocity
   V_REL3Label: string
+
   O_REL3: number    // Dependence of envelope 3 release rate on note-off velocity
   O_REL3Label: string
+
   K_DAR3: number    // Dependence of envelope 3 release and decay rate on key
   K_DAR3Label: string
+
   V_ENV3: number    // Scaling of envelope 3 by note-on velocity
   V_ENV3Label: string
+
   KFXCHAN: number    // Keygroup override Effects Bus select; Range: 0 to 5
   KFXCHANLabel: string
+
   KFXSLEV: number    // Keygroup override Effects Send level; Range: 0 to 99
   KFXSLEVLabel: string
+
   raw: number[] // Raw sysex message data
 }
+
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {
     const out = newClientOutput(true, 'parseKeygroupHeader')
@@ -2593,4 +3788,1054 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
     o.KFXSLEV = bytes2numberLE(b)
 
 }
+
+export function KeygroupHeader_writeKGIDENT(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKGIDENT')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeNXTKG(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeNXTKG')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLONOTE(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLONOTE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHINOTE(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHINOTE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKGTUNO(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKGTUNO')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFILFRQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFILFRQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeK_FREQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeK_FREQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_FREQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_FREQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeP_FREQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeP_FREQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeE_FREQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeE_FREQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeATTAK1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeATTAK1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeDECAY1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeDECAY1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSUSTN1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSUSTN1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeRELSE1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeRELSE1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_ATT1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_ATT1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_REL1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_REL1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeO_REL1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeO_REL1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeK_DAR1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeK_DAR1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2R1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2R1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2R3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2R3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2L3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2L3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2R4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2R4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_ATT2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_ATT2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_REL2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_REL2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeO_REL2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeO_REL2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeK_DAR2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeK_DAR2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_ENV2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_ENV2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeE_PTCH(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeE_PTCH')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVXFADE(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVXFADE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVZONES(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVZONES')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLKXF(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLKXF')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeRKXF(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeRKXF')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSNAME1(header: KeygroupHeader, v: string) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSNAME1')
+    out.log('Offset: ' + NaN)
+    // IMPLEMENT ME!
+}
+
+export function KeygroupHeader_writeLOVEL1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLOVEL1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHIVEL1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHIVEL1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVTUNO1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVTUNO1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVLOUD1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVLOUD1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVFREQ1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVFREQ1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVPANO1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVPANO1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeZPLAY1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeZPLAY1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLVXF1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLVXF1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHVXF1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHVXF1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSBADD1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSBADD1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSNAME2(header: KeygroupHeader, v: string) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSNAME2')
+    out.log('Offset: ' + NaN)
+    // IMPLEMENT ME!
+}
+
+export function KeygroupHeader_writeLOVEL2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLOVEL2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHIVEL2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHIVEL2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVTUNO2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVTUNO2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVLOUD2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVLOUD2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVFREQ2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVFREQ2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVPANO2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVPANO2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeZPLAY2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeZPLAY2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLVXF2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLVXF2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHVXF2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHVXF2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSBADD2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSBADD2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSNAME3(header: KeygroupHeader, v: string) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSNAME3')
+    out.log('Offset: ' + NaN)
+    // IMPLEMENT ME!
+}
+
+export function KeygroupHeader_writeLOVEL3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLOVEL3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHIVEL3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHIVEL3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVTUNO3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVTUNO3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVLOUD3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVLOUD3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVFREQ3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVFREQ3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVPANO3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVPANO3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeZPLAY3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeZPLAY3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLVXF3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLVXF3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHVXF3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHVXF3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSBADD3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSBADD3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSNAME4(header: KeygroupHeader, v: string) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSNAME4')
+    out.log('Offset: ' + NaN)
+    // IMPLEMENT ME!
+}
+
+export function KeygroupHeader_writeLOVEL4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLOVEL4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHIVEL4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHIVEL4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVTUNO4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVTUNO4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVLOUD4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVLOUD4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVFREQ4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVFREQ4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVPANO4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVPANO4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeZPLAY4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeZPLAY4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLVXF4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLVXF4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeHVXF4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeHVXF4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeSBADD4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeSBADD4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKBEAT(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKBEAT')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeAHOLD(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeAHOLD')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeCP1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeCP1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeCP2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeCP2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeCP3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeCP3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeCP4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeCP4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVZOUT1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVZOUT1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVZOUT2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVZOUT2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVZOUT3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVZOUT3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVZOUT4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVZOUT4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVSS1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVSS1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVSS2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVSS2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVSS3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVSS3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeVSS4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeVSS4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKV_LO(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKV_LO')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFILQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFILQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeL_PTCH(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeL_PTCH')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFILT1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFILT1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFILT2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFILT2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFILT3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFILT3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVPITCH(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVPITCH')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVAMP3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVAMP3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2L1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2L1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2R2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2R2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2L2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2L2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV2L4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV2L4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKGMUTE(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKGMUTE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writePFXCHAN(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writePFXCHAN')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writePFXSLEV(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writePFXSLEV')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeReserved_1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeReserved_1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeLSI2_ON(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeLSI2_ON')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFLT2GAIN(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFLT2GAIN')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFLT2MODE(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFLT2MODE')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFLT2Q(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFLT2Q')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeTONEFREQ(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeTONEFREQ')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeTONESLOP(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeTONESLOP')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFLT2_1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFLT2_1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFLT2_2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFLT2_2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeMODVFLT2_3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeMODVFLT2_3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeFIL2FR(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeFIL2FR')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeK_FRQ2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeK_FRQ2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeATTAK3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeATTAK3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3L1(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3L1')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3R2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3R2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3L2(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3L2')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3R3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3R3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3L3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3L3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3R4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3R4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeENV3L4(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeENV3L4')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_ATT3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_ATT3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_REL3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_REL3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeO_REL3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeO_REL3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeK_DAR3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeK_DAR3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeV_ENV3(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeV_ENV3')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKFXCHAN(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKFXCHAN')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+export function KeygroupHeader_writeKFXSLEV(header: KeygroupHeader, v: number) {
+    const out = newClientOutput(true, 'KeygroupHeader_writeKFXSLEV')
+    out.log('Offset: ' + NaN)
+    const d = byte2nibblesLE(v)
+    header.raw[NaN] = d[0]
+    header.raw[NaN + 1] = d[1]
+}
+
+
 

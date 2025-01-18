@@ -1,5 +1,6 @@
 specs:
   - name: ProgramHeader
+    headerOffset: 1
     fields:
       - n: 'KGRP1'
         d: "Block address of first keygroup (internal use)"

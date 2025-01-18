@@ -1,8 +1,7 @@
 import midi from 'midi'
 import {expect} from "chai";
 import {akaiByte2String, newDevice, string2AkaiBytes} from "../src/midi/akai-s3000xl";
-import {KeygroupHeader, ProgramHeader, SampleHeader} from "../src/midi/devices/s3000xl";
-import {nibbles2byte} from "../src/lib/lib-core";
+import {KeygroupHeader, ProgramHeader, ProgramHeader_writePLAYLO, SampleHeader} from "../src/midi/devices/s3000xl";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -135,6 +134,22 @@ describe('akai-s3000xl tests', () => {
         }
 
         expect(h2.POLYPH).eq(polyphony)
+    })
+
+    it(`writes low note`, async () => {
+        const device = newDevice(input, output)
+        const programNumber = 0
+        const header = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, header)
+
+        const lowNote = header.PLAYLO + 1
+        ProgramHeader_writePLAYLO(header, lowNote)
+
+        await device.writeProgram(header)
+
+        const h2 = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, h2)
+        expect(h2.PLAYLO).eq(lowNote)
     })
 
     it('fetches keygroup header', async () => {
