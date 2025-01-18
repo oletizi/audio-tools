@@ -33,6 +33,7 @@ export async function genInterface(spec: Spec) {
         rv += `  ${field.n}: ${field.t ? field.t : 'number'}    // ${field.d}\n`
         rv += `  ${field.n}Label: string\n`
     }
+    rv += '  raw: number[] // Raw sysex message data\n'
     rv += '}'
     return rv
 }

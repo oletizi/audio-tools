@@ -1,5 +1,5 @@
 //
-// GENERATED Fri Jan 17 2025 18:00:15 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Fri Jan 17 2025 19:28:17 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -172,6 +172,7 @@ export interface ProgramHeader {
   PORTENLabel: string
   PFXCHAN: number    // Effects Bus Select; 0 to 4
   PFXCHANLabel: string
+  raw: number[] // Raw sysex message data
 }
 
 export function parseProgramHeader(data: number[], offset: number, o: ProgramHeader) {
@@ -408,6 +409,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Note-On velocity
     out.log('VELDEP: offset: ' + reloff())
+    o["VELDEPLabel"] = "Vel -> LFO1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -416,6 +418,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Range of increase of Pitch by bendwheel
     out.log('B_PTCH: offset: ' + reloff())
+    o["B_PTCHLabel"] = "Bend Up -> Pitch"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -424,6 +427,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of Pitch by Pressure
     out.log('P_PTCH: offset: ' + reloff())
+    o["P_PTCHLabel"] = "Pressure -> Pitch"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -432,6 +436,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Keygroup crossfade enable
     out.log('KXFADE: offset: ' + reloff())
+    o["KXFADELabel"] = "Crossfade [on | off]"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -440,6 +445,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Number of keygroups. To change the number of keygroups in a program, the KDATA and DELK commands should be used.
     out.log('GROUPS: offset: ' + reloff())
+    o["GROUPSLabel"] = "Keygroup Count"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -456,6 +462,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Key temperament C, C#, D, D# etc.
     out.log('TEMPER: offset: ' + reloff())
+    o["TEMPERLabel"] = "Key"
     o.TEMPER = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -488,6 +495,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Enable de-synchronisation of LFO1 across notes;  0 represents OFF, 1 represents ON
     out.log('DESYNC: offset: ' + reloff())
+    o["DESYNCLabel"] = "LFO desync [on | off]"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -504,6 +512,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Criterion by which voices are stolen; 0 represents OLDEST, 1 represents QUIETEST
     out.log('VASSOQ: offset: ' + reloff())
+    o["VASSOQLabel"] = "Stealing [age | vel]"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -512,6 +521,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Reduction in loudness due to soft pedal
     out.log('SPLOUD: offset: ' + reloff())
+    o["SPLOUDLabel"] = "Pedal -> Amp"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -520,6 +530,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Stretch of attack due to soft pedal
     out.log('SPATT: offset: ' + reloff())
+    o["SPATTLabel"] = "Pedal -> Attack"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -528,6 +539,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Reduction of filter frequency due to soft pedal
     out.log('SPFILT: offset: ' + reloff())
+    o["SPFILTLabel"] = "Pedal -> Cutoff"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -536,6 +548,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Tuning offset of program; -50.00 to +50.00 (fraction is binary)
     out.log('PTUNO: offset: ' + reloff())
+    o["PTUNOLabel"] = "Tuning"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -568,6 +581,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Level sent to Individual outputs/effects
     out.log('VOSCL: offset: ' + reloff())
+    o["VOSCLLabel"] = "VOSCL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -584,6 +598,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Mono legato mode enable; 0 represents OFF, 1 represents ON
     out.log('LEGATO: offset: ' + reloff())
+    o["LEGATOLabel"] = "Legato [on | off]"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -592,6 +607,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Range of decrease of Pitch by bendwheel
     out.log('B_PTCHD: offset: ' + reloff())
+    o["B_PTCHDLabel"] = "Bend Down -> Pitch"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -943,6 +959,7 @@ export interface SampleHeader {
   SSRATELabel: string
   SHLTO: number    // Tuning offset of hold loop; Range: -50 to +50
   SHLTOLabel: string
+  raw: number[] // Raw sysex message data
 }
 
 export function parseSampleHeader(data: number[], offset: number, o: SampleHeader) {
@@ -1504,6 +1521,7 @@ export interface KeygroupHeader {
   KFXCHANLabel: string
   KFXSLEV: number    // Keygroup override Effects Send level; Range: 0 to 99
   KFXSLEVLabel: string
+  raw: number[] // Raw sysex message data
 }
 
 export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupHeader) {

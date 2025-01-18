@@ -8,6 +8,9 @@ import {
     ProgramHeader,
     SampleHeader
 } from "@/midi/devices/s3000xl";
+import midi, {output} from "midi";
+import {data} from "autoprefixer";
+import {message} from "blessed";
 
 export interface Device {
 
@@ -21,11 +24,15 @@ export interface Device {
 
     getProgramNames(names: string[]): string[]
 
-    getProgramHeader(programName: string) : ProgramHeader
+    getProgramHeader(programName: string): ProgramHeader
 
     fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
+
+    updateProgramName(header: ProgramHeader, name: string): Promise<void>
+
+    writeProgram(header: ProgramHeader): Promise<void>
 }
 
 export function newDevice(input: midi.Input, output: midi.Output, out: ProcessOutput = newClientOutput()): Device {
@@ -104,7 +111,7 @@ class s3000xl implements Device {
 
     async init() {
         const names = await this.fetchProgramNames([])
-        for (let i=0; i<names.length; i++) {
+        for (let i = 0; i < names.length; i++) {
             const header = {} as ProgramHeader
             await this.fetchProgramHeader(i, header)
             this.programs[names[i]] = header
@@ -153,7 +160,7 @@ class s3000xl implements Device {
         return names
     }
 
-    getProgramHeader(programName: string) : ProgramHeader {
+    getProgramHeader(programName: string): ProgramHeader {
         return this.programs[programName]
     }
 
@@ -166,8 +173,18 @@ class s3000xl implements Device {
         header['PNUMBER'] = nextByte(m, v).value
         const headerData = m.slice(v.offset, m.length - 1)
         parseProgramHeader(headerData, 1, header)
+        header.raw = m
         out.log(header)
         return header
+    }
+
+    async writeProgram(header: ProgramHeader) {
+        const data = header.raw
+        await this.send(Opcode.PDATA, data)
+    }
+
+    async updateProgramName(header: ProgramHeader, name: string) {
+
     }
 
     async fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader) {
@@ -200,7 +217,8 @@ class s3000xl implements Device {
         return header
     }
 
-    private async send(opcode: Opcode, data: number[]) {
+
+    private async send(opcode: Opcode, data: number[]): Promise<number[]> {
         const out = this.out
         const input = this.midiInput
         const output = this.midiOutput
@@ -240,6 +258,22 @@ export function akaiByte2String(bytes: number[]) {
     }
     return rv
 
+}
+
+export function string2AkaiBytes(s: string, data: number[], offset) {
+    s = s.toUpperCase()
+    for (let i = 0; i < 12; i++) {
+        let akaiValue = 10 // default value is ' '
+        if (s.length > i) {
+            const c = s.charAt(i)
+            for (let j = 0; j < ALPHABET.length; j++) {
+                if (ALPHABET[j] === c) {
+                    akaiValue = j
+                }
+            }
+        }
+        data[i + offset] = akaiValue
+    }
 }
 
 export function nextByte(nibbles, v: { value: number, offset: number }) {
