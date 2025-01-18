@@ -1,7 +1,15 @@
 import midi from 'midi'
 import {expect} from "chai";
 import {akaiByte2String, newDevice, string2AkaiBytes} from "../src/midi/akai-s3000xl";
-import {KeygroupHeader, ProgramHeader, ProgramHeader_writePLAYLO, SampleHeader} from "../src/midi/devices/s3000xl";
+import {
+    KeygroupHeader,
+    ProgramHeader,
+    Program,
+    ProgramHeader_writePLAYLO,
+    SampleHeader
+} from "../src/midi/devices/s3000xl";
+import {Widgets} from "blessed";
+
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -86,7 +94,7 @@ describe('akai-s3000xl tests', () => {
 
     it('fetches program header', async () => {
         const device = newDevice(input, output)
-        const programNumber = 3
+        const programNumber = 0
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
         console.log(header)
@@ -107,6 +115,54 @@ describe('akai-s3000xl tests', () => {
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
         await device.writeProgramName(header, 'new name')
+    })
+
+    it(`writes program name via generated class`, async () => {
+        const device = newDevice(input, output)
+        const programNumber = 0
+        const header = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, header)
+
+        const program = new Program(header)
+
+        program.setProgramName('test program')
+        await device.writeProgram(header)
+
+
+
+        let newName = 'a new name'
+        expect(program.getProgramName().trim()).not.eq(newName.toUpperCase())
+        program.setProgramName('a new name')
+        expect(program.getProgramName().trim()).eq(newName.toUpperCase())
+
+        await device.writeProgram(header)
+
+        const h2 = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, h2)
+
+        const p2 = new Program(header)
+        expect(p2.getProgramName()).eq(program.getProgramName())
+    })
+
+    it(`writes program level via generated class`, async () => {
+        const device = newDevice(input, output)
+        const programNumber = 0
+        const header = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, header)
+
+        const program = new Program(header)
+
+        const level = program.getProgramLevel()
+
+        program.setProgramLevel(level - 1)
+        expect(program.getProgramLevel()).eq(level - 1)
+        await device.writeProgram(header)
+
+        const h2 = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, h2)
+        const p2 = new Program(h2)
+
+        expect(p2.getProgramLevel()).eq(program.getProgramLevel())
     })
 
     it(`writes program polyphony`, async () => {

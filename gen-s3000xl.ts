@@ -1,4 +1,4 @@
-import {genImports, genInterface, genParser, genSetters, readSpecs} from "./src/gen/gen-s3000xl-device";
+import {genClass, genImports, genInterface, genParser, genSetters, readSpecs} from "./src/gen/gen-s3000xl-device";
 import fs from "fs";
 import path from "path";
 
@@ -18,6 +18,8 @@ async function doIt() {
         out.write(await genParser(spec))
         out.write('\n\n')
         out.write(await genSetters(spec))
+        out.write('\n\n')
+        out.write(await genClass(spec))
         out.write('\n\n')
     }
 }

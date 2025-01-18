@@ -3,15 +3,19 @@ import * as fs from 'fs/promises'
 
 interface Spec {
     name: string
+    className: string
     headerOffset: number
     fields: {
         n: string,  // name
+        f?: string,  // function name root
         l?: string, // label
         d: string,  // description
         s?: number, // size in bytes; 1 if undefined
-        t?: number   // type; number if undefined
+        t?: string   // type; number if undefined
     }[]
 }
+
+const HEADER_START = 7;
 
 export async function readSpecs(file: string) {
     return parse((await fs.readFile(file)).toString())
@@ -23,7 +27,7 @@ export function genImports() {
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
-import {nextByte, akaiByte2String} from "@/midi/akai-s3000xl"
+import {nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
     
 `
 }
@@ -41,16 +45,70 @@ export async function genInterface(spec: Spec) {
     return rv
 }
 
+export async function genClass(spec: Spec) {
+    let rv = `export class ${spec.className} {\n`
+
+    rv += `    private readonly header: ${spec.name}\n`
+    rv += `\n`
+    rv += `    constructor(header: ${spec.name}) {\n`
+    rv += `        this.header = header\n`
+    rv += `    }\n`
+    rv += `\n`
+    for (const field of spec.fields) {
+        if (field.f) {
+            const parseOffset = HEADER_START
+            const fu = String(field.f).charAt(0).toUpperCase() + String(field.f).slice(1)
+            const type = field.t ? field.t : 'number'
+            rv += `    get${fu}(): ${type} { \n`
+            rv += `        return this.header.${field.n}\n`
+            rv += `    }\n`
+            rv += `    set${fu}(v: ${type}) {\n`
+            rv += `        const out = newClientOutput(true, 'set${fu}')\n`
+            rv += `        ${writeFunctionName(spec, field)}(this.header, v)\n`
+            rv += `        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.\n`
+            rv += `        out.log('Parsing header from ${HEADER_START} with header offset: ${spec.headerOffset}')\n`
+            rv += `        const tmp = this.header.raw.slice(${HEADER_START}, this.header.raw.length - 1)\n`
+            rv += `        parse${spec.name}(tmp, ${spec.headerOffset}, this.header)\n`
+            rv += `    }\n`
+            rv += `\n`
+        }
+    }
+
+    rv += '}\n\n'
+    return rv
+}
+
+function writeFunctionName(spec: Spec, field) {
+    return `${spec.name}_write${field.n}`
+}
+
+
 export async function genSetters(spec: Spec) {
     let rv = ''
-    let offset = 8 + spec.headerOffset
+    let offset = HEADER_START + spec.headerOffset * 2
     for (const field of spec.fields) {
-        const fname = `${spec.name}_write${field.n}`
+        const fname = writeFunctionName(spec, field)
         rv += `export function ${fname}(header: ${spec.name}, v: ${field.t ? field.t : 'number'}) {\n`
         rv += `    const out = newClientOutput(true, '${fname}')\n`
         rv += `    out.log('Offset: ' + ${offset})\n`
         if (field.t) {
-            rv += `    // IMPLEMENT ME!\n`
+            if (field.t === 'string') {
+                //         const data = string2AkaiBytes(name)
+                //         for (let i = offset, j = 0; i < offset + 12 * 2; i += 2, j++) {
+                //             const nibbles = byte2nibblesLE(data[j])
+                //             header.raw[i] = nibbles[0]
+                //             header.raw[i + 1] = nibbles[1]
+                //         }
+                rv += `    const data = string2AkaiBytes(v)\n`
+                rv += `    for (let i = ${offset}, j = 0; i < ${offset} + 12 * 2; i += 2, j++) {\n`
+                rv += `        const nibbles = byte2nibblesLE(data[j])\n`
+                rv += `        header.raw[i] = nibbles[0]\n`
+                rv += `        header.raw[i + 1] = nibbles[1]`
+                rv += `    }\n`
+
+            } else {
+                rv += '    // IMPLEMENT ME'
+            }
         } else {
             //         const d = byte2nibblesLE(polyphony)
             //         header.raw[offset] = d[0]

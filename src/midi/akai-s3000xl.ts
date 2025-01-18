@@ -175,6 +175,7 @@ class s3000xl implements Device {
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
         header['PNUMBER'] = nextByte(m, v).value
+        out.log(`ProgramHeader header data offset: ${v.offset}`)
         const headerData = m.slice(v.offset, m.length - 1)
         parseProgramHeader(headerData, 1, header)
         header.raw = m

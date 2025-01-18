@@ -1,9 +1,9 @@
 //
-// GENERATED Sat Jan 18 2025 11:15:01 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Sat Jan 18 2025 13:01:13 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
-import {nextByte, akaiByte2String} from "@/midi/akai-s3000xl"
+import {nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
     
 export interface ProgramHeader {
   KGRP1: number    // Block address of first keygroup (internal use)
@@ -983,7 +983,11 @@ export function ProgramHeader_writeKGRP1(header: ProgramHeader, v: number) {
 export function ProgramHeader_writePRNAME(header: ProgramHeader, v: string) {
     const out = newClientOutput(true, 'ProgramHeader_writePRNAME')
     out.log('Offset: ' + 13)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = 13, j = 0; i < 13 + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function ProgramHeader_writePRGNUM(header: ProgramHeader, v: number) {
@@ -1221,7 +1225,11 @@ export function ProgramHeader_writeTPNUM(header: ProgramHeader, v: number) {
 export function ProgramHeader_writeTEMPER(header: ProgramHeader, v: string) {
     const out = newClientOutput(true, 'ProgramHeader_writeTEMPER')
     out.log('Offset: ' + 95)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = 95, j = 0; i < 95 + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function ProgramHeader_writeECHOUT(header: ProgramHeader, v: number) {
@@ -1630,6 +1638,197 @@ export function ProgramHeader_writePFXCHAN(header: ProgramHeader, v: number) {
     const d = byte2nibblesLE(v)
     header.raw[233] = d[0]
     header.raw[233 + 1] = d[1]
+}
+
+
+
+export class Program {
+    private readonly header: ProgramHeader
+
+    constructor(header: ProgramHeader) {
+        this.header = header
+    }
+
+    getProgramName(): string { 
+        return this.header.PRNAME
+    }
+    setProgramName(v: string) {
+        const out = newClientOutput(true, 'setProgramName')
+        ProgramHeader_writePRNAME(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getProgramNumber(): number { 
+        return this.header.PRGNUM
+    }
+    setProgramNumber(v: number) {
+        const out = newClientOutput(true, 'setProgramNumber')
+        ProgramHeader_writePRGNUM(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getMidiChannel(): number { 
+        return this.header.PMCHAN
+    }
+    setMidiChannel(v: number) {
+        const out = newClientOutput(true, 'setMidiChannel')
+        ProgramHeader_writePMCHAN(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getPolyphony(): number { 
+        return this.header.POLYPH
+    }
+    setPolyphony(v: number) {
+        const out = newClientOutput(true, 'setPolyphony')
+        ProgramHeader_writePOLYPH(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getVoicePriority(): number { 
+        return this.header.PRIORT
+    }
+    setVoicePriority(v: number) {
+        const out = newClientOutput(true, 'setVoicePriority')
+        ProgramHeader_writePRIORT(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getLowNote(): number { 
+        return this.header.PLAYLO
+    }
+    setLowNote(v: number) {
+        const out = newClientOutput(true, 'setLowNote')
+        ProgramHeader_writePLAYLO(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getHighNote(): number { 
+        return this.header.PLAYHI
+    }
+    setHighNote(v: number) {
+        const out = newClientOutput(true, 'setHighNote')
+        ProgramHeader_writePLAYHI(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getOutput(): number { 
+        return this.header.OUTPUT
+    }
+    setOutput(v: number) {
+        const out = newClientOutput(true, 'setOutput')
+        ProgramHeader_writeOUTPUT(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getOutputLevel(): number { 
+        return this.header.STEREO
+    }
+    setOutputLevel(v: number) {
+        const out = newClientOutput(true, 'setOutputLevel')
+        ProgramHeader_writeSTEREO(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getPan(): number { 
+        return this.header.PANPOS
+    }
+    setPan(v: number) {
+        const out = newClientOutput(true, 'setPan')
+        ProgramHeader_writePANPOS(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getProgramLevel(): number { 
+        return this.header.PRLOUD
+    }
+    setProgramLevel(v: number) {
+        const out = newClientOutput(true, 'setProgramLevel')
+        ProgramHeader_writePRLOUD(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getVelocityToAmp(): number { 
+        return this.header.V_LOUD
+    }
+    setVelocityToAmp(v: number) {
+        const out = newClientOutput(true, 'setVelocityToAmp')
+        ProgramHeader_writeV_LOUD(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getLfo2Rate(): number { 
+        return this.header.PANRAT
+    }
+    setLfo2Rate(v: number) {
+        const out = newClientOutput(true, 'setLfo2Rate')
+        ProgramHeader_writePANRAT(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getLfo2Depth(): number { 
+        return this.header.PANDEP
+    }
+    setLfo2Depth(v: number) {
+        const out = newClientOutput(true, 'setLfo2Depth')
+        ProgramHeader_writePANDEP(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
+    getLfo2Delay(): number { 
+        return this.header.PANDEL
+    }
+    setLfo2Delay(v: number) {
+        const out = newClientOutput(true, 'setLfo2Delay')
+        ProgramHeader_writePANDEL(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 1')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseProgramHeader(tmp, 1, this.header)
+    }
+
 }
 
 
@@ -2065,7 +2264,11 @@ export function SampleHeader_writeSPITCH(header: SampleHeader, v: number) {
 export function SampleHeader_writeSHNAME(header: SampleHeader, v: string) {
     const out = newClientOutput(true, 'SampleHeader_writeSHNAME')
     out.log('Offset: ' + NaN)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = NaN, j = 0; i < NaN + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function SampleHeader_writeSSRVLD(header: SampleHeader, v: number) {
@@ -2314,6 +2517,17 @@ export function SampleHeader_writeSHLTO(header: SampleHeader, v: number) {
     const d = byte2nibblesLE(v)
     header.raw[NaN] = d[0]
     header.raw[NaN + 1] = d[1]
+}
+
+
+
+export class Sample {
+    private readonly header: SampleHeader
+
+    constructor(header: SampleHeader) {
+        this.header = header
+    }
+
 }
 
 
@@ -4048,7 +4262,11 @@ export function KeygroupHeader_writeRKXF(header: KeygroupHeader, v: number) {
 export function KeygroupHeader_writeSNAME1(header: KeygroupHeader, v: string) {
     const out = newClientOutput(true, 'KeygroupHeader_writeSNAME1')
     out.log('Offset: ' + NaN)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = NaN, j = 0; i < NaN + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function KeygroupHeader_writeLOVEL1(header: KeygroupHeader, v: number) {
@@ -4134,7 +4352,11 @@ export function KeygroupHeader_writeSBADD1(header: KeygroupHeader, v: number) {
 export function KeygroupHeader_writeSNAME2(header: KeygroupHeader, v: string) {
     const out = newClientOutput(true, 'KeygroupHeader_writeSNAME2')
     out.log('Offset: ' + NaN)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = NaN, j = 0; i < NaN + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function KeygroupHeader_writeLOVEL2(header: KeygroupHeader, v: number) {
@@ -4220,7 +4442,11 @@ export function KeygroupHeader_writeSBADD2(header: KeygroupHeader, v: number) {
 export function KeygroupHeader_writeSNAME3(header: KeygroupHeader, v: string) {
     const out = newClientOutput(true, 'KeygroupHeader_writeSNAME3')
     out.log('Offset: ' + NaN)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = NaN, j = 0; i < NaN + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function KeygroupHeader_writeLOVEL3(header: KeygroupHeader, v: number) {
@@ -4306,7 +4532,11 @@ export function KeygroupHeader_writeSBADD3(header: KeygroupHeader, v: number) {
 export function KeygroupHeader_writeSNAME4(header: KeygroupHeader, v: string) {
     const out = newClientOutput(true, 'KeygroupHeader_writeSNAME4')
     out.log('Offset: ' + NaN)
-    // IMPLEMENT ME!
+    const data = string2AkaiBytes(v)
+    for (let i = NaN, j = 0; i < NaN + 12 * 2; i += 2, j++) {
+        const nibbles = byte2nibblesLE(data[j])
+        header.raw[i] = nibbles[0]
+        header.raw[i + 1] = nibbles[1]    }
 }
 
 export function KeygroupHeader_writeLOVEL4(header: KeygroupHeader, v: number) {
@@ -4835,6 +5065,17 @@ export function KeygroupHeader_writeKFXSLEV(header: KeygroupHeader, v: number) {
     const d = byte2nibblesLE(v)
     header.raw[NaN] = d[0]
     header.raw[NaN + 1] = d[1]
+}
+
+
+
+export class Keygroup {
+    private readonly header: KeygroupHeader
+
+    constructor(header: KeygroupHeader) {
+        this.header = header
+    }
+
 }
 
 
