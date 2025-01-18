@@ -51,7 +51,9 @@ export async function genParser(spec: Spec) {
     for (const field of spec.fields) {
         rv += `    // ${field.d}\n`
         rv += `    out.log('${field.n}: offset: ' + reloff())\n`
-        rv += `    o["${field.n}Label"] = "${field.l ? field.l : field.n}"\n`
+        if (field.l) {
+            rv += `    o["${field.n}Label"] = "${field.l}"\n`
+        }
         if (field.t) {
             rv += `    o.${field.n} = ''\n` +
                 '    for (let i = 0; i < 12; i++) {\n' +

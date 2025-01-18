@@ -106,36 +106,21 @@ function ProgramDetailScreen({programName}: { programName: string }) {
     let maxLabel = 0
     for (const prop of Object.getOwnPropertyNames(header)) {
         out.log(`prop: ${prop}`)
-        if (!prop.endsWith('Label')) {
-            const labelField = prop + 'Label'
-            const label = header[labelField] ? header[labelField] : prop
+        const labelField = prop + 'Label'
+        if (header[labelField]) {
+            const label = header[labelField]
             const value = header[prop]
-            out.log(`  val: ${value}`)
             maxLabel = label.length > maxLabel ? label.length : maxLabel
             fields.push({Name: label, Value: value})
         }
     }
 
-    function pad(v: string, l: number, p: string = ' ') {
-        while (v.length < l) {
-            v += p
-        }
-        return v
-    }
+    out.log(`Max label: ${maxLabel}`)
 
     return (
-        <Box flexDirection="column">
-            {/*<Text>Program : {header.PRNAME}</Text>*/}
-            {/*<Text>Number : {header.PRGNUM}</Text>*/}
-            {/*<Text>Channel : {header.PMCHAN}</Text>*/}
-            {/*<Text>Polyphony : {header.POLYPH}</Text>*/}
-            {/*<Text>Priority : {header.PRIORT}</Text>*/}
-            {/*<Text>Note range : {header.PLAYLO}-{header.PLAYHI}</Text>*/}
-            {/*<Text>Output : {header.OUTPUT}</Text>*/}
-            {/*<Text>Stereo level : {header.STEREO}</Text>*/}
-            {/*<Text>Pan : {header.PANPOS}</Text>*/}
+        <Box justifyContent="flex-start" flexDirection="column" width={24}>
             {fields.map(f => {
-                return (<Box><Text>{pad(f.Name, maxHeaderSize)}:</Text><Text>{f.Value}</Text></Box>)
+                return (<Box justifyContent="space-between"><Text>{f.Name}</Text><Text>{f.Value}</Text></Box>)
             })}
         </Box>)
 }

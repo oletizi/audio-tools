@@ -1,5 +1,5 @@
 //
-// GENERATED Fri Jan 17 2025 17:09:31 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Fri Jan 17 2025 17:39:10 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -188,7 +188,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Block address of first keygroup (internal use)
     out.log('KGRP1: offset: ' + reloff())
-    o["KGRP1Label"] = "KGRP1"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -242,7 +241,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Lower limit of play range; Range: 21 to 127 represents A1 to G8
     out.log('PLAYLO: offset: ' + reloff())
-    o["PLAYLOLabel"] = "PLAYLO"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -251,7 +249,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Upper limit of play range
     out.log('PLAYHI: offset: ' + reloff())
-    o["PLAYHILabel"] = "PLAYHI"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -260,7 +257,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('OSHIFT: offset: ' + reloff())
-    o["OSHIFTLabel"] = "OSHIFT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -269,7 +265,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Individual output routing. This parameter also controls send to effects section.
     out.log('OUTPUT: offset: ' + reloff())
-    o["OUTPUTLabel"] = "OUTPUT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -278,7 +273,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Left and right output levels; Range: 0 to 99
     out.log('STEREO: offset: ' + reloff())
-    o["STEREOLabel"] = "STEREO"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -287,7 +281,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Balance between left and right outputs; Range: -50 to +50
     out.log('PANPOS: offset: ' + reloff())
-    o["PANPOSLabel"] = "PANPOS"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -296,7 +289,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Basic loudness of this program; Range: 0 to 99
     out.log('PRLOUD: offset: ' + reloff())
-    o["PRLOUDLabel"] = "PRLOUD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -305,7 +297,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Note-on velocity dependence of loudness; Range: -50 to +50
     out.log('V_LOUD: offset: ' + reloff())
-    o["V_LOUDLabel"] = "V_LOUD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -314,7 +305,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('K_LOUD: offset: ' + reloff())
-    o["K_LOUDLabel"] = "K_LOUD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -323,7 +313,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('P_LOUD: offset: ' + reloff())
-    o["P_LOUDLabel"] = "P_LOUD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -332,7 +321,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Speed of LFO2; 0 to 99
     out.log('PANRAT: offset: ' + reloff())
-    o["PANRATLabel"] = "PANRAT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -341,7 +329,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Depth of LFO2
     out.log('PANDEP: offset: ' + reloff())
-    o["PANDEPLabel"] = "PANDEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -350,7 +337,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Delay in growth of LFO2
     out.log('PANDEL: offset: ' + reloff())
-    o["PANDELLabel"] = "PANDEL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -359,7 +345,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('K_PANP: offset: ' + reloff())
-    o["K_PANPLabel"] = "K_PANP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -368,7 +353,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Speed of LFO1
     out.log('LFORAT: offset: ' + reloff())
-    o["LFORATLabel"] = "LFORAT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -377,7 +361,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Depth of LFO1
     out.log('LFODEP: offset: ' + reloff())
-    o["LFODEPLabel"] = "LFODEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -386,7 +369,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Delay in growth of LFO1
     out.log('LFODEL: offset: ' + reloff())
-    o["LFODELLabel"] = "LFODEL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -395,7 +377,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Modwheel
     out.log('MWLDEP: offset: ' + reloff())
-    o["MWLDEPLabel"] = "MWLDEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -404,7 +385,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Aftertouch
     out.log('PRSDEP: offset: ' + reloff())
-    o["PRSDEPLabel"] = "PRSDEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -413,7 +393,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth by Note-On velocity
     out.log('VELDEP: offset: ' + reloff())
-    o["VELDEPLabel"] = "VELDEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -422,7 +401,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Range of increase of Pitch by bendwheel
     out.log('B_PTCH: offset: ' + reloff())
-    o["B_PTCHLabel"] = "B_PTCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -431,7 +409,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of Pitch by Pressure
     out.log('P_PTCH: offset: ' + reloff())
-    o["P_PTCHLabel"] = "P_PTCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -440,7 +417,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Keygroup crossfade enable
     out.log('KXFADE: offset: ' + reloff())
-    o["KXFADELabel"] = "KXFADE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -449,7 +425,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Number of keygroups. To change the number of keygroups in a program, the KDATA and DELK commands should be used.
     out.log('GROUPS: offset: ' + reloff())
-    o["GROUPSLabel"] = "GROUPS"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -458,7 +433,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Temporary program number (internal use)
     out.log('TPNUM: offset: ' + reloff())
-    o["TPNUMLabel"] = "TPNUM"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -467,7 +441,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Key temperament C, C#, D, D# etc.
     out.log('TEMPER: offset: ' + reloff())
-    o["TEMPERLabel"] = "TEMPER"
     o.TEMPER = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -476,7 +449,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('ECHOUT: offset: ' + reloff())
-    o["ECHOUTLabel"] = "ECHOUT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -485,7 +457,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('MW_PAN: offset: ' + reloff())
-    o["MW_PANLabel"] = "MW_PAN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -494,7 +465,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('COHERE: offset: ' + reloff())
-    o["COHERELabel"] = "COHERE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -503,7 +473,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Enable de-synchronisation of LFO1 across notes;  0 represents OFF, 1 represents ON
     out.log('DESYNC: offset: ' + reloff())
-    o["DESYNCLabel"] = "DESYNC"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -512,7 +481,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('PLAW: offset: ' + reloff())
-    o["PLAWLabel"] = "PLAW"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -521,7 +489,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Criterion by which voices are stolen; 0 represents OLDEST, 1 represents QUIETEST
     out.log('VASSOQ: offset: ' + reloff())
-    o["VASSOQLabel"] = "VASSOQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -530,7 +497,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Reduction in loudness due to soft pedal
     out.log('SPLOUD: offset: ' + reloff())
-    o["SPLOUDLabel"] = "SPLOUD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -539,7 +505,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Stretch of attack due to soft pedal
     out.log('SPATT: offset: ' + reloff())
-    o["SPATTLabel"] = "SPATT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -548,7 +513,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Reduction of filter frequency due to soft pedal
     out.log('SPFILT: offset: ' + reloff())
-    o["SPFILTLabel"] = "SPFILT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -557,7 +521,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Tuning offset of program; -50.00 to +50.00 (fraction is binary)
     out.log('PTUNO: offset: ' + reloff())
-    o["PTUNOLabel"] = "PTUNO"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -566,7 +529,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('K_LRAT: offset: ' + reloff())
-    o["K_LRATLabel"] = "K_LRAT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -575,7 +537,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('K_LDEP: offset: ' + reloff())
-    o["K_LDEPLabel"] = "K_LDEP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -584,7 +545,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('K_LDEL: offset: ' + reloff())
-    o["K_LDELLabel"] = "K_LDEL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -593,7 +553,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Level sent to Individual outputs/effects
     out.log('VOSCL: offset: ' + reloff())
-    o["VOSCLLabel"] = "VOSCL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -602,7 +561,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('VSSCL: offset: ' + reloff())
-    o["VSSCLLabel"] = "VSSCL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -611,7 +569,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Mono legato mode enable; 0 represents OFF, 1 represents ON
     out.log('LEGATO: offset: ' + reloff())
-    o["LEGATOLabel"] = "LEGATO"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -620,7 +577,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Range of decrease of Pitch by bendwheel
     out.log('B_PTCHD: offset: ' + reloff())
-    o["B_PTCHDLabel"] = "B_PTCHD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -629,7 +585,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Bending of held notes; 0 represents NORMAL mode, 1 represents HELD mode
     out.log('B_MODE: offset: ' + reloff())
-    o["B_MODELabel"] = "B_MODE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -638,7 +593,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Shift pitch of incoming MIDI
     out.log('TRANSPOSE: offset: ' + reloff())
-    o["TRANSPOSELabel"] = "TRANSPOSE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -647,7 +601,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // First source of assignable modulation of pan position
     out.log('MODSPAN1: offset: ' + reloff())
-    o["MODSPAN1Label"] = "MODSPAN1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -656,7 +609,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Second source of assignable modulation of pan
     out.log('MODSPAN2: offset: ' + reloff())
-    o["MODSPAN2Label"] = "MODSPAN2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -665,7 +617,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Third source of assignable modulation of pan
     out.log('MODSPAN3: offset: ' + reloff())
-    o["MODSPAN3Label"] = "MODSPAN3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -674,7 +625,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // First source of assignable modulation of loudness
     out.log('MODSAMP1: offset: ' + reloff())
-    o["MODSAMP1Label"] = "MODSAMP1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -683,7 +633,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Second source of assignable modulation of loudness
     out.log('MODSAMP2: offset: ' + reloff())
-    o["MODSAMP2Label"] = "MODSAMP2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -692,7 +641,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Source of assignable modulation of LFO1 speed
     out.log('MODSLFOT: offset: ' + reloff())
-    o["MODSLFOTLabel"] = "MODSLFOT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -701,7 +649,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Source of assignable modulation of LFO1 depth
     out.log('MODSLFOL: offset: ' + reloff())
-    o["MODSLFOLLabel"] = "MODSLFOL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -710,7 +657,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Source of assignable modulation of LFO1 delay
     out.log('MODSLFOD: offset: ' + reloff())
-    o["MODSLFODLabel"] = "MODSLFOD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -719,7 +665,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // First source of assignable modulation of filter frequency
     out.log('MODSFILT1: offset: ' + reloff())
-    o["MODSFILT1Label"] = "MODSFILT1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -728,7 +673,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Second source of assignable modulation of filter frequency
     out.log('MODSFILT2: offset: ' + reloff())
-    o["MODSFILT2Label"] = "MODSFILT2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -737,7 +681,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Third source of assignable modulation of filter frequency
     out.log('MODSFILT3: offset: ' + reloff())
-    o["MODSFILT3Label"] = "MODSFILT3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -746,7 +689,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Source of assignable modulation of pitch
     out.log('MODSPITCH: offset: ' + reloff())
-    o["MODSPITCHLabel"] = "MODSPITCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -755,7 +697,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Third source of assignable modulation of loudness
     out.log('MODSAMP3: offset: ' + reloff())
-    o["MODSAMP3Label"] = "MODSAMP3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -764,7 +705,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of pan by assignable source 1
     out.log('MODVPAN1: offset: ' + reloff())
-    o["MODVPAN1Label"] = "MODVPAN1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -773,7 +713,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of pan by assignable source 2
     out.log('MODVPAN2: offset: ' + reloff())
-    o["MODVPAN2Label"] = "MODVPAN2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -782,7 +721,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of pan by assignable source 3
     out.log('MODVPAN3: offset: ' + reloff())
-    o["MODVPAN3Label"] = "MODVPAN3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -791,7 +729,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of loudness by assignable source 1
     out.log('MODVAMP1: offset: ' + reloff())
-    o["MODVAMP1Label"] = "MODVAMP1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -800,7 +737,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of loudness by assignable source 2
     out.log('MODVAMP2: offset: ' + reloff())
-    o["MODVAMP2Label"] = "MODVAMP2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -809,7 +745,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 speed
     out.log('MODVLFOR: offset: ' + reloff())
-    o["MODVLFORLabel"] = "MODVLFOR"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -818,7 +753,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 depth
     out.log('MODVLVOL: offset: ' + reloff())
-    o["MODVLVOLLabel"] = "MODVLVOL"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -827,7 +761,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Amount of control of LFO1 delay
     out.log('MODVLFOD: offset: ' + reloff())
-    o["MODVLFODLabel"] = "MODVLFOD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -836,7 +769,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // LFO1 waveform; 0 represents Triangle, 1 represents Sawtooth, 2 represents Square
     out.log('LFO1WAVE: offset: ' + reloff())
-    o["LFO1WAVELabel"] = "LFO1WAVE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -845,7 +777,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // LFO2 waveform
     out.log('LFO2WAVE: offset: ' + reloff())
-    o["LFO2WAVELabel"] = "LFO2WAVE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -854,7 +785,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // First source of assignable modulation of filter 2 frequency (only used on S3200).
     out.log('MODSLFLT2_1: offset: ' + reloff())
-    o["MODSLFLT2_1Label"] = "MODSLFLT2_1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -863,7 +793,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Second source of assignable modulation of filter 2 frequency (only used on S3200).
     out.log('MODSLFLT2_2: offset: ' + reloff())
-    o["MODSLFLT2_2Label"] = "MODSLFLT2_2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -872,7 +801,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Third source of assignable modulation of filter 2 frequency (only used on S3200).
     out.log('MODSLFLT2_3: offset: ' + reloff())
-    o["MODSLFLT2_3Label"] = "MODSLFLT2_3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -881,7 +809,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Retrigger mode for LFO2
     out.log('LFO2TRIG: offset: ' + reloff())
-    o["LFO2TRIGLabel"] = "LFO2TRIG"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -890,7 +817,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Not used
     out.log('RESERVED_1: offset: ' + reloff())
-    o["RESERVED_1Label"] = "RESERVED_1"
     b = []
     for (let i=0; i<7; i++) {
         b.push(nextByte(data, v).value)
@@ -899,7 +825,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // PORTAMENTO TIME
     out.log('PORTIME: offset: ' + reloff())
-    o["PORTIMELabel"] = "PORTIME"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -908,7 +833,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // PORTAMENTO TYPE
     out.log('PORTYPE: offset: ' + reloff())
-    o["PORTYPELabel"] = "PORTYPE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -917,7 +841,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // PORTAMENTO ON/OFF
     out.log('PORTEN: offset: ' + reloff())
-    o["PORTENLabel"] = "PORTEN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -926,7 +849,6 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
 
     // Effects Bus Select; 0 to 4
     out.log('PFXCHAN: offset: ' + reloff())
-    o["PFXCHANLabel"] = "PFXCHAN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1022,7 +944,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Block identifier; Range: 3 (Fixed)
     out.log('SHIDENT: offset: ' + reloff())
-    o["SHIDENTLabel"] = "SHIDENT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1031,7 +952,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Sample bandwidth; Range: 0 represents 10kHz, 1 represents 20kHz
     out.log('SBANDW: offset: ' + reloff())
-    o["SBANDWLabel"] = "SBANDW"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1040,7 +960,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Original pitch; Range: 21 to 127 represents A1 to G8
     out.log('SPITCH: offset: ' + reloff())
-    o["SPITCHLabel"] = "SPITCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1049,7 +968,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Sample name
     out.log('SHNAME: offset: ' + reloff())
-    o["SHNAMELabel"] = "SHNAME"
     o.SHNAME = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -1058,7 +976,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid
     out.log('SSRVLD: offset: ' + reloff())
-    o["SSRVLDLabel"] = "SSRVLD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1067,7 +984,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Number of loops
     out.log('SLOOPS: offset: ' + reloff())
-    o["SLOOPSLabel"] = "SLOOPS"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1076,7 +992,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // First active loop (internal use)
     out.log('SALOOP: offset: ' + reloff())
-    o["SALOOPLabel"] = "SALOOP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1085,7 +1000,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Highest loop (internal use)
     out.log('SHLOOP: offset: ' + reloff())
-    o["SHLOOPLabel"] = "SHLOOP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1094,7 +1008,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end
     out.log('SPTYPE: offset: ' + reloff())
-    o["SPTYPELabel"] = "SPTYPE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1103,7 +1016,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Sample tuning offset cent:semi
     out.log('STUNO: offset: ' + reloff())
-    o["STUNOLabel"] = "STUNO"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1112,7 +1024,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Absolute start address in memory of sample
     out.log('SLOCAT: offset: ' + reloff())
-    o["SLOCATLabel"] = "SLOCAT"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1121,7 +1032,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Length of sample
     out.log('SLNGTH: offset: ' + reloff())
-    o["SLNGTHLabel"] = "SLNGTH"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1130,7 +1040,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Offset from start of sample from which playback commences
     out.log('SSTART: offset: ' + reloff())
-    o["SSTARTLabel"] = "SSTART"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1139,7 +1048,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Offset from start of sample from which playback ceases
     out.log('SMPEND: offset: ' + reloff())
-    o["SMPENDLabel"] = "SMPEND"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1148,7 +1056,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Position in sample of first loop point
     out.log('LOOPAT1: offset: ' + reloff())
-    o["LOOPAT1Label"] = "LOOPAT1"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1157,7 +1064,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // First loop length
     out.log('LLNGTH1: offset: ' + reloff())
-    o["LLNGTH1Label"] = "LLNGTH1"
     b = []
     for (let i=0; i<6; i++) {
         b.push(nextByte(data, v).value)
@@ -1166,7 +1072,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
     out.log('LDWELL1: offset: ' + reloff())
-    o["LDWELL1Label"] = "LDWELL1"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1175,7 +1080,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Position in sample of second loop point
     out.log('LOOPAT2: offset: ' + reloff())
-    o["LOOPAT2Label"] = "LOOPAT2"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1184,7 +1088,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Second loop length
     out.log('LLNGTH2: offset: ' + reloff())
-    o["LLNGTH2Label"] = "LLNGTH2"
     b = []
     for (let i=0; i<6; i++) {
         b.push(nextByte(data, v).value)
@@ -1193,7 +1096,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
     out.log('LDWELL2: offset: ' + reloff())
-    o["LDWELL2Label"] = "LDWELL2"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1202,7 +1104,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Position in sample of third loop point
     out.log('LOOPAT3: offset: ' + reloff())
-    o["LOOPAT3Label"] = "LOOPAT3"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1211,7 +1112,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Third loop length
     out.log('LLNGTH3: offset: ' + reloff())
-    o["LLNGTH3Label"] = "LLNGTH3"
     b = []
     for (let i=0; i<6; i++) {
         b.push(nextByte(data, v).value)
@@ -1220,7 +1120,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
     out.log('LDWELL3: offset: ' + reloff())
-    o["LDWELL3Label"] = "LDWELL3"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1229,7 +1128,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Position in sample of fourth loop point
     out.log('LOOPAT4: offset: ' + reloff())
-    o["LOOPAT4Label"] = "LOOPAT4"
     b = []
     for (let i=0; i<4; i++) {
         b.push(nextByte(data, v).value)
@@ -1238,7 +1136,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Fourth loop length
     out.log('LLNGTH4: offset: ' + reloff())
-    o["LLNGTH4Label"] = "LLNGTH4"
     b = []
     for (let i=0; i<6; i++) {
         b.push(nextByte(data, v).value)
@@ -1247,7 +1144,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds
     out.log('LDWELL4: offset: ' + reloff())
-    o["LDWELL4Label"] = "LDWELL4"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1256,7 +1152,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Relative loop factors for loop 1
     out.log('SLXY1: offset: ' + reloff())
-    o["SLXY1Label"] = "SLXY1"
     b = []
     for (let i=0; i<12; i++) {
         b.push(nextByte(data, v).value)
@@ -1265,7 +1160,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Relative loop factors for loop 2
     out.log('SLXY2: offset: ' + reloff())
-    o["SLXY2Label"] = "SLXY2"
     b = []
     for (let i=0; i<12; i++) {
         b.push(nextByte(data, v).value)
@@ -1274,7 +1168,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Relative loop factors for loop 3
     out.log('SLXY3: offset: ' + reloff())
-    o["SLXY3Label"] = "SLXY3"
     b = []
     for (let i=0; i<12; i++) {
         b.push(nextByte(data, v).value)
@@ -1283,7 +1176,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Relative loop factors for loop 4
     out.log('SLXY4: offset: ' + reloff())
-    o["SLXY4Label"] = "SLXY4"
     b = []
     for (let i=0; i<12; i++) {
         b.push(nextByte(data, v).value)
@@ -1292,7 +1184,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Used internally
     out.log('SSPARE: offset: ' + reloff())
-    o["SSPARELabel"] = "SSPARE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1301,7 +1192,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Not used
     out.log('SWCOMM: offset: ' + reloff())
-    o["SWCOMMLabel"] = "SWCOMM"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1310,7 +1200,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Address of stereo partner (internal use)
     out.log('SSPAIR: offset: ' + reloff())
-    o["SSPAIRLabel"] = "SSPAIR"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1319,7 +1208,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Sample rate
     out.log('SSRATE: offset: ' + reloff())
-    o["SSRATELabel"] = "SSRATE"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1328,7 +1216,6 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
 
     // Tuning offset of hold loop; Range: -50 to +50
     out.log('SHLTO: offset: ' + reloff())
-    o["SHLTOLabel"] = "SHLTO"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1618,7 +1505,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Block identifier (internal use); Should equal 2
     out.log('KGIDENT: offset: ' + reloff())
-    o["KGIDENTLabel"] = "KGIDENT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1627,7 +1513,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Next keygroup block address (internal use)
     out.log('NXTKG: offset: ' + reloff())
-    o["NXTKGLabel"] = "NXTKG"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1636,7 +1521,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Lower limit of keyrange; Range: 21 to 127 represents A1 to G8
     out.log('LONOTE: offset: ' + reloff())
-    o["LONOTELabel"] = "LONOTE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1645,7 +1529,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Upper limit of keyrange
     out.log('HINOTE: offset: ' + reloff())
-    o["HINOTELabel"] = "HINOTE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1654,7 +1537,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Keygroup tuning offset; Range: -50.00 to +50.00 (fraction is binary)
     out.log('KGTUNO: offset: ' + reloff())
-    o["KGTUNOLabel"] = "KGTUNO"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1663,7 +1545,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Basic filter frequency; Range: 0 to 99
     out.log('FILFRQ: offset: ' + reloff())
-    o["FILFRQLabel"] = "FILFRQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1672,7 +1553,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Key follow of filter frequency
     out.log('K_FREQ: offset: ' + reloff())
-    o["K_FREQLabel"] = "K_FREQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1681,7 +1561,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('V_FREQ: offset: ' + reloff())
-    o["V_FREQLabel"] = "V_FREQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1690,7 +1569,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Note used
     out.log('P_FREQ: offset: ' + reloff())
-    o["P_FREQLabel"] = "P_FREQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1699,7 +1577,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('E_FREQ: offset: ' + reloff())
-    o["E_FREQLabel"] = "E_FREQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1708,7 +1585,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Attack rate of envelope 1; 0-99
     out.log('ATTAK1: offset: ' + reloff())
-    o["ATTAK1Label"] = "ATTAK1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1717,7 +1593,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Decay rate of envelope 1; 0-99
     out.log('DECAY1: offset: ' + reloff())
-    o["DECAY1Label"] = "DECAY1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1726,7 +1601,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sustain level of envelope 1
     out.log('SUSTN1: offset: ' + reloff())
-    o["SUSTN1Label"] = "SUSTN1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1735,7 +1609,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Release rate of envelope 1
     out.log('RELSE1: offset: ' + reloff())
-    o["RELSE1Label"] = "RELSE1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1744,7 +1617,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Note-on velocity dependence of envelope 1 attack rate; Range: -50 to +50
     out.log('V_ATT1: offset: ' + reloff())
-    o["V_ATT1Label"] = "V_ATT1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1753,7 +1625,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Note-on velocity dependence of envelope 1 release rate
     out.log('V_REL1: offset: ' + reloff())
-    o["V_REL1Label"] = "V_REL1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1762,7 +1633,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Note-off velocity dependence of envelope 1 release rate
     out.log('O_REL1: offset: ' + reloff())
-    o["O_REL1Label"] = "O_REL1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1771,7 +1641,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 2 decay and release rates on key
     out.log('K_DAR1: offset: ' + reloff())
-    o["K_DAR1Label"] = "K_DAR1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1780,7 +1649,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Attack rate of envelope 2: 0-99
     out.log('ENV2R1: offset: ' + reloff())
-    o["ENV2R1Label"] = "ENV2R1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1789,7 +1657,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Decay rate of envelope 2
     out.log('ENV2R3: offset: ' + reloff())
-    o["ENV2R3Label"] = "ENV2R3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1798,7 +1665,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sustain level of envelope 2
     out.log('ENV2L3: offset: ' + reloff())
-    o["ENV2L3Label"] = "ENV2L3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1807,7 +1673,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Release rate of envelope 2
     out.log('ENV2R4: offset: ' + reloff())
-    o["ENV2R4Label"] = "ENV2R4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1816,7 +1681,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 2 attack on note-on velocity; Range: -50 to 50
     out.log('V_ATT2: offset: ' + reloff())
-    o["V_ATT2Label"] = "V_ATT2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1825,7 +1689,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 2 release on note-on velocity
     out.log('V_REL2: offset: ' + reloff())
-    o["V_REL2Label"] = "V_REL2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1834,7 +1697,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 2 release on note-off velocity
     out.log('O_REL2: offset: ' + reloff())
-    o["O_REL2Label"] = "O_REL2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1843,7 +1705,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 2 decay and release rates on key
     out.log('K_DAR2: offset: ' + reloff())
-    o["K_DAR2Label"] = "K_DAR2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1852,7 +1713,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Scaling of envelope 2 by note-on velocity
     out.log('V_ENV2: offset: ' + reloff())
-    o["V_ENV2Label"] = "V_ENV2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1861,7 +1721,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('E_PTCH: offset: ' + reloff())
-    o["E_PTCHLabel"] = "E_PTCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1870,7 +1729,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone crossfade; Range: 0 represents OFF, 1 represents ON
     out.log('VXFADE: offset: ' + reloff())
-    o["VXFADELabel"] = "VXFADE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1879,7 +1737,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('VZONES: offset: ' + reloff())
-    o["VZONESLabel"] = "VZONES"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1888,7 +1745,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated left keygroup crossfade factor (internal)
     out.log('LKXF: offset: ' + reloff())
-    o["LKXFLabel"] = "LKXF"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1897,7 +1753,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated right keygroup crossfade factor (internal)
     out.log('RKXF: offset: ' + reloff())
-    o["RKXFLabel"] = "RKXF"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1906,7 +1761,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sample name used in velocity zone 1
     out.log('SNAME1: offset: ' + reloff())
-    o["SNAME1Label"] = "SNAME1"
     o.SNAME1 = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -1915,7 +1769,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Lower limit of velocity range; 0-127
     out.log('LOVEL1: offset: ' + reloff())
-    o["LOVEL1Label"] = "LOVEL1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1924,7 +1777,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Upper limit of velocity range
     out.log('HIVEL1: offset: ' + reloff())
-    o["HIVEL1Label"] = "HIVEL1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1933,7 +1785,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 1 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
     out.log('VTUNO1: offset: ' + reloff())
-    o["VTUNO1Label"] = "VTUNO1"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -1942,7 +1793,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 1 loudness offset; Range: -50 to +50
     out.log('VLOUD1: offset: ' + reloff())
-    o["VLOUD1Label"] = "VLOUD1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1951,7 +1801,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 1 filter frequency offset
     out.log('VFREQ1: offset: ' + reloff())
-    o["VFREQ1Label"] = "VFREQ1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1960,7 +1809,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 1 pan offset
     out.log('VPANO1: offset: ' + reloff())
-    o["VPANO1Label"] = "VPANO1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1969,7 +1817,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Type of sample playback in velocity zone 1; 0 = As sample, 1 = Loop in release, 2 = Loop til release, 3 = No loops, 4 = Play to sample end
     out.log('ZPLAY1: offset: ' + reloff())
-    o["ZPLAY1Label"] = "ZPLAY1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1978,7 +1825,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Low velocity crossfade factor (internal use)
     out.log('LVXF1: offset: ' + reloff())
-    o["LVXF1Label"] = "LVXF1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1987,7 +1833,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // High velocity crossfade factor (internal use)
     out.log('HVXF1: offset: ' + reloff())
-    o["HVXF1Label"] = "HVXF1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -1996,7 +1841,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated sample header block address (internal)
     out.log('SBADD1: offset: ' + reloff())
-    o["SBADD1Label"] = "SBADD1"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2005,7 +1849,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sample name used in velocity zone 2
     out.log('SNAME2: offset: ' + reloff())
-    o["SNAME2Label"] = "SNAME2"
     o.SNAME2 = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -2014,7 +1857,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Lower limit of velocity range 2
     out.log('LOVEL2: offset: ' + reloff())
-    o["LOVEL2Label"] = "LOVEL2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2023,7 +1865,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Upper limit of velocity range 2
     out.log('HIVEL2: offset: ' + reloff())
-    o["HIVEL2Label"] = "HIVEL2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2032,7 +1873,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 2 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
     out.log('VTUNO2: offset: ' + reloff())
-    o["VTUNO2Label"] = "VTUNO2"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2041,7 +1881,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 2 loudness offset
     out.log('VLOUD2: offset: ' + reloff())
-    o["VLOUD2Label"] = "VLOUD2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2050,7 +1889,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 2 filter frequency offset
     out.log('VFREQ2: offset: ' + reloff())
-    o["VFREQ2Label"] = "VFREQ2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2059,7 +1897,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 2 pan offset
     out.log('VPANO2: offset: ' + reloff())
-    o["VPANO2Label"] = "VPANO2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2068,7 +1905,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Type of sample playback in velocity zone 2; see ZPLAY1
     out.log('ZPLAY2: offset: ' + reloff())
-    o["ZPLAY2Label"] = "ZPLAY2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2077,7 +1913,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Low velocity crossfade factor (internal use)
     out.log('LVXF2: offset: ' + reloff())
-    o["LVXF2Label"] = "LVXF2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2086,7 +1921,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // High velocity crossfade factor (internal use)
     out.log('HVXF2: offset: ' + reloff())
-    o["HVXF2Label"] = "HVXF2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2095,7 +1929,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated sample header block address (internal)
     out.log('SBADD2: offset: ' + reloff())
-    o["SBADD2Label"] = "SBADD2"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2104,7 +1937,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sample name used in velocity zone 3
     out.log('SNAME3: offset: ' + reloff())
-    o["SNAME3Label"] = "SNAME3"
     o.SNAME3 = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -2113,7 +1945,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Lower limit of velocity range 3
     out.log('LOVEL3: offset: ' + reloff())
-    o["LOVEL3Label"] = "LOVEL3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2122,7 +1953,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Upper limit of velocity range 3
     out.log('HIVEL3: offset: ' + reloff())
-    o["HIVEL3Label"] = "HIVEL3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2131,7 +1961,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 3 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
     out.log('VTUNO3: offset: ' + reloff())
-    o["VTUNO3Label"] = "VTUNO3"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2140,7 +1969,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 3 loudness offset; -50 to +50
     out.log('VLOUD3: offset: ' + reloff())
-    o["VLOUD3Label"] = "VLOUD3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2149,7 +1977,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 3 filter frequency offset
     out.log('VFREQ3: offset: ' + reloff())
-    o["VFREQ3Label"] = "VFREQ3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2158,7 +1985,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 3 pan offset
     out.log('VPANO3: offset: ' + reloff())
-    o["VPANO3Label"] = "VPANO3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2167,7 +1993,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Type of sample playback in velocity zone 3; See ZPLAY1
     out.log('ZPLAY3: offset: ' + reloff())
-    o["ZPLAY3Label"] = "ZPLAY3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2176,7 +2001,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Low velocity crossfade factor (internal use)
     out.log('LVXF3: offset: ' + reloff())
-    o["LVXF3Label"] = "LVXF3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2185,7 +2009,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // High velocity crossfade factor (internal use)
     out.log('HVXF3: offset: ' + reloff())
-    o["HVXF3Label"] = "HVXF3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2194,7 +2017,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated sample header block address (internal)
     out.log('SBADD3: offset: ' + reloff())
-    o["SBADD3Label"] = "SBADD3"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2203,7 +2025,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Sample name used in velocity zone 4
     out.log('SNAME4: offset: ' + reloff())
-    o["SNAME4Label"] = "SNAME4"
     o.SNAME4 = ''
     for (let i = 0; i < 12; i++) {
           nextByte(data, v)
@@ -2212,7 +2033,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Lower limit of velocity range 4
     out.log('LOVEL4: offset: ' + reloff())
-    o["LOVEL4Label"] = "LOVEL4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2221,7 +2041,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Upper limit of velocity range 4
     out.log('HIVEL4: offset: ' + reloff())
-    o["HIVEL4Label"] = "HIVEL4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2230,7 +2049,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 4 tuning offset; Range: -50.00 to +50.00 (fraction is binary)
     out.log('VTUNO4: offset: ' + reloff())
-    o["VTUNO4Label"] = "VTUNO4"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2239,7 +2057,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 4 loudness offset
     out.log('VLOUD4: offset: ' + reloff())
-    o["VLOUD4Label"] = "VLOUD4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2248,7 +2065,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 4 filter frequency offset
     out.log('VFREQ4: offset: ' + reloff())
-    o["VFREQ4Label"] = "VFREQ4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2257,7 +2073,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Velocity zone 4 pan offset
     out.log('VPANO4: offset: ' + reloff())
-    o["VPANO4Label"] = "VPANO4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2266,7 +2081,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Type of sample playback in velocity zone 4; See ZPLAY1
     out.log('ZPLAY4: offset: ' + reloff())
-    o["ZPLAY4Label"] = "ZPLAY4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2275,7 +2089,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Low velocity crossfade factor (internal use)
     out.log('LVXF4: offset: ' + reloff())
-    o["LVXF4Label"] = "LVXF4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2284,7 +2097,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // High velocity crossfade factor (internal use)
     out.log('HVXF4: offset: ' + reloff())
-    o["HVXF4Label"] = "HVXF4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2293,7 +2105,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Calculated sample header block address (internal)
     out.log('SBADD4: offset: ' + reloff())
-    o["SBADD4Label"] = "SBADD4"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2302,7 +2113,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Fixed rate detune; -50 to 50
     out.log('KBEAT: offset: ' + reloff())
-    o["KBEATLabel"] = "KBEAT"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2311,7 +2121,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Remain in attack phase until first loop encountered; Range: 0 represents OFF, 1 represents ON
     out.log('AHOLD: offset: ' + reloff())
-    o["AHOLDLabel"] = "AHOLD"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2320,7 +2129,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Constant pitch flag for velocity zone 1; 0 represents TRACK, 1 represents CONST
     out.log('CP1: offset: ' + reloff())
-    o["CP1Label"] = "CP1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2329,7 +2137,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Constant pitch flag for velocity zone 2
     out.log('CP2: offset: ' + reloff())
-    o["CP2Label"] = "CP2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2338,7 +2145,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Constant pitch flag for velocity zone 3
     out.log('CP3: offset: ' + reloff())
-    o["CP3Label"] = "CP3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2347,7 +2153,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Constant pitch flag for velocity zone 4
     out.log('CP4: offset: ' + reloff())
-    o["CP4Label"] = "CP4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2356,7 +2161,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Individual output offset for velocity zone 1
     out.log('VZOUT1: offset: ' + reloff())
-    o["VZOUT1Label"] = "VZOUT1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2365,7 +2169,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Individual output offset for velocity zone 2
     out.log('VZOUT2: offset: ' + reloff())
-    o["VZOUT2Label"] = "VZOUT2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2374,7 +2177,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Individual output offset for velocity zone 3
     out.log('VZOUT3: offset: ' + reloff())
-    o["VZOUT3Label"] = "VZOUT3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2383,7 +2185,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Individual output offset for velocity zone 4
     out.log('VZOUT4: offset: ' + reloff())
-    o["VZOUT4Label"] = "VZOUT4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2392,7 +2193,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Start point dependence on note-on velocity for sample in velocity zone 1; Range: -9999 to +9999 data points
     out.log('VSS1: offset: ' + reloff())
-    o["VSS1Label"] = "VSS1"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2401,7 +2201,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Start point dependence on note-on velocity for sample in velocity zone 2
     out.log('VSS2: offset: ' + reloff())
-    o["VSS2Label"] = "VSS2"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2410,7 +2209,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Start point dependence on note-on velocity for sample in velocity zone 3
     out.log('VSS3: offset: ' + reloff())
-    o["VSS3Label"] = "VSS3"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2419,7 +2217,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Start point dependence on note-on velocity for sample in velocity zone 4
     out.log('VSS4: offset: ' + reloff())
-    o["VSS4Label"] = "VSS4"
     b = []
     for (let i=0; i<2; i++) {
         b.push(nextByte(data, v).value)
@@ -2428,7 +2225,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('KV_LO: offset: ' + reloff())
-    o["KV_LOLabel"] = "KV_LO"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2437,7 +2233,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Resonance of filter 1; Range: 0 to 15
     out.log('FILQ: offset: ' + reloff())
-    o["FILQLabel"] = "FILQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2446,7 +2241,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of pitch by LFO1; -50 to +50
     out.log('L_PTCH: offset: ' + reloff())
-    o["L_PTCHLabel"] = "L_PTCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2455,7 +2249,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of filter frequency by assignable source 1
     out.log('MODVFILT1: offset: ' + reloff())
-    o["MODVFILT1Label"] = "MODVFILT1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2464,7 +2257,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of filter frequency by assignable source 2
     out.log('MODVFILT2: offset: ' + reloff())
-    o["MODVFILT2Label"] = "MODVFILT2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2473,7 +2265,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of filter frequency by assignable source 3
     out.log('MODVFILT3: offset: ' + reloff())
-    o["MODVFILT3Label"] = "MODVFILT3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2482,7 +2273,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of pitch by assignable source
     out.log('MODVPITCH: offset: ' + reloff())
-    o["MODVPITCHLabel"] = "MODVPITCH"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2491,7 +2281,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of loudness by assignable keygroup source
     out.log('MODVAMP3: offset: ' + reloff())
-    o["MODVAMP3Label"] = "MODVAMP3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2500,7 +2289,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Level of envelope 2 at end attack phase (phase 1); 0-99
     out.log('ENV2L1: offset: ' + reloff())
-    o["ENV2L1Label"] = "ENV2L1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2509,7 +2297,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Rate during phase 2 of envelope 2
     out.log('ENV2R2: offset: ' + reloff())
-    o["ENV2R2Label"] = "ENV2R2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2518,7 +2305,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Level of envelope 2 at end of phase 1
     out.log('ENV2L2: offset: ' + reloff())
-    o["ENV2L2Label"] = "ENV2L2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2527,7 +2313,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Final envelope 2 level
     out.log('ENV2L4: offset: ' + reloff())
-    o["ENV2L4Label"] = "ENV2L4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2536,7 +2321,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Keygroup mute group; Range: 0ffh = off, mute groups 0 to 31
     out.log('KGMUTE: offset: ' + reloff())
-    o["KGMUTELabel"] = "KGMUTE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2545,7 +2329,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Effects bus select
     out.log('PFXCHAN: offset: ' + reloff())
-    o["PFXCHANLabel"] = "PFXCHAN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2554,7 +2337,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Effects send level
     out.log('PFXSLEV: offset: ' + reloff())
-    o["PFXSLEVLabel"] = "PFXSLEV"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2563,7 +2345,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Not used
     out.log('Reserved_1: offset: ' + reloff())
-    o["Reserved_1Label"] = "Reserved_1"
     b = []
     for (let i=0; i<5; i++) {
         b.push(nextByte(data, v).value)
@@ -2572,7 +2353,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Route audio through second LSI; Range: 0 = -6dB, 1 = 0dB
     out.log('LSI2_ON: offset: ' + reloff())
-    o["LSI2_ONLabel"] = "LSI2_ON"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2581,7 +2361,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Make-up gain of second filter; Range: 0 = -6dB, 1 = 0dB
     out.log('FLT2GAIN: offset: ' + reloff())
-    o["FLT2GAINLabel"] = "FLT2GAIN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2590,7 +2369,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Mode of second filter; Range: 0 = Low-pass, 1 = Band-pass, 2 = High-pass, 3 = EQ
     out.log('FLT2MODE: offset: ' + reloff())
-    o["FLT2MODELabel"] = "FLT2MODE"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2599,7 +2377,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Resonance of second filter; Range: 0 to 31
     out.log('FLT2Q: offset: ' + reloff())
-    o["FLT2QLabel"] = "FLT2Q"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2608,7 +2385,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Center frequency of tone section
     out.log('TONEFREQ: offset: ' + reloff())
-    o["TONEFREQLabel"] = "TONEFREQ"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2617,7 +2393,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Slope of tone section
     out.log('TONESLOP: offset: ' + reloff())
-    o["TONESLOPLabel"] = "TONESLOP"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2626,7 +2401,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of second filter frequency by source 1
     out.log('MODVFLT2_1: offset: ' + reloff())
-    o["MODVFLT2_1Label"] = "MODVFLT2_1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2635,7 +2409,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of second filter frequency by source 2
     out.log('MODVFLT2_2: offset: ' + reloff())
-    o["MODVFLT2_2Label"] = "MODVFLT2_2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2644,7 +2417,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Amount of control of second filter frequency by source 3
     out.log('MODVFLT2_3: offset: ' + reloff())
-    o["MODVFLT2_3Label"] = "MODVFLT2_3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2653,7 +2425,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Basic second filter frequency; 0-99
     out.log('FIL2FR: offset: ' + reloff())
-    o["FIL2FRLabel"] = "FIL2FR"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2662,7 +2433,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Second filter key follow; Range: -24 to +24 semitones
     out.log('K_FRQ2: offset: ' + reloff())
-    o["K_FRQ2Label"] = "K_FRQ2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2671,7 +2441,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Attack rate of envelope 3
     out.log('ATTAK3: offset: ' + reloff())
-    o["ATTAK3Label"] = "ATTAK3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2680,7 +2449,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Final level of attack phase (phase 1) of envelope 3
     out.log('ENV3L1: offset: ' + reloff())
-    o["ENV3L1Label"] = "ENV3L1"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2689,7 +2457,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Rate of phase 2 of envelope 3
     out.log('ENV3R2: offset: ' + reloff())
-    o["ENV3R2Label"] = "ENV3R2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2698,7 +2465,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Final level of phase 2 of envelope 3
     out.log('ENV3L2: offset: ' + reloff())
-    o["ENV3L2Label"] = "ENV3L2"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2707,7 +2473,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Rate of phase 3 of envelope 3
     out.log('ENV3R3: offset: ' + reloff())
-    o["ENV3R3Label"] = "ENV3R3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2716,7 +2481,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Final level of phase 3 of envelope 3
     out.log('ENV3L3: offset: ' + reloff())
-    o["ENV3L3Label"] = "ENV3L3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2725,7 +2489,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Rate of release phase (phase 4) of envelope 3
     out.log('ENV3R4: offset: ' + reloff())
-    o["ENV3R4Label"] = "ENV3R4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2734,7 +2497,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Final target level of envelope 3
     out.log('ENV3L4: offset: ' + reloff())
-    o["ENV3L4Label"] = "ENV3L4"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2743,7 +2505,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 3 attack rate on note-on velocity
     out.log('V_ATT3: offset: ' + reloff())
-    o["V_ATT3Label"] = "V_ATT3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2752,7 +2513,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 3 release rate on note-on velocity
     out.log('V_REL3: offset: ' + reloff())
-    o["V_REL3Label"] = "V_REL3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2761,7 +2521,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 3 release rate on note-off velocity
     out.log('O_REL3: offset: ' + reloff())
-    o["O_REL3Label"] = "O_REL3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2770,7 +2529,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Dependence of envelope 3 release and decay rate on key
     out.log('K_DAR3: offset: ' + reloff())
-    o["K_DAR3Label"] = "K_DAR3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2779,7 +2537,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Scaling of envelope 3 by note-on velocity
     out.log('V_ENV3: offset: ' + reloff())
-    o["V_ENV3Label"] = "V_ENV3"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2788,7 +2545,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Keygroup override Effects Bus select; Range: 0 to 5
     out.log('KFXCHAN: offset: ' + reloff())
-    o["KFXCHANLabel"] = "KFXCHAN"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
@@ -2797,7 +2553,6 @@ export function parseKeygroupHeader(data: number[], offset: number, o: KeygroupH
 
     // Keygroup override Effects Send level; Range: 0 to 99
     out.log('KFXSLEV: offset: ' + reloff())
-    o["KFXSLEVLabel"] = "KFXSLEV"
     b = []
     for (let i=0; i<1; i++) {
         b.push(nextByte(data, v).value)
