@@ -93,7 +93,7 @@ describe('akai-s3000xl tests', () => {
         console.log(header)
     })
 
-    it('writes program header', async () =>{
+    it('writes program header', async () => {
         const device = newDevice(input, output)
         const programNumber = 0
         const header = {} as ProgramHeader
@@ -102,12 +102,39 @@ describe('akai-s3000xl tests', () => {
         await device.writeProgram(header)
     })
 
-    it(`updates program name`, async () => {
+    it(`writes program name`, async () => {
         const device = newDevice(input, output)
         const programNumber = 0
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
-        await device.updateProgramName(header, 'new name')
+        await device.writeProgramName(header, 'new name')
+    })
+
+    it(`writes program polyphony`, async () => {
+        let polyphony = 2
+        const device = newDevice(input, output)
+        const programNumber = 0
+        const header = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, header)
+        expect(header.POLYPH).not.eq(polyphony)
+
+        await device.writeProgramPolyphony(header, polyphony)
+
+        const h2 = {} as ProgramHeader
+        await device.fetchProgramHeader(programNumber, h2)
+
+        for (const field of Object.getOwnPropertyNames(header)) {
+            if (!field.endsWith('Label')) {
+                console.log(`${field}:`)
+                console.log(`  old: ${header[field]}`)
+                console.log(`  new: ${h2[field]}`)
+                if (header[field] !== h2[field]) {
+                    console.log(`  DIFFERENT!!!!`)
+                }
+            }
+        }
+
+        expect(h2.POLYPH).eq(polyphony)
     })
 
     it('fetches keygroup header', async () => {

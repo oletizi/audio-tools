@@ -1,4 +1,4 @@
-import * as midi from 'midi'
+// import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 import {
@@ -10,7 +10,9 @@ import {
 } from "@/midi/devices/s3000xl";
 import midi, {output} from "midi";
 import {data} from "autoprefixer";
+import {name} from "dayjs";
 import {message} from "blessed";
+import {response} from "express";
 
 export interface Device {
 
@@ -30,9 +32,11 @@ export interface Device {
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
-    updateProgramName(header: ProgramHeader, name: string): Promise<void>
-
     writeProgram(header: ProgramHeader): Promise<void>
+
+    writeProgramName(header: ProgramHeader, name: string): Promise<void>
+
+    writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void>
 }
 
 export function newDevice(input: midi.Input, output: midi.Output, out: ProcessOutput = newClientOutput()): Device {
@@ -183,7 +187,7 @@ class s3000xl implements Device {
         await this.send(Opcode.PDATA, data)
     }
 
-    async updateProgramName(header: ProgramHeader, name: string) {
+    async writeProgramName(header: ProgramHeader, name: string) {
         const offset = 13 // offset into raw sysex message for start of program name
         let v = ''
         for (let i = offset; i < offset + 12 * 2; i += 2) {
@@ -206,6 +210,19 @@ class s3000xl implements Device {
             v += akaiByte2String([b])
         }
         this.out.log(`new name: ${v}`)
+        await this.send(Opcode.PDATA, header.raw)
+    }
+
+
+    async writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void> {
+        let offset = 13 // start of program name
+        offset += 2 * 12 // PRGNUM
+        offset += 2 // PMCHAN
+        offset += 2 // POLYPH
+        this.out.log(`Offset: ${offset}; calculated: ${(offset - 13) / 2}`)
+        const d = byte2nibblesLE(polyphony)
+        header.raw[offset] = d[0]
+        header.raw[offset + 1] = d[1]
         await this.send(Opcode.PDATA, header.raw)
     }
 
@@ -267,6 +284,7 @@ class s3000xl implements Device {
         output.sendMessage(message)
         return response
     }
+
 
 }
 
