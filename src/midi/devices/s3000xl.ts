@@ -1,9 +1,9 @@
 //
-// GENERATED Sat Jan 18 2025 13:01:13 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Sat Jan 18 2025 19:48:42 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
-import {nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
+import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
     
 export interface ProgramHeader {
   KGRP1: number    // Block address of first keygroup (internal use)
@@ -1643,10 +1643,16 @@ export function ProgramHeader_writePFXCHAN(header: ProgramHeader, v: number) {
 
 
 export class Program {
+    private readonly device: Device
     private readonly header: ProgramHeader
 
-    constructor(header: ProgramHeader) {
+    constructor(device: Device, header: ProgramHeader) {
+        this.device = device
         this.header = header
+    }
+
+    async save() {
+        return this.device.sendRaw(this.header.raw)
     }
 
     getProgramName(): string { 
@@ -2522,10 +2528,16 @@ export function SampleHeader_writeSHLTO(header: SampleHeader, v: number) {
 
 
 export class Sample {
+    private readonly device: Device
     private readonly header: SampleHeader
 
-    constructor(header: SampleHeader) {
+    constructor(device: Device, header: SampleHeader) {
+        this.device = device
         this.header = header
+    }
+
+    async save() {
+        return this.device.sendRaw(this.header.raw)
     }
 
 }
@@ -5070,10 +5082,16 @@ export function KeygroupHeader_writeKFXSLEV(header: KeygroupHeader, v: number) {
 
 
 export class Keygroup {
+    private readonly device: Device
     private readonly header: KeygroupHeader
 
-    constructor(header: KeygroupHeader) {
+    constructor(device: Device, header: KeygroupHeader) {
+        this.device = device
         this.header = header
+    }
+
+    async save() {
+        return this.device.sendRaw(this.header.raw)
     }
 
 }

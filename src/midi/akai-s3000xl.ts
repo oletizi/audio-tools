@@ -8,11 +8,7 @@ import {
     ProgramHeader,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-import midi, {output} from "midi";
-import {data} from "autoprefixer";
-import {name} from "dayjs";
-import {message} from "blessed";
-import {response} from "express";
+import midi from "midi";
 
 export interface Device {
 
@@ -32,11 +28,15 @@ export interface Device {
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
-    writeProgram(header: ProgramHeader): Promise<void>
+    // writeProgram(header: ProgramHeader): Promise<void>
 
     writeProgramName(header: ProgramHeader, name: string): Promise<void>
 
     writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void>
+
+    send(opcode: number, data: number[])
+
+    sendRaw(message: number[])
 }
 
 export function newDevice(input: midi.Input, output: midi.Output, out: ProcessOutput = newClientOutput()): Device {
@@ -172,6 +172,11 @@ class s3000xl implements Device {
         // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
         const out = this.out//newClientOutput(true, 'getProgramHeader')
         const m = await this.send(Opcode.RPDATA, byte2nibblesLE(programNumber))
+
+        const opcode = getOpcode(m)
+        if (opcode === Opcode.REPLY) {
+            throw new Error(`Error fetching program header.`)
+        }
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
         header['PNUMBER'] = nextByte(m, v).value
@@ -181,11 +186,6 @@ class s3000xl implements Device {
         header.raw = m
         out.log(header)
         return header
-    }
-
-    async writeProgram(header: ProgramHeader) {
-        const data = header.raw
-        await this.send(Opcode.PDATA, data)
     }
 
     async writeProgramName(header: ProgramHeader, name: string) {
@@ -248,6 +248,7 @@ class s3000xl implements Device {
         // See header spec: https://lakai.sourceforge.net/docs/s2800_sysex.html
         const out = this.out // newClientOutput(true, 'getSampleHeader')
         const m = await this.send(Opcode.RSDATA, byte2nibblesLE(sampleNumber))
+
         const v = {value: 0, offset: 5}
         out.log(`SNUMBER: offset: ${v.offset}`)
         header['SNUMBER'] = nextByte(m, v).value
@@ -258,10 +259,7 @@ class s3000xl implements Device {
     }
 
 
-    private async send(opcode: Opcode, data: number[]): Promise<number[]> {
-        const out = this.out
-        const input = this.midiInput
-        const output = this.midiOutput
+    async send(opcode: Opcode, data: number[]): Promise<number[]> {
         const message = [
             0xf0, // 00: (240) SYSEX_START
             0x47, // 01: ( 71) AKAI
@@ -270,7 +268,13 @@ class s3000xl implements Device {
             0x48, // 04: ( 72) DEVICE ID
         ].concat(data)
         message.push(0xf7)  // 21: (247) SYSEX_END)
+        return this.sendRaw(message)
+    }
 
+    async sendRaw(message: number[]) {
+        const out = this.out
+        const input = this.midiInput
+        const output = this.midiOutput
         const response = new Promise((resolve) => {
             function listener(delta: number, message: midi.MidiMessage) {
                 // TODO: make sure the opcode in the response message is correct
@@ -286,7 +290,14 @@ class s3000xl implements Device {
         return response
     }
 
+}
 
+function getOpcode(message: number[]) {
+    let rv = -1
+    if (message.length >= 4) {
+        rv = message[3]
+    }
+    return rv
 }
 
 const ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',

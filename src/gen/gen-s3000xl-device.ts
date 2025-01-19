@@ -27,7 +27,7 @@ export function genImports() {
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
-import {nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
+import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
     
 `
 }
@@ -48,11 +48,17 @@ export async function genInterface(spec: Spec) {
 export async function genClass(spec: Spec) {
     let rv = `export class ${spec.className} {\n`
 
+    rv += `    private readonly device: Device\n`
     rv += `    private readonly header: ${spec.name}\n`
     rv += `\n`
-    rv += `    constructor(header: ${spec.name}) {\n`
+    rv += `    constructor(device: Device, header: ${spec.name}) {\n`
+    rv += `        this.device = device\n`
     rv += `        this.header = header\n`
     rv += `    }\n`
+    rv += `\n`
+    rv += '    async save() {\n'
+    rv += `        return this.device.sendRaw(this.header.raw)\n`
+    rv += '    }\n'
     rv += `\n`
     for (const field of spec.fields) {
         if (field.f) {
@@ -107,7 +113,7 @@ export async function genSetters(spec: Spec) {
                 rv += `    }\n`
 
             } else {
-                rv += '    // IMPLEMENT ME'
+                rv += `    // IMPLEMENT ME for field: ${field.t}`
             }
         } else {
             //         const d = byte2nibblesLE(polyphony)

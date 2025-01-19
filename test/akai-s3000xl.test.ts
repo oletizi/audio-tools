@@ -105,8 +105,10 @@ describe('akai-s3000xl tests', () => {
         const programNumber = 0
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
+        const program = new Program(device, header)
         console.log(header)
-        await device.writeProgram(header)
+        // await device.writeProgram(header)
+        await program.save()
     })
 
     it(`writes program name`, async () => {
@@ -123,24 +125,24 @@ describe('akai-s3000xl tests', () => {
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
 
-        const program = new Program(header)
+        const program = new Program(device, header)
 
         program.setProgramName('test program')
-        await device.writeProgram(header)
-
-
+        // await device.writeProgram(header)
+        await program.save()
 
         let newName = 'a new name'
         expect(program.getProgramName().trim()).not.eq(newName.toUpperCase())
         program.setProgramName('a new name')
         expect(program.getProgramName().trim()).eq(newName.toUpperCase())
 
-        await device.writeProgram(header)
+        // await device.writeProgram(header)
+        await program.save()
 
         const h2 = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, h2)
 
-        const p2 = new Program(header)
+        const p2 = new Program(device, h2)
         expect(p2.getProgramName()).eq(program.getProgramName())
     })
 
@@ -150,17 +152,17 @@ describe('akai-s3000xl tests', () => {
         const header = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, header)
 
-        const program = new Program(header)
+        const program = new Program(device, header)
 
         const level = program.getProgramLevel()
 
         program.setProgramLevel(level - 1)
         expect(program.getProgramLevel()).eq(level - 1)
-        await device.writeProgram(header)
+        await program.save()
 
         const h2 = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, h2)
-        const p2 = new Program(h2)
+        const p2 = new Program(device, h2)
 
         expect(p2.getProgramLevel()).eq(program.getProgramLevel())
     })
@@ -201,7 +203,9 @@ describe('akai-s3000xl tests', () => {
         const lowNote = header.PLAYLO + 1
         ProgramHeader_writePLAYLO(header, lowNote)
 
-        await device.writeProgram(header)
+        // await device.writeProgram(header)
+        const program = new Program(device, header)
+        await program.save()
 
         const h2 = {} as ProgramHeader
         await device.fetchProgramHeader(programNumber, h2)
