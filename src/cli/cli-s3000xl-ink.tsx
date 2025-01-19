@@ -45,6 +45,10 @@ export interface CliApp {
     doProgramDetail(programNumber: number): void;
 
     addListener(event: string, callback: Function): void;
+
+    setIsEditing(b: boolean): void
+
+    getIsEditing(): boolean
 }
 
 class BasicApp implements CliApp {
@@ -53,6 +57,7 @@ class BasicApp implements CliApp {
     setScreen: (Element) => void = (element) => {
         this.listeners.forEach(callback => callback(element))
     }
+    private isEditing: boolean;
 
     addListener(event: string, callback: Function) {
         this.listeners.push(callback)
@@ -66,6 +71,14 @@ class BasicApp implements CliApp {
         const app = this
         device.getProgram(programNumber).then(program => this.setScreen(<ProgramDetailScreen app={app}
                                                                                              program={program}/>))
+    }
+
+    setIsEditing(b: boolean): void {
+        this.isEditing = b
+    }
+
+    getIsEditing() {
+        return this.isEditing
     }
 }
 
@@ -97,16 +110,18 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
     }
 
     useInput((input: string, key) => {
-        switch (input.toUpperCase()) {
-            case 'M':
-                doMidi()
-                break
-            case 'P':
-                doProgram()
-                break
-            case 'Q':
-                quit()
-                break
+        if (!app.getIsEditing()) {
+            switch (input.toUpperCase()) {
+                case 'M':
+                    doMidi()
+                    break
+                case 'P':
+                    doProgram()
+                    break
+                case 'Q':
+                    quit()
+                    break
+            }
         }
     })
     return (
