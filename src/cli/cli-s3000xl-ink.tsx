@@ -35,7 +35,7 @@ out.log(`Current program: ${currentProgram.getProgramName()}`)
 out.log(`Rendering app...`)
 
 
-export interface App {
+export interface CliApp {
     out: ProcessOutput
 
     setScreen(screen): void
@@ -47,7 +47,7 @@ export interface App {
     addListener(event: string, callback: Function): void;
 }
 
-class BasicApp implements App {
+class BasicApp implements CliApp {
     private readonly listeners: Function[] = []
     out: ProcessOutput = out
     setScreen: (Element) => void = (element) => {
@@ -69,7 +69,7 @@ class BasicApp implements App {
     }
 }
 
-export function Main({app, program}: { app: App, program: Program }) {
+export function Main({app, program}: { app: CliApp, program: Program }) {
     const {exit} = useApp();
     const [screen, setScreen] = useState(<ProgramDetailScreen app={app} program={program}/>)
     const {stdout} = useStdout()
