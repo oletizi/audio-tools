@@ -4,7 +4,7 @@ import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 import {
     KeygroupHeader, parseKeygroupHeader,
     parseProgramHeader,
-    parseSampleHeader,
+    parseSampleHeader, Program,
     ProgramHeader,
     SampleHeader
 } from "@/midi/devices/s3000xl";
@@ -13,6 +13,8 @@ import midi from "midi";
 export interface Device {
 
     init(): Promise<void>
+
+    getCurrentProgram(): Program
 
     fetchSampleNames(names: any[]): Promise<String[]>
 
@@ -25,6 +27,8 @@ export interface Device {
     getProgramHeader(programName: string): ProgramHeader
 
     fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
+
+    getProgram(programNumber: number): Promise<Program>
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
@@ -104,6 +108,7 @@ class s3000xl implements Device {
     private readonly programNames: string[] = []
     private readonly programs = {}
     private readonly sampleNames: string[] = []
+    private currentProgram: Program
 
     private readonly out: ProcessOutput
 
@@ -114,14 +119,21 @@ class s3000xl implements Device {
     }
 
     async init() {
+        const out = this.out
         const names = await this.fetchProgramNames([])
         for (let i = 0; i < names.length; i++) {
             const header = {} as ProgramHeader
             await this.fetchProgramHeader(i, header)
             this.programs[names[i]] = header
         }
+        out.log(`Fetching current program...`)
+        this.currentProgram = await this.getProgram(0)
+        out.log(`Current program set: ${this.currentProgram.getProgramName()}`)
     }
 
+    getCurrentProgram(): Program {
+        return this.currentProgram
+    }
 
     getProgramNames(names: string[]) {
         this.programNames.forEach(n => names.push(n))
@@ -186,6 +198,11 @@ class s3000xl implements Device {
         header.raw = m
         out.log(header)
         return header
+    }
+
+    async getProgram(programNumber) {
+        const header = await this.fetchProgramHeader(programNumber, {} as ProgramHeader)
+        return new Program(this, header)
     }
 
     async writeProgramName(header: ProgramHeader, name: string) {
