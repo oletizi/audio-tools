@@ -15,31 +15,33 @@ export function DataField({defaultValue, label, onChange, app}: {
     const {focusNext} = useFocusManager()
     const {isFocused} = useFocus()
 
-    function toggleEditing(b = ! isEditing) {
+    function toggleEditing(b = !isEditing) {
         app.setIsEditing(b)
         setIsEditing(b)
     }
 
-    useInput((value, key) =>{
+    useInput((value, key) => {
         if (key.escape) {
             toggleEditing(false)
         }
     })
 
-
-
     return (
         <Box justifyContent="space-between">
             <Text>{label}</Text>
             {isEditing ?
-                <TextInput isDisabled={!isFocused} defaultValue={value} onSubmit={(v) => {
-                    onChange(v).then((newValue) => setValue(newValue))
-                    toggleEditing()
-                }}/>
-                : <Button variant="plain" onClick={() => {
-                    toggleEditing()
-                    focusNext()
-                }
-                }>{value}</Button>}
+                <TextInput isDisabled={!isFocused}
+                           defaultValue={value}
+                           onBlur={() => toggleEditing()}
+                           onSubmit={(v) => {
+                               onChange(v).then((newValue) => setValue(newValue))
+                               toggleEditing()
+                           }}/>
+                : <Button variant="plain"
+                          onClick={() => {
+                              toggleEditing()
+                              focusNext()
+                          }
+                          }>{value}</Button>}
         </Box>)
 }
