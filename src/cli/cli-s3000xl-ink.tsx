@@ -4,7 +4,7 @@ import {Box, Text, render, useApp, useInput, useStdout} from 'ink';
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
 import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
-import {newStreamOutput} from "@/lib/process-output.js";
+import {newStreamOutput, ProcessOutput} from "@/lib/process-output.js";
 import fs from "fs";
 import {Program} from "@/midi/devices/s3000xl.js";
 import {ProgramScreen} from "@/cli/components/program-screen.js";
@@ -33,16 +33,50 @@ out.log(`Done initializing device.`)
 let currentProgram = device.getCurrentProgram()
 out.log(`Current program: ${currentProgram.getProgramName()}`)
 out.log(`Rendering app...`)
-try {
-    render(<App program={currentProgram}/>)
-} catch (e) {
-    shutdown(useApp())
+
+
+export interface App {
+    out: ProcessOutput
+
+    setScreen(screen): void
+
+    save(program: Program): void;
+
+    doProgramDetail(programNumber: number): void;
+
+    addListener(event: string, callback: Function): void;
 }
 
-export function App({program}: { program: Program }) {
+class BasicApp implements App {
+    private readonly listeners: Function[] = []
+    out: ProcessOutput = out
+    setScreen: (Element) => void = (element) => {
+        this.listeners.forEach(callback => callback(element))
+    }
+
+    addListener(event: string, callback: Function) {
+        this.listeners.push(callback)
+    }
+
+    save(p: Program) {
+        p.save().then(out.log(`Program saved.`)).catch(e => out.log(`Error saving program: ${e}`))
+    }
+
+    doProgramDetail(programNumber: number): void {
+        const app = this
+        device.getProgram(programNumber).then(program => this.setScreen(<ProgramDetailScreen app={app}
+                                                                                             program={program}/>))
+    }
+}
+
+export function Main({app, program}: { app: App, program: Program }) {
     const {exit} = useApp();
-    const [screen, setScreen] = useState(<ProgramDetailScreen program={program}/>)
+    const [screen, setScreen] = useState(<ProgramDetailScreen app={app} program={program}/>)
     const {stdout} = useStdout()
+
+    app.addListener('screen', (s) => {
+        setScreen(s)
+    })
 
     function quit() {
         shutdown(exit)
@@ -59,7 +93,7 @@ export function App({program}: { program: Program }) {
     }
 
     function doProgram() {
-        setScreen(<ProgramScreen device={device} names={device.getProgramNames([])} setScreen={setScreen}/>)
+        setScreen(<ProgramScreen app={app} device={device} names={device.getProgramNames([])} setScreen={setScreen}/>)
     }
 
     useInput((input: string, key) => {
@@ -117,9 +151,21 @@ function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
     return false
 }
 
-function shutdown(cb = () => {}) {
+function shutdown(cb = () => {
+}) {
     [midiInput, midiOutput].forEach(i => i.closePort())
     cb()
 }
+
+
+try {
+    render(<Main
+        app={new BasicApp()}
+        program={currentProgram}/>)
+} catch (e) {
+    out.log(`Error rendering Main: ${e}`)
+    shutdown()
+}
+
 
 
