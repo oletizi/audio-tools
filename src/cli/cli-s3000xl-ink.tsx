@@ -40,7 +40,7 @@ export interface CliApp {
 
     setScreen(screen): void
 
-    save(program: Program): void;
+    save(program: Program): Promise<void>;
 
     doProgramDetail(programNumber: number): void;
 
@@ -63,8 +63,13 @@ class BasicApp implements CliApp {
         this.listeners.push(callback)
     }
 
-    save(p: Program) {
-        p.save().then(out.log(`Program saved.`)).catch(e => out.log(`Error saving program: ${e}`))
+    async save(p: Program) {
+        try {
+            await p.save()
+            out.log(`Program saved.`)
+        } catch (e) {
+            out.log(`Error saving program: ${e}`)
+        }
     }
 
     doProgramDetail(programNumber: number): void {

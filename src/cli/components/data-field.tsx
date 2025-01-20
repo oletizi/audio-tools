@@ -7,7 +7,7 @@ import {Button} from "@/cli/components/button.js";
 export function DataField({defaultValue, label, onChange, app}: {
     defaultValue?: string
     label: string
-    onChange: (v: string | number) => Promise<string | number>,
+    onChange: (v: string | number) => string | number
     app?: CliApp
 }) {
     const [value, setValue] = useState<string | number>(defaultValue)
@@ -34,8 +34,9 @@ export function DataField({defaultValue, label, onChange, app}: {
                            defaultValue={value}
                            onBlur={() => toggleEditing()}
                            onSubmit={(v) => {
-                               onChange(v).then((newValue) => setValue(newValue))
                                toggleEditing()
+                               const newValue = onChange(v)
+                               setValue(newValue)
                            }}/>
                 : <Button variant="plain"
                           onClick={() => {

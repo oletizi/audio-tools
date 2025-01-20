@@ -12,11 +12,9 @@ export function ProgramDetailScreen({app, program}: { app: CliApp, program: Prog
                        label="Program Name"
                        defaultValue={program.getProgramName()}
                        onChange={(v) => {
-                           return new Promise((resolve, reject) => {
-                               program.setProgramName(String(v))
-                               app.save(program)
-                               resolve(program.getProgramName())
-                           })
+                           program.setProgramName(String(v))
+                           app.save(program).then()
+                           return program.getProgramName()
                        }}/>
         </Box>)
 }
