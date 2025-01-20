@@ -16,6 +16,15 @@ export function ProgramDetailScreen({app, program}: { app: CliApp, program: Prog
                            app.save(program).then()
                            return program.getProgramName()
                        }}/>
+            <DataField app={app}
+                       label="Program Number"
+                       defaultValue={String(program.getProgramNumber())}
+                        onChange={(v)=>{
+                            program.setProgramNumber(Number.parseInt(String(v)))
+                            app.save(program).then()
+                            return program.getProgramNumber()
+                        }}
+            />
         </Box>)
 }
 

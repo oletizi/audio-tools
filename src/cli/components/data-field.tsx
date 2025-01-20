@@ -5,7 +5,7 @@ import {CliApp} from "@/cli/cli-s3000xl-ink.js";
 import {Button} from "@/cli/components/button.js";
 
 export function DataField({defaultValue, label, onChange, app}: {
-    defaultValue?: string
+    defaultValue?: string | number
     label: string
     onChange: (v: string | number) => string | number
     app?: CliApp
