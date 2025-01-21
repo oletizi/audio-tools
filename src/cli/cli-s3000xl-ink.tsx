@@ -11,7 +11,7 @@ import {ProgramScreen} from "@/cli/components/program-screen.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {Button} from "@/cli/components/button.js";
 import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
-import e from "express";
+
 import {SampleScreen} from "@/cli/components/sample-screen.js";
 import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
 
@@ -41,19 +41,29 @@ out.log(`Rendering app...`)
 export interface CliApp {
     out: ProcessOutput
 
+    addListener(event: string, callback: Function): void;
+
     setScreen(screen): void
 
-    save(program: Program): Promise<void>;
-
-    doProgramDetail(programNumber: number): void;
-
-    addListener(event: string, callback: Function): void;
 
     setIsEditing(b: boolean): void
 
     getIsEditing(): boolean
 
+    doProgram(): void
+
+    doProgramDetail(programNumber: number): void;
+
+    saveProgram(program: Program): Promise<void>;
+
+
+    doSample(): void
+
     doSampleDetail(sampleName): void
+
+    doChop(): void;
+
+    doChopDetail(sampleName): void;
 }
 
 class BasicApp implements CliApp {
@@ -68,13 +78,36 @@ class BasicApp implements CliApp {
         this.listeners.push(callback)
     }
 
-    async save(p: Program) {
+    async saveProgram(p: Program) {
         try {
             await p.save()
             out.log(`Program saved.`)
         } catch (e) {
             out.log(`Error saving program: ${e}`)
         }
+    }
+
+    doSample() {
+        const app = this
+        this.setScreen(<SampleScreen nextScreen={(v) => {
+            app.doSampleDetail(v)
+        }} names={device.getSampleNames([])}/>)
+    }
+
+
+    doProgram() {
+        const app = this
+        this.setScreen(<ProgramScreen nextScreen={(v) => {
+            app.doProgramDetail(v)
+        }} names={device.getProgramNames([])}/>)
+    }
+
+
+    doChop() {
+        const app = this
+        this.setScreen(<SampleScreen nextScreen={(v) => {
+            app.doChopDetail(v)
+        }} names={device.getSampleNames([])}/>)
     }
 
     doProgramDetail(programNumber: number): void {
@@ -94,6 +127,9 @@ class BasicApp implements CliApp {
 
     getIsEditing() {
         return this.isEditing
+    }
+
+    doChopDetail(sampleName): void {
     }
 }
 
@@ -121,25 +157,21 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
         />)
     }
 
-    function doSample() {
-        setScreen(<SampleScreen app={app} device={device} names={device.getSampleNames([])} setScreen={setScreen}/>)
-    }
 
-    function doProgram() {
-        setScreen(<ProgramScreen app={app} device={device} names={device.getProgramNames([])} setScreen={setScreen}/>)
-    }
-
-    useInput((input: string, key) => {
+    useInput((input: string) => {
         if (!app.getIsEditing()) {
             switch (input.toUpperCase()) {
+                case 'C':
+                    app.doChop()
+                    break
                 case 'M':
                     doMidi()
                     break
-                case 'S':
-                    doSample()
-                    break
                 case 'P':
-                    doProgram()
+                    app.doProgram()
+                    break
+                case 'S':
+                    app.doSample()
                     break
                 case 'Q':
                     quit()
@@ -151,8 +183,8 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
         <>
             <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
             <Box>
-                <Button onClick={doProgram}>P: Program</Button>
-                <Button onClick={doSample}>S: Sample</Button>
+                <Button onClick={app.doProgram}>P: Program</Button>
+                <Button onClick={app.doSample}>S: Sample</Button>
                 <Button onClick={doMidi}>M: MIDI</Button>
                 <Button onClick={quit}>Q: Quit</Button>
             </Box>

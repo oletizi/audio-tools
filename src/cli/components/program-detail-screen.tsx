@@ -13,7 +13,7 @@ export function ProgramDetailScreen({app, program}: { app: CliApp, program: Prog
                        defaultValue={program.getProgramName()}
                        onChange={(v) => {
                            program.setProgramName(String(v))
-                           app.save(program).then()
+                           app.saveProgram(program).then()
                            return program.getProgramName()
                        }}/>
             <DataField app={app}
@@ -21,7 +21,7 @@ export function ProgramDetailScreen({app, program}: { app: CliApp, program: Prog
                        defaultValue={String(program.getProgramNumber())}
                        onChange={(v) => {
                            program.setProgramNumber(Number.parseInt(String(v)))
-                           app.save(program).then()
+                           app.saveProgram(program).then()
                            return program.getProgramNumber()
                        }}
             />
