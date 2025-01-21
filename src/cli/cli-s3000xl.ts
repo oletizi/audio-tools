@@ -10,6 +10,7 @@ const out = newServerOutput(true, 'cli-s3000xl')
 
 const mainMenu = `
 p: programs
+s: samples
 q: quit
 
 > `
@@ -34,8 +35,11 @@ main()
 function main() {
     rl.question(mainMenu, (i) => {
         switch (i) {
+            case "s":
+                sample().then(main)
+                break
             case "p":
-                program().then(() => main())
+                program().then(main)
                 break
             case "q":
                 stdout.write(`Goodbye!`)
@@ -47,6 +51,12 @@ function main() {
                 main()
         }
     })
+}
+
+async function sample() {
+    for (const name of  await device.fetchProgramNames([]))  {
+        stdout.write(name + '\n')
+    }
 }
 
 async function program() {

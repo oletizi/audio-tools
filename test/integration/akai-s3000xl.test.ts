@@ -1,13 +1,13 @@
 import midi from 'midi'
 import {expect} from "chai";
-import {akaiByte2String, newDevice, string2AkaiBytes} from "../src/midi/akai-s3000xl";
+import {akaiByte2String, newDevice, string2AkaiBytes} from "@/midi/akai-s3000xl";
 import {
     KeygroupHeader,
     ProgramHeader,
     Program,
     ProgramHeader_writePLAYLO,
     SampleHeader
-} from "../src/midi/devices/s3000xl";
+} from "@/midi/devices/s3000xl";
 import {Widgets} from "blessed";
 
 

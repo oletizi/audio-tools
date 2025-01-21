@@ -1,5 +1,5 @@
 //
-// GENERATED Sat Jan 18 2025 19:48:42 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Mon Jan 20 2025 17:40:33 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -2538,6 +2538,66 @@ export class Sample {
 
     async save() {
         return this.device.sendRaw(this.header.raw)
+    }
+
+    getBandwidth(): number { 
+        return this.header.SBANDW
+    }
+    setBandwidth(v: number) {
+        const out = newClientOutput(true, 'setBandwidth')
+        SampleHeader_writeSBANDW(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getPitch(): number { 
+        return this.header.SPITCH
+    }
+    setPitch(v: number) {
+        const out = newClientOutput(true, 'setPitch')
+        SampleHeader_writeSPITCH(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getSampleName(): string { 
+        return this.header.SHNAME
+    }
+    setSampleName(v: string) {
+        const out = newClientOutput(true, 'setSampleName')
+        SampleHeader_writeSHNAME(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoopCount(): number { 
+        return this.header.SLOOPS
+    }
+    setLoopCount(v: number) {
+        const out = newClientOutput(true, 'setLoopCount')
+        SampleHeader_writeSLOOPS(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getPlaybackType(): number { 
+        return this.header.SPTYPE
+    }
+    setPlaybackType(v: number) {
+        const out = newClientOutput(true, 'setPlaybackType')
+        SampleHeader_writeSPTYPE(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
     }
 
 }

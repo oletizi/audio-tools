@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Box, Text, render, useApp, useInput, useStdout} from 'ink';
+import {Box, render, useApp, useInput, useStdout} from 'ink';
 
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
@@ -11,6 +11,9 @@ import {ProgramScreen} from "@/cli/components/program-screen.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {Button} from "@/cli/components/button.js";
 import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
+import e from "express";
+import {SampleScreen} from "@/cli/components/sample-screen.js";
+import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
@@ -49,6 +52,8 @@ export interface CliApp {
     setIsEditing(b: boolean): void
 
     getIsEditing(): boolean
+
+    doSampleDetail(sampleName): void
 }
 
 class BasicApp implements CliApp {
@@ -78,6 +83,11 @@ class BasicApp implements CliApp {
                                                                                              program={program}/>))
     }
 
+    doSampleDetail(sampleName): void {
+        const app = this
+        device.getSample(sampleName).then(sample => this.setScreen(<SampleDetailScreen app={app} sample={sample}/>))
+    }
+
     setIsEditing(b: boolean): void {
         this.isEditing = b
     }
@@ -86,6 +96,7 @@ class BasicApp implements CliApp {
         return this.isEditing
     }
 }
+
 
 export function Main({app, program}: { app: CliApp, program: Program }) {
     const {exit} = useApp();
@@ -110,6 +121,10 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
         />)
     }
 
+    function doSample() {
+        setScreen(<SampleScreen app={app} device={device} names={device.getSampleNames([])} setScreen={setScreen}/>)
+    }
+
     function doProgram() {
         setScreen(<ProgramScreen app={app} device={device} names={device.getProgramNames([])} setScreen={setScreen}/>)
     }
@@ -119,6 +134,9 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
             switch (input.toUpperCase()) {
                 case 'M':
                     doMidi()
+                    break
+                case 'S':
+                    doSample()
                     break
                 case 'P':
                     doProgram()
@@ -134,6 +152,7 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
             <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
             <Box>
                 <Button onClick={doProgram}>P: Program</Button>
+                <Button onClick={doSample}>S: Sample</Button>
                 <Button onClick={doMidi}>M: MIDI</Button>
                 <Button onClick={quit}>Q: Quit</Button>
             </Box>

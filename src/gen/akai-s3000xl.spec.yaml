@@ -318,16 +318,25 @@ specs:
   - name: SampleHeader
     className: Sample
     fields:
+        # n: field name;
+        # f: field function name root (used for generated write and read functions)
+        # l: field label;
+        # d: field description;
+        # s: field size (default: 1);
+        # t: field type (default: number);
       - n: 'SHIDENT'
         d: 'Block identifier; Range: 3 (Fixed)'
 
       - n: 'SBANDW'
+        f: 'bandwidth'
         d: 'Sample bandwidth; Range: 0 represents 10kHz, 1 represents 20kHz'
 
       - n: 'SPITCH'
+        f: 'pitch'
         d: 'Original pitch; Range: 21 to 127 represents A1 to G8'
 
       - n: 'SHNAME'
+        f: 'sampleName'
         d: 'Sample name'
         t: 'string'
         s: 12
@@ -336,6 +345,7 @@ specs:
         d: 'Sample rate validity; 0 indicates rate is invalid, 128 indicates rate is valid'
 
       - n: 'SLOOPS'
+        f: 'loopCount'
         d: 'Number of loops'
 
       - n: 'SALOOP'
@@ -345,6 +355,7 @@ specs:
         d: 'Highest loop (internal use)'
 
       - n: 'SPTYPE'
+        f: 'playbackType'
         d: 'Playback type; 0 = Normal looping, 1 = Loop until release, 2 = No looping, 3 = Play to sample end'
 
       - n: 'STUNO'

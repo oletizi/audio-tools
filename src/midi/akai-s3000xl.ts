@@ -5,7 +5,7 @@ import {
     KeygroupHeader, parseKeygroupHeader,
     parseProgramHeader,
     parseSampleHeader, Program,
-    ProgramHeader,
+    ProgramHeader, Sample,
     SampleHeader
 } from "@/midi/devices/s3000xl";
 import midi from "midi";
@@ -18,9 +18,11 @@ export interface Device {
 
     fetchSampleNames(names: any[]): Promise<String[]>
 
+    fetchProgramNames(names: string[]): Promise<string[]>
+
     fetchSampleHeader(sampleNumber: number, header: SampleHeader): Promise<SampleHeader>
 
-    fetchProgramNames(names: string[]): Promise<string[]>
+    getSampleNames(names: string[]): string[]
 
     getProgramNames(names: string[]): string[]
 
@@ -29,6 +31,8 @@ export interface Device {
     fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
 
     getProgram(programNumber: number): Promise<Program>
+
+    getSample(sampleName: string): Promise<Sample>
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
@@ -120,19 +124,20 @@ class s3000xl implements Device {
 
     async init() {
         const out = this.out
-        const names = await this.fetchProgramNames([])
-        for (let i = 0; i < names.length; i++) {
-            const header = {} as ProgramHeader
-            await this.fetchProgramHeader(i, header)
-            this.programs[names[i]] = header
-        }
+        await this.fetchProgramNames([])
         out.log(`Fetching current program...`)
         this.currentProgram = await this.getProgram(0)
         out.log(`Current program set: ${this.currentProgram.getProgramName()}`)
+        await this.fetchSampleNames([])
     }
 
     getCurrentProgram(): Program {
         return this.currentProgram
+    }
+
+    getSampleNames(names: string[]) {
+        this.sampleNames.forEach(n => names.push(n))
+        return names
     }
 
     getProgramNames(names: string[]) {
@@ -203,6 +208,26 @@ class s3000xl implements Device {
     async getProgram(programNumber) {
         const header = await this.fetchProgramHeader(programNumber, {} as ProgramHeader)
         return new Program(this, header)
+    }
+
+    async getSample(sampleName: string) {
+        const names = []
+        let rv = null
+        await this.fetchSampleNames(names)
+        let sampleNumber = -1
+        for (let i = 0; i < names.length; i++) {
+            if (sampleName.trim().toUpperCase() === names[i].trim()) {
+                sampleNumber = i
+                break
+            }
+        }
+        if (sampleNumber >= 0) {
+            const header = await this.fetchSampleHeader(sampleNumber, {} as SampleHeader)
+            rv = new Sample(this, header)
+        } else {
+            throw new Error(`Can't find sample named: ${sampleName}`)
+        }
+        return rv
     }
 
     async writeProgramName(header: ProgramHeader, name: string) {
