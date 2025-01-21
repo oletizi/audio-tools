@@ -9,3 +9,4 @@ export function SampleDetailScreen({app, sample}: { app: CliApp, sample: Sample 
             <Text>Sample detail for: {sample.getSampleName()}</Text>
         </Box>)
 }
+

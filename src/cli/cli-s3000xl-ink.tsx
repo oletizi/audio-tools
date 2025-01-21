@@ -14,6 +14,7 @@ import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
 
 import {SampleScreen} from "@/cli/components/sample-screen.js";
 import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
+import {ChopDetailScreen} from "@/cli/components/chop-detail-screen.js";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
@@ -87,27 +88,11 @@ class BasicApp implements CliApp {
         }
     }
 
-    doSample() {
-        const app = this
-        this.setScreen(<SampleScreen nextScreen={(v) => {
-            app.doSampleDetail(v)
-        }} names={device.getSampleNames([])}/>)
-    }
-
-
     doProgram() {
         const app = this
         this.setScreen(<ProgramScreen nextScreen={(v) => {
             app.doProgramDetail(v)
         }} names={device.getProgramNames([])}/>)
-    }
-
-
-    doChop() {
-        const app = this
-        this.setScreen(<SampleScreen nextScreen={(v) => {
-            app.doChopDetail(v)
-        }} names={device.getSampleNames([])}/>)
     }
 
     doProgramDetail(programNumber: number): void {
@@ -116,9 +101,28 @@ class BasicApp implements CliApp {
                                                                                              program={program}/>))
     }
 
+    doSample() {
+        const app = this
+        this.setScreen(<SampleScreen nextScreen={(v) => {
+            app.doSampleDetail(v)
+        }} names={device.getSampleNames([])}/>)
+    }
+
     doSampleDetail(sampleName): void {
         const app = this
         device.getSample(sampleName).then(sample => this.setScreen(<SampleDetailScreen app={app} sample={sample}/>))
+    }
+
+    doChop() {
+        const app = this
+        this.setScreen(<SampleScreen nextScreen={(v) => {
+            app.doChopDetail(v)
+        }} names={device.getSampleNames([])}/>)
+    }
+
+    doChopDetail(sampleName): void {
+        const app = this
+        device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
     }
 
     setIsEditing(b: boolean): void {
@@ -127,9 +131,6 @@ class BasicApp implements CliApp {
 
     getIsEditing() {
         return this.isEditing
-    }
-
-    doChopDetail(sampleName): void {
     }
 }
 
@@ -183,6 +184,7 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
         <>
             <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
             <Box>
+                <Button onClick={app.doChop}>C: Chop</Button>
                 <Button onClick={app.doProgram}>P: Program</Button>
                 <Button onClick={app.doSample}>S: Sample</Button>
                 <Button onClick={doMidi}>M: MIDI</Button>
