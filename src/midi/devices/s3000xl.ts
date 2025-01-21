@@ -1,5 +1,5 @@
 //
-// GENERATED Mon Jan 20 2025 17:40:33 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Mon Jan 20 2025 18:19:40 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
 import {newClientOutput} from "@/lib/process-output"
@@ -2594,6 +2594,198 @@ export class Sample {
     setPlaybackType(v: number) {
         const out = newClientOutput(true, 'setPlaybackType')
         SampleHeader_writeSPTYPE(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getSampleLength(): number { 
+        return this.header.SLNGTH
+    }
+    setSampleLength(v: number) {
+        const out = newClientOutput(true, 'setSampleLength')
+        SampleHeader_writeSLNGTH(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getSampleStart(): number { 
+        return this.header.SSTART
+    }
+    setSampleStart(v: number) {
+        const out = newClientOutput(true, 'setSampleStart')
+        SampleHeader_writeSSTART(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getSampleEnd(): number { 
+        return this.header.SMPEND
+    }
+    setSampleEnd(v: number) {
+        const out = newClientOutput(true, 'setSampleEnd')
+        SampleHeader_writeSMPEND(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop1At(): number { 
+        return this.header.LOOPAT1
+    }
+    setLoop1At(v: number) {
+        const out = newClientOutput(true, 'setLoop1At')
+        SampleHeader_writeLOOPAT1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop1Length(): number { 
+        return this.header.LLNGTH1
+    }
+    setLoop1Length(v: number) {
+        const out = newClientOutput(true, 'setLoop1Length')
+        SampleHeader_writeLLNGTH1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop1Dwell(): number { 
+        return this.header.LDWELL1
+    }
+    setLoop1Dwell(v: number) {
+        const out = newClientOutput(true, 'setLoop1Dwell')
+        SampleHeader_writeLDWELL1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop2At(): number { 
+        return this.header.LOOPAT2
+    }
+    setLoop2At(v: number) {
+        const out = newClientOutput(true, 'setLoop2At')
+        SampleHeader_writeLOOPAT2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop2Length(): number { 
+        return this.header.LLNGTH2
+    }
+    setLoop2Length(v: number) {
+        const out = newClientOutput(true, 'setLoop2Length')
+        SampleHeader_writeLLNGTH2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop2Dwell(): number { 
+        return this.header.LDWELL2
+    }
+    setLoop2Dwell(v: number) {
+        const out = newClientOutput(true, 'setLoop2Dwell')
+        SampleHeader_writeLDWELL2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop3At(): number { 
+        return this.header.LOOPAT3
+    }
+    setLoop3At(v: number) {
+        const out = newClientOutput(true, 'setLoop3At')
+        SampleHeader_writeLOOPAT3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop3Length(): number { 
+        return this.header.LLNGTH3
+    }
+    setLoop3Length(v: number) {
+        const out = newClientOutput(true, 'setLoop3Length')
+        SampleHeader_writeLLNGTH3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop3Dwell(): number { 
+        return this.header.LDWELL3
+    }
+    setLoop3Dwell(v: number) {
+        const out = newClientOutput(true, 'setLoop3Dwell')
+        SampleHeader_writeLDWELL3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop4At(): number { 
+        return this.header.LOOPAT4
+    }
+    setLoop4At(v: number) {
+        const out = newClientOutput(true, 'setLoop4At')
+        SampleHeader_writeLOOPAT4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop4Length(): number { 
+        return this.header.LLNGTH4
+    }
+    setLoop4Length(v: number) {
+        const out = newClientOutput(true, 'setLoop4Length')
+        SampleHeader_writeLLNGTH4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getLoop4Dwell(): number { 
+        return this.header.LDWELL4
+    }
+    setLoop4Dwell(v: number) {
+        const out = newClientOutput(true, 'setLoop4Dwell')
+        SampleHeader_writeLDWELL4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: undefined')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseSampleHeader(tmp, undefined, this.header)
+    }
+
+    getSampleRate(): number { 
+        return this.header.SSRATE
+    }
+    setSampleRate(v: number) {
+        const out = newClientOutput(true, 'setSampleRate')
+        SampleHeader_writeSSRATE(this.header, v)
         // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
         out.log('Parsing header from 7 with header offset: undefined')
         const tmp = this.header.raw.slice(7, this.header.raw.length - 1)

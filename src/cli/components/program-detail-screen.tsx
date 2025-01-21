@@ -10,7 +10,7 @@ export function ProgramDetailScreen({app, program}: { app: CliApp, program: Prog
         <Box justifyContent="flex-start" flexDirection="column" width={32}>
             <DataField app={app}
                        label="Program Name"
-                       defaultValue={program.getProgramName()}
+                       defaultValue={program.getProgramName().trim()}
                        onChange={(v) => {
                            program.setProgramName(String(v))
                            app.saveProgram(program).then()

@@ -6,7 +6,7 @@ import {newDevice} from "@/midi/akai-s3000xl.js";
 import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
 import {newStreamOutput, ProcessOutput} from "@/lib/process-output.js";
 import fs from "fs";
-import {Program} from "@/midi/devices/s3000xl.js";
+import {Program, Sample} from "@/midi/devices/s3000xl.js";
 import {ProgramScreen} from "@/cli/components/program-screen.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {Button} from "@/cli/components/button.js";
@@ -57,7 +57,6 @@ export interface CliApp {
 
     saveProgram(program: Program): Promise<void>;
 
-
     doSample(): void
 
     doSampleDetail(sampleName): void
@@ -65,6 +64,8 @@ export interface CliApp {
     doChop(): void;
 
     doChopDetail(sampleName): void;
+
+    saveSample(sample: Sample): Promise<void>;
 }
 
 class BasicApp implements CliApp {
@@ -85,6 +86,15 @@ class BasicApp implements CliApp {
             out.log(`Program saved.`)
         } catch (e) {
             out.log(`Error saving program: ${e}`)
+        }
+    }
+
+    async saveSample(s: Sample) {
+        try {
+            await s.save()
+            out.log(`Sample saved.`)
+        } catch (e) {
+            out.log(`Error saving sample: ${s}`)
         }
     }
 

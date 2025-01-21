@@ -367,62 +367,77 @@ specs:
         s: 4
 
       - n: 'SLNGTH'
+        f: 'sampleLength'
         d: 'Length of sample'
         s: 4
 
       - n: 'SSTART'
+        f: 'sampleStart'
         d: 'Offset from start of sample from which playback commences'
         s: 4
 
       - n: 'SMPEND'
+        f: 'sampleEnd'
         d: 'Offset from start of sample from which playback ceases'
         s: 4
 
       - n: 'LOOPAT1'
+        f: 'loop1At'
         d: 'Position in sample of first loop point'
         s: 4
 
       - n: 'LLNGTH1'
+        f: 'loop1Length'
         d: 'First loop length'
         s: 6
 
       - n: 'LDWELL1'
+        f: 'loop1Dwell'
         d: 'Dwell time of first loop; Range: 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
         s: 2
 
       - n: 'LOOPAT2'
+        f: 'loop2At'
         d: 'Position in sample of second loop point'
         s: 4
 
       - n: 'LLNGTH2'
+        f: 'loop2Length'
         d: 'Second loop length'
         s: 6
 
       - n: 'LDWELL2'
+        f: 'loop2Dwell'
         d: 'Dwell time of second loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
         s: 2
 
       - n: 'LOOPAT3'
+        f: 'loop3At'
         d: 'Position in sample of third loop point'
         s: 4
 
       - n: 'LLNGTH3'
+        f: 'loop3Length'
         d: 'Third loop length'
         s: 6
 
       - n: 'LDWELL3'
+        f: 'loop3Dwell'
         d: 'Dwell time of third loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
         s: 2
 
       - n: 'LOOPAT4'
+        f: 'loop4At'
         d: 'Position in sample of fourth loop point'
         s: 4
 
       - n: 'LLNGTH4'
+        f: 'loop4Length'
         d: 'Fourth loop length'
         s: 6
 
       - n: 'LDWELL4'
+        f: 'loop4Dwell'
         d: 'Dwell time of fourth loop; 0 represents No Loop, 9999 = Hold, 1 to 9998 represents Dwell time in milliseconds'
         s: 2
 
@@ -453,6 +468,7 @@ specs:
         s: 2
 
       - n: 'SSRATE'
+        f: 'sampleRate'
         d: 'Sample rate'
         s: 2
 
