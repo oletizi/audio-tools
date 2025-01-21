@@ -2,7 +2,8 @@ import {Program} from "@/midi/devices/s3000xl.js";
 import React from "react";
 import {Box} from 'ink'
 import {DataField} from "@/cli/components/data-field.js";
-import {CliApp} from "@/cli/cli-s3000xl-ink.js";
+
+import {CliApp} from "@/cli/cli-app.js";
 
 export function ProgramDetailScreen({app, program}: { app: CliApp, program: Program }) {
 

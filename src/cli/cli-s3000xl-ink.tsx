@@ -4,17 +4,13 @@ import {Box, render, useApp, useInput, useStdout} from 'ink';
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
 import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
-import {newStreamOutput, ProcessOutput} from "@/lib/process-output.js";
+import {newStreamOutput} from "@/lib/process-output.js";
 import fs from "fs";
-import {Program, Sample} from "@/midi/devices/s3000xl.js";
-import {ProgramScreen} from "@/cli/components/program-screen.js";
+import {Program} from "@/midi/devices/s3000xl.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {Button} from "@/cli/components/button.js";
 import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
-
-import {SampleScreen} from "@/cli/components/sample-screen.js";
-import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
-import {ChopDetailScreen} from "@/cli/components/chop-detail-screen.js";
+import {BasicApp, CliApp} from "@/cli/cli-app.js";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
@@ -31,118 +27,14 @@ await updateMidiInput(config.midiInput)
 await updateMidiOutput(config.midiOutput)
 const device = newDevice(midiInput, midiOutput, out)
 
+const app: CliApp = new BasicApp(device, out);
+
 out.log(`Initializing device...`)
 await device.init()
 out.log(`Done initializing device.`)
 let currentProgram = device.getCurrentProgram()
 out.log(`Current program: ${currentProgram.getProgramName()}`)
 out.log(`Rendering app...`)
-
-
-export interface CliApp {
-    out: ProcessOutput
-
-    addListener(event: string, callback: Function): void;
-
-    setScreen(screen): void
-
-
-    setIsEditing(b: boolean): void
-
-    getIsEditing(): boolean
-
-    doProgram(): void
-
-    doProgramDetail(programNumber: number): void;
-
-    saveProgram(program: Program): Promise<void>;
-
-    doSample(): void
-
-    doSampleDetail(sampleName): void
-
-    doChop(): void;
-
-    doChopDetail(sampleName): void;
-
-    saveSample(sample: Sample): Promise<void>;
-}
-
-class BasicApp implements CliApp {
-    private readonly listeners: Function[] = []
-    out: ProcessOutput = out
-    setScreen: (Element) => void = (element) => {
-        this.listeners.forEach(callback => callback(element))
-    }
-    private isEditing: boolean;
-
-    addListener(event: string, callback: Function) {
-        this.listeners.push(callback)
-    }
-
-    async saveProgram(p: Program) {
-        try {
-            await p.save()
-            out.log(`Program saved.`)
-        } catch (e) {
-            out.log(`Error saving program: ${e}`)
-        }
-    }
-
-    async saveSample(s: Sample) {
-        try {
-            await s.save()
-            out.log(`Sample saved.`)
-        } catch (e) {
-            out.log(`Error saving sample: ${s}`)
-        }
-    }
-
-    doProgram() {
-        const app = this
-        this.setScreen(<ProgramScreen nextScreen={(v) => {
-            app.doProgramDetail(v)
-        }} names={device.getProgramNames([])}/>)
-    }
-
-    doProgramDetail(programNumber: number): void {
-        const app = this
-        device.getProgram(programNumber).then(program => this.setScreen(<ProgramDetailScreen app={app}
-                                                                                             program={program}/>))
-    }
-
-    doSample() {
-        const app = this
-        this.setScreen(<SampleScreen nextScreen={(v) => {
-            app.doSampleDetail(v)
-        }} names={device.getSampleNames([])}/>)
-    }
-
-    doSampleDetail(sampleName): void {
-        const app = this
-        device.getSample(sampleName).then(sample => this.setScreen(<SampleDetailScreen app={app} sample={sample}/>))
-    }
-
-    doChop() {
-        const app = this
-        this.setScreen(<SampleScreen nextScreen={(v) => {
-            app.doChopDetail(v)
-        }} names={device.getSampleNames([])}/>)
-    }
-
-    doChopDetail(sampleName): void {
-        const app = this
-        device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
-    }
-
-    setIsEditing(b: boolean): void {
-        this.isEditing = b
-    }
-
-    getIsEditing() {
-        return this.isEditing
-    }
-}
 
 
 export function Main({app, program}: { app: CliApp, program: Program }) {
@@ -243,7 +135,7 @@ function shutdown(cb = () => {
 
 try {
     render(<Main
-        app={new BasicApp()}
+        app={app}
         program={currentProgram}/>)
 } catch (e) {
     out.log(`Error rendering Main: ${e}`)

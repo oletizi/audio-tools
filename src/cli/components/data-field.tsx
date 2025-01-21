@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import {Box, Text, useFocus, useFocusManager, useInput} from 'ink'
 import {TextInput} from '@inkjs/ui'
-import {CliApp} from "@/cli/cli-s3000xl-ink.js";
 import {Button} from "@/cli/components/button.js";
+import {CliApp} from "@/cli/cli-app.js";
 
 export function DataDisplay({label, value}: { label: string, value: any }) {
     return (<Box justifyContent="space-between"><Text>{label}</Text><Text>{String(value)}</Text></Box>)
