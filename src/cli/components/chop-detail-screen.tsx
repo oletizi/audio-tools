@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import {Box, Text} from "ink"
 import {DataDisplay, DataField} from "@/cli/components/data-field.js";
 import {CliApp} from "@/cli/cli-app.js";
+import {Button} from "@mui/material";
 
 export function ChopDetailScreen({app, sample}: { app: CliApp, sample: Sample }) {
     const [bpm, setBpm] = useState(app.getDefaults().bpm)
@@ -51,5 +52,6 @@ export function ChopDetailScreen({app, sample}: { app: CliApp, sample: Sample })
                        }}/>
             <DataDisplay label="Samples per Beat" value={String(getSamplesPerBeat())}/>
             <DataDisplay label="Total Chops" value={String(getTotalChops())}/>
+            <Button onClick={app.chopSample(sample, getSamplesPerBeat() * beatsPerChop, getTotalChops())}>Do It</Button>
         </Box>)
 }

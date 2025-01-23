@@ -38,6 +38,8 @@ export interface CliApp {
     doChopDetail(sampleName): void;
 
     saveSample(sample: Sample): Promise<void>;
+
+    chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void>
 }
 
 export interface Defaults {
@@ -48,14 +50,19 @@ export interface Defaults {
 export class BasicApp implements CliApp {
     private readonly listeners: Function[] = []
     private readonly defaults: Defaults = {beatsPerChop: 1, bpm: 90}
+    private readonly device: Device;
+
     private isEditing: boolean;
 
     readonly out: ProcessOutput
-    private device: Device;
 
     constructor(device: Device, out: ProcessOutput) {
         this.device = device
         this.out = out
+    }
+
+    async chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
+        await this.device.chopSample(sample, chopLength, totalChops)
     }
 
     setIsEditing(b: boolean): void {

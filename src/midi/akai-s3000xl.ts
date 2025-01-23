@@ -8,7 +8,11 @@ import {
     ProgramHeader, Sample,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-import midi from "midi";
+import midi, {output} from "midi";
+import {name} from "mocha";
+import {data} from "autoprefixer";
+import {message} from "blessed";
+import {response} from "express";
 
 export interface Device {
 
@@ -41,6 +45,10 @@ export interface Device {
     writeProgramName(header: ProgramHeader, name: string): Promise<void>
 
     writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void>
+
+    copySample(name: string, sample: Sample)
+
+    chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void>
 
     send(opcode: number, data: number[])
 
@@ -297,9 +305,37 @@ class s3000xl implements Device {
 
         parseSampleHeader(m.slice(v.offset, m.length - 1), 0, header)
         out.log(header)
+        header.raw = m
         return header
     }
 
+    async copySample(name: string, sample: Sample) {
+        if (name === sample.getSampleName()) {
+            throw new Error("Attempt to copy sample with same name.")
+        }
+        const names = []
+        await this.fetchSampleNames(names)
+        let sampleId = names.length
+
+        const s = await this.getSample(sample.getSampleName())
+        s.setSampleName(name)
+        const d = s.getHeader().raw
+        const offset = 5
+        const originalId = nibbles2byte(d[offset], d[offset + 1])
+        this.out.log(`Original sample ID: ${originalId}`)
+        this.out.log(`New sample ID     : ${sampleId}`)
+
+        const n= byte2nibblesLE(sampleId)
+        d[offset] = n[0]
+        d[offset + 1] = n[1]
+        const response = await this.sendRaw(d)
+        this.out.log(`response: `)
+        this.out.log(response)
+    }
+
+    async chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
+        throw new Error("Implement me!")
+    }
 
     async send(opcode: Opcode, data: number[]): Promise<number[]> {
         const message = [
@@ -317,7 +353,7 @@ class s3000xl implements Device {
         const out = this.out
         const input = this.midiInput
         const output = this.midiOutput
-        const response = new Promise((resolve) => {
+        const response = new Promise<number[]>((resolve) => {
             function listener(delta: number, message: midi.MidiMessage) {
                 // TODO: make sure the opcode in the response message is correct
                 input.removeListener('message', listener)
@@ -331,6 +367,7 @@ class s3000xl implements Device {
         output.sendMessage(message)
         return response
     }
+
 
 }
 

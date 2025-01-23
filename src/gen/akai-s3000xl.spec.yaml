@@ -317,13 +317,14 @@ specs:
 
   - name: SampleHeader
     className: Sample
+    headerOffset: 0
     fields:
-        # n: field name;
-        # f: field function name root (used for generated write and read functions)
-        # l: field label;
-        # d: field description;
-        # s: field size (default: 1);
-        # t: field type (default: number);
+      # n: field name;
+      # f: field function name root (used for generated write and read functions)
+      # l: field label;
+      # d: field description;
+      # s: field size (default: 1);
+      # t: field type (default: number);
       - n: 'SHIDENT'
         d: 'Block identifier; Range: 3 (Fixed)'
 
@@ -476,6 +477,7 @@ specs:
         d: 'Tuning offset of hold loop; Range: -50 to +50'
   - name: KeygroupHeader
     className: Keygroup
+    headerOffset: 0
     fields:
       - n: 'KGIDENT'
         d: 'Block identifier (internal use); Should equal 2'

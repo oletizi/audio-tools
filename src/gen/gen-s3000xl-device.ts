@@ -56,6 +56,16 @@ export async function genClass(spec: Spec) {
     rv += `        this.header = header\n`
     rv += `    }\n`
     rv += `\n`
+    rv += `    getHeader(): ${spec.name} {\n`
+    rv += `        return this.header\n`
+    rv += `    }\n`
+    rv += `\n`
+    // rv += `    copy(): ${spec.className} {\n`
+    // rv += `        const h = {} as ${spec.name}\n`
+    // rv += `        parse${spec.name}(this.header.raw.map(i => i), ${spec.headerOffset}, h)\n`
+    // rv += `        return new ${spec.className}(this.device, h)\n`
+    // rv += `    }\n`
+    // rv += `\n`
     rv += '    async save() {\n'
     rv += `        return this.device.sendRaw(this.header.raw)\n`
     rv += '    }\n'
