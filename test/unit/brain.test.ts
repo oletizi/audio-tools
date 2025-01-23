@@ -1,6 +1,6 @@
 import path from "path";
 import {expect} from "chai";
-import {Brain} from "../src/ts/app/brain";
+import {Brain} from "@/app/brain";
 
 describe('Brain', async () => {
     it('Returns a list of files in the from and to directories', async () => {
