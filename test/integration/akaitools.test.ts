@@ -2,7 +2,7 @@ import {akaiFormat, akaiList, AkaiRecordType, akaiWrite, validateConfig} from ".
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
-import {parseProgramHeader, ProgramHeader} from "../../src/midi/devices/s3000xl";
+import {parseProgramHeader, parseSampleHeader, ProgramHeader, SampleHeader} from "../../src/midi/devices/s3000xl";
 import {byte2nibblesLE} from "../../src/lib/lib-core";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
@@ -80,8 +80,20 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         }
         let header = {} as ProgramHeader;
         parseProgramHeader(data, 1, header)
-        console.log(`program name: ${header.PRNAME}`)
         expect(header.PRNAME).eq('TEST PROGRAM')
+    })
 
+    it(`Parses Akai sample header from file`, async () => {
+        const samplePath = path.join('test', 'data', 's3000xl', 'instruments', 'sine.a3s')
+        const buffer = await fs.readFile(samplePath)
+        const data = []
+        for (let i=0; i< buffer.length; i++) {
+            const nibbles = byte2nibblesLE(buffer[i])
+            data.push(nibbles[0])
+            data.push(nibbles[1])
+        }
+        let header = {} as SampleHeader
+        parseSampleHeader(data, 0, header)
+        expect(header.SHNAME).equal('SINE        ')
     })
 })
