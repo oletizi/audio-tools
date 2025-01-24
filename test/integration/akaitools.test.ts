@@ -1,4 +1,11 @@
-import {akaiFormat, akaiList, AkaiRecordType, akaiWrite, validateConfig} from "../../src/akaitools/akaitools";
+import {
+    wav2Akai,
+    akaiFormat,
+    akaiList,
+    AkaiRecordType,
+    akaiWrite,
+    validateConfig
+} from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
@@ -56,14 +63,28 @@ describe('Test interaction w/ akaitools and akai files.', async () => {
         }
 
         // the first entry should be a volume
-        expect(listResult.errors.length).eq(0)
+        expect(listResult.errors).empty
         expect(listResult.data.length).eq(1)
         expect(listResult.data[0].type).eq(AkaiRecordType.VOLUME)
 
         // listing the volume should return some Akai objects
         listResult = await akaiList(newConfig(), listResult.data[0].name)
-        expect(listResult.errors.length).eq(0)
+        expect(listResult.errors).empty
         expect(listResult.data.length).eq(5)
+    })
+    it(`Converts wav files to Akai sample format`, async () => {
+        const source = path.join('test', 'data', 's3000xl', 'samples', 'kit.wav')
+        const stat = await fs.stat(source)
+        expect(stat.isFile())
+        const targetDir = path.join('build')
+        const c = newConfig()
+        let result = await akaiFormat(c)
+        expect(result.code).eq(0)
+        expect(result.errors.length).eq(0)
+        result = await wav2Akai(c, source, targetDir, 'kit'.padEnd(12, ' '))
+
+        expect(!result.code)
+        expect(result.errors).empty
     })
 })
 
@@ -71,9 +92,8 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
     it(`Parses Akai program file`, async () => {
         const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
         const buffer = await fs.readFile(programPath)
-        // const data = new Array(buffer.length * 2).fill(0)
         const data = []
-        for (let i=0; i<buffer.length; i++) {
+        for (let i = 0; i < buffer.length; i++) {
             const nibbles = byte2nibblesLE(buffer[i])
             data.push(nibbles[0])
             data.push(nibbles[1])
@@ -87,7 +107,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const samplePath = path.join('test', 'data', 's3000xl', 'instruments', 'sine.a3s')
         const buffer = await fs.readFile(samplePath)
         const data = []
-        for (let i=0; i< buffer.length; i++) {
+        for (let i = 0; i < buffer.length; i++) {
             const nibbles = byte2nibblesLE(buffer[i])
             data.push(nibbles[0])
             data.push(nibbles[1])

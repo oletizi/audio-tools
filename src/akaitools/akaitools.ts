@@ -32,8 +32,7 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
         path.join(c.akaiToolsPath, 'akaiformat'),
         ['-f', String(c.diskFile)].concat(new Array(partitionCount).fill(partitionSize)),
         {
-            onData: () => {
-            },
+            onData: voidFunction,
             onStart: (child) => {
                 child.stdin.write('y\n')
             }
@@ -42,10 +41,27 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
 }
 
 export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
+    process.env['PERL5LIB'] = c.akaiToolsPath
     return doSpawn(
         path.join(c.akaiToolsPath, 'akaiwrite'),
         ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
 
+}
+
+/**
+ *
+ * @param c configuration
+ * @param sourcePath path to wav file to convert
+ * @param targetPath path to output directory on local filesystem (**not** in an Akai disk) to write converted sample files to
+ * @param targetName name of the converted sample. Should obey Akai name requirements (<= 12 characters, alpha+a few extra characters)
+ */
+export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPath: string, targetName: string) {
+    process.env['PATH'] = process.env['PATH'] + `:"${c.akaiToolsPath}"`
+    console.log(`new path: ${process.env['PATH']}`)
+    return doSpawn(
+        path.join(c.akaiToolsPath, 'wav2akai'),
+        ['-n', targetName, '-d', `"${targetPath}"`, `"${sourcePath}"`]
+    )
 }
 
 export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
@@ -94,7 +110,8 @@ interface ExecutionResult {
     code: number;
 }
 
-function voidFunction() {}
+function voidFunction() {
+}
 
 async function doSpawn(bin: string, args: readonly string[],
                        opts: {
