@@ -28,36 +28,44 @@ export interface AkaiRecordResult extends Result {
 
 export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
     await validateConfig(c)
+    const rv: AkaiRecordResult = {data: [], errors: []}
     const bin = path.join(c.akaiToolsPath, 'akailist')
     const args = ['-f', `${c.diskFile}`, '-l', '-p', String(partition), '-u', `"${akaiPath}"`]
     process.env['PERL5LIB'] = c.akaiToolsPath
-
-    return new Promise<AkaiRecordResult>(async (resolve, reject) => {
-        const rv: AkaiRecordResult = {data: [], errors: []}
-        const child = spawn(bin, args, {shell: true})
-
-        let record: AkaiRecord = {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
-        let parsing = false
-        child.stdout.setEncoding('utf8')
-        child.stdout.on('data', (data) => {
-            for (const line of String(data).split('\n')) {
-                if (data.startsWith('/') && data.endsWith(':')) {
-                    if (parsing) {
-                        rv.data.push(record)
-                        record = {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
-                    }
-                    parsing = true
-                } else {
-                    if (line === '') {
-                        continue
-                    }
-                    record.type = line.slice(0, 23).trim() as AkaiRecordType
-                    record.block = Number.parseInt(line.slice(23, 25).trim())
-                    record.size = Number.parseInt(line.slice(25, 34).trim())
-                    record.name = line.slice(35).trim()
+    let parsing = false
+    function newRecord(): AkaiRecord { return {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}}
+    let record = newRecord()
+    const result = await doSpawn(bin, args, (data) => {
+        for (const line of String(data).split('\n')) {
+            if (data.startsWith('/') && data.endsWith(':')) {
+                if (parsing) {
                     rv.data.push(record)
+                    record = newRecord()
                 }
+                parsing = true
+            } else {
+                if (line === '') {
+                    continue
+                }
+                record.type = line.slice(0, 23).trim() as AkaiRecordType
+                record.block = Number.parseInt(line.slice(23, 25).trim())
+                record.size = Number.parseInt(line.slice(25, 34).trim())
+                record.name = line.slice(35).trim()
+                rv.data.push(record)
             }
+        }
+    })
+    return rv
+}
+
+
+async function doSpawn(bin: string, args: readonly string[], onData: (Buffer, ChildProcess) => void) {
+    return new Promise<{errors: number[], code: number}>((resolve, reject) => {
+        const rv = {errors: [], code: -1}
+        const child = spawn(bin, args, {shell: true})
+        child.stdout.setEncoding('utf8')
+        child.stdout.on('data', data => {
+            onData(data, child)
         })
 
         child.on('error', (e) => {
@@ -66,6 +74,7 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
         })
         child.on('close', (code, signal) => {
             if (code !== null) {
+                rv.code = code
                 resolve(rv)
             } else {
                 reject(new Error('Process terminated without an exit code.'))
