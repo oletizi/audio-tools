@@ -26,6 +26,21 @@ export interface AkaiRecordResult extends Result {
     data: AkaiRecord[]
 }
 
+export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
+    process.env['PERL5LIB'] = c.akaiToolsPath
+    return doSpawn(
+        path.join(c.akaiToolsPath, 'akaiformat'),
+        ['-f', String(c.diskFile)].concat(new Array(partitionCount).fill(partitionSize)),
+        {
+            onData: () => {
+            },
+            onStart: (child) => {
+                child.stdin.write('y\n')
+            }
+        }
+    )
+}
+
 export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
     await validateConfig(c)
     const rv: AkaiRecordResult = {data: [], errors: []}
@@ -33,25 +48,33 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
     const args = ['-f', `${c.diskFile}`, '-l', '-p', String(partition), '-u', `"${akaiPath}"`]
     process.env['PERL5LIB'] = c.akaiToolsPath
     let parsing = false
-    function newRecord(): AkaiRecord { return {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}}
+
+    function newRecord(): AkaiRecord {
+        return {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
+    }
+
     let record = newRecord()
-    const result = await doSpawn(bin, args, (data) => {
-        for (const line of String(data).split('\n')) {
-            if (data.startsWith('/') && data.endsWith(':')) {
-                if (parsing) {
+    const result = await doSpawn(bin, args, {
+        onStart: () => {
+        },
+        onData: (data) => {
+            for (const line of String(data).split('\n')) {
+                if (data.startsWith('/') && data.endsWith(':')) {
+                    if (parsing) {
+                        rv.data.push(record)
+                        record = newRecord()
+                    }
+                    parsing = true
+                } else {
+                    if (line === '') {
+                        continue
+                    }
+                    record.type = line.slice(0, 23).trim() as AkaiRecordType
+                    record.block = Number.parseInt(line.slice(23, 25).trim())
+                    record.size = Number.parseInt(line.slice(25, 34).trim())
+                    record.name = line.slice(35).trim()
                     rv.data.push(record)
-                    record = newRecord()
                 }
-                parsing = true
-            } else {
-                if (line === '') {
-                    continue
-                }
-                record.type = line.slice(0, 23).trim() as AkaiRecordType
-                record.block = Number.parseInt(line.slice(23, 25).trim())
-                record.size = Number.parseInt(line.slice(25, 34).trim())
-                record.name = line.slice(35).trim()
-                rv.data.push(record)
             }
         }
     })
@@ -59,13 +82,18 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
 }
 
 
-async function doSpawn(bin: string, args: readonly string[], onData: (Buffer, ChildProcess) => void) {
-    return new Promise<{errors: number[], code: number}>((resolve, reject) => {
+async function doSpawn(bin: string, args: readonly string[],
+                       opts: {
+                           onData: (Buffer, ChildProcess) => void,
+                           onStart: (ChildProcess) => void
+                       }) {
+    return new Promise<{ errors: number[], code: number }>((resolve, reject) => {
         const rv = {errors: [], code: -1}
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
+        opts.onStart(child)
         child.stdout.on('data', data => {
-            onData(data, child)
+            opts.onData(data, child)
         })
 
         child.on('error', (e) => {
@@ -81,6 +109,7 @@ async function doSpawn(bin: string, args: readonly string[], onData: (Buffer, Ch
             }
         })
         child.stderr.on('data', data => {
+            process.stderr.write(data)
             rv.errors.push(new Error(data))
         })
 
