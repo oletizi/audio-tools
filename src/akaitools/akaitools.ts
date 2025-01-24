@@ -41,6 +41,13 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
     )
 }
 
+export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
+    return doSpawn(
+        path.join(c.akaiToolsPath, 'akaiwrite'),
+        ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
+
+}
+
 export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
     await validateConfig(c)
     const rv: AkaiRecordResult = {data: [], errors: []}
@@ -82,12 +89,19 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
 }
 
 
+interface ExecutionResult {
+    errors: number[];
+    code: number;
+}
+
+function voidFunction() {}
+
 async function doSpawn(bin: string, args: readonly string[],
                        opts: {
                            onData: (Buffer, ChildProcess) => void,
                            onStart: (ChildProcess) => void
-                       }) {
-    return new Promise<{ errors: number[], code: number }>((resolve, reject) => {
+                       } = {onData: voidFunction, onStart: voidFunction}) {
+    return new Promise<ExecutionResult>((resolve, reject) => {
         const rv = {errors: [], code: -1}
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
@@ -118,10 +132,14 @@ async function doSpawn(bin: string, args: readonly string[],
 }
 
 export async function validateConfig(c: AkaiToolsConfig) {
+    let s
+    try {
+        s = await fs.stat(c.diskFile)
+    } catch (e) {
+    }
 
-    let s = await fs.stat(c.diskFile)
-    if (!s.isFile()) {
-        throw new Error(`Akai disk file path not a regular file: ${c.diskFile}`)
+    if (s?.isDirectory()) {
+        throw new Error(`Akai disk file is a directory: ${c.diskFile}`)
     }
 
     s = await fs.stat(c.akaiToolsPath)
