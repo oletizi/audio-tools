@@ -2,6 +2,8 @@ import {akaiFormat, akaiList, AkaiRecordType, akaiWrite, validateConfig} from ".
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
+import {parseProgramHeader, ProgramHeader} from "../../src/midi/devices/s3000xl";
+import {byte2nibblesLE} from "../../src/lib/lib-core";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
     let diskFile = ""
@@ -62,5 +64,24 @@ describe('Test interaction w/ akaitools and akai files.', async () => {
         listResult = await akaiList(newConfig(), listResult.data[0].name)
         expect(listResult.errors.length).eq(0)
         expect(listResult.data.length).eq(5)
+    })
+})
+
+describe(`Test parsing Akai objects read by akaitools`, async () => {
+    it(`Parses Akai program file`, async () => {
+        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
+        const buffer = await fs.readFile(programPath)
+        // const data = new Array(buffer.length * 2).fill(0)
+        const data = []
+        for (let i=0; i<buffer.length; i++) {
+            const nibbles = byte2nibblesLE(buffer[i])
+            data.push(nibbles[0])
+            data.push(nibbles[1])
+        }
+        let header = {} as ProgramHeader;
+        parseProgramHeader(data, 1, header)
+        console.log(`program name: ${header.PRNAME}`)
+        expect(header.PRNAME).eq('TEST PROGRAM')
+
     })
 })
