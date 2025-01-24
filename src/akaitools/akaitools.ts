@@ -16,7 +16,6 @@ export enum AkaiRecordType {
 }
 
 export interface AkaiRecord {
-    parent: string
     type: AkaiRecordType
     name: string
     block: number
@@ -36,9 +35,8 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
     return new Promise<AkaiRecordResult>(async (resolve, reject) => {
         const rv: AkaiRecordResult = {data: [], errors: []}
         const child = spawn(bin, args, {shell: true})
-        // child.stdout.pipe(process.stdout)
 
-        let record: AkaiRecord = {block: 0, name: "", parent: "", size: 0, type: AkaiRecordType.NULL}
+        let record: AkaiRecord = {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
         let parsing = false
         child.stdout.setEncoding('utf8')
         child.stdout.on('data', (data) => {
@@ -46,7 +44,7 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
                 if (data.startsWith('/') && data.endsWith(':')) {
                     if (parsing) {
                         rv.data.push(record)
-                        record = {block: 0, name: "", parent: "", size: 0, type: AkaiRecordType.NULL}
+                        record = {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
                     }
                     parsing = true
                 } else {
@@ -67,7 +65,6 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
             resolve(rv)
         })
         child.on('close', (code, signal) => {
-            console.log(`Process exited with code ${code} and signal ${signal}`)
             if (code !== null) {
                 resolve(rv)
             } else {
