@@ -1,28 +1,30 @@
 import React, {useEffect, useState} from "react"
-import {Box, Text, useFocus, useFocusManager} from "ink"
+import {Box, Text, useFocus, useFocusManager, useInput} from "ink"
 import fs from "fs/promises";
 import path from "path";
 
-function Item({children, id}: {id: string}) {
-    const isFocused = useFocus(id)
-    const inverse = isFocused ? ' (focused)' : ''
+function Item({children, id, onClick}: { id: string, onClick: (string) => void }) {
+    const {isFocused} = useFocus({id})
+    useInput((i, key) => {
+        if (isFocused && key.return) {
+            onClick(id)
+        }
+    })
     return (
         <Box justifyContent="space-between">
-            <Box><Text>{children}</Text></Box>
-            <Box><Text>{inverse}</Text></Box>
+            <Box><Text inverse={isFocused}>{children}</Text></Box>
         </Box>)
 }
 
 export function FileChooser({defaultDirectory, onSubmit}: { defaultDirectory: string, onSubmit: (v: string) => void }) {
     const [dir, setDir] = useState<string>(defaultDirectory)
     const [files, setFiles] = useState<any>(null)
-    const {focus} = useFocusManager()
+    const {focus, focusNext, focusPrevious} = useFocusManager()
     useEffect(() => {
         fs.readdir(dir).then(async list => {
-            const f = []
+            const f = [(<Item key="0" id="0" onClick={() => setDir(path.join(dir, '..'))}>../</Item>)]
             let id = 0
             for (const filename of list) {
-                console.log(filename)
                 if (filename.startsWith('.DS_Store')) {
                     continue
                 }
@@ -30,17 +32,37 @@ export function FileChooser({defaultDirectory, onSubmit}: { defaultDirectory: st
                 const file = path.join(dir, filename)
                 const s = await fs.stat(file)
 
-                f.push(<Item key={id} id={String(id)}>{id}: {s.isDirectory() ? 'D' : 'F'}: {filename}</Item>)
+                f.push(<Item key={id}
+                             id={String(id)}
+                             onClick={(id) => {
+                                 console.log(`CLICKED: ${id}`)
+                                 const selection = path.join(dir, filename);
+                                 if (s.isDirectory()) {
+                                     setDir(selection)
+                                 } else {
+                                     onSubmit(selection)
+                                 }
+                             }}>{filename}{s.isDirectory() ? '/' : ''}</Item>)
             }
+
             setFiles(f)
-            // if (f.length > 0) {
-            //     focus("0")
-            // }
+            focus("1")
         })
     }, [dir])
+
+    useInput((i, key) => {
+        if (key.downArrow || key.rightArrow) {
+            focusNext()
+        } else if (key.upArrow || key.leftArrow) {
+            focusPrevious()
+        }
+    })
+
+
     return (
-        <Box flexDirection="column" width="50%">
-            <Text>{dir}</Text>
+        <Box flexDirection="column" width="100%">
+            <Text>{dir}:</Text>
+            <Text> </Text>
             {files}
         </Box>
     )
