@@ -1,4 +1,4 @@
-import {AkaiToolsConfig, ExecutionResult} from "@/akaitools/akaitools";
+import {AkaiToolsConfig, akaiWrite, ExecutionResult, wav2Akai} from "@/akaitools/akaitools";
 import fs from "fs/promises"
 import {createWriteStream} from 'fs'
 import {newSampleFromBuffer} from "@/model/sample";
@@ -34,8 +34,15 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
     let count = 0
     for (let i = 0; i < sampleCount; i += chopLength) {
         const chop = sample.trim(i, i + chopLength)
-        const outfile = path.join(target, prefix + '.' + pad(count, 2)) + '.wav'
+        let targetName = prefix + '.' + pad(count, 2)
+        const outfile = path.join(target, targetName) + '.wav'
         await chop.writeToStream(createWriteStream(outfile))
+        const result = await wav2Akai(c, outfile, target, targetName)
+        if (result.errors.length > 0) {
+            rv.errors = rv.errors.concat(result.errors)
+            break
+        }
+        await akaiWrite()
         count++
     }
     return rv

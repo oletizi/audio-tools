@@ -61,8 +61,9 @@ export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPa
  * @param targetName name of the converted sample. Should obey Akai name requirements (<= 12 characters, alpha+a few extra characters)
  */
 export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPath: string, targetName: string) {
-    process.env['PATH'] = process.env['PATH'] + `:"${c.akaiToolsPath}"`
-    console.log(`new path: ${process.env['PATH']}`)
+    process.env['PERL5LIB'] = c.akaiToolsPath
+    // process.env['PATH'] = process.env['PATH'] + `:"${c.akaiToolsPath}"`
+    // console.log(`new path: ${process.env['PATH']}`)
     return doSpawn(
         path.join(c.akaiToolsPath, 'wav2akai'),
         ['-n', targetName, '-d', `"${targetPath}"`, `"${sourcePath}"`]
