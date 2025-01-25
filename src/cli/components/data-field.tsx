@@ -22,7 +22,7 @@ export function DataField(
     const {isFocused} = useFocus()
 
     function toggleEditing(b = !isEditing) {
-        app.setIsEditing(b)
+        app?.setIsEditing(b)
         setIsEditing(b)
     }
 

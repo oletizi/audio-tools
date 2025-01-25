@@ -8,16 +8,21 @@ export function FormatScreen({device, diskFile}: { device: Device, diskFile: str
     const [size, setSize] = useState<number>(1)
     const [count, setCount] = useState<number>(1)
     const [status, setStatus] = useState(<></>)
+    function clearStatus() {
+        setStatus(<></>)
+    }
     return (
         <Box gap={1} flexDirection="column">
             <Text>Format disk: {diskFile}</Text>
             <DataField label="Partition Size" defaultValue={String(size)} onChange={v => {
                 setSize(Number.parseInt(v))
+                clearStatus()
                 return String(size)
             }
             }/>
             <DataField label="Partition Count" defaultValue={String(count)} onChange={v => {
                 setCount(Number.parseInt(v))
+                clearStatus()
                 return String(count)
             }}/>
             {status}
