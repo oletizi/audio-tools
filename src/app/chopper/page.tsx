@@ -5,6 +5,7 @@ import {newClientOutput} from "@/lib/process-output";
 import {ChopApp} from "@/app/chopper/chop-app";
 import {ChopDetailScreen} from "@/app/chopper/chop-detail-screen";
 import {useState} from "react";
+import {chopSample} from "@/lib/client-translator";
 
 const config = newClientConfig()
 const out = newClientOutput(true, 'Chopper')
@@ -19,7 +20,14 @@ export default function Page() {
                 <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
             </div>
             <div className="grow">
-                <ChopDetailScreen app={app} defaultDirectory="/" file={file}/>
+                <ChopDetailScreen app={app} defaultDirectory="/"
+                                  file={file}
+                                  doIt={(samplesPerBeat, beatsPerChop) => {
+                                      if (file) {
+                                          chopSample(file, samplesPerBeat, beatsPerChop).then()
+                                      }
+                                  }}
+                                  onErrors={(e) => console.log(e)}/>
             </div>
         </div>
     </div>)

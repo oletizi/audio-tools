@@ -9,7 +9,7 @@ export async function getProgress(jobId: JobId) {
     return await client.post(root + '/progress', {jobId: jobId})
 }
 
-export async function chop(path:string){
+export async function chopSample(path:string, samplesPerBeat: number, beatsPerChop: number){
     return await client.post(root + '/chop', {path: path})
 }
 

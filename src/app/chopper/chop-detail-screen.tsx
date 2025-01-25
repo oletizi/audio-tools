@@ -4,7 +4,16 @@ import {getMeta} from "@/lib/client-translator";
 import IntField, {FieldDisplay} from "@/components/components-core";
 import {Button} from "@mui/material";
 
-export function ChopDetailScreen({file, onErrors = (e) => console.error(e)}: { file: string | null }) {
+export function ChopDetailScreen(
+    {
+        file,
+        onErrors = (e) => console.error(e),
+        doIt
+    }: {
+        file: string | null,
+        onErrors: (e: Error | Error[]) => void,
+        doIt: (samplesPerBeat: number, beatsPerChop: number) => void
+    }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
@@ -12,7 +21,7 @@ export function ChopDetailScreen({file, onErrors = (e) => console.error(e)}: { f
         if (file) {
             getMeta(file).then(r => {
                 if (r.errors.length) {
-                    onErrors(r)
+                    onErrors(r.errors)
                 } else {
                     setMeta(r.data)
                 }
@@ -40,7 +49,7 @@ export function ChopDetailScreen({file, onErrors = (e) => console.error(e)}: { f
                     <IntField defaultValue={bpm} label="BPM" max={200} min={40} onSubmit={v => setBpm(v)}/>
                     <IntField defaultValue={beatsPerChop} max={200} min={1} label="Beats per Chop"
                               onSubmit={v => setBeatsPerChop(v)}/>
-                    <Button variant="contained">Do It!</Button>
+                    <Button variant="contained" onClick={() => doIt(getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
                 </>) : (<></>)}
         </div>
     )
