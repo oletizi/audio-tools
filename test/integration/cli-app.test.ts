@@ -24,5 +24,6 @@ describe(`CliApp implementations`, async () => {
         const device = {} as Device
         const app = newFileApp(config, device, out, diskFile)
         expect(app).exist
+
     })
 })

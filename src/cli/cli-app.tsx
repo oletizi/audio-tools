@@ -1,4 +1,6 @@
-import midi from "midi";
+import React from "react"
+import {Box, Text} from "ink"
+import midi from "midi"
 import {ProcessOutput} from "@/lib/process-output.js";
 import {Program, Sample} from "@/midi/devices/s3000xl.js";
 import {ProgramScreen} from "@/cli/components/program-screen.js";
@@ -6,11 +8,11 @@ import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
 import {SampleScreen} from "@/cli/components/sample-screen.js";
 import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
 import {ChopDetailScreen} from "@/cli/components/chop-detail-screen.js";
-import React from "react";
 import {Device} from "@/midi/akai-s3000xl.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {ClientConfig} from "@/lib/config-client.js";
 import {saveClientConfig} from "@/lib/config-server.js";
+
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
     for (let i = 0; i < midiHandle.getPortCount(); i++) {
@@ -97,6 +99,8 @@ class BasicApp implements CliApp {
         this.config = config
         this.device = device
         this.out = out
+        this.doConfig = () => {
+        }
     }
 
     async chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
@@ -120,7 +124,7 @@ class BasicApp implements CliApp {
     }
 
 
-    setScreen: (Element) => void = (element) => {
+    setScreen(element) {
         this.listeners.forEach(callback => callback(element))
     }
 
@@ -189,48 +193,29 @@ class BasicApp implements CliApp {
         this.device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
     }
 
-    doConfig() {
-    }
+    doConfig: () => void
 }
+
 
 export function newFileApp(config: ClientConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
-    return new FileApp(config, device, out, diskFilePath)
-}
-
-class FileApp extends BasicApp {
-    private diskFilePath: string
-    constructor(config: ClientConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
-        super(config, device, out)
-        this.diskFilePath = diskFilePath
+    const rv = new BasicApp(config, device, out)
+    rv.doConfig = () => {
+        rv.setScreen(<Box gap={3}><Text>Hi. Let's do some config!</Text><Text>Disk file
+            path: {diskFilePath}</Text></Box>)
     }
+    return rv
 }
 
 export function newMidiApp(config: ClientConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
-    return new MidiApp(config, device, out, midiInput, midiOutput)
-}
-
-class MidiApp extends BasicApp {
-    private readonly midiInput: midi.Input
-    private readonly midiOutput: midi.Output
-
-    constructor(config: ClientConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
-        super(config, device, out)
-        this.midiInput = midiInput
-        this.midiOutput = midiOutput
-    }
-
-    doConfig() {
-        const config = super.config
-        const midiInput = this.midiInput
-        const midiOutput = this.midiOutput
-
-
-        this.setScreen(<StartScreen defaultMidiInput={config.midiInput}
-                                    defaultMidiOutput={config.midiOutput}
-                                    midiInput={midiInput}
-                                    midiOutput={midiOutput}
-                                    updateMidiInput={(v) => updateMidiInput(config, midiInput, v)}
-                                    updateMidiOutput={(v) => updateMidiOutput(config, midiOutput, v)}
+    const rv = new BasicApp(config, device, out)
+    rv.doConfig = () => {
+        rv.setScreen(<StartScreen defaultMidiInput={config.midiInput}
+                                  defaultMidiOutput={config.midiOutput}
+                                  midiInput={midiInput}
+                                  midiOutput={midiOutput}
+                                  updateMidiInput={(v) => updateMidiInput(config, midiInput, v)}
+                                  updateMidiOutput={(v) => updateMidiOutput(config, midiOutput, v)}
         />)
     }
+    return rv
 }
