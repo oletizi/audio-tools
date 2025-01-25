@@ -2,7 +2,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import IconButton from '@mui/material/IconButton'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import List from '@mui/material/List'
-import ListItemButton from "@mui/material/ListItemButton";
 import Divider from '@mui/material/Divider'
 import FolderIcon from '@mui/icons-material/Folder'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -23,21 +22,25 @@ export interface ItemAdornments {
     onDelete: (f: FileSpec | DirectorySpec) => void
 }
 
-export interface visitItem {
-    (f: FileSpec | DirectorySpec): ItemAdornments
+export type visitItem = (f: FileSpec | DirectorySpec) => ItemAdornments
+
+export function newItemAdornments(): ItemAdornments {
+    return {
+        translatable: false,
+        clickable: false, deletable: false, onClick: () => {
+            return Promise.resolve()
+        },
+        onDelete: () => {
+            return Promise.resolve()
+        },
+        onTranslate: () => {
+            return Promise.resolve()
+        },
+    }
 }
 
 const nullVisitItem: visitItem = () => {
-    const rv: ItemAdornments = {
-        clickable: false, deletable: false, onClick(f: FileSpec | DirectorySpec): Promise<void> {
-            return Promise.resolve(undefined);
-        }, onDelete(f: FileSpec | DirectorySpec): Promise<void> {
-            return Promise.resolve(undefined);
-        }, onTranslate(f: FileSpec | DirectorySpec): Promise<void> {
-            return Promise.resolve(undefined);
-        }, translatable: false
-    }
-    return rv
+    return newItemAdornments()
 }
 
 export function join(items: [], separator) {
@@ -46,8 +49,8 @@ export function join(items: [], separator) {
 
 export function FileList({data, className, visit = nullVisitItem}: {
     data: FileSet | null,
-    className: string,
-    visit: visitItem
+    className?: string,
+    visit?: visitItem
 }) {
     let items = []
 
@@ -63,7 +66,8 @@ export function FileList({data, className, visit = nullVisitItem}: {
                         return (
                             <div key={seq()}>
                                 <ListItem className="hover:bg-neutral-100">
-                                    <div className="flex items-center h-full w-full" onClick={() => adornments.onClick(item)}>
+                                    <div className="flex items-center h-full w-full"
+                                         onClick={() => adornments.onClick(item)}>
                                         <ListItemIcon><FolderIcon/></ListItemIcon>
                                         <ListItemText>{item.name}</ListItemText>
                                     </div>
@@ -94,7 +98,10 @@ export function FileList({data, className, visit = nullVisitItem}: {
                         <IconButton onClick={() => adornments.onTranslate(item)}><ArrowForwardIcon/></IconButton> : ''
 
                     return (<div key={seq()}>
-                        <ListItem className={classes} onClick={adornments.translatable ? () => {adornments.onTranslate(item)} : () => {}}>
+                        <ListItem className={classes} onClick={adornments.translatable ? () => {
+                            adornments.onTranslate(item)
+                        } : () => {
+                        }}>
                             <ListItemIcon><InsertDriveFileIcon/></ListItemIcon>
                             <ListItemText>{item.name}</ListItemText>
                             {deleteButton}

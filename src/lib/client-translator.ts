@@ -1,4 +1,4 @@
-import {DirectorySpec, FileSet, FileSetResult} from "@/lib/lib-fs-api";
+import {FileSetResult} from "@/lib/lib-fs-api";
 import {newClientCommon} from "@/lib/client-common";
 import {JobId} from "@/lib/lib-jobs";
 
