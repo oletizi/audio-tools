@@ -48,8 +48,8 @@ export function LabeledBorder({
 export function FieldDisplay({label, value}: { label: string, value: any }) {
     return (
         <div className="flex gap-4">
-            <div>{label}</div>
-            <div>{String(value)}</div>
+            <div className="w-1/2">{label}</div>
+            <div className="grow">{String(value)}</div>
         </div>)
 }
 
