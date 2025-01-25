@@ -15,7 +15,10 @@ export async function GET(request: NextRequest, {params}: { params: Promise<{ pa
 
         const normal = path.normalize(path.join(session.translate.source.join('/'), p))
         const absolute = path.normalize(path.join(cfg.sourceRoot, normal))
-
+        if (! absolute.startsWith(cfg.sourceRoot)) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Source path outside of source root')
+        }
         const sample = newSampleFromBuffer(await fs.readFile(absolute))
 
         return NextResponse.json({message: 'Ok', status: 200, normal: normal, absolute: absolute, data: sample.getMetadata()})

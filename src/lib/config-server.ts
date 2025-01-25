@@ -11,6 +11,9 @@ const DEFAULT_TARGET_DIR = path.join(DEFAULT_DATA_DIR, 'target')
 const out: ProcessOutput = newServerOutput(false)
 
 export interface ServerConfig {
+    akaiTools: string
+    akaiDisk: string
+    s3k: string
     sourceRoot: string
     targetRoot: string
     sessionRoot: string
@@ -20,6 +23,7 @@ export interface ServerConfig {
 
 async function validate(cfg: ServerConfig) {
     return cfg && await mkdir(cfg.sourceRoot) && await mkdir(cfg.targetRoot) && await mkdir(cfg.sessionRoot)
+    && await mkdir(cfg.s3k) && await fs.stat(cfg.akaiTools)
 }
 
 export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
@@ -28,7 +32,10 @@ export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<Serve
         targetRoot: DEFAULT_TARGET_DIR,
         jobsRoot: path.join(dataDir, 'jobs'),
         sessionRoot: path.join(dataDir, 'sessions'),
-        logfile: path.join(dataDir, 'log.txt')
+        logfile: path.join(dataDir, 'log.txt'),
+        s3k: path.join(DEFAULT_TARGET_DIR, 's3k'),
+        akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'akai.img'),
+        akaiTools: path.join(dataDir, 'akaitools-1.5')
     }
     const configPath = path.join(dataDir, 'server-config.json')
     const storedConfig = (await objectFromFile(configPath)).data
