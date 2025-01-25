@@ -31,10 +31,8 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
     }
     const sampleCount = sample.getSampleCount()
     const chopLength = samplesPerBeat * beatsPerChop
-    console.log(`Chop length:${chopLength}`)
     let count = 0
     for (let i = 0; i < sampleCount; i += chopLength) {
-        console.log(`Trimming from ${i} to ${i + chopLength}`)
         const chop = sample.trim(i, i + chopLength)
         const outfile = path.join(target, prefix + '.' + pad(count, 2)) + '.wav'
         await chop.writeToStream(createWriteStream(outfile))
