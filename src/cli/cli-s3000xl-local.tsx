@@ -9,6 +9,7 @@ import {Device} from "@/midi/akai-s3000xl.js";
 import fs from "fs";
 import path from "path";
 import {akaiFormat, AkaiToolsConfig, ExecutionResult} from "@/akaitools/akaitools.js";
+import {FileChooser} from "@/cli/components/file-chooser.js";
 
 
 const serverConfig = await newServerConfig()
@@ -18,7 +19,9 @@ const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-local')
 const diskFilePath = path.join(serverConfig.targetRoot, 'akai.img')
 const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", diskFile: diskFilePath}
 function Main({app}: { app: CliApp }) {
-    const [screen, setScreen] = useState(<Text>Hi.</Text>)
+    const [screen, setScreen] = useState(<FileChooser defaultDirectory={serverConfig.sourceRoot} onSubmit={v => {
+        setScreen(<Box><Text>You chose: {v}</Text></Box>)
+    }}/>)
     const {exit} = useApp()
     const stdout = useStdout()
 
@@ -70,12 +73,6 @@ function Main({app}: { app: CliApp }) {
 }
 
 class FileDevice implements Device {
-    chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
-        return Promise.resolve(undefined);
-    }
-
-    copySample(name: string, sample: Sample) {
-    }
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader> {
         throw new Error("Implement Me!")

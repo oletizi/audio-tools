@@ -1,4 +1,3 @@
-// import * as midi from 'midi'
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core";
 import {newClientOutput, ProcessOutput} from "@/lib/process-output";
 import {
@@ -8,12 +7,7 @@ import {
     ProgramHeader, Sample,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-import midi, {output} from "midi";
-import {name} from "mocha";
-import {data} from "autoprefixer";
-import {message} from "blessed";
-import {response} from "express";
-import {name} from "postcss";
+import midi from "midi";
 import {ExecutionResult} from "@/akaitools/akaitools.js";
 
 export interface Device {
@@ -42,15 +36,9 @@ export interface Device {
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
-    // writeProgram(header: ProgramHeader): Promise<void>
-
     writeProgramName(header: ProgramHeader, name: string): Promise<void>
 
     writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void>
-
-    copySample(name: string, sample: Sample)
-
-    chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void>
 
     send(opcode: number, data: number[])
 
@@ -311,34 +299,6 @@ class s3000xl implements Device {
         out.log(header)
         header.raw = m
         return header
-    }
-
-    async copySample(name: string, sample: Sample) {
-        if (name === sample.getSampleName()) {
-            throw new Error("Attempt to copy sample with same name.")
-        }
-        const names = []
-        await this.fetchSampleNames(names)
-        let sampleId = names.length
-
-        const s = await this.getSample(sample.getSampleName())
-        s.setSampleName(name)
-        const d = s.getHeader().raw
-        const offset = 5
-        const originalId = nibbles2byte(d[offset], d[offset + 1])
-        this.out.log(`Original sample ID: ${originalId}`)
-        this.out.log(`New sample ID     : ${sampleId}`)
-
-        const n = byte2nibblesLE(sampleId)
-        d[offset] = n[0]
-        d[offset + 1] = n[1]
-        const response = await this.sendRaw(d)
-        this.out.log(`response: `)
-        this.out.log(response)
-    }
-
-    async chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
-        throw new Error("Implement me!")
     }
 
     async send(opcode: Opcode, data: number[]): Promise<number[]> {

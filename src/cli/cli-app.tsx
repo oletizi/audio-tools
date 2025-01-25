@@ -11,9 +11,10 @@ import {ChopDetailScreen} from "@/cli/components/chop-detail-screen.js";
 import {Device} from "@/midi/akai-s3000xl.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {ClientConfig} from "@/lib/config-client.js";
-import {saveClientConfig} from "@/lib/config-server.js";
-import e from "express";
+import {saveClientConfig, ServerConfig} from "@/lib/config-server.js";
 import {FormatScreen} from "@/cli/components/format-screen.js";
+import {ExecutionResult} from "@/akaitools/akaitools.js";
+import {FileChooser} from "@/cli/components/file-chooser.js";
 
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
@@ -80,7 +81,7 @@ export interface CliApp {
 
     saveSample(sample: Sample): Promise<void>;
 
-    chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void>
+    chopSample(samplePath: string, chopLength: number, totalChops: number): Promise<ExecutionResult>
 }
 
 export interface Defaults {
@@ -93,23 +94,22 @@ class BasicApp implements CliApp {
     private readonly listeners: Function[] = []
     private readonly defaults: Defaults = {beatsPerChop: 1, bpm: 90}
     private readonly device: Device;
-    protected readonly config: ClientConfig;
+    private readonly config: ClientConfig;
+    private readonly serverConfig: ServerConfig;
 
     private isEditing: boolean;
 
     readonly out: ProcessOutput
 
-
-    constructor(config: ClientConfig, device: Device, out: ProcessOutput) {
+    constructor(config: ClientConfig, serverConfig: ServerConfig, device: Device, out: ProcessOutput) {
         this.config = config
+        this.serverConfig = serverConfig
         this.device = device
         this.out = out
-        this.doConfig = () => {
-        }
     }
 
-    async chopSample(sample: Sample, chopLength: number, totalChops: number): Promise<void> {
-        await this.device.chopSample(sample, chopLength, totalChops)
+    chopSample(samplePath: string, chopLength: number, totalChops: number): Promise<ExecutionResult> {
+        return Promise.resolve({code: 0, errors: []})
     }
 
     setIsEditing(b: boolean): void {
@@ -127,7 +127,6 @@ class BasicApp implements CliApp {
     async saveDefaults(d: Defaults): Promise<Defaults> {
         return this.defaults
     }
-
 
     setScreen(element) {
         this.listeners.forEach(callback => callback(element))
@@ -186,11 +185,7 @@ class BasicApp implements CliApp {
     }
 
     doChop() {
-        const device = this.device
-        const app = this
-        this.setScreen(<SampleScreen nextScreen={(v) => {
-            app.doChopDetail(v)
-        }} names={device.getSampleNames([])}/>)
+        this.setScreen(<FileChooser defaultDirectory={this.serverConfig.sourceRoot}/>)
     }
 
     doChopDetail(sampleName): void {
@@ -206,8 +201,8 @@ class BasicApp implements CliApp {
 }
 
 
-export function newFileApp(config: ClientConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
-    const rv = new BasicApp(config, device, out)
+export function newFileApp(config: ClientConfig, serverConfig: ServerConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
+    const rv = new BasicApp(config, serverConfig, device, out)
     rv.doConfig = () => {
         rv.setScreen(<Box gap={3}><Text>Hi. Let's do some config!</Text><Text>Disk file
             path: {diskFilePath}</Text></Box>)
@@ -216,6 +211,10 @@ export function newFileApp(config: ClientConfig, device: Device, out: ProcessOut
     rv.doFormat = async () => {
         rv.setScreen(<FormatScreen device={device} diskFile={diskFilePath}/>)
     }
+
+    // rv.chopSample = async (samplePath, chopLength, totalChops) => {
+    //
+    // }
 
     return rv
 }
