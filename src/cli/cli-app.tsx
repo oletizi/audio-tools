@@ -12,6 +12,7 @@ import {Device} from "@/midi/akai-s3000xl.js";
 import {StartScreen} from "@/cli/components/start-screen.js";
 import {ClientConfig} from "@/lib/config-client.js";
 import {saveClientConfig} from "@/lib/config-server.js";
+import e from "express";
 
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
@@ -43,9 +44,12 @@ export function updateMidiOutput(config: ClientConfig, midiOutput: midi.Output, 
 
 
 export interface CliApp {
+
     out: ProcessOutput
 
     doConfig()
+
+    doFormat(): void
 
     getDefaults(): Defaults
 
@@ -193,7 +197,11 @@ class BasicApp implements CliApp {
         this.device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
     }
 
-    doConfig: () => void
+    doConfig() {
+    }
+
+    doFormat() {
+    }
 }
 
 
@@ -203,6 +211,11 @@ export function newFileApp(config: ClientConfig, device: Device, out: ProcessOut
         rv.setScreen(<Box gap={3}><Text>Hi. Let's do some config!</Text><Text>Disk file
             path: {diskFilePath}</Text></Box>)
     }
+
+    rv.doFormat = async () => {
+        rv.setScreen(<Box><Text>Hi. Let's do some formatting!</Text></Box>)
+    }
+
     return rv
 }
 

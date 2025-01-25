@@ -40,6 +40,12 @@ function Main({app}: { app: CliApp }) {
                 case 'S':
                     app.doSample()
                     break
+                case 'F':
+                    app.doFormat()
+                    break
+                case ';':
+                    app.doConfig()
+                    break
                 case 'Q':
                     quit()
                     break
@@ -53,6 +59,7 @@ function Main({app}: { app: CliApp }) {
                 <Button onClick={app.doChop}>C: Chop</Button>
                 <Button onClick={app.doProgram}>P: Program</Button>
                 <Button onClick={app.doSample}>S: Sample</Button>
+                <Button onClick={app.doFormat}>F: Format</Button>
                 <Button onClick={app.doConfig}>;: Config</Button>
                 <Button onClick={quit}>Q: Quit</Button>
             </Box>
