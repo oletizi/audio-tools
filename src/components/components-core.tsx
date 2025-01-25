@@ -45,13 +45,21 @@ export function LabeledBorder({
     )
 }
 
+export function FieldDisplay({label, value}: { label: string, value: any }) {
+    return (
+        <div className="flex gap-4">
+            <div>{label}</div>
+            <div>{String(value)}</div>
+        </div>)
+}
+
 export default function IntField({
-                                     onSubmit,
-                                     label = "",
-                                     defaultValue = 0,
-                                     min = Number.MIN_SAFE_INTEGER,
-                                     max = Number.MAX_SAFE_INTEGER
-                                 }: {
+                             onSubmit,
+                             label = "",
+                             defaultValue = 0,
+                             min = Number.MIN_SAFE_INTEGER,
+                             max = Number.MAX_SAFE_INTEGER
+                         }: {
     onSubmit: (n: number) => void,
     label: string,
     defaultValue: number,

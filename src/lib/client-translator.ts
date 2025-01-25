@@ -14,7 +14,7 @@ export async function chop(path:string){
 }
 
 export async function getMeta(path:string) {
-    return await client.post(root + '/meta', {path: path})
+    return await client.get(root + '/meta/' + path)
 }
 
 export async function translate(path: string) {

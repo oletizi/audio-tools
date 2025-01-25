@@ -3,21 +3,21 @@ import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 import {cdSource, listSource} from "@/lib/client-translator";
 import {FileList, newItemAdornments} from "@/components/file-list"
 
-export function SampleSelectScreen({onSelect, onErrors = e =>  console.error(e)} : {onSelect: (v: string) => void, onErrors?: (e: Error[]) => void}) {
+export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}: {
+    onSelect: (v: string) => void,
+    onErrors?: (e: Error[]) => void
+}) {
     const [dir, setDir] = useState<string>('/')
     const [files, setFiles] = useState<FileSet>(null)
     useEffect(() => {
-        cdSource(dir).then(() => {
-                listSource().then(r => {
-                    if (r.errors.length > 0) {
-                        onErrors(r.errors)
-                    } else {
-                        setFiles(r.data)
-                        setDir('/' + r.data.path.join('/'))
-                    }
-                })
+        listSource().then(r => {
+            if (r.errors.length > 0) {
+                onErrors(r.errors)
+            } else {
+                setFiles(r.data)
+                setDir('/' + r.data.path.join('/'))
             }
-        )
+        })
     }, [dir])
 
     function visitItem(item: FileSpec | DirectorySpec) {

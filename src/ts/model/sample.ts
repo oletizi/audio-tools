@@ -67,9 +67,9 @@ export interface Sample {
 }
 
 class WavSample implements Sample {
-    private readonly wav: wavefile.WaveFile;
+    private readonly wav: WaveFile;
 
-    constructor(wav: wavefile.WaveFile) {
+    constructor(wav: WaveFile) {
         this.wav = wav
     }
 
@@ -109,7 +109,8 @@ class WavSample implements Sample {
 
     getSampleCount(): number {
         // XXX: There's probably a more efficient way to do this
-        return this.wav.getSamples().length
+        const channelCount = this.getChannelCount() ? this.getChannelCount() : 1
+        return this.wav.getSamples(true).length / channelCount
     }
 
     getSampleRate(): number {
@@ -137,7 +138,7 @@ class WavSample implements Sample {
     trim(start, end): Sample {
         const channelCount = this.wav.fmt["numChannels"]
         const trimmedSamples = this.wav.getSamples(true).slice(start * channelCount, end * channelCount)
-        const trimmed = new wavefile.WaveFile()
+        const trimmed = new WaveFile()
         trimmed.fromScratch(channelCount, this.wav.fmt.sampleRate, this.wav.bitDepth, trimmedSamples)
         return newSampleFromBuffer(trimmed.toBuffer())
     }
