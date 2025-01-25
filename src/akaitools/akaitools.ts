@@ -26,6 +26,11 @@ export interface AkaiRecordResult extends Result {
     data: AkaiRecord[]
 }
 
+export interface ExecutionResult {
+    errors: number[];
+    code: number;
+}
+
 export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     return doSpawn(
@@ -105,10 +110,6 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
 }
 
 
-interface ExecutionResult {
-    errors: number[];
-    code: number;
-}
 
 function voidFunction() {
 }

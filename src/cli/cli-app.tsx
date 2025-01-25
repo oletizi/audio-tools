@@ -13,6 +13,7 @@ import {StartScreen} from "@/cli/components/start-screen.js";
 import {ClientConfig} from "@/lib/config-client.js";
 import {saveClientConfig} from "@/lib/config-server.js";
 import e from "express";
+import {FormatScreen} from "@/cli/components/format-screen.js";
 
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
@@ -213,7 +214,7 @@ export function newFileApp(config: ClientConfig, device: Device, out: ProcessOut
     }
 
     rv.doFormat = async () => {
-        rv.setScreen(<Box><Text>Hi. Let's do some formatting!</Text></Box>)
+        rv.setScreen(<FormatScreen device={device} diskFile={diskFilePath}/>)
     }
 
     return rv

@@ -8,6 +8,7 @@ import {loadClientConfig, newServerConfig} from "@/lib/config-server.js";
 import {Device} from "@/midi/akai-s3000xl.js";
 import fs from "fs";
 import path from "path";
+import {akaiFormat, AkaiToolsConfig, ExecutionResult} from "@/akaitools/akaitools.js";
 
 
 const serverConfig = await newServerConfig()
@@ -15,6 +16,7 @@ const config = await loadClientConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
 const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-local')
 const diskFilePath = path.join(serverConfig.targetRoot, 'akai.img')
+const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", diskFile: diskFilePath}
 function Main({app}: { app: CliApp }) {
     const [screen, setScreen] = useState(<Text>Hi.</Text>)
     const {exit} = useApp()
@@ -135,6 +137,10 @@ class FileDevice implements Device {
 
     writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void> {
         return Promise.resolve(undefined);
+    }
+
+    format(partitionSize: number, partitionCount: number): Promise<ExecutionResult> {
+        return akaiFormat(akaiToolsConfig, partitionSize, partitionCount)
     }
 }
 

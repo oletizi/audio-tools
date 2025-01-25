@@ -13,6 +13,8 @@ import {name} from "mocha";
 import {data} from "autoprefixer";
 import {message} from "blessed";
 import {response} from "express";
+import {name} from "postcss";
+import {ExecutionResult} from "@/akaitools/akaitools.js";
 
 export interface Device {
 
@@ -53,6 +55,8 @@ export interface Device {
     send(opcode: number, data: number[])
 
     sendRaw(message: number[])
+
+    format(partitionSize: number, partitionCount: number): Promise<ExecutionResult>
 }
 
 export function newDevice(input: midi.Input, output: midi.Output, out: ProcessOutput = newClientOutput()): Device {
@@ -325,7 +329,7 @@ class s3000xl implements Device {
         this.out.log(`Original sample ID: ${originalId}`)
         this.out.log(`New sample ID     : ${sampleId}`)
 
-        const n= byte2nibblesLE(sampleId)
+        const n = byte2nibblesLE(sampleId)
         d[offset] = n[0]
         d[offset + 1] = n[1]
         const response = await this.sendRaw(d)
@@ -366,6 +370,10 @@ class s3000xl implements Device {
         out.log(`Sending message...`)
         output.sendMessage(message)
         return response
+    }
+
+    format(partitionSize: number, partitionCount: number): Promise<ExecutionResult> {
+        return Promise.resolve({errors: [], code: 0})
     }
 
 
