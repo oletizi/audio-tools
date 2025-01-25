@@ -1,6 +1,5 @@
-import type {NextConfig} from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
     /* config options here */
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     typescript: {

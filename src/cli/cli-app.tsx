@@ -14,7 +14,6 @@ import {ClientConfig} from "@/lib/config-client.js";
 import {saveClientConfig, ServerConfig} from "@/lib/config-server.js";
 import {FormatScreen} from "@/cli/components/format-screen.js";
 import {ExecutionResult} from "@/akaitools/akaitools.js";
-import {FileChooser} from "@/cli/components/file-chooser.js";
 import {ChopScreen} from "@/cli/components/chop-screen.js";
 
 

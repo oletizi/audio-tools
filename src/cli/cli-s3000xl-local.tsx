@@ -4,7 +4,7 @@ import {CliApp, newFileApp} from "@/cli/cli-app.js";
 import {newStreamOutput} from "@/lib/process-output.js";
 import {KeygroupHeader, Program, ProgramHeader, Sample, SampleHeader} from "@/midi/devices/s3000xl.js";
 import {Button} from "@/cli/components/button.js";
-import {loadClientConfig, newServerConfig} from "@/lib/config-server.js";
+import {loadClientConfig, newServerConfig, ServerConfig} from "@/lib/config-server.js";
 import {Device} from "@/midi/akai-s3000xl.js";
 import fs from "fs";
 import path from "path";
@@ -13,14 +13,7 @@ import {FileChooser} from "@/cli/components/file-chooser.js";
 import {ChopScreen} from "@/cli/components/chop-screen.js";
 
 
-const serverConfig = await newServerConfig()
-const config = await loadClientConfig()
-const logstream = fs.createWriteStream(serverConfig.logfile)
-const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-local')
-const diskFilePath = path.join(serverConfig.targetRoot, 'akai.img')
-const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", diskFile: diskFilePath}
-
-function Main({app}: { app: CliApp }) {
+function Main({app, serverConfig}: { app: CliApp, serverConfig: ServerConfig }) {
     const {stdout} = useStdout()
     const [screen, setScreen] = useState(<ChopScreen app={app} maxHeight={(stdout.rows / 2) - 5}
                                                      defaultDirectory={serverConfig.sourceRoot}
@@ -78,6 +71,11 @@ function Main({app}: { app: CliApp }) {
 }
 
 class FileDevice implements Device {
+    private readonly akaiToolsConfig: AkaiToolsConfig;
+
+    constructor(akaiToolsConfig: AkaiToolsConfig) {
+        this.akaiToolsConfig = akaiToolsConfig
+    }
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader> {
         throw new Error("Implement Me!")
@@ -142,8 +140,19 @@ class FileDevice implements Device {
     }
 
     format(partitionSize: number, partitionCount: number): Promise<ExecutionResult> {
-        return akaiFormat(akaiToolsConfig, partitionSize, partitionCount)
+        return akaiFormat(this.akaiToolsConfig, partitionSize, partitionCount)
     }
 }
 
-render(<Main app={newFileApp(config, serverConfig, new FileDevice(), out, diskFilePath)}/>)
+
+async function doIt() {
+    const serverConfig = await newServerConfig()
+    const config = await loadClientConfig()
+    const logstream = fs.createWriteStream(serverConfig.logfile)
+    const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-local')
+    const diskFilePath = path.join(serverConfig.targetRoot, 'akai.img')
+    const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", diskFile: diskFilePath}
+    render(<Main serverConfig={serverConfig} app={newFileApp(config, serverConfig, new FileDevice(akaiToolsConfig), out, diskFilePath)}/>)
+}
+
+doIt().then()
