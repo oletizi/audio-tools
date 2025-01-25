@@ -1,3 +1,4 @@
+import midi from "midi";
 import {ProcessOutput} from "@/lib/process-output.js";
 import {Program, Sample} from "@/midi/devices/s3000xl.js";
 import {ProgramScreen} from "@/cli/components/program-screen.js";
@@ -7,9 +8,42 @@ import {SampleDetailScreen} from "@/cli/components/sample-detail-screen.js";
 import {ChopDetailScreen} from "@/cli/components/chop-detail-screen.js";
 import React from "react";
 import {Device} from "@/midi/akai-s3000xl.js";
+import {StartScreen} from "@/cli/components/start-screen.js";
+import {ClientConfig} from "@/lib/config-client.js";
+import {saveClientConfig} from "@/lib/config-server.js";
+
+function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
+    for (let i = 0; i < midiHandle.getPortCount(); i++) {
+        const portName = midiHandle.getPortName(i)
+        if (portName === name) {
+            midiHandle.closePort()
+            midiHandle.openPort(i)
+            return true
+        }
+    }
+    return false
+}
+
+
+export function updateMidiInput(config: ClientConfig, midiInput: midi.Input, v: string) {
+    if (openMidiPort(midiInput, v)) {
+        config.midiInput = v
+        saveClientConfig(config).then()
+    }
+}
+
+export function updateMidiOutput(config: ClientConfig, midiOutput: midi.Output, v: string) {
+    if (openMidiPort(midiOutput, v)) {
+        config.midiOutput = v
+        saveClientConfig(config).then()
+    }
+}
+
 
 export interface CliApp {
     out: ProcessOutput
+
+    doConfig()
 
     getDefaults(): Defaults
 
@@ -47,16 +81,20 @@ export interface Defaults {
     bpm: number
 }
 
-export class BasicApp implements CliApp {
+
+class BasicApp implements CliApp {
     private readonly listeners: Function[] = []
     private readonly defaults: Defaults = {beatsPerChop: 1, bpm: 90}
     private readonly device: Device;
+    protected readonly config: ClientConfig;
 
     private isEditing: boolean;
 
     readonly out: ProcessOutput
 
-    constructor(device: Device, out: ProcessOutput) {
+
+    constructor(config: ClientConfig, device: Device, out: ProcessOutput) {
+        this.config = config
         this.device = device
         this.out = out
     }
@@ -121,7 +159,7 @@ export class BasicApp implements CliApp {
     doProgramDetail(programNumber: number): void {
         const app = this
         this.device.getProgram(programNumber).then(program => this.setScreen(<ProgramDetailScreen app={app}
-                                                                                             program={program}/>))
+                                                                                                  program={program}/>))
     }
 
     doSample() {
@@ -134,7 +172,8 @@ export class BasicApp implements CliApp {
 
     doSampleDetail(sampleName): void {
         const app = this
-        this.device.getSample(sampleName).then(sample => this.setScreen(<SampleDetailScreen app={app} sample={sample}/>))
+        this.device.getSample(sampleName).then(sample => this.setScreen(<SampleDetailScreen app={app}
+                                                                                            sample={sample}/>))
     }
 
     doChop() {
@@ -150,4 +189,48 @@ export class BasicApp implements CliApp {
         this.device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
     }
 
+    doConfig() {
+    }
+}
+
+export function newFileApp(config: ClientConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
+    return new FileApp(config, device, out, diskFilePath)
+}
+
+class FileApp extends BasicApp {
+    private diskFilePath: string
+    constructor(config: ClientConfig, device: Device, out: ProcessOutput, diskFilePath: string) {
+        super(config, device, out)
+        this.diskFilePath = diskFilePath
+    }
+}
+
+export function newMidiApp(config: ClientConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
+    return new MidiApp(config, device, out, midiInput, midiOutput)
+}
+
+class MidiApp extends BasicApp {
+    private readonly midiInput: midi.Input
+    private readonly midiOutput: midi.Output
+
+    constructor(config: ClientConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
+        super(config, device, out)
+        this.midiInput = midiInput
+        this.midiOutput = midiOutput
+    }
+
+    doConfig() {
+        const config = super.config
+        const midiInput = this.midiInput
+        const midiOutput = this.midiOutput
+
+
+        this.setScreen(<StartScreen defaultMidiInput={config.midiInput}
+                                    defaultMidiOutput={config.midiOutput}
+                                    midiInput={midiInput}
+                                    midiOutput={midiOutput}
+                                    updateMidiInput={(v) => updateMidiInput(config, midiInput, v)}
+                                    updateMidiOutput={(v) => updateMidiOutput(config, midiOutput, v)}
+        />)
+    }
 }

@@ -3,18 +3,17 @@ import {Box, render, useApp, useInput, useStdout} from 'ink';
 
 import midi from "midi";
 import {newDevice} from "@/midi/akai-s3000xl.js";
-import {loadClientConfig, newServerConfig, saveClientConfig} from "@/lib/config-server.js";
+import {loadClientConfig, newServerConfig} from "@/lib/config-server.js";
 import {newStreamOutput} from "@/lib/process-output.js";
 import fs from "fs";
 import {Program} from "@/midi/devices/s3000xl.js";
-import {StartScreen} from "@/cli/components/start-screen.js";
 import {Button} from "@/cli/components/button.js";
 import {ProgramDetailScreen} from "@/cli/components/program-detail-screen.js";
-import {BasicApp, CliApp} from "@/cli/cli-app.js";
+import {CliApp, newMidiApp, updateMidiInput, updateMidiOutput} from "@/cli/cli-app.js";
 
 const serverConfig = await newServerConfig()
 const logstream = fs.createWriteStream(serverConfig.logfile)
-const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl')
+const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-midi')
 const config = await loadClientConfig()
 
 const midiInput = new midi.Input()
@@ -23,11 +22,11 @@ const midiOutput = new midi.Output()
 
 
 out.log(`startup`)
-await updateMidiInput(config.midiInput)
-await updateMidiOutput(config.midiOutput)
+await updateMidiInput(config, midiInput, config.midiInput)
+await updateMidiOutput(config, midiOutput, config.midiOutput)
 const device = newDevice(midiInput, midiOutput, out)
 
-const app: CliApp = new BasicApp(device, out);
+const app: CliApp = newMidiApp(config, device, out, midiInput, midiOutput);
 
 out.log(`Initializing device...`)
 await device.init()
@@ -50,15 +49,7 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
         shutdown(exit)
     }
 
-    function doMidi() {
-        setScreen(<StartScreen defaultMidiInput={config.midiInput}
-                               defaultMidiOutput={config.midiOutput}
-                               midiInput={midiInput}
-                               midiOutput={midiOutput}
-                               updateMidiInput={updateMidiInput}
-                               updateMidiOutput={updateMidiOutput}
-        />)
-    }
+
 
 
     useInput((input: string) => {
@@ -67,8 +58,8 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
                 case 'C':
                     app.doChop()
                     break
-                case 'M':
-                    doMidi()
+                case ';':
+                    app.doConfig()
                     break
                 case 'P':
                     app.doProgram()
@@ -89,42 +80,16 @@ export function Main({app, program}: { app: CliApp, program: Program }) {
                 <Button onClick={app.doChop}>C: Chop</Button>
                 <Button onClick={app.doProgram}>P: Program</Button>
                 <Button onClick={app.doSample}>S: Sample</Button>
-                <Button onClick={doMidi}>M: MIDI</Button>
+                <Button onClick={app.doConfig}>;: Config</Button>
                 <Button onClick={quit}>Q: Quit</Button>
             </Box>
         </>
     )
 }
 
-async function updateMidiInput(v: string) {
-    if (openMidiPort(midiInput, v)) {
-        config.midiInput = v
-        await saveClientConfig(config)
-    }
-}
 
-async function updateMidiOutput(v: string) {
-    if (openMidiPort(midiOutput, v)) {
-        config.midiOutput = v
-        await saveClientConfig(config)
-    }
-}
 
-function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
-    out.log(`Opening midi port: ${name}`)
-    for (let i = 0; i < midiHandle.getPortCount(); i++) {
-        const portName = midiHandle.getPortName(i)
-        if (portName === name) {
-            out.log(`Closing midi port: ${name}`)
-            midiHandle.closePort()
-            out.log(`Opening midi port: ${name}`)
-            midiHandle.openPort(i)
-            out.log(`Midi port open: ${name}`)
-            return true
-        }
-    }
-    return false
-}
+
 
 function shutdown(cb = () => {
 }) {
