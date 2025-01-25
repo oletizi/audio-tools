@@ -1,17 +1,27 @@
 "use client"
-import {ChopScreen} from "@/app/chopper/chop-screen";
+import {SampleSelectScreen} from "@/app/chopper/sample-select-screen";
 import {newClientConfig} from "@/lib/config-client";
 import {newClientOutput} from "@/lib/process-output";
-import {useState} from "react";
 import {ChopApp} from "@/app/chopper/chop-app";
+import {ChopDetailScreen} from "@/app/chopper/chop-detail-screen";
+import {useState} from "react";
 
 const config = newClientConfig()
 const out = newClientOutput(true, 'Chopper')
 const app = new ChopApp(config, out)
 export default function Page() {
-    const [screen, setScreen] = useState(<ChopScreen app={app}/>)
+    const [file, setFile] = useState<string | null>(null)
+    // app.setListener(() => {})
 
-    app.setListener(setScreen)
-    return (<div className="container mx-auto">{screen}</div>)
+    return (<div className="container mx-auto">
+        <div className="flex gap-4">
+            <div className="w-1/2">
+                <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
+            </div>
+            <div className="grow">
+                <ChopDetailScreen app={app} defaultDirectory="/" file={file}/>
+            </div>
+        </div>
+    </div>)
 }
 

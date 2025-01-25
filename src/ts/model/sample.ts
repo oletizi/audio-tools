@@ -1,8 +1,8 @@
-import wavefile from "wavefile";
+import {WaveFile} from "wavefile";
 import {WriteStream} from "fs";
 
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
-    const wav = new wavefile.WaveFile()
+    const wav = new WaveFile()
     wav.fromBuffer(buf)
     return new WavSample(wav)
 }
@@ -28,6 +28,10 @@ export interface SampleMetadata {
     smpteFormat: number
     smpteOffset: number
     loopCount: number
+    sampleLength: number
+    channelCount: number
+    bitDepth: number
+    sampleRate: number
 }
 
 
@@ -92,7 +96,10 @@ class WavSample implements Sample {
             rv.smpteOffset = smpl['dwSMPTEOffset']
             rv.loopCount = smpl['dwNumSampleLoops']
         }
-
+        rv.sampleLength = this.getSampleCount()
+        rv.sampleRate = this.getSampleRate()
+        rv.channelCount = this.getChannelCount()
+        rv.bitDepth = this.getBitDepth()
         return rv
     }
 

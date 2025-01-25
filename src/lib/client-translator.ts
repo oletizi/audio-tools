@@ -9,6 +9,14 @@ export async function getProgress(jobId: JobId) {
     return await client.post(root + '/progress', {jobId: jobId})
 }
 
+export async function chop(path:string){
+    return await client.post(root + '/chop', {path: path})
+}
+
+export async function getMeta(path:string) {
+    return await client.post(root + '/meta', {path: path})
+}
+
 export async function translate(path: string) {
     return await client.post(root + '/translate', {path: path})
 }

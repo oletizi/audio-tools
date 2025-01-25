@@ -1,7 +1,7 @@
-import {DirList, Entry} from "./api";
 import Queue from "queue";
 import {createRoot} from "react-dom/client";
 import React from 'react';
+import {DirList, Entry} from "@/app/api";
 
 const workqueue = new Queue({results: [], autostart: true})
 const term = document.getElementById('terminal')
@@ -206,7 +206,8 @@ function writeFromList(theList: DirList) {
     const rows = []
     for (const e of sortEntries(theList.entries)) {
         let className = 'list-group-item list-group-item-action';
-        let onClick = () => {}
+        let onClick = () => {
+        }
         let badge = <span/>
         if (e.directory) {
             className += ' as-list-view-dir'
