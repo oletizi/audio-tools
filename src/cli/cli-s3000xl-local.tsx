@@ -18,12 +18,13 @@ const logstream = fs.createWriteStream(serverConfig.logfile)
 const out = newStreamOutput(logstream, logstream, true, 'cli-s3000xl-local')
 const diskFilePath = path.join(serverConfig.targetRoot, 'akai.img')
 const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", diskFile: diskFilePath}
+
 function Main({app}: { app: CliApp }) {
-    const [screen, setScreen] = useState(<FileChooser defaultDirectory={serverConfig.sourceRoot} onSubmit={v => {
+    const {stdout} = useStdout()
+    const [screen, setScreen] = useState(<FileChooser maxHeight={(stdout.rows / 2) - 5} defaultDirectory={serverConfig.sourceRoot} onSubmit={v => {
         setScreen(<Box><Text>You chose: {v}</Text></Box>)
     }}/>)
     const {exit} = useApp()
-    const stdout = useStdout()
 
     app.addListener('screen', (s) => {
         setScreen(s)
@@ -59,7 +60,7 @@ function Main({app}: { app: CliApp }) {
     })
     return (
         <>
-            <Box borderStyle='single' padding='1' height={stdout.rows - 4}>{screen}</Box>
+            <Box borderStyle='single' padding='1' height={stdout.rows / 2}>{screen}</Box>
             <Box>
                 <Button onClick={app.doChop}>C: Chop</Button>
                 <Button onClick={app.doProgram}>P: Program</Button>

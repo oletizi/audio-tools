@@ -219,8 +219,8 @@ export function newFileApp(config: ClientConfig, serverConfig: ServerConfig, dev
     return rv
 }
 
-export function newMidiApp(config: ClientConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
-    const rv = new BasicApp(config, device, out)
+export function newMidiApp(config: ClientConfig, serverConfig: ServerConfig, device: Device, out: ProcessOutput, midiInput: midi.Input, midiOutput: midi.Output) {
+    const rv = new BasicApp(config, serverConfig, device, out)
     rv.doConfig = () => {
         rv.setScreen(<StartScreen defaultMidiInput={config.midiInput}
                                   defaultMidiOutput={config.midiOutput}
