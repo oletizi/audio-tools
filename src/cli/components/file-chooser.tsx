@@ -18,7 +18,6 @@ export function FileChooser({defaultDirectory, onSubmit, maxHeight}: {
     useEffect(() => {
         fs.readdir(dir).then(async list => {
             let id = 0
-            // const f = [(<Item key={String(id)} id={String(id)} onClick={() => setDir(path.join(dir, '..'))}>../</Item>)]
             const f = [{
                 label: '../',
                 value: path.join('D' + dir, '..')

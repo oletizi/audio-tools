@@ -10,6 +10,7 @@ import fs from "fs";
 import path from "path";
 import {akaiFormat, AkaiToolsConfig, ExecutionResult} from "@/akaitools/akaitools.js";
 import {FileChooser} from "@/cli/components/file-chooser.js";
+import {ChopScreen} from "@/cli/components/chop-screen.js";
 
 
 const serverConfig = await newServerConfig()
@@ -21,9 +22,12 @@ const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: "../akaitools-1.5", dis
 
 function Main({app}: { app: CliApp }) {
     const {stdout} = useStdout()
-    const [screen, setScreen] = useState(<FileChooser maxHeight={(stdout.rows / 2) - 5} defaultDirectory={serverConfig.sourceRoot} onSubmit={v => {
-        setScreen(<Box><Text>You chose: {v}</Text></Box>)
-    }}/>)
+    const [screen, setScreen] = useState(<ChopScreen app={app} maxHeight={(stdout.rows / 2) - 5}
+                                                     defaultDirectory={serverConfig.sourceRoot}
+                                                     onSubmit={v => {
+                                                         app.doChopDetail(v)
+                                                     }
+                                                     }/>)
     const {exit} = useApp()
 
     app.addListener('screen', (s) => {
@@ -142,4 +146,4 @@ class FileDevice implements Device {
     }
 }
 
-render(<Main app={newFileApp(config, new FileDevice(), out, diskFilePath)}/>)
+render(<Main app={newFileApp(config, serverConfig, new FileDevice(), out, diskFilePath)}/>)

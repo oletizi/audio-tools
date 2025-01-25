@@ -15,6 +15,7 @@ import {saveClientConfig, ServerConfig} from "@/lib/config-server.js";
 import {FormatScreen} from "@/cli/components/format-screen.js";
 import {ExecutionResult} from "@/akaitools/akaitools.js";
 import {FileChooser} from "@/cli/components/file-chooser.js";
+import {ChopScreen} from "@/cli/components/chop-screen.js";
 
 
 function openMidiPort(midiHandle: midi.Input | midi.Output, name: string) {
@@ -77,7 +78,7 @@ export interface CliApp {
 
     doChop(): void;
 
-    doChopDetail(sampleName): void;
+    doChopDetail(samplepath): void;
 
     saveSample(sample: Sample): Promise<void>;
 
@@ -185,12 +186,11 @@ class BasicApp implements CliApp {
     }
 
     doChop() {
-        this.setScreen(<FileChooser defaultDirectory={this.serverConfig.sourceRoot}/>)
+        this.setScreen(<ChopScreen app={this} defaultDirectory={this.serverConfig.sourceRoot}/>)
     }
 
-    doChopDetail(sampleName): void {
-        const app = this
-        this.device.getSample(sampleName).then(sample => this.setScreen(<ChopDetailScreen app={app} sample={sample}/>))
+    doChopDetail(samplepath): void {
+        this.setScreen(<ChopDetailScreen app={this} samplepath={samplepath}/>)
     }
 
     doConfig() {

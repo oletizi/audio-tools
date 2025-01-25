@@ -1,8 +1,7 @@
-import * as wavefile from "wavefile";
+import wavefile from "wavefile";
 import {WriteStream} from "fs";
 
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
-    console.log(`wavefile: ${wavefile}`)
     const wav = new wavefile.WaveFile()
     wav.fromBuffer(buf)
     return new WavSample(wav)
@@ -40,6 +39,10 @@ export interface Sample {
 
     getChannelCount(): number
 
+    getSampleRate(): number
+
+    getBitDepth(): number
+
     setRootNote(r: number)
 
     trim(start, end): Sample
@@ -76,6 +79,7 @@ class WavSample implements Sample {
     //   dwNumSampleLoops: 0,
     //   dwSamplerData: 18,
     getMetadata(): SampleMetadata {
+
         const rv = {} as SampleMetadata
         const smpl = this.wav.smpl
         if (smpl) {
@@ -99,6 +103,14 @@ class WavSample implements Sample {
     getSampleCount(): number {
         // XXX: There's probably a more efficient way to do this
         return this.wav.getSamples().length
+    }
+
+    getSampleRate(): number {
+        return this.wav.fmt.sampleRate
+    }
+
+    getBitDepth(): number {
+        return Number.parseInt(this.wav.bitDepth)
     }
 
     setRootNote(r: number) {
