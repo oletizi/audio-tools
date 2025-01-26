@@ -212,7 +212,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
         expect(keygroup2.SNAME1).eq('MODIFIED    ')
         KeygroupHeader_writeSNAME1(keygroup2, 'KEYGROUP 2')
-        const keygroup2data = keygroup2raw.slice(rawLeader)
+        const keygroup2data: number[] = keygroup2raw.slice(rawLeader)
 
         // update GROUP count in program
         ProgramHeader_writeGROUPS(program, 2)
@@ -223,16 +223,19 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         for (let i = 0; i < keygroup1data.length; i++) {
             nibbles[KEYGROUP1_START_OFFSET + i] = keygroup1data[i]
         }
+
         for (let i=0; i<keygroup2data.length; i++) {
             // Nice that javascript automatically grows the array behind the scenes ;-)
             // But, if this *wasn't* javascript, we'd have to explicitly grow the array.
+            // HOWEVER--if there is anything interesting at the end of the original program file AFTER the
+            // keygroup data, this will overwrite it.
             nibbles[KEYGROUP1_START_OFFSET * 2 + i] = keygroup2data[i]
         }
+
 
         const outData = []
         for (let i = 0; i < nibbles.length; i += 2) {
             outData.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
-
         }
         console.log(`outdata lenght: ${outData.length}`)
         const p = {} as ProgramHeader
