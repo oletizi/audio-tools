@@ -10,11 +10,11 @@ import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
 import {
-    KeygroupHeader,
+    KeygroupHeader, KeygroupHeader_writeSNAME1,
     parseKeygroupHeader,
     parseProgramHeader,
     parseSampleHeader,
-    ProgramHeader, ProgramHeader_writePRNAME,
+    ProgramHeader, ProgramHeader_writeGROUPS, ProgramHeader_writePRNAME,
     SampleHeader
 } from "../../src/midi/devices/s3000xl";
 import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
@@ -186,30 +186,55 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const data = await readAkaiData(protoPath)
         const programData = await readAkaiProgram(protoPath)
         expect(programData.program.PRNAME).eq('TEST PROGRAM')
+        expect(programData.keygroups.length).eq(1)
         // the number of bytes the program header starts writing to (bc it thinks its writing
         // to raw sysex data.). This should all be baked into the auto-generated parser somehow.
         const rawLeader = 7
-        // const raw = new Array(rawLeader).fill(0).concat(data)
-        const raw = []
-        for (let i = 0; i < rawLeader; i++) {
-            raw.push(0)
-        }
-        for (let i = 0; i < data.length; i++) {
-            raw.push(data[i])
-        }
+        const raw = new Array(rawLeader).fill(0).concat(data)
         const program = programData.program
         program.raw = raw
 
         ProgramHeader_writePRNAME(program, 'SYNTHETIC')
 
+
+        const keygroup1raw = new Array(rawLeader).fill(0).concat(data.slice(KEYGROUP1_START_OFFSET))
+        const keygroup1 = programData.keygroups[0]
+        keygroup1.raw = keygroup1raw
+
+        KeygroupHeader_writeSNAME1(keygroup1, 'MODIFIED')
+        const keygroup1data = keygroup1raw.slice(rawLeader)
+
+        const keygroup2raw = keygroup1raw.slice()
+        const keygroup2 = {} as KeygroupHeader
+        keygroup2.raw = keygroup2raw
+        parseKeygroupHeader(keygroup2raw.slice(rawLeader), 0, keygroup2)
+
+
+        expect(keygroup2.SNAME1).eq('MODIFIED    ')
+        KeygroupHeader_writeSNAME1(keygroup2, 'KEYGROUP 2')
+        const keygroup2data = keygroup2raw.slice(rawLeader)
+
+        // update GROUP count in program
+        ProgramHeader_writeGROUPS(program, 2)
+
+        // Write keygroup data
         const nibbles = raw.slice(rawLeader)
+
+        for (let i = 0; i < keygroup1data.length; i++) {
+            nibbles[KEYGROUP1_START_OFFSET + i] = keygroup1data[i]
+        }
+        for (let i=0; i<keygroup2data.length; i++) {
+            // Nice that javascript automatically grows the array behind the scenes ;-)
+            // But, if this *wasn't* javascript, we'd have to explicitly grow the array.
+            nibbles[KEYGROUP1_START_OFFSET * 2 + i] = keygroup2data[i]
+        }
+
         const outData = []
         for (let i = 0; i < nibbles.length; i += 2) {
-            outData.push(nibbles2byte(nibbles[i], nibbles[i+1]))
+            outData.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
 
         }
         console.log(`outdata lenght: ${outData.length}`)
-        console.log(`data length: ${data.length}`)
         const p = {} as ProgramHeader
         parseProgramHeader(nibbles, 1, p)
         expect(p.PRNAME).eq('SYNTHETIC   ')
@@ -219,6 +244,9 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
         const parsed = await readAkaiProgram(outfile)
         expect(parsed.program.PRNAME).eq('SYNTHETIC   ')
+        expect(parsed.keygroups[0].SNAME1).eq('MODIFIED    ')
+        expect(parsed.keygroups.length).eq(2)
+        expect(parsed.keygroups[1].SNAME1).eq('KEYGROUP 2  ')
     })
 
     it(`Finds strings in akai files`, async () => {
