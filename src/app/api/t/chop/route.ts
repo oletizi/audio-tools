@@ -3,13 +3,26 @@ import {getSessionData, getSessionId} from "@/lib/lib-session";
 import path from "path";
 import {newServerConfig} from "@/lib/config-server";
 import {chop} from "@/lib/lib-translate-s3k";
-import {AkaiToolsConfig} from "@/akaitools/akaitools";
+import {akaiFormat, AkaiToolsConfig} from "@/akaitools/akaitools";
+import fs from "fs/promises";
 
 export async function POST(request: NextRequest) {
     try {
         const session = await getSessionData(await getSessionId())
         const cfg = await newServerConfig()
-
+        const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
+        try {
+            const stats = await fs.stat(cfg.akaiDisk)
+            if (! stats.isFile()) {
+                throw new Error(`Akai disk is not a regular file: ${cfg.akaiDisk}`)
+            }
+        } catch (e) {
+            const result = await akaiFormat(akaiToolsConfig, 60)
+            if (result.errors.length > 0) {
+                result.errors.forEach(e => console.error(e))
+                throw new Error('Error formatting Akai disk.')
+            }
+        }
         const data = await request.json();
         if (! data.samplesPerBeat) {
             throw new Error('Samples per beat undefined.')
@@ -33,11 +46,15 @@ export async function POST(request: NextRequest) {
             throw new Error('TargetPath is outside target root.')
         }
 
-        const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
-        const result = await chop(akaiToolsConfig, absolute, target, data.prefix, data.samplesPerBeat, data.beatsPerChop)
 
+        const result = await chop(akaiToolsConfig, absolute, target, data.prefix, data.samplesPerBeat, data.beatsPerChop)
+        if (result.errors.length > 0) {
+            result.errors.forEach(e => console.error(e))
+            throw new Error('Barf!')
+        }
         return NextResponse.json({
             errors: result.errors,
+            code: result.code,
             message: result.errors.length === 0 ? 'Ok' : "Error",
             status: result.errors.length === 0 ? 200 : 500,
             normal: normal,

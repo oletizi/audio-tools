@@ -1,8 +1,9 @@
-import {translate} from '@/lib/lib-translate'
+// import {translate} from '@/lib/lib-translate-s56k'
 import {Keygroup, newProgramFromBuffer} from "@/lib/lib-akai-s56k"
 import fs from "fs/promises"
 import {expect} from "chai"
 import path from "path"
+import {decent2Sxk, mpc2Sxk} from "../../src/lib/lib-translate-s56k";
 
 describe(`Translate`, async () => {
     let cleanup = false
@@ -10,7 +11,7 @@ describe(`Translate`, async () => {
         this.timeout(10000)
         const infile = 'test/data/mpc/Oscar/Oscar.xpm'
         const outdir = 'build'
-        await translate.mpc2Sxk(infile, outdir)
+        await mpc2Sxk(infile, outdir)
         const buf = await fs.readFile('build/Oscar.AKP')
         const program = newProgramFromBuffer(buf)
         let midiNote = 60
@@ -43,7 +44,7 @@ describe(`Translate`, async () => {
         const outdir = path.join('build')
         const outfile = path.join(outdir, 'Oscar.AKP')
         // const program = decent.newProgramFromBuffer(await fs.readFile(infile))
-        await translate.decent2Sxk(infile, outdir)
+        await decent2Sxk(infile, outdir)
 
         const program = newProgramFromBuffer(await fs.readFile(outfile))
         expect(program).to.exist
@@ -53,7 +54,7 @@ describe(`Translate`, async () => {
         const infile = path.join('test', 'data', 'decent', 'multizone.dspreset')
         const outdir = 'build'
         const outfile = path.join(outdir, 'multizone.AKP')
-        let result = await translate.decent2Sxk(infile, outdir);
+        let result = await decent2Sxk(infile, outdir);
         expect(result.errors.length).eq(90) // one error for each missing sample file
         expect(result.data.length).eq(2)
         const program = result.data[0]

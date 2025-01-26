@@ -47,6 +47,8 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
 
 export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
+    console.log(`write: sourcePath: ${sourcePath}`)
+    console.log(`WRite: targetPath: ${targetPath}`)
     return doSpawn(
         path.join(c.akaiToolsPath, 'akaiwrite'),
         ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
@@ -62,8 +64,6 @@ export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPa
  */
 export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPath: string, targetName: string) {
     process.env['PERL5LIB'] = c.akaiToolsPath
-    // process.env['PATH'] = process.env['PATH'] + `:"${c.akaiToolsPath}"`
-    // console.log(`new path: ${process.env['PATH']}`)
     return doSpawn(
         path.join(c.akaiToolsPath, 'wav2akai'),
         ['-n', targetName, '-d', `"${targetPath}"`, `"${sourcePath}"`]

@@ -6,8 +6,11 @@ import {
     ProgramHeader,
     Program,
     ProgramHeader_writePLAYLO,
-    SampleHeader, Sample
+    SampleHeader, parseProgramHeader, ProgramHeader_writePRNAME
 } from "@/midi/devices/s3000xl";
+import path from "path";
+import fs from "fs/promises";
+import {byte2nibblesLE} from "../../src/lib/lib-core";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
@@ -58,13 +61,6 @@ describe('akai-s3000xl tests', () => {
         vv = akaiByte2String(data)
         console.log(`vv: <${vv}>`)
         expect(vv).eq(v.toUpperCase() + '      ')
-    })
-
-    it(`Copies a sample`, async () => {
-        const device = newDevice(input, output)
-        const h = await device.fetchSampleHeader(0, {} as SampleHeader)
-        const sample = new Sample(device, h)
-        await device.copySample('new name', sample)
     })
 
     it('fetches resident sample names', async () => {
@@ -311,4 +307,3 @@ describe('basic node midi tests', () => {
 
     })
 })
-

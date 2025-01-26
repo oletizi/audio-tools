@@ -42,8 +42,21 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
             rv.errors = rv.errors.concat(result.errors)
             break
         }
-        await akaiWrite()
         count++
+    }
+    if (rv.errors.length ===0) {
+        for (const f of await fs.readdir(target)) {
+            if (f.endsWith('a3s')) {
+                const result = await akaiWrite(c, path.join(target, f), `/${prefix}`)
+                if (result.errors.length !== 0) {
+                    rv.errors = rv.errors.concat(rv.errors, result.errors)
+                    break
+                }
+            }
+        }
+    }
+    if (rv.errors.length === 0) {
+        rv.code = 0
     }
     return rv
 }

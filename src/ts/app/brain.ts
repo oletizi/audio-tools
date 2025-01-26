@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import {Entry, DirList} from "./api.ts"
 import path from "path";
-import {translate} from "@/lib/lib-translate";
+import {translate} from "@/lib/lib-translate-s56k";
 import {newProgramFromBuffer} from "@/lib/lib-akai-s56k";
 import * as Path from "path";
 
