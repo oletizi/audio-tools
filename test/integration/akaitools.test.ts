@@ -9,7 +9,7 @@ import {
     readAkaiProgram,
     addKeygroup,
     writeAkaiProgram,
-    RAW_LEADER, CHUNK_LENGTH
+    RAW_LEADER, CHUNK_LENGTH, AkaiToolsConfig
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -24,6 +24,7 @@ import {
 } from "../../src/midi/devices/s3000xl";
 import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
+import {newServerConfig} from "../../src/lib/config-server";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
     let diskFile = ""
@@ -140,7 +141,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
         const kg1 = {} as KeygroupHeader
         // parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET), 0, kg1)
-         parseKeygroupHeader(data.slice(CHUNK_LENGTH), 0, kg1)
+        parseKeygroupHeader(data.slice(CHUNK_LENGTH), 0, kg1)
         expect(kg1.SNAME1.startsWith('SINE'))
 
         const kg2 = {} as KeygroupHeader
@@ -232,7 +233,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
             nibbles[CHUNK_LENGTH + i] = keygroup1data[i]
         }
 
-        for (let i=0; i<keygroup2data.length; i++) {
+        for (let i = 0; i < keygroup2data.length; i++) {
             // Nice that javascript automatically grows the array behind the scenes ;-)
             // But, if this *wasn't* javascript, we'd have to explicitly grow the array.
             // HOWEVER--if there is anything interesting at the end of the original program file AFTER the
@@ -262,7 +263,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(parsed.keygroups[1].SNAME1).eq('KEYGROUP 2  ')
     })
 
-    it(`Adds keygroups`, async ()=> {
+    it(`Adds keygroups`, async () => {
         const protoPath = path.join('data', 'test_program.a3p')
         const p = await readAkaiProgram(protoPath)
         expect(p.program).to.exist
@@ -291,6 +292,39 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(p2.keygroups[1].SNAME1).eq('SQUARE      ')
 
         // await fs.rm(outfile)
+    })
+
+    it(`Reads and writes a program file with multiple keygroups unchanged`, async () => {
+        const protoPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
+        const p = await readAkaiProgram(protoPath)
+
+        const outpath = path.join('build', 'test_4_kgs.a3p');
+        await fs.rm(outpath).then().catch(() => {
+        })
+        await writeAkaiProgram(outpath, p)
+
+        const cfg = await newServerConfig()
+        const diskpath = path.join(cfg.s3k, 'HD4.hds');
+        const c: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: diskpath}
+        await akaiFormat(c, 1, 1)
+        await akaiWrite(c, outpath, '/test4kgs')
+    })
+
+    it('Reads and writes a program file with multiple keygroups and adds a keygroup', async () => {
+        const protoPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
+        const p = await readAkaiProgram(protoPath)
+
+        addKeygroup(p)
+
+        const outpath = path.join('build', 'test_5_kgs.a3p')
+        await fs.rm(outpath).then().catch(() => {})
+        await writeAkaiProgram(outpath, p)
+
+        const cfg = await newServerConfig()
+        const diskpath = path.join(cfg.s3k, 'HD4.hds');
+        const c: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: diskpath}
+        await akaiFormat(c, 1, 1)
+        await akaiWrite(c, outpath, '/test5kgs')
     })
 
     it(`Finds strings in akai files`, async () => {
