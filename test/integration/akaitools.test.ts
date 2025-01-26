@@ -270,13 +270,15 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(p.keygroups.length).eq(1)
         expect(p.keygroups[0].SNAME1).eq('SINE        ')
 
+        ProgramHeader_writePRNAME(p.program, 'SYNTHETIC')
+
         addKeygroup(p)
         expect(p.keygroups.length).eq(2)
 
-        KeygroupHeader_writeSNAME1(p.keygroups[1], 'FUN TIMES')
+        KeygroupHeader_writeSNAME1(p.keygroups[1], 'SQUARE')
         let kg2 = {} as KeygroupHeader
         parseKeygroupHeader(p.keygroups[1].raw.slice(RAW_LEADER), 0, kg2)
-        expect(kg2.SNAME1).eq('FUN TIMES   ')
+        expect(kg2.SNAME1).eq('SQUARE      ')
 
         const outfile = path.join('build', `synthetic.${new Date().getTime()}.a3p`)
         await writeAkaiProgram(outfile, p)
@@ -286,9 +288,9 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(p2.keygroups.length).eq(2)
         expect(p.keygroups[0].SNAME1).eq('SINE        ')
 
-        expect(p2.keygroups[1].SNAME1).eq('FUN TIMES   ')
+        expect(p2.keygroups[1].SNAME1).eq('SQUARE      ')
 
-        await fs.rm(outfile)
+        // await fs.rm(outfile)
     })
 
     it(`Finds strings in akai files`, async () => {
