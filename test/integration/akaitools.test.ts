@@ -4,13 +4,21 @@ import {
     akaiList,
     AkaiRecordType,
     akaiWrite,
-    validateConfig
+    validateConfig, readAkaiData
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
-import {parseProgramHeader, parseSampleHeader, ProgramHeader, SampleHeader} from "../../src/midi/devices/s3000xl";
+import {
+    KeygroupHeader,
+    parseKeygroupHeader,
+    parseProgramHeader,
+    parseSampleHeader,
+    ProgramHeader,
+    SampleHeader
+} from "../../src/midi/devices/s3000xl";
 import {byte2nibblesLE} from "../../src/lib/lib-core";
+import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
     let diskFile = ""
@@ -88,6 +96,7 @@ describe('Test interaction w/ akaitools and akai files.', async () => {
     })
 })
 
+
 describe(`Test parsing Akai objects read by akaitools`, async () => {
     it(`Parses Akai program file`, async () => {
         const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
@@ -105,15 +114,59 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
     it(`Parses Akai sample header from file`, async () => {
         const samplePath = path.join('test', 'data', 's3000xl', 'instruments', 'sine.a3s')
-        const buffer = await fs.readFile(samplePath)
-        const data = []
-        for (let i = 0; i < buffer.length; i++) {
-            const nibbles = byte2nibblesLE(buffer[i])
-            data.push(nibbles[0])
-            data.push(nibbles[1])
-        }
+        const data = await readAkaiData(samplePath);
         let header = {} as SampleHeader
-        parseSampleHeader(data, 0, header)
+        const bytesRead = parseSampleHeader(data, 0, header)
+        console.log(`bytes read: ${bytesRead}`)
+        console.log(`data size : ${data.length}`)
         expect(header.SHNAME).equal('SINE        ')
+    })
+
+    it(`Parses Akai program header from file`, async () => {
+        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
+        const data = await readAkaiData(programPath)
+        const programHeader = {} as ProgramHeader
+        const bytesRead = parseProgramHeader(data, 1, programHeader)
+        console.log(`bytes read: ${bytesRead}`)
+        console.log(`data size : ${data.length}`)
+        console.log(`Keygroup count: ${programHeader.GROUPS}`)
+        expect(programHeader.PRNAME).equal('TEST PROGRAM')
+
+        const kg = {} as KeygroupHeader
+        parseKeygroupHeader(data.slice(384), 0, kg)
+        expect(kg.SNAME1.startsWith('SINE'))
+
+        const v = {value: 0, offset: 0}
+        for (let i = 0; i < data.length; i += 2) {
+
+            const kg = {} as KeygroupHeader
+            parseKeygroupHeader(data.slice(i), 0, kg)
+            if (kg.SNAME1.startsWith('SINE')) {
+                console.log(`Bytes read by program: ${bytesRead}`)
+                console.log(`OFFSET               : ${i}`)
+                break
+            }
+        }
+
+
+        // SNAM1 offset into data: 476
+    })
+
+    it(`Finds strings in akai files`, async () => {
+        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
+        const data = await readAkaiData(programPath)
+        let offset = 0
+        const v = {value: 0, offset: offset * 2}
+        const window = []
+        while (v.offset < data.length) {
+            nextByte(data, v)
+            window.push(v.value)
+            if (window.length > 12) {
+                window.shift()
+            }
+            // console.log(window)
+            const s = akaiByte2String(window)
+            console.log(`${v.offset}: ${s}`)
+        }
     })
 })

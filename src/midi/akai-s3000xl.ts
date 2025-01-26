@@ -353,7 +353,7 @@ const ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', 'A', 'B
 export function akaiByte2String(bytes: number[]) {
     let rv = ''
     for (let v of bytes) {
-        rv += ALPHABET[v]
+        rv += v < ALPHABET.length ? ALPHABET[v] : '?'
     }
     return rv
 

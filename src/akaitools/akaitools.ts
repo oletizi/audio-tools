@@ -1,7 +1,9 @@
 import fs from "fs/promises";
 import {spawn} from 'child_process'
 import path from "path";
-import {Result} from "@/lib/lib-core.js";
+import {byte2nibblesLE, Result} from "@/lib/lib-core.js";
+
+export const KEYGROUP_START_OFFSET = 384
 
 export interface AkaiToolsConfig {
     diskFile: string
@@ -30,6 +32,18 @@ export interface ExecutionResult {
     errors: number[];
     code: number;
 }
+
+export async function readAkaiData(file: string) {
+    const buffer = await fs.readFile(file)
+    const data = []
+    for (let i = 0; i < buffer.length; i++) {
+        const nibbles = byte2nibblesLE(buffer[i])
+        data.push(nibbles[0])
+        data.push(nibbles[1])
+    }
+    return data;
+}
+
 
 export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath

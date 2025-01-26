@@ -969,7 +969,7 @@ export function parseProgramHeader(data: number[], offset: number, o: ProgramHea
         b.push(nextByte(data, v).value)
     }
     o.PFXCHAN = bytes2numberLE(b)
-
+    return v.offset
 }
 
 export function ProgramHeader_writeKGRP1(header: ProgramHeader, v: number) {
@@ -2244,7 +2244,7 @@ export function parseSampleHeader(data: number[], offset: number, o: SampleHeade
         b.push(nextByte(data, v).value)
     }
     o.SHLTO = bytes2numberLE(b)
-
+    return v.offset
 }
 
 export function SampleHeader_writeSHIDENT(header: SampleHeader, v: number) {
