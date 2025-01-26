@@ -14,10 +14,10 @@ import {
     parseKeygroupHeader,
     parseProgramHeader,
     parseSampleHeader,
-    ProgramHeader,
+    ProgramHeader, ProgramHeader_writePRNAME,
     SampleHeader
 } from "../../src/midi/devices/s3000xl";
-import {byte2nibblesLE, pad} from "../../src/lib/lib-core";
+import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
@@ -141,7 +141,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH), 0, kg2)
         expect(kg2.SNAME1.startsWith('SQUARE'))
 
-        const keygroups : KeygroupHeader[] = []
+        const keygroups: KeygroupHeader[] = []
         for (let i = 0; i < programHeader.GROUPS; i++) {
             const kg = {} as KeygroupHeader
             parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
@@ -167,7 +167,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         // SNAM1 offset into data: 476
     })
 
-    it(`Reads akai program files`, async() =>{
+    it(`Reads akai program files`, async () => {
         const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
         const programData = await readAkaiProgram(programPath)
         expect(programData.program.PRNAME).eq('TEST 4 KGS  ')
@@ -179,6 +179,46 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(keygroups[1].SNAME1).eq('SQUARE      ')
         expect(keygroups[2].SNAME1).eq('SAWTOOTH    ')
         expect(keygroups[3].SNAME1).eq('PULSE       ')
+    })
+
+    it(`Creates akaiprogram files`, async () => {
+        const protoPath = path.join('data', 'test_program.a3p')
+        const data = await readAkaiData(protoPath)
+        const programData = await readAkaiProgram(protoPath)
+        expect(programData.program.PRNAME).eq('TEST PROGRAM')
+        // the number of bytes the program header starts writing to (bc it thinks its writing
+        // to raw sysex data.). This should all be baked into the auto-generated parser somehow.
+        const rawLeader = 7
+        // const raw = new Array(rawLeader).fill(0).concat(data)
+        const raw = []
+        for (let i = 0; i < rawLeader; i++) {
+            raw.push(0)
+        }
+        for (let i = 0; i < data.length; i++) {
+            raw.push(data[i])
+        }
+        const program = programData.program
+        program.raw = raw
+
+        ProgramHeader_writePRNAME(program, 'SYNTHETIC')
+
+        const nibbles = raw.slice(rawLeader)
+        const outData = []
+        for (let i = 0; i < nibbles.length; i += 2) {
+            outData.push(nibbles2byte(nibbles[i], nibbles[i+1]))
+
+        }
+        console.log(`outdata lenght: ${outData.length}`)
+        console.log(`data length: ${data.length}`)
+        const p = {} as ProgramHeader
+        parseProgramHeader(nibbles, 1, p)
+        expect(p.PRNAME).eq('SYNTHETIC   ')
+
+        const outfile = path.join('build', 'synthetic.a3p')
+        await fs.writeFile(outfile, Buffer.from(outData))
+
+        const parsed = await readAkaiProgram(outfile)
+        expect(parsed.program.PRNAME).eq('SYNTHETIC   ')
     })
 
     it(`Finds strings in akai files`, async () => {
