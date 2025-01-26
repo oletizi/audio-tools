@@ -190,21 +190,21 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         // the number of bytes the program header starts writing to (bc it thinks its writing
         // to raw sysex data.). This should all be baked into the auto-generated parser somehow.
         const rawLeader = 7
-        const raw = new Array(rawLeader).fill(0).concat(data)
+        // const raw = new Array(rawLeader).fill(0).concat(data)
         const program = programData.program
-        program.raw = raw
+        // program.raw = raw
 
         ProgramHeader_writePRNAME(program, 'SYNTHETIC')
 
 
-        const keygroup1raw = new Array(rawLeader).fill(0).concat(data.slice(KEYGROUP1_START_OFFSET))
+        // const keygroup1raw = new Array(rawLeader).fill(0).concat(data.slice(KEYGROUP1_START_OFFSET))
         const keygroup1 = programData.keygroups[0]
-        keygroup1.raw = keygroup1raw
+        // keygroup1.raw = keygroup1raw
 
         KeygroupHeader_writeSNAME1(keygroup1, 'MODIFIED')
-        const keygroup1data = keygroup1raw.slice(rawLeader)
+        const keygroup1data = keygroup1.raw.slice(rawLeader)
 
-        const keygroup2raw = keygroup1raw.slice()
+        const keygroup2raw = keygroup1.raw.slice()
         const keygroup2 = {} as KeygroupHeader
         keygroup2.raw = keygroup2raw
         parseKeygroupHeader(keygroup2raw.slice(rawLeader), 0, keygroup2)
@@ -218,7 +218,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         ProgramHeader_writeGROUPS(program, 2)
 
         // Write keygroup data
-        const nibbles = raw.slice(rawLeader)
+        const nibbles = program.raw.slice(rawLeader)
 
         for (let i = 0; i < keygroup1data.length; i++) {
             nibbles[KEYGROUP1_START_OFFSET + i] = keygroup1data[i]

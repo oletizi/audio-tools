@@ -8,6 +8,11 @@ export const KEYGROUP1_START_OFFSET = 384
 export const KEYGROUP2_START_OFFSET = 768
 export const KEYGROUP_LENGTH = KEYGROUP2_START_OFFSET - KEYGROUP1_START_OFFSET
 
+// number of bytes before header start in the raw data backing each header.
+// This is an artifact of the auto-generated code assuming a sysex environment which has 7 bytes of midi and housekeeping
+// data in the raw midi data. This should probably sorted out in the auto-generated code.
+export const RAW_LEADER = 7
+
 export interface AkaiToolsConfig {
     diskFile: string
     akaiToolsPath: string
@@ -56,12 +61,19 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     const data = await readAkaiData(file)
     const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
     parseProgramHeader(data, 1, rv.program)
-    for (let i=0; i<rv.program.GROUPS; i++) {
+    rv.program.raw = new Array(RAW_LEADER).fill(0).concat(data)
+    for (let i = 0; i < rv.program.GROUPS; i++) {
         const kg = {} as KeygroupHeader
-        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
+        let kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
+        parseKeygroupHeader(kgData, 0, kg)
+        kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
         rv.keygroups.push(kg)
     }
     return rv
+}
+
+export async function writeAkaiProram(file: string, p: AkaiProgramFile) {
+
 }
 
 export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
