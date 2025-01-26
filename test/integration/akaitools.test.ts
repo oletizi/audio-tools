@@ -4,7 +4,12 @@ import {
     akaiList,
     AkaiRecordType,
     akaiWrite,
-    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH, readAkaiProgram, addKeygroup, writeAkaiProgram
+    validateConfig,
+    readAkaiData,
+    readAkaiProgram,
+    addKeygroup,
+    writeAkaiProgram,
+    RAW_LEADER, CHUNK_LENGTH
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -134,17 +139,21 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(programHeader.GROUPS).eq(4)
 
         const kg1 = {} as KeygroupHeader
-        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET), 0, kg1)
+        // parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET), 0, kg1)
+         parseKeygroupHeader(data.slice(CHUNK_LENGTH), 0, kg1)
         expect(kg1.SNAME1.startsWith('SINE'))
 
         const kg2 = {} as KeygroupHeader
-        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH), 0, kg2)
+        // parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH), 0, kg2)
+        parseKeygroupHeader(data.slice(CHUNK_LENGTH + CHUNK_LENGTH), 0, kg2)
         expect(kg2.SNAME1.startsWith('SQUARE'))
 
         const keygroups: KeygroupHeader[] = []
         for (let i = 0; i < programHeader.GROUPS; i++) {
             const kg = {} as KeygroupHeader
-            parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
+            // parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
+            parseKeygroupHeader(data.slice(CHUNK_LENGTH + CHUNK_LENGTH * i), 0, kg)
+
             keygroups.push(kg)
         }
 
@@ -220,7 +229,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const nibbles = program.raw.slice(rawLeader)
 
         for (let i = 0; i < keygroup1data.length; i++) {
-            nibbles[KEYGROUP1_START_OFFSET + i] = keygroup1data[i]
+            nibbles[CHUNK_LENGTH + i] = keygroup1data[i]
         }
 
         for (let i=0; i<keygroup2data.length; i++) {
@@ -228,7 +237,9 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
             // But, if this *wasn't* javascript, we'd have to explicitly grow the array.
             // HOWEVER--if there is anything interesting at the end of the original program file AFTER the
             // keygroup data, this will overwrite it.
-            nibbles[KEYGROUP1_START_OFFSET * 2 + i] = keygroup2data[i]
+            // nibbles[KEYGROUP1_START_OFFSET * 2 + i] = keygroup2data[i]
+            nibbles[CHUNK_LENGTH * 2 + i] = keygroup2data[i]
+            // nibbles[KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * 2 + i] = keygroup2data[i]
         }
 
 
@@ -257,15 +268,24 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(p.program).to.exist
         expect(p.keygroups).to.exist
         expect(p.keygroups.length).eq(1)
+        expect(p.keygroups[0].SNAME1).eq('SINE        ')
 
         addKeygroup(p)
         expect(p.keygroups.length).eq(2)
 
         KeygroupHeader_writeSNAME1(p.keygroups[1], 'FUN TIMES')
+        let kg2 = {} as KeygroupHeader
+        parseKeygroupHeader(p.keygroups[1].raw.slice(RAW_LEADER), 0, kg2)
+        expect(kg2.SNAME1).eq('FUN TIMES   ')
+
         const outfile = path.join('build', `synthetic.${new Date().getTime()}.a3p`)
         await writeAkaiProgram(outfile, p)
 
         const p2 = await readAkaiProgram(outfile)
+
+        expect(p2.keygroups.length).eq(2)
+        expect(p.keygroups[0].SNAME1).eq('SINE        ')
+
         expect(p2.keygroups[1].SNAME1).eq('FUN TIMES   ')
 
         await fs.rm(outfile)

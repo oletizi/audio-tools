@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import {spawn} from 'child_process'
 import path from "path";
-import {byte2nibblesLE, Result} from "@/lib/lib-core.js";
+import {byte2nibblesLE, nibbles2byte, Result} from "@/lib/lib-core.js";
 import {
     KeygroupHeader,
     parseKeygroupHeader,
@@ -10,9 +10,11 @@ import {
     ProgramHeader_writeGROUPS
 } from "@/midi/devices/s3000xl";
 
-export const KEYGROUP1_START_OFFSET = 384
-export const KEYGROUP2_START_OFFSET = 768
-export const KEYGROUP_LENGTH = KEYGROUP2_START_OFFSET - KEYGROUP1_START_OFFSET
+
+export const CHUNK_LENGTH = 384
+// export const KEYGROUP1_START_OFFSET = 384
+// export const KEYGROUP2_START_OFFSET = 768
+// export const KEYGROUP_LENGTH = KEYGROUP2_START_OFFSET - KEYGROUP1_START_OFFSET
 
 // number of bytes before header start in the raw data backing each header.
 // This is an artifact of the auto-generated code assuming a sysex environment which has 7 bytes of midi and housekeeping
@@ -70,7 +72,8 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     rv.program.raw = new Array(RAW_LEADER).fill(0).concat(data)
     for (let i = 0; i < rv.program.GROUPS; i++) {
         const kg = {} as KeygroupHeader
-        const kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
+        // const kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
+        const kgData = data.slice(CHUNK_LENGTH + CHUNK_LENGTH * i)
         parseKeygroupHeader(kgData, 0, kg)
         kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
         rv.keygroups.push(kg)
@@ -78,10 +81,11 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     return rv
 }
 
-export function addKeygroup(p:AkaiProgramFile){
+export function addKeygroup(p: AkaiProgramFile) {
     const proto = p.keygroups[p.keygroups.length - 1]
     const kg = {} as KeygroupHeader
-    const kgData = proto.raw.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * p.keygroups.length)
+    // const kgData = proto.raw.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * p.keygroups.length)
+    const kgData = proto.raw.slice(CHUNK_LENGTH + CHUNK_LENGTH * p.keygroups.length)
     parseKeygroupHeader(kgData, 0, kg)
     kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
     p.keygroups.push(kg)
@@ -89,7 +93,19 @@ export function addKeygroup(p:AkaiProgramFile){
 }
 
 export async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
-
+    const nibbles = p.program.raw.slice(RAW_LEADER)
+    for (let i = 0; i < p.keygroups.length; i++) {
+        const kgData = p.keygroups[i].raw.slice(RAW_LEADER)
+        for (let j = 0; j < kgData.length; j++) {
+            // nibbles[KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i  + j] = kgData[j]
+            nibbles[CHUNK_LENGTH + CHUNK_LENGTH * i + j] = kgData[j]
+        }
+    }
+    const outdata = []
+    for (let i = 0; i < nibbles.length; i += 2) {
+        outdata.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
+    }
+    await fs.writeFile(file, Buffer.from(outdata))
 }
 
 export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
