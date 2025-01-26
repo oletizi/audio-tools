@@ -1,6 +1,8 @@
 import {parse} from 'yaml'
 import * as fs from 'fs/promises'
 
+const DEBUG = "false"
+
 interface Spec {
     name: string
     className: string
@@ -79,7 +81,7 @@ export async function genClass(spec: Spec) {
             rv += `        return this.header.${field.n}\n`
             rv += `    }\n`
             rv += `    set${fu}(v: ${type}) {\n`
-            rv += `        const out = newClientOutput(true, 'set${fu}')\n`
+            rv += `        const out = newClientOutput(${DEBUG}, 'set${fu}')\n`
             rv += `        ${writeFunctionName(spec, field)}(this.header, v)\n`
             rv += `        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.\n`
             rv += `        out.log('Parsing header from ${HEADER_START} with header offset: ${spec.headerOffset}')\n`
@@ -105,7 +107,7 @@ export async function genSetters(spec: Spec) {
     for (const field of spec.fields) {
         const fname = writeFunctionName(spec, field)
         rv += `export function ${fname}(header: ${spec.name}, v: ${field.t ? field.t : 'number'}) {\n`
-        rv += `    const out = newClientOutput(true, '${fname}')\n`
+        rv += `    const out = newClientOutput(${DEBUG}, '${fname}')\n`
         rv += `    out.log('Offset: ' + ${offset})\n`
         if (field.t) {
             if (field.t === 'string') {
@@ -141,7 +143,7 @@ export async function genSetters(spec: Spec) {
 
 export async function genParser(spec: Spec) {
     let rv = `export function parse${spec.name}(data: number[], offset: number, o: ${spec.name}) {\n`
-    rv += `    const out = newClientOutput(true, 'parse${spec.name}')\n`
+    rv += `    const out = newClientOutput(${DEBUG}, 'parse${spec.name}')\n`
     rv += `    const v = {value: 0, offset: offset * 2}\n\n`
     rv += '    let b: number[]\n'
     rv += '    function reloff() {\n' +

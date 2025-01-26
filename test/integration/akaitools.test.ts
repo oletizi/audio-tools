@@ -4,7 +4,7 @@ import {
     akaiList,
     AkaiRecordType,
     akaiWrite,
-    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH, readAkaiProgram
+    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH, readAkaiProgram, addKeygroup, writeAkaiProgram
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -183,7 +183,6 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
     it(`Creates akaiprogram files`, async () => {
         const protoPath = path.join('data', 'test_program.a3p')
-        const data = await readAkaiData(protoPath)
         const programData = await readAkaiProgram(protoPath)
         expect(programData.program.PRNAME).eq('TEST PROGRAM')
         expect(programData.keygroups.length).eq(1)
@@ -250,6 +249,26 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(parsed.keygroups[0].SNAME1).eq('MODIFIED    ')
         expect(parsed.keygroups.length).eq(2)
         expect(parsed.keygroups[1].SNAME1).eq('KEYGROUP 2  ')
+    })
+
+    it(`Adds keygroups`, async ()=> {
+        const protoPath = path.join('data', 'test_program.a3p')
+        const p = await readAkaiProgram(protoPath)
+        expect(p.program).to.exist
+        expect(p.keygroups).to.exist
+        expect(p.keygroups.length).eq(1)
+
+        addKeygroup(p)
+        expect(p.keygroups.length).eq(2)
+
+        KeygroupHeader_writeSNAME1(p.keygroups[1], 'FUN TIMES')
+        const outfile = path.join('build', `synthetic.${new Date().getTime()}.a3p`)
+        await writeAkaiProgram(outfile, p)
+
+        const p2 = await readAkaiProgram(outfile)
+        expect(p2.keygroups[1].SNAME1).eq('FUN TIMES   ')
+
+        await fs.rm(outfile)
     })
 
     it(`Finds strings in akai files`, async () => {

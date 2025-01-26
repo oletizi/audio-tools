@@ -2,7 +2,13 @@ import fs from "fs/promises";
 import {spawn} from 'child_process'
 import path from "path";
 import {byte2nibblesLE, Result} from "@/lib/lib-core.js";
-import {KeygroupHeader, parseKeygroupHeader, parseProgramHeader, ProgramHeader} from "@/midi/devices/s3000xl";
+import {
+    KeygroupHeader,
+    parseKeygroupHeader,
+    parseProgramHeader,
+    ProgramHeader,
+    ProgramHeader_writeGROUPS
+} from "@/midi/devices/s3000xl";
 
 export const KEYGROUP1_START_OFFSET = 384
 export const KEYGROUP2_START_OFFSET = 768
@@ -64,7 +70,7 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     rv.program.raw = new Array(RAW_LEADER).fill(0).concat(data)
     for (let i = 0; i < rv.program.GROUPS; i++) {
         const kg = {} as KeygroupHeader
-        let kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
+        const kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
         parseKeygroupHeader(kgData, 0, kg)
         kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
         rv.keygroups.push(kg)
@@ -72,7 +78,17 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     return rv
 }
 
-export async function writeAkaiProram(file: string, p: AkaiProgramFile) {
+export function addKeygroup(p:AkaiProgramFile){
+    const proto = p.keygroups[p.keygroups.length - 1]
+    const kg = {} as KeygroupHeader
+    const kgData = proto.raw.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * p.keygroups.length)
+    parseKeygroupHeader(kgData, 0, kg)
+    kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
+    p.keygroups.push(kg)
+    ProgramHeader_writeGROUPS(p.program, p.keygroups.length)
+}
+
+export async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
 
 }
 
