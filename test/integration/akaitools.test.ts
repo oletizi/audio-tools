@@ -4,7 +4,7 @@ import {
     akaiList,
     AkaiRecordType,
     akaiWrite,
-    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH
+    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH, readAkaiProgram
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -165,6 +165,20 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 
 
         // SNAM1 offset into data: 476
+    })
+
+    it(`Reads akai program files`, async() =>{
+        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
+        const programData = await readAkaiProgram(programPath)
+        expect(programData.program.PRNAME).eq('TEST 4 KGS  ')
+
+        const keygroups = programData.keygroups
+        expect(keygroups.length).eq(4)
+
+        expect(keygroups[0].SNAME1).eq('SINE        ')
+        expect(keygroups[1].SNAME1).eq('SQUARE      ')
+        expect(keygroups[2].SNAME1).eq('SAWTOOTH    ')
+        expect(keygroups[3].SNAME1).eq('PULSE       ')
     })
 
     it(`Finds strings in akai files`, async () => {

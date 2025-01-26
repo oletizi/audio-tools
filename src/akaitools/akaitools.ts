@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import {spawn} from 'child_process'
 import path from "path";
 import {byte2nibblesLE, Result} from "@/lib/lib-core.js";
+import {KeygroupHeader, parseKeygroupHeader, parseProgramHeader, ProgramHeader} from "@/midi/devices/s3000xl";
 
 export const KEYGROUP1_START_OFFSET = 384
 export const KEYGROUP2_START_OFFSET = 768
@@ -26,6 +27,11 @@ export interface AkaiRecord {
     size: number
 }
 
+export interface AkaiProgramFile {
+    program: ProgramHeader
+    keygroups: KeygroupHeader[]
+}
+
 export interface AkaiRecordResult extends Result {
     data: AkaiRecord[]
 }
@@ -46,6 +52,17 @@ export async function readAkaiData(file: string) {
     return data;
 }
 
+export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
+    const data = await readAkaiData(file)
+    const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
+    parseProgramHeader(data, 1, rv.program)
+    for (let i=0; i<rv.program.GROUPS; i++) {
+        const kg = {} as KeygroupHeader
+        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
+        rv.keygroups.push(kg)
+    }
+    return rv
+}
 
 export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
