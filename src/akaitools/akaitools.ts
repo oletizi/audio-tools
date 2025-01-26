@@ -3,7 +3,9 @@ import {spawn} from 'child_process'
 import path from "path";
 import {byte2nibblesLE, Result} from "@/lib/lib-core.js";
 
-export const KEYGROUP_START_OFFSET = 384
+export const KEYGROUP1_START_OFFSET = 384
+export const KEYGROUP2_START_OFFSET = 768
+export const KEYGROUP_LENGTH = KEYGROUP2_START_OFFSET - KEYGROUP1_START_OFFSET
 
 export interface AkaiToolsConfig {
     diskFile: string
@@ -123,7 +125,6 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
     })
     return rv
 }
-
 
 
 function voidFunction() {

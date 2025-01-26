@@ -4,7 +4,7 @@ import {
     akaiList,
     AkaiRecordType,
     akaiWrite,
-    validateConfig, readAkaiData
+    validateConfig, readAkaiData, KEYGROUP1_START_OFFSET, KEYGROUP_LENGTH
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -17,7 +17,7 @@ import {
     ProgramHeader,
     SampleHeader
 } from "../../src/midi/devices/s3000xl";
-import {byte2nibblesLE} from "../../src/lib/lib-core";
+import {byte2nibblesLE, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 
 describe('Test interaction w/ akaitools and akai files.', async () => {
@@ -123,30 +123,45 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
     })
 
     it(`Parses Akai program header from file`, async () => {
-        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p')
+        const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
         const data = await readAkaiData(programPath)
         const programHeader = {} as ProgramHeader
         const bytesRead = parseProgramHeader(data, 1, programHeader)
         console.log(`bytes read: ${bytesRead}`)
         console.log(`data size : ${data.length}`)
         console.log(`Keygroup count: ${programHeader.GROUPS}`)
-        expect(programHeader.PRNAME).equal('TEST PROGRAM')
+        expect(programHeader.PRNAME).equal('TEST 4 KGS  ')
+        expect(programHeader.GROUPS).eq(4)
 
-        const kg = {} as KeygroupHeader
-        parseKeygroupHeader(data.slice(384), 0, kg)
-        expect(kg.SNAME1.startsWith('SINE'))
+        const kg1 = {} as KeygroupHeader
+        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET), 0, kg1)
+        expect(kg1.SNAME1.startsWith('SINE'))
 
-        const v = {value: 0, offset: 0}
-        for (let i = 0; i < data.length; i += 2) {
+        const kg2 = {} as KeygroupHeader
+        parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH), 0, kg2)
+        expect(kg2.SNAME1.startsWith('SQUARE'))
 
+        const keygroups : KeygroupHeader[] = []
+        for (let i = 0; i < programHeader.GROUPS; i++) {
             const kg = {} as KeygroupHeader
-            parseKeygroupHeader(data.slice(i), 0, kg)
-            if (kg.SNAME1.startsWith('SINE')) {
-                console.log(`Bytes read by program: ${bytesRead}`)
-                console.log(`OFFSET               : ${i}`)
-                break
-            }
+            parseKeygroupHeader(data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i), 0, kg)
+            keygroups.push(kg)
         }
+
+        expect(keygroups[0].SNAME1).eq('SINE        ')
+        expect(keygroups[1].SNAME1).eq('SQUARE      ')
+        expect(keygroups[2].SNAME1).eq('SAWTOOTH    ')
+        expect(keygroups[3].SNAME1).eq('PULSE       ')
+        // for (let i = 0; i < data.length; i += 2) {
+        //
+        //     const kg = {} as KeygroupHeader
+        //     parseKeygroupHeader(data.slice(i), 0, kg)
+        //     if (kg.SNAME1.startsWith('SQUARE')) {
+        //         console.log(`Bytes read by program: ${bytesRead}`)
+        //         console.log(`OFFSET               : ${i}`)
+        //         break
+        //     }
+        // }
 
 
         // SNAM1 offset into data: 476
