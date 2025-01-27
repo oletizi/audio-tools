@@ -317,7 +317,8 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         addKeygroup(p)
 
         const outpath = path.join('build', 'test_5_kgs.a3p')
-        await fs.rm(outpath).then().catch(() => {})
+        await fs.rm(outpath).then().catch(() => {
+        })
         await writeAkaiProgram(outpath, p)
 
         const cfg = await newServerConfig()
@@ -325,6 +326,27 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const c: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: diskpath}
         await akaiFormat(c, 1, 1)
         await akaiWrite(c, outpath, '/test5kgs')
+    })
+
+    it(`Compares known good to broken akai program`, async () => {
+        const goodPath = path.join('test', 'data', 's3000xl', 'chops', 'brk.10', 'brk.10_good.a3p')
+        const badPath = path.join('test', 'data', 's3000xl', 'chops', 'brk.10-broken', 'brk.10.a3p')
+
+        const good = await readAkaiProgram(goodPath)
+        const bad = await readAkaiProgram(badPath)
+        console.log(`good: KGRP1 (block address of first keygroup): ${good.program.KGRP1}`)
+        console.log(`bad : KGRP1                                  : ${bad.program.KGRP1}`)
+
+        for (let i = 0; i < good.keygroups.length; i++) {
+            const goodkg = good.keygroups[i]
+            console.log(`good[${i}]: SNAME1: ${goodkg.SNAME1}`)
+        }
+
+        for (let i = 0; i < bad.keygroups.length; i++) {
+            const badkg = bad.keygroups[i]
+            console.log(`badkg[${i}]: SNAME1: ${badkg.SNAME1}`)
+        }
+
     })
 
     it(`Finds strings in akai files`, async () => {
