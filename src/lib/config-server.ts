@@ -13,6 +13,7 @@ const out: ProcessOutput = newServerOutput(false)
 export interface ServerConfig {
     akaiTools: string
     akaiDisk: string
+    s3kDefaultProgram: string
     s3k: string
     sourceRoot: string
     targetRoot: string
@@ -34,6 +35,7 @@ export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<Serve
         sessionRoot: path.join(dataDir, 'sessions'),
         logfile: path.join(dataDir, 'log.txt'),
         s3k: path.join(DEFAULT_TARGET_DIR, 's3k'),
+        s3kDefaultProgram: path.join(dataDir, 'test_program.a3p'),
         akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'akai.img'),
         akaiTools: path.join(dataDir, 'akaitools-1.5')
     }

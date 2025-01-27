@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import {spawn} from 'child_process'
 import path from "path";
-import {byte2nibblesLE, nibbles2byte, Result} from "@/lib/lib-core.js";
+import {byte2nibblesLE, nibbles2byte, Result} from "@/lib/lib-core";
 import {
     KeygroupHeader,
     parseKeygroupHeader,
