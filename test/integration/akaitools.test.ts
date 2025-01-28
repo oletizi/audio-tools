@@ -353,9 +353,9 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const c: AkaiToolsConfig = await newAkaiToolsConfig()
         c.diskFile = diskpath
         await akaiFormat(c)
-        await akaiWrite(c, outpath, '/')
+        await akaiWrite(c, outpath, '/test')
 
-        const result = await akaiList(c, '/')
+        const result = await akaiList(c, '/test')
         expect(result.data).to.exist
         expect(result.data.length).gte(1)
         for (const record of result.data) {
@@ -366,8 +366,25 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         expect(record.type).eq(AkaiRecordType.PROGRAM)
         expect(record.name.endsWith(path.parse(outpath).name))
 
-        await akaiRead(c, '/', path.join('build'))
 
+        // read the program from disk and validate it
+        const refriedDir = path.join('build', `tmp-${new Date().getTime()}`);
+        await akaiRead(c, '/test', refriedDir)
+        const refriedPath = path.join(refriedDir, 'test', path.parse(outpath).name + '.a3p')
+
+        const refried = await readAkaiProgram(refriedPath)
+        console.log(`refried name: ${refried.program.PRNAME}`)
+        expect(refried).to.exist
+        expect(refried.keygroups).to.exist
+        expect(refried.keygroups.length).eq(good.keygroups.length)
+        for (let i = 0; i < good.keygroups.length; i++) {
+            const goodkg = good.keygroups[i]
+            const refkg = refried.keygroups[i]
+            console.log(`good[${i}]  : SNAME1: ${goodkg.SNAME1}`)
+            console.log(`refried[${i}] : SNAME1: ${refkg.SNAME1}`)
+            console.log()
+            expect(refkg.SNAME1).eq(goodkg.SNAME1)
+        }
 
     })
 
