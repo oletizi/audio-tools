@@ -9,6 +9,7 @@ import {
     ProgramHeader,
     ProgramHeader_writeGROUPS
 } from "@/midi/devices/s3000xl";
+import {newServerConfig} from "@/lib/config-server";
 
 
 export const CHUNK_LENGTH = 384
@@ -50,8 +51,14 @@ export interface AkaiRecordResult extends Result {
 }
 
 export interface ExecutionResult {
-    errors: number[];
+    errors: Error[];
     code: number;
+}
+
+export async function newAkaiToolsConfig() {
+    const cfg = await newServerConfig()
+    const rv: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
+    return rv
 }
 
 export async function readAkaiData(file: string) {
@@ -124,11 +131,20 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
 
 export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
-    console.log(`write: sourcePath: ${sourcePath}`)
-    console.log(`WRite: targetPath: ${targetPath}`)
+    console.log(`akaiwrite: sourcePath: ${sourcePath}`)
+    console.log(`akaiwrite: targetPath: ${targetPath}`)
     return doSpawn(
         path.join(c.akaiToolsPath, 'akaiwrite'),
         ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
+}
+
+export async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1, recursive: boolean = true){
+    process.env['PERL5LIB'] = c.akaiToolsPath
+    console.log(`akairead: sourcePath: ${sourcePath}`)
+    console.log(`akairead: targetPath: ${targetPath}`)
+    return doSpawn(
+        path.join(c.akaiToolsPath, 'akairead'),
+        ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, recursive? '-R': '', `"${sourcePath}"`])
 
 }
 
@@ -184,6 +200,7 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
             }
         }
     })
+    rv.errors = rv.errors.concat(result.errors)
     return rv
 }
 
@@ -198,6 +215,7 @@ async function doSpawn(bin: string, args: readonly string[],
                        } = {onData: voidFunction, onStart: voidFunction}) {
     return new Promise<ExecutionResult>((resolve, reject) => {
         const rv = {errors: [], code: -1}
+        console.log(`akaitools: ${bin} ${args.join( ' ')}`)
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
         opts.onStart(child)

@@ -9,7 +9,7 @@ import {
     readAkaiProgram,
     addKeygroup,
     writeAkaiProgram,
-    RAW_LEADER, CHUNK_LENGTH, AkaiToolsConfig
+    RAW_LEADER, CHUNK_LENGTH, AkaiToolsConfig, newAkaiToolsConfig, akaiRead
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -326,6 +326,49 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const c: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: diskpath}
         await akaiFormat(c, 1, 1)
         await akaiWrite(c, outpath, '/test5kgs')
+    })
+
+    it(`Writes a known good multi-keygroup akai program to disk and reads it back`, async () => {
+        const goodPath = path.join('test', 'data', 's3000xl', 'chops', 'brk.10', 'brk.10_good.a3p')
+        const good = await readAkaiProgram(goodPath)
+
+
+        const outpath = path.join('build', 'brk.10_sus.a3p')
+        await writeAkaiProgram(outpath, good)
+
+        const suspect = await readAkaiProgram(outpath)
+        expect (suspect.program.PRNAME).eq(good.program.PRNAME)
+
+        for (let i = 0; i < good.keygroups.length; i++) {
+            const goodkg = good.keygroups[i]
+            const suskg = suspect.keygroups[i]
+            console.log(`good[${i}]: SNAME1: ${goodkg.SNAME1}`)
+            console.log(`sus[${i}] : SNAME1: ${suskg.SNAME1}`)
+            console.log()
+            expect(suskg.SNAME1).eq(goodkg.SNAME1)
+        }
+
+        // write the program to a disk, extract it, then read it
+        const diskpath = path.join('build', 'akai.img')
+        const c: AkaiToolsConfig = await newAkaiToolsConfig()
+        c.diskFile = diskpath
+        await akaiFormat(c)
+        await akaiWrite(c, outpath, '/')
+
+        const result = await akaiList(c, '/')
+        expect(result.data).to.exist
+        expect(result.data.length).gte(1)
+        for (const record of result.data) {
+            console.log(`record:`)
+            console.log(record)
+        }
+        const record = result.data[0]
+        expect(record.type).eq(AkaiRecordType.PROGRAM)
+        expect(record.name.endsWith(path.parse(outpath).name))
+
+        await akaiRead(c, '/', path.join('build'))
+
+
     })
 
     it(`Compares known good to broken akai program`, async () => {
