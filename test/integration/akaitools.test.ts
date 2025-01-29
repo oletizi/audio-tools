@@ -17,7 +17,7 @@ import {
     remoteVolumes,
     remoteUnmount,
     RemoteVolume,
-    remoteMount
+    remoteMount, parseRemoteVolumes
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -437,13 +437,45 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
 })
 
 describe(`Synchronizing data w/ a piscsi host`, async () => {
+
+    it(`Parses table of mounted volumes`, async function () {
+        const table = `+----+-----+------+-------------------------------------
+| ID | LUN | TYPE | IMAGE FILE
++----+-----+------+-------------------------------------
+|  1 |   0 | SCHD | /home/orion/images/HD1.hds
+|  2 |   0 | SCHD | /home/orion/images/HD2.hds
+|  4 |   0 | SCHD | /home/orion/images/HD4.hds
+|  5 |   0 | SCHD | /home/orion/images/HD5.hds
++----+-----+------+-------------------------------------`
+        // const parsed = []
+        // table.split('\n').forEach(i => {
+        //     const match = i.match(/\|\s*(\d+).*/)
+        //     if (match) {
+        //         parsed.push({
+        //             scsiId: Number.parseInt(i.substring(2, 4)),
+        //             lun: Number.parseInt(i.substring(6, 10)),
+        //             image: i.substring(19).trim()
+        //         })
+        //     }
+        // })
+        const parsed = parseRemoteVolumes(table)
+        expect(parsed).exist
+        expect(parsed.length).eq(4)
+        expect(parsed[0].scsiId).eq(1)
+        expect(parsed[0].lun).eq(0)
+        expect(parsed[0].image).eq('/home/orion/images/HD1.hds')
+    })
+
     it(`Lists mounted volumes`, async function () {
         this.timeout(5000)
         const c = await newAkaiToolsConfig()
         expect(c.piscsiHost)
         expect(c.scsiId)
 
-        await remoteVolumes(c)
+        const result = await remoteVolumes(c)
+        result.data.forEach(v => console.log(v))
+        expect(result.errors.length).eq(0)
+        expect(result.data.length).gte(1)
     })
 
     it(`Unmounts a volume`, async function () {

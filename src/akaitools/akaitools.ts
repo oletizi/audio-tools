@@ -70,6 +70,7 @@ export async function newAkaiToolsConfig() {
 
 export interface RemoteVolume {
     scsiId: number
+    lun?: number
     image: string
 }
 
@@ -106,14 +107,30 @@ export async function remoteMount(c: AkaiToolsConfig, v: RemoteVolume) {
     return rv
 }
 
+export function parseRemoteVolumes(data: string): RemoteVolume[] {
+    const rv: RemoteVolume[] = []
+    data.split('\n').forEach(i => {
+        const match = i.match(/\|\s*(\d+).*/)
+        if (match) {
+            rv.push({
+                scsiId: Number.parseInt(i.substring(2, 4)),
+                lun: Number.parseInt(i.substring(6, 10)),
+                image: i.substring(19).trim()
+            })
+        }
+    })
+    return rv
+}
+
 export async function remoteVolumes(c: AkaiToolsConfig) {
+    // const re = new RegExp("(/[0-9]+).*?([0-9]+).*(\/.+)/")
     const rv: RemoteVolumeResult = {data: [], errors: []}
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined.'))
     } else {
         const result = await doSpawn('ssh', [c.piscsiHost, '"scsictl -l"'], {
             onData: data => {
-                console.log(data)
+                rv.data = rv.data.concat(parseRemoteVolumes(data))
             },
             onStart: child => {
             }
