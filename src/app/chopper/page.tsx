@@ -22,9 +22,9 @@ export default function Page() {
             <div className="grow">
                 <ChopDetailScreen app={app} defaultDirectory="/"
                                   file={file}
-                                  doIt={(samplesPerBeat, beatsPerChop) => {
+                                  doIt={(prefix:string, samplesPerBeat, beatsPerChop) => {
                                       if (file) {
-                                          chopSample(file, samplesPerBeat, beatsPerChop).then()
+                                          chopSample(file, prefix, samplesPerBeat, beatsPerChop).then()
                                       }
                                   }}
                                   onErrors={(e) => console.log(e)}/>

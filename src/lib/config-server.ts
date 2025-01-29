@@ -40,7 +40,7 @@ export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<Serve
         sessionRoot: path.join(dataDir, 'sessions'),
         logfile: path.join(dataDir, 'log.txt'),
         s3k: path.join(DEFAULT_TARGET_DIR, 's3k'),
-        akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'akai.img'),
+        akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'akai.hds'),
         akaiTools: path.join(dataDir, 'akaitools-1.5')
     }
     const configPath = path.join(dataDir, 'server-config.json')

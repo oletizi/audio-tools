@@ -9,8 +9,9 @@ export async function getProgress(jobId: JobId) {
     return await client.post(root + '/progress', {jobId: jobId})
 }
 
-export async function chopSample(path:string, samplesPerBeat: number, beatsPerChop: number){
-    return await client.post(root + '/chop', {path: path})
+export async function chopSample(path:string, prefix: string, samplesPerBeat: number, beatsPerChop: number){
+    return await client.post(root + '/chop', {path: path, prefix:prefix, samplesPerBeat: samplesPerBeat, beatsPerChop: beatsPerChop
+    })
 }
 
 export async function getMeta(path:string) {
