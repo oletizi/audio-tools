@@ -25,6 +25,8 @@ export const RAW_LEADER = 7
 export interface AkaiToolsConfig {
     diskFile: string
     akaiToolsPath: string
+    piscsiHost?: string
+    scsiId?: number
 }
 
 export enum AkaiRecordType {
@@ -57,7 +59,67 @@ export interface ExecutionResult {
 
 export async function newAkaiToolsConfig() {
     const cfg = await newServerConfig()
-    const rv: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
+    const rv: AkaiToolsConfig = {
+        piscsiHost: cfg.piscsiHost, scsiId: cfg.s3kScsiId,
+        akaiToolsPath: cfg.akaiTools,
+        diskFile: cfg.akaiDisk
+    }
+    return rv
+}
+
+
+export interface RemoteVolume {
+    scsiId: number
+    image: string
+}
+
+export interface RemoteVolumeResult {
+    errors: Error[]
+    data: RemoteVolume[]
+}
+
+export async function remoteSync(c: AkaiToolsConfig) {
+    throw new Error("Implement Me!")
+}
+
+export async function remoteUnmount(c: AkaiToolsConfig, v: RemoteVolume) {
+    const rv: ExecutionResult = {code: -1, errors: []}
+    if (!c.piscsiHost) {
+        rv.errors.push(new Error('Piscsi host is not defined.'))
+    } else {
+        const result = await doSpawn('ssh', [c.piscsiHost, `"scsictl -c d -i ${v.scsiId}"`])
+        rv.code = result.code
+        rv.errors = rv.errors.concat(result.errors)
+    }
+    return rv
+}
+
+export async function remoteMount(c: AkaiToolsConfig, v: RemoteVolume) {
+    const rv: ExecutionResult = {code: -1, errors: []}
+    if (!c.piscsiHost) {
+        rv.errors.push(new Error('Piscsi host is not defined'))
+    } else {
+        const result = await doSpawn('ssh', [c.piscsiHost, `"scsictl -c a -i ${v.scsiId} -f ${v.image}"`])
+        rv.code = result.code
+        rv.errors = rv.errors.concat(result.errors)
+    }
+    return rv
+}
+
+export async function remoteVolumes(c: AkaiToolsConfig) {
+    const rv: RemoteVolumeResult = {data: [], errors: []}
+    if (!c.piscsiHost) {
+        rv.errors.push(new Error('Piscsi host is not defined.'))
+    } else {
+        const result = await doSpawn('ssh', [c.piscsiHost, '"scsictl -l"'], {
+            onData: data => {
+                console.log(data)
+            },
+            onStart: child => {
+            }
+        })
+
+    }
     return rv
 }
 
@@ -138,13 +200,13 @@ export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPa
         ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
 }
 
-export async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1, recursive: boolean = true){
+export async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1, recursive: boolean = true) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     console.log(`akairead: sourcePath: ${sourcePath}`)
     console.log(`akairead: targetPath: ${targetPath}`)
     return doSpawn(
         path.join(c.akaiToolsPath, 'akairead'),
-        ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, recursive? '-R': '', `"${sourcePath}"`])
+        ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, recursive ? '-R' : '', `"${sourcePath}"`])
 
 }
 
@@ -215,7 +277,7 @@ async function doSpawn(bin: string, args: readonly string[],
                        } = {onData: voidFunction, onStart: voidFunction}) {
     return new Promise<ExecutionResult>((resolve, reject) => {
         const rv = {errors: [], code: -1}
-        console.log(`akaitools: ${bin} ${args.join( ' ')}`)
+        console.log(`akaitools: ${bin} ${args.join(' ')}`)
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
         opts.onStart(child)

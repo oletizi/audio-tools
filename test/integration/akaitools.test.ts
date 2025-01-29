@@ -9,7 +9,15 @@ import {
     readAkaiProgram,
     addKeygroup,
     writeAkaiProgram,
-    RAW_LEADER, CHUNK_LENGTH, AkaiToolsConfig, newAkaiToolsConfig, akaiRead
+    RAW_LEADER,
+    CHUNK_LENGTH,
+    AkaiToolsConfig,
+    newAkaiToolsConfig,
+    akaiRead,
+    remoteVolumes,
+    remoteUnmount,
+    RemoteVolume,
+    remoteMount
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -337,7 +345,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         await writeAkaiProgram(outpath, good)
 
         const suspect = await readAkaiProgram(outpath)
-        expect (suspect.program.PRNAME).eq(good.program.PRNAME)
+        expect(suspect.program.PRNAME).eq(good.program.PRNAME)
 
         for (let i = 0; i < good.keygroups.length; i++) {
             const goodkg = good.keygroups[i]
@@ -425,5 +433,36 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
             const s = akaiByte2String(window)
             console.log(`${v.offset}: ${s}`)
         }
+    })
+})
+
+describe(`Synchronizing data w/ a piscsi host`, async () => {
+    it(`Lists mounted volumes`, async function () {
+        this.timeout(5000)
+        const c = await newAkaiToolsConfig()
+        expect(c.piscsiHost)
+        expect(c.scsiId)
+
+        await remoteVolumes(c)
+    })
+
+    it(`Unmounts a volume`, async function () {
+        this.timeout(5000)
+        const c = await newAkaiToolsConfig()
+        const v: RemoteVolume = {image: "/home/orion/images/HD4.hds", scsiId: 4}
+        const result = await remoteUnmount(c, v)
+        result.errors.forEach(e => console.error(e))
+        expect(result.code).eq(0)
+        expect(result.errors.length).eq(0)
+    })
+
+    it('Mounts a volume', async function () {
+        this.timeout(5000)
+        const c = await newAkaiToolsConfig()
+        const v: RemoteVolume = {image: "/home/orion/images/HD4.hds", scsiId: 4}
+        const result = await remoteMount(c, v)
+        result.errors.forEach(e => console.error(e))
+        expect(result.code).eq(0)
+        expect(result.errors.length).eq(0)
     })
 })
