@@ -17,7 +17,7 @@ import {
     remoteVolumes,
     remoteUnmount,
     RemoteVolume,
-    remoteMount, parseRemoteVolumes
+    remoteMount, parseRemoteVolumes, remoteSync
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -476,6 +476,7 @@ describe(`Synchronizing data w/ a piscsi host`, async () => {
         result.data.forEach(v => console.log(v))
         expect(result.errors.length).eq(0)
         expect(result.data.length).gte(1)
+
     })
 
     it(`Unmounts a volume`, async function () {
@@ -493,6 +494,15 @@ describe(`Synchronizing data w/ a piscsi host`, async () => {
         const c = await newAkaiToolsConfig()
         const v: RemoteVolume = {image: "/home/orion/images/HD4.hds", scsiId: 4}
         const result = await remoteMount(c, v)
+        result.errors.forEach(e => console.error(e))
+        expect(result.code).eq(0)
+        expect(result.errors.length).eq(0)
+    })
+
+    it('Syncs akai data', async function() {
+        this.timeout(30000)
+        const c = await newAkaiToolsConfig()
+        const result = await remoteSync(c)
         result.errors.forEach(e => console.error(e))
         expect(result.code).eq(0)
         expect(result.errors.length).eq(0)

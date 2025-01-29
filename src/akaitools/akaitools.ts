@@ -80,7 +80,50 @@ export interface RemoteVolumeResult {
 }
 
 export async function remoteSync(c: AkaiToolsConfig) {
-    throw new Error("Implement Me!")
+    const rv: ExecutionResult = {code: -1, errors: []}
+    if (!c.piscsiHost || c.scsiId === undefined) {
+        rv.errors.push(new Error('Remote host not defined.'))
+        return rv
+    }
+    console.log(`Listing remote volumes...`)
+    let result = await remoteVolumes(c)
+    rv.errors = rv.errors.concat(result.errors)
+    if (result.errors.length !== 0) {
+        return rv
+    }
+    let targetVolume: RemoteVolume
+    for (const v of result.data) {
+        if (v.scsiId === c.scsiId) {
+            targetVolume = v
+            break
+        }
+    }
+
+    const parsedPath = path.parse(c.diskFile);
+    const imagePath = `"~/images/${parsedPath.name}${parsedPath.ext}"`;
+    if (targetVolume) {
+        let r = await remoteUnmount(c, targetVolume)
+        if (r.errors.length !== 0) {
+            rv.errors = rv.errors.concat(r.errors)
+            return rv
+        }
+    }
+    targetVolume = {image: imagePath, scsiId: c.scsiId}
+
+    const syncResult = await doSpawn('scp', [`"${c.diskFile}"`, `${c.piscsiHost}:${targetVolume.image}`])
+    if (syncResult.errors.length !== 0) {
+        rv.errors = rv.errors.concat(syncResult.errors)
+    }
+
+    const mountResult = await remoteMount(c, targetVolume)
+    if (mountResult.errors.length !== 0) {
+        rv.errors = rv.errors.concat(mountResult.errors)
+        return rv
+    }
+
+    rv.code = rv.errors.length
+    return rv
+
 }
 
 export async function remoteUnmount(c: AkaiToolsConfig, v: RemoteVolume) {
@@ -123,7 +166,6 @@ export function parseRemoteVolumes(data: string): RemoteVolume[] {
 }
 
 export async function remoteVolumes(c: AkaiToolsConfig) {
-    // const re = new RegExp("(/[0-9]+).*?([0-9]+).*(\/.+)/")
     const rv: RemoteVolumeResult = {data: [], errors: []}
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined.'))
@@ -132,7 +174,7 @@ export async function remoteVolumes(c: AkaiToolsConfig) {
             onData: data => {
                 rv.data = rv.data.concat(parseRemoteVolumes(data))
             },
-            onStart: child => {
+            onStart: () => {
             }
         })
 
@@ -319,7 +361,7 @@ async function doSpawn(bin: string, args: readonly string[],
             rv.errors.push(new Error(data))
         })
 
-        setTimeout(() => reject(new Error(`Timout executing ${bin}.`)), 5 * 1000)
+        setTimeout(() => reject(new Error(`Timout executing ${bin}.`)), 30 * 1000)
     })
 }
 
