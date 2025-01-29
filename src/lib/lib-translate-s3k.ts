@@ -100,7 +100,7 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
                 const kg = p.keygroups[i]
                 const spec = keygroupSpec[i]
                 KeygroupHeader_writeLONOTE(kg, 60 + i)
-                KeygroupHeader_writeHINOTE(kg, 60 + 1)
+                KeygroupHeader_writeHINOTE(kg, 60 + i)
 
                 KeygroupHeader_writeSNAME1(kg, spec.sample1)
                 KeygroupHeader_writeCP1(kg, 1)
