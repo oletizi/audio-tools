@@ -4,6 +4,7 @@ import {newServerOutput, ProcessOutput} from "@/lib/process-output";
 import {ClientConfig, newClientConfig} from "@/lib/config-client";
 import {objectFromFile} from "@/lib/lib-server";
 import {mkdir} from "@/lib/lib-fs-server";
+import {pad} from "@/lib/lib-core";
 
 const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
 const DEFAULT_SOURCE_DIR = path.join(DEFAULT_DATA_DIR, 'source')
@@ -13,13 +14,14 @@ const out: ProcessOutput = newServerOutput(false)
 export interface ServerConfig {
     akaiTools: string
     akaiDisk: string
-    s3kDefaultProgram: string
     s3k: string
     sourceRoot: string
     targetRoot: string
     sessionRoot: string
     jobsRoot: string
     logfile: string
+
+    getS3kDefaultProgramPath(keygroupCount: number): string;
 }
 
 async function validate(cfg: ServerConfig) {
@@ -29,13 +31,15 @@ async function validate(cfg: ServerConfig) {
 
 export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
     const rv: ServerConfig = {
+        getS3kDefaultProgramPath(keygroupCount: number): string {
+            return path.join('data', 's3000xl', 'defaults', `kg_${pad(keygroupCount, 2)}.a3p`)
+        },
         sourceRoot: DEFAULT_SOURCE_DIR,
         targetRoot: DEFAULT_TARGET_DIR,
         jobsRoot: path.join(dataDir, 'jobs'),
         sessionRoot: path.join(dataDir, 'sessions'),
         logfile: path.join(dataDir, 'log.txt'),
         s3k: path.join(DEFAULT_TARGET_DIR, 's3k'),
-        s3kDefaultProgram: path.join(dataDir, 'test_program.a3p'),
         akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'akai.img'),
         akaiTools: path.join(dataDir, 'akaitools-1.5')
     }

@@ -13,7 +13,7 @@ import path from "path";
 import {pad} from "@/lib/lib-core";
 import {newServerConfig} from "@/lib/config-server";
 import {
-    KeygroupHeader_writeSNAME1,
+    KeygroupHeader_writeSNAME1, KeygroupHeader_writeSNAME2,
     parseSampleHeader,
     ProgramHeader_writePRNAME,
     SampleHeader
@@ -47,50 +47,67 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
     const sampleCount = sample.getSampleCount()
     const chopLength = samplesPerBeat * beatsPerChop
     let count = 0
-    const p = await readAkaiProgram(cfg.s3kDefaultProgram)
-    ProgramHeader_writePRNAME(p.program, prefix)
     for (let i = 0; i < sampleCount; i += chopLength) {
         const chop = sample.trim(i, i + chopLength)
         let targetName = prefix + '.' + pad(count, 2)
         const outfile = path.join(target, targetName) + '.wav'
         await chop.writeToStream(createWriteStream(outfile))
         const result = await wav2Akai(c, outfile, target, targetName)
-        if (count > 0) {
-            // addKeygroup(p)
-            for (let j=0; j<chop.getChannelCount(); j++) {
-                addKeygroup(p)
-            }
+        if (result.errors.length) {
+            rv.errors = rv.errors.concat(result.errors)
         }
         count++
     }
     if (rv.errors.length === 0) {
+        const keygroupSpec: { sample1: string, sample2: string | null }[] = []
         for (const f of await fs.readdir(target)) {
             if (f.endsWith('a3s')) {
                 const result = await akaiWrite(c, path.join(target, f), `/${prefix}`)
                 if (result.errors.length !== 0) {
                     rv.errors = rv.errors.concat(rv.errors, result.errors)
-                    break
+                    return rv
                 }
                 // const buf = await fs.readFile(path.join(target, f))
                 const data = await readAkaiData(path.join(target, f))
                 const sampleHeader = {} as SampleHeader
-                parseSampleHeader(data, 1, sampleHeader)
+                parseSampleHeader(data, 0, sampleHeader)
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
 
-                KeygroupHeader_writeSNAME1(p.keygroups[count], sampleHeader.SHNAME)
+                console.log(`Checking sample name for stereo; ${sampleHeader.SHNAME}`)
+
+                if (sampleHeader.SHNAME.endsWith('-R')) {
+                    keygroupSpec[keygroupSpec.length - 1].sample2 = sampleHeader.SHNAME
+                } else {
+                    keygroupSpec.push({sample1: sampleHeader.SHNAME, sample2: null})
+                }
                 if (result.errors.length > 0) {
                     rv.errors = rv.errors.concat(result.errors)
-                    break
+                    return rv
                 }
 
             }
         }
-        const programPath = path.join(target, prefix + '.a3p');
-        await writeAkaiProgram(programPath, p)
-        await akaiWrite(c, programPath, `/${prefix}`)
+        const p = await readAkaiProgram(cfg.getS3kDefaultProgramPath(keygroupSpec.length))
+        if (p.keygroups.length != keygroupSpec.length) {
+            rv.errors.push(new Error(`Keygroup count does not match. Program keygroups: ${p.keygroups.length}; expected keygroups: ${keygroupSpec.length}`))
+            return rv
+        } else {
+            ProgramHeader_writePRNAME(p.program, prefix)
 
+            for (let i = 0; i < p.keygroups.length; i++) {
+                const kg = p.keygroups[i]
+                const spec = keygroupSpec[i]
+                KeygroupHeader_writeSNAME1(kg, spec.sample1)
+                if (spec.sample2) {
+                    KeygroupHeader_writeSNAME2(kg, spec.sample2)
+                }
+            }
+            const programPath = path.join(target, prefix + '.a3p');
+            await writeAkaiProgram(programPath, p)
+            await akaiWrite(c, programPath, `/${prefix}`)
+        }
     }
-    if (rv.errors.length === 0) {
+    if (rv.errors.length === 0){
         rv.code = 0
     }
     return rv

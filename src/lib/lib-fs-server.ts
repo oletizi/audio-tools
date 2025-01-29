@@ -40,6 +40,7 @@ export async function list(dir: string, set: FileSet, filter: (n: string) => boo
 
 export async function mkdir(dir: string) {
     if (!dir) return false
+
     try {
         return (await fs.stat(dir)).isDirectory()
     } catch (e) {
