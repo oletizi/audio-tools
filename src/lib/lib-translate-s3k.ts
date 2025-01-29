@@ -1,5 +1,4 @@
 import {
-    addKeygroup,
     AkaiToolsConfig,
     akaiWrite,
     ExecutionResult, RAW_LEADER, readAkaiData,
@@ -13,6 +12,9 @@ import path from "path";
 import {pad} from "@/lib/lib-core";
 import {newServerConfig} from "@/lib/config-server";
 import {
+    KeygroupHeader_writeCP1, KeygroupHeader_writeCP2,
+    KeygroupHeader_writeHINOTE,
+    KeygroupHeader_writeHIVEL2, KeygroupHeader_writeLONOTE,
     KeygroupHeader_writeSNAME1, KeygroupHeader_writeSNAME2,
     parseSampleHeader,
     ProgramHeader_writePRNAME,
@@ -97,9 +99,15 @@ export async function chop(c: AkaiToolsConfig, source: string, target: string, p
             for (let i = 0; i < p.keygroups.length; i++) {
                 const kg = p.keygroups[i]
                 const spec = keygroupSpec[i]
+                KeygroupHeader_writeLONOTE(kg, 60 + i)
+                KeygroupHeader_writeHINOTE(kg, 60 + 1)
+
                 KeygroupHeader_writeSNAME1(kg, spec.sample1)
+                KeygroupHeader_writeCP1(kg, 1)
                 if (spec.sample2) {
                     KeygroupHeader_writeSNAME2(kg, spec.sample2)
+                    KeygroupHeader_writeHIVEL2(kg, 127)
+                    KeygroupHeader_writeCP2(kg, 1)
                 }
             }
             const programPath = path.join(target, prefix + '.a3p');
