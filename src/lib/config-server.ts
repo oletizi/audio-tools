@@ -27,8 +27,14 @@ export interface ServerConfig {
 }
 
 async function validate(cfg: ServerConfig) {
-    return cfg && cfg.s3kScsiId && cfg.piscsiHost && await mkdir(cfg.sourceRoot) && await mkdir(cfg.targetRoot) && await mkdir(cfg.sessionRoot)
-    && await mkdir(cfg.s3k) && await fs.stat(cfg.akaiTools)
+    if (!cfg) {throw new Error('Config is undefined')}
+    if (cfg.s3kScsiId === undefined) {throw new Error('S3000XL disk SCSI ID is undefined.')}
+    if (! cfg.piscsiHost) {throw new Error('piscsi hostis undefined.')}
+    await mkdir(cfg.sourceRoot)
+    await mkdir(cfg.targetRoot)
+    await mkdir(cfg.sessionRoot)
+    await mkdir(cfg.s3k)
+    await fs.stat(cfg.akaiTools)
 }
 
 export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
@@ -48,14 +54,11 @@ export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<Serve
     }
     const configPath = path.join(dataDir, 'server-config.json')
     const storedConfig = (await objectFromFile(configPath)).data
-    if (await validate(storedConfig)) {
-        rv.piscsiHost = storedConfig.piscsiHost
-        rv.s3kScsiId = storedConfig.s3kScsiId
-        rv.sourceRoot = storedConfig.sourceRoot
-        rv.targetRoot = storedConfig.targetRoot
-    } else {
-        await validate(rv)
-    }
+    await validate(storedConfig)
+    rv.piscsiHost = storedConfig.piscsiHost
+    rv.s3kScsiId = storedConfig.s3kScsiId
+    rv.sourceRoot = storedConfig.sourceRoot
+    rv.targetRoot = storedConfig.targetRoot
     return rv
 }
 

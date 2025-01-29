@@ -24,7 +24,15 @@ describe('Integration tests for lib-translate-s3k', async () => {
         const prefix = 'loop96'
         const samplesPerBeat = 27563
         const beatsPerChop = 4
-        const result = await chop(c, sourcepath, targetpath, prefix, samplesPerBeat, beatsPerChop)
+        const opts = {    source: sourcepath,
+            target: targetpath,
+            prefix: prefix,
+            samplesPerBeat: samplesPerBeat,
+            beatsPerChop: beatsPerChop,
+            wipeDisk: true
+        }
+        // const result = await chop(c, sourcepath, targetpath, prefix, samplesPerBeat, beatsPerChop)
+        const result = await chop(c, opts)
         result.errors.forEach(e => console.error(e))
         expect(result.errors.length).eq(0)
     })

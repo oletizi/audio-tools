@@ -3,14 +3,14 @@ import {getSessionData, getSessionId} from "@/lib/lib-session";
 import path from "path";
 import {newServerConfig} from "@/lib/config-server";
 import {chop} from "@/lib/lib-translate-s3k";
-import {akaiFormat, AkaiToolsConfig} from "@/akaitools/akaitools";
+import {akaiFormat, AkaiToolsConfig, newAkaiToolsConfig, remoteSync} from "@/akaitools/akaitools";
 import fs from "fs/promises";
 
 export async function POST(request: NextRequest) {
     try {
         const session = await getSessionData(await getSessionId())
         const cfg = await newServerConfig()
-        const akaiToolsConfig: AkaiToolsConfig = {akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
+        const akaiToolsConfig: AkaiToolsConfig = await newAkaiToolsConfig() //{akaiToolsPath: cfg.akaiTools, diskFile: cfg.akaiDisk}
         try {
             const stats = await fs.stat(cfg.akaiDisk)
             if (! stats.isFile()) {
@@ -43,20 +43,41 @@ export async function POST(request: NextRequest) {
 
         const target = path.normalize(path.join(cfg.s3k, data.prefix))
         if (! target.startsWith(cfg.targetRoot)) {
-            throw new Error('TargetPath is outside target root.')
+            throw new Error(`Target path is outside target root.
+  target root: ${cfg.targetRoot}
+  target path: ${target}`)
         }
 
-
-        const result = await chop(akaiToolsConfig, absolute, target, data.prefix, data.samplesPerBeat, data.beatsPerChop)
+        const opts = {
+            source: absolute,
+            target: target,
+            prefix: data.prefix,
+            samplesPerBeat: data.samplesPerBeat,
+            beatsPerChop: data.beatsPerChop,
+            wipeDisk: true
+        }
+        // const result = await chop(akaiToolsConfig, absolute, target, data.prefix, data.samplesPerBeat, data.beatsPerChop)
+        const result = await chop(akaiToolsConfig, opts)
+        console.log(`Done choppping.`)
         if (result.errors.length > 0) {
             result.errors.forEach(e => console.error(e))
             throw new Error('Barf!')
+        }
+
+        console.log(`remote sync...`)
+        const syncResult = await remoteSync(akaiToolsConfig)
+        console.log(`remote sync complete. Errors: ${syncResult.errors.length}`)
+        syncResult.errors.forEach(e => console.error(e))
+
+        if (syncResult.errors.length > 0) {
+            result.errors = result.errors.concat(syncResult.errors)
         }
         return NextResponse.json({
             errors: result.errors,
             code: result.code,
             message: result.errors.length === 0 ? 'Ok' : "Error",
             status: result.errors.length === 0 ? 200 : 500,
+            syncStatus: syncResult.code,
             normal: normal,
             absolute: absolute,
             prefix: data.prefix,
