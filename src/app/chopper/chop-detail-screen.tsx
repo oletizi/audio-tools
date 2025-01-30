@@ -63,8 +63,8 @@ export function ChopDetailScreen(
                 <div className="flex flex-col gap-4">
                     {meta ? (
                             <>
-                                <Paper><Metadata meta={meta}/></Paper>
-                                <Paper className="flex gap-5">
+                                <Paper variant="outlined"><Metadata meta={meta}/></Paper>
+                                <Paper elevation="5" className="flex gap-5">
                                     <Table><TableBody>
                                         <TableRow><TableCell>BPM</TableCell><TableCell>{bpm}</TableCell></TableRow>
                                         <TableRow><TableCell>Beats per
@@ -77,13 +77,12 @@ export function ChopDetailScreen(
                                             Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
                                     </TableBody> </Table>
                                 </Paper>
-                                <Paper className="flex gap-5">
+                                <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
                                         <TableRow>
-                                            <TableCell>BPM
+                                            <TableCell>BPM ({bpm})
                                                 <Slider value={bpm} min={60}
                                                         max={200}
-                                                        valueLabelDisplay="auto"
                                                         step={1}
                                                         shiftStep={5}
                                                         onChange={e => setBpm(e.target.value)}/></TableCell>
@@ -93,9 +92,8 @@ export function ChopDetailScreen(
                                     <Table>
                                         <TableBody>
                                             <TableRow>
-                                                <TableCell>Beats per Chop
+                                                <TableCell>Beats per Chop ({beatsPerChop})
                                                     <Slider value={beatsPerChop} min={1} max={32} marks
-                                                            valueLabelDisplay="auto"
                                                             step={1}
                                                             shiftStep={4}
                                                             onChange={e => setBeatsPerChop(e.target.value)}/></TableCell>
