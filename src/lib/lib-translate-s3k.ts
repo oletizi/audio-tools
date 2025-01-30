@@ -70,7 +70,7 @@ export async function chop(c: AkaiToolsConfig, opts: {
     }
     if (rv.errors.length === 0) {
         if (opts.wipeDisk) {
-            await akaiFormat(c, 5, 1)
+            await akaiFormat(c, 10, 1)
         }
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
         for (const f of await fs.readdir(opts.target)) {
