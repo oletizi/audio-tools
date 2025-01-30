@@ -110,5 +110,5 @@ export function FileList({data, className, visit = nullVisitItem}: {
                         <Divider/></div>)
                 }))
     }
-    return (<List className={className}>{items}</List>)
+    return (<List className={className} style={{maxHeight: '100%', overflow: 'auto'}}>{items}</List>)
 }

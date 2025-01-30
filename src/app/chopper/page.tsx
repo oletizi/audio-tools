@@ -12,24 +12,27 @@ const out = newClientOutput(true, 'Chopper')
 const app = new ChopApp(config, out)
 export default function Page() {
     const [file, setFile] = useState<string | null>(null)
-    // app.setListener(() => {})
 
-    return (<div className="container mx-auto">
-        <div className="flex gap-4">
-            <div className="w-1/2">
-                <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
+    return (
+        <div className="container mx-auto flex-column">
+            <div className="flex" style={{height: 'calc((100vh / 12) * 1)'}}>
+                <div className="mt-5 text-2xl text-red-600">Akai S3000XL Chopper</div>
             </div>
-            <div className="grow">
-                <ChopDetailScreen app={app} defaultDirectory="/"
-                                  file={file}
-                                  doIt={(prefix:string, samplesPerBeat, beatsPerChop) => {
-                                      if (file) {
-                                          chopSample(file, prefix, samplesPerBeat, beatsPerChop).then()
-                                      }
-                                  }}
-                                  onErrors={(e) => console.log(e)}/>
+            <div className="flex gap-10" style={{maxHeight: '100vh'}}>
+                <div className="w-1/2 border-2" style={{maxHeight: 'calc((100vh / 12) * 10)'}}>
+                    <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
+                </div>
+                <div className="w-1/2 border-2">
+                    <ChopDetailScreen app={app} defaultDirectory="/"
+                                      file={file}
+                                      doIt={(prefix: string, samplesPerBeat, beatsPerChop) => {
+                                          if (file) {
+                                              chopSample(file, prefix, samplesPerBeat, beatsPerChop).then()
+                                          }
+                                      }}
+                                      onErrors={(e) => console.log(e)}/>
+                </div>
             </div>
-        </div>
-    </div>)
+        </div>)
 }
 

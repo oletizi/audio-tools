@@ -35,10 +35,11 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
     }
 
     return (
-        <div className="flex flex-col">
-            <div>Let's pick a sample to chop!:</div>
-            <div>Source: {dir}</div>
-            <FileList data={files} visit={visitItem}/>
+        <div className="flex-col border-2 border-red-600" style={{height: 'calc((100vh / 12) * 10)', overflow: 'auto'}}>
+            <div className="h-14">
+                <div className="pl-4 pt-4">Source: {dir}</div>
+            </div>
+            <FileList className="border-t-2" data={files} visit={visitItem}/>
         </div>
     )
 }
