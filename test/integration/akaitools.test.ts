@@ -16,8 +16,8 @@ import {
     akaiRead,
     remoteVolumes,
     remoteUnmount,
-    RemoteVolume,
-    remoteMount, parseRemoteVolumes, remoteSync
+    RemoteDisk,
+    remoteMount, parseRemoteVolumes, remoteSync, readAkaiDisk
 } from "../../src/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -34,14 +34,49 @@ import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 import {newServerConfig} from "../../src/lib/config-server";
 
-describe('Test interaction w/ akaitools and akai files.', async () => {
-    let diskFile = ""
-    beforeEach(() => {
-        diskFile = path.join('build', `akai.${new Date().getTime()}.img`)
+
+describe(`Read akai disk image.`, async () => {
+
+    it(`Reads an akai disk image`, async function () {
+        this.timeout(2 * 1000)
+        const diskFile = path.join('build', `akai-${new Date().getTime()}.img`)
+        let partitionCount = 3
+        let c = await newAkaiToolsConfig()
+        c.diskFile = diskFile
+        let er = await akaiFormat(c, 1, partitionCount)
+        er.errors.forEach(e => console.error(e))
+        expect(er.errors.length).eq(0)
+
+        for (let i = 0; i < partitionCount; i++) {
+            let sourcePath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p');
+            er = await akaiWrite(c, sourcePath, '/vol 1', i + 1)
+            er.errors.forEach(e=>console.error(e))
+            expect(er.errors.length).eq(0)
+        }
+
+        const result = await readAkaiDisk(c)
+        result.errors.forEach(e => console.error(e))
+        expect(result.errors.length).eq(0)
+
+        const akaiDisk = result.data
+        expect(akaiDisk).to.exist
+        expect(akaiDisk.partitions.length).eq(partitionCount)
+        for (const partition of akaiDisk.partitions) {
+            expect(partition.volumes.length).gte(1)
+            for (const volume of partition.volumes) {
+                expect(volume.records.length).gte(1)
+            }
+        }
+        await fs.writeFile(path.join('build', `akai-disk-${new Date().getTime()}.json`), JSON.stringify(akaiDisk))
     })
+})
+
+describe('Test interaction w/ akaitools and akai files.', async () => {
+    const diskFile = path.join('build', `akai-${new Date().getTime()}.img`)
 
     afterEach(() => {
         fs.rm(diskFile).then().catch(() => {
+            /* no one cares */
         })
     })
 
@@ -482,7 +517,7 @@ describe(`Synchronizing data w/ a piscsi host`, async () => {
     it(`Unmounts a volume`, async function () {
         this.timeout(5000)
         const c = await newAkaiToolsConfig()
-        const v: RemoteVolume = {image: "/home/orion/images/HD4.hds", scsiId: 4}
+        const v: RemoteDisk = {image: "/home/orion/images/HD4.hds", scsiId: 4}
         const result = await remoteUnmount(c, v)
         result.errors.forEach(e => console.error(e))
         expect(result.code).eq(0)
@@ -492,14 +527,14 @@ describe(`Synchronizing data w/ a piscsi host`, async () => {
     it('Mounts a volume', async function () {
         this.timeout(5000)
         const c = await newAkaiToolsConfig()
-        const v: RemoteVolume = {image: "/home/orion/images/HD4.hds", scsiId: 4}
+        const v: RemoteDisk = {image: "/home/orion/images/HD4.hds", scsiId: 4}
         const result = await remoteMount(c, v)
         result.errors.forEach(e => console.error(e))
         expect(result.code).eq(0)
         expect(result.errors.length).eq(0)
     })
 
-    it('Syncs akai data', async function() {
+    it('Syncs akai data', async function () {
         this.timeout(30000)
         const c = await newAkaiToolsConfig()
         const result = await remoteSync(c)

@@ -54,7 +54,7 @@ export function ChopDetailScreen(
     }
 
     return (
-        <Card className="w-1/2" elevation="3">
+        <Card className="grow" elevation="3">
             <CardHeader className="shadow-md" title={`Chop it!`}
                         subheader={`${file ? file : '(Choose a file)'}`}/>
             <CardContent>
