@@ -22,7 +22,7 @@ export default function Page() {
                 <div className="w-1/2 border-2" style={{maxHeight: 'calc((100vh / 12) * 10)'}}>
                     <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
                 </div>
-                <div className="w-1/2 border-2">
+                <div className="w-1/2 border-2 p-4">
                     <ChopDetailScreen app={app} defaultDirectory="/"
                                       file={file}
                                       doIt={(prefix: string, samplesPerBeat, beatsPerChop) => {

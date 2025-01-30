@@ -35,7 +35,7 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
     }
 
     return (
-        <div className="flex-col border-2 border-red-600" style={{height: 'calc((100vh / 12) * 10)', overflow: 'auto'}}>
+        <div className="flex-col" style={{height: 'calc((100vh / 12) * 10)', overflow: 'auto'}}>
             <div className="h-14">
                 <div className="pl-4 pt-4">Source: {dir}</div>
             </div>
