@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {SampleMetadata} from "@/model/sample";
 import {getMeta} from "@/lib/client-translator";
-import {FieldDisplay} from "@/components/components-core";
 import {
     Button,
-    Card,
+    Card, CardActions,
     CardContent,
     CardHeader,
-    Divider, Paper,
+    Paper,
     Slider,
     Table, TableBody,
     TableCell,
@@ -55,37 +54,34 @@ export function ChopDetailScreen(
     }
 
     return (
-        <Card className="w-1/2">
-            <CardHeader title={`Let's chop this sample!`}
-                        subheader={`${file ? file : 'Choose a file!'}`}/>
+        <Card className="w-1/2" elevation="3">
+            <CardHeader className="shadow-md" title={`Chop it!`}
+                        subheader={`${file ? file : '(Choose a file)'}`}/>
             <CardContent>
 
                 <div className="flex flex-col gap-4">
                     {meta ? (
                             <>
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>
-                                <Paper elevation="5" className="flex gap-5">
+                                <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
                                         <TableRow><TableCell>BPM</TableCell><TableCell>{bpm}</TableCell></TableRow>
-                                        <TableRow><TableCell>Beats per
-                                            Chop</TableCell><TableCell>{beatsPerChop}</TableCell></TableRow>
+                                        <TableRow><TableCell>Beats per Chop</TableCell><TableCell>{beatsPerChop}</TableCell></TableRow>
                                     </TableBody></Table>
                                     <Table><TableBody>
                                         <TableRow><TableCell>Total Beats</TableCell>
                                             <TableCell>{getTotalBeats()}</TableCell></TableRow>
-                                        <TableRow><TableCell>Total
-                                            Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
+                                        <TableRow><TableCell>Total Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
                                     </TableBody> </Table>
                                 </Paper>
                                 <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
                                         <TableRow>
-                                            <TableCell>BPM ({bpm})
-                                                <Slider value={bpm} min={60}
-                                                        max={200}
-                                                        step={1}
-                                                        shiftStep={5}
-                                                        onChange={e => setBpm(e.target.value)}/></TableCell>
+                                            <TableCell>BPM ({bpm}) <Slider value={bpm} min={60}
+                                                                           max={200}
+                                                                           step={1}
+                                                                           shiftStep={5}
+                                                                           onChange={e => setBpm(e.target.value)}/></TableCell>
                                         </TableRow>
                                     </TableBody>
                                     </Table>
@@ -101,8 +97,9 @@ export function ChopDetailScreen(
                                         </TableBody></Table>
                                 </Paper>
                                 <TextField label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
-                                <Button variant="contained" onClick={() => doIt(prefix, getSamplesPerBeat(), beatsPerChop)}>Do
-                                    It!</Button>
+                                <CardActions>
+                                    <Button variant="contained" onClick={() => doIt(prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
+                                </CardActions>
                             </>) :
                         (<></>)
                     }

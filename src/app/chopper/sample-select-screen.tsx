@@ -1,7 +1,8 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
 import {cdSource, listSource} from "@/lib/client-translator";
 import {FileList, newItemAdornments} from "@/components/file-list"
+import {Card, CardContent, CardHeader} from "@mui/material";
 
 export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}: {
     onSelect: (v: string) => void,
@@ -35,11 +36,11 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
     }
 
     return (
-        <div className="flex-col" style={{height: 'calc((100vh / 12) * 10)', overflow: 'auto'}}>
-            <div className="h-14">
-                <div className="pl-4 pt-4">Source: {dir}</div>
-            </div>
-            <FileList className="border-t-2" data={files} visit={visitItem}/>
-        </div>
+            <Card elevation={3} className="w-1/2">
+                <CardHeader className="shadow-md" title="Pick a Sample" subheader={dir}/>
+                <CardContent style={{maxHeight: 'calc((100vh / 12) * 8)', overflow: 'auto'}}>
+                    <FileList className="border-t-2" data={files} visit={visitItem}/>
+                </CardContent>
+            </Card>
     )
 }

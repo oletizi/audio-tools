@@ -7,7 +7,7 @@ import FolderIcon from '@mui/icons-material/Folder'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {newSequence} from "@/lib/lib-core";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
-import {ListItem, ListItemIcon, ListItemText} from "@mui/material";
+import {ListItem, ListItemIcon, ListItemText, Typography} from "@mui/material";
 
 const seq = newSequence('file-list')
 
@@ -69,7 +69,7 @@ export function FileList({data, className, visit = nullVisitItem}: {
                                     <div className="flex items-center h-full w-full"
                                          onClick={() => adornments.onClick(item)}>
                                         <ListItemIcon><FolderIcon/></ListItemIcon>
-                                        <ListItemText>{item.name}</ListItemText>
+                                        <ListItemText><Typography variant="body2">{item.name}</Typography></ListItemText>
                                     </div>
                                     {deleteButton}
                                 </ListItem>
