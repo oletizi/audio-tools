@@ -41,9 +41,9 @@ export function AkaiDiskView() {
 
     function display() {
         return (
-            <Card sx={{minWidth: '150px'}}>
+            <Card elevation={3} sx={{minWidth: '200px'}}>
                 <CardHeader className="shadow-md" title="Your Disk So Far" subheader={disk.name}/>
-                <CardContent>
+                <CardContent style={{height: 'calc((100vh / 12) * 7)', overflow: 'auto'}}>
                     {disk.partitions.map(partition => {
                         items++
                         return (
@@ -89,7 +89,7 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
     return (<>
             <ListItemButton onClick={() => setOpen(!open)}>
                 <ListItemIcon><SaveIcon/></ListItemIcon>
-                <ListItemText primary={`Vol: ${path.parse(data.name).name}`}/>
+                <ListItemText primary={`Vol: ${data.name.split('/').pop()}`}/>
                 {open ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
             <Collapse in={open}>
@@ -97,7 +97,7 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
                     {data.records.map(record => {
 
                         return (
-                            <ListItem sx={{pl: 4}} key={record.name} disableGutters><RecordsView
+                            <ListItem sx={{pl: 2}} key={record.name} disableGutters><RecordsView
                                 data={data.records}/></ListItem>)
                     })}
                 </List>
@@ -114,7 +114,7 @@ function RecordsView({data}: { data: AkaiRecord[] }) {
                     <ListItem key={record.name} disableGutters>
                         <ListItemIcon>{record.type === AkaiRecordType.SAMPLE ? <AudioFile/> :
                             <LibraryBooksIcon/>}</ListItemIcon>
-                        <ListItemText primary={path.parse(record.name).name}/>
+                        <ListItemText primary={record.name.split('/').pop()}/>
                     </ListItem>)
             })}
         </List>
