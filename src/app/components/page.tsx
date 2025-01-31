@@ -5,13 +5,13 @@ import {Button, Stack} from "@mui/material";
 
 import {DoubleThrowSwitch} from "@/components/components-core";
 import {AkaiDiskView} from "@/app/chopper/akai-disk-view";
-import {AkaiDisk} from "@/akaitools/akaitools";
+import {AkaiDisk} from "@/model/akai";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
     const [value, setValue] = useState(1)
     const [thingy, setThingy] = useState(0)
-    const json = '{ "timestamp": "0", "name":"akai-1738276851687.img","partitions":[{"block":0,"name":"1","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"2","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"3","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]}]}';
+    const json = '{ "timestamp": "0", "name":"akai-1738276851687.img","partitions":[{"block":0,"name":"1","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"},{"block":5,"name":"/vol_1/sample1","size":384000,"type":"S3000 SAMPLE"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"2","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"3","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]}]}';
     const akaiDisk: AkaiDisk = JSON.parse(json)
     const subscribers = new Set()
     const dataSource = {

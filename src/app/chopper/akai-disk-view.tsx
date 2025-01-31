@@ -1,33 +1,45 @@
 import {
     Button,
-    Card, CardActions,
+    Card,
+    CardActions,
     CardContent,
-    CardHeader, Collapse,
+    CardHeader,
+    Collapse,
     List,
     ListItem,
-    ListItemButton, ListSubheader
+    ListItemButton, ListItemIcon,
+    ListItemText,
+    ListSubheader
 } from "@mui/material";
 import React, {useState} from "react";
-import {AkaiDisk, AkaiPartition, AkaiRecord, AkaiVolume} from "@/akaitools/akaitools";
+import {AkaiDisk, AkaiPartition, AkaiRecord, AkaiRecordType, AkaiVolume} from "@/model/akai";
 import RefreshIcon from '@mui/icons-material/Refresh'
 import StorageIcon from '@mui/icons-material/Storage';
 import SaveIcon from '@mui/icons-material/Save';
 import path from "path";
+import {AudioFile} from "@mui/icons-material";
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import dayjs from "dayjs";
 
 export function AkaiDiskView({data, update}: { data: AkaiDisk, update: () => AkaiDisk }) {
     const [disk, setDisk] = useState(data)
+    const [open, setOpen] = useState(true)
+    const dateFormat = dayjs(new Date(disk.timestamp)).format()
     return (
         <Card>
-            <CardHeader title="Your Disk So Far" subheader={new Date(disk.timestamp).toString()}/>
+            <CardHeader title="Your Disk So Far"/>
             <CardContent>
-                <List className="grow">
-                    {disk.partitions.map(partition => {
-                        return (<ListItem key={partition.name}><PartitionView data={partition}/></ListItem>)
-                    })}
-                </List>
+                {disk.partitions.map(partition => {
+                    return (
+                        <List key={partition.name} sx={{width: '100%'}}>
+                            <PartitionView data={partition}/>
+                        </List>)
+                })}
             </CardContent>
             <CardActions>
-                <Button onClick={() => {setDisk(update())}}><RefreshIcon/></Button>
+                <Button onClick={() => {
+                    setDisk(update())
+                }}><RefreshIcon/></Button>
             </CardActions>
         </Card>
     )
@@ -35,46 +47,52 @@ export function AkaiDiskView({data, update}: { data: AkaiDisk, update: () => Aka
 
 function PartitionView({data}: { data: AkaiPartition }) {
     const [open, setOpen] = useState(true)
-    return (<List subheader={
-            <ListItemButton>
-                <ListSubheader onClick={() => setOpen(!open)}>
-                    <SaveIcon/> {data.name}
-                </ListSubheader>
+    return (<>
+            <ListItemButton onClick={() => setOpen(!open)}>
+                <ListItemIcon><StorageIcon/></ListItemIcon>
+                <ListItemText primary={`Partition ${data.name}`}/>
             </ListItemButton>
-        }>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-                {data.volumes.map(volume => {
-                    return (<ListItem key={volume.name}><VolumeView data={volume}/></ListItem>)
-                })}
+            <Collapse in={open}>
+                <List sx={{width: '100%'}} dense={true} disablePadding>
+                    {data.volumes.map(volume => {
+                        return (<VolumeView key={volume.name} data={volume}/>)
+                    })}
+                </List>
             </Collapse>
-        </List>
+        </>
     )
 }
 
 function VolumeView({data}: { data: AkaiVolume }) {
     const [open, setOpen] = useState(true)
-    return (
-        <List subheader={
-            <ListItemButton onClick={() => {
-                setOpen(!open)
-            }}><ListSubheader component="div" id="nested-list-subheader">
-                <StorageIcon/> {path.parse(data.name).name}
-            </ListSubheader></ListItemButton>
-        }>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-                {data.records.map(record => {
-                    return (<ListItem key={record.name}><RecordsView data={data.records}/></ListItem>)
-                })}
+    return (<>
+            <ListItemButton onClick={() => setOpen(!open)}>
+                <ListItemIcon><SaveIcon/></ListItemIcon>
+                <ListItemText primary={`Vol: ${path.parse(data.name).name}`}/>
+            </ListItemButton>
+            <Collapse in={open}>
+                <List sx={{width: '100%'}} dense={true} disablePadding>
+                    {data.records.map(record => {
+                        return (
+                            <ListItem sx={{pl: 4}} key={record.name} disableGutters><RecordsView
+                                data={data.records}/></ListItem>)
+                    })}
+                </List>
             </Collapse>
-        </List>
+        </>
     )
 }
 
 function RecordsView({data}: { data: AkaiRecord[] }) {
     return (
-        <List>
+        <List sx={{width: '100%'}} dense={false} disablePadding>
             {data.map(record => {
-                return (<ListItem key={record.name}>{path.parse(record.name).name}</ListItem>)
+                return (
+                    <ListItem key={record.name} disableGutters>
+                        <ListItemIcon>{record.type === AkaiRecordType.SAMPLE ? <AudioFile/> :
+                            <LibraryBooksIcon/>}</ListItemIcon>
+                        <ListItemText primary={path.parse(record.name).name}/>
+                    </ListItem>)
             })}
         </List>
     )
