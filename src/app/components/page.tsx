@@ -28,7 +28,7 @@ export default function Page() {
         <div className="flex gap-5">
         <AkaiDiskView data={akaiDisk} update={() => {
             const rv = JSON.parse(json)
-            rv.timestampe = new Date().getTime()
+            rv.timestamp = new Date().getTime()
             return rv
         }}/>
             <Stack className="flex flex-col items-center gap-5">

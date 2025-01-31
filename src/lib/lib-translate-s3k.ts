@@ -1,6 +1,5 @@
 import {
     akaiFormat,
-    AkaiToolsConfig,
     akaiWrite,
     ExecutionResult, RAW_LEADER, readAkaiData,
     readAkaiProgram,
@@ -21,6 +20,7 @@ import {
     ProgramHeader_writePRNAME,
     SampleHeader
 } from "@/midi/devices/s3000xl";
+import {AkaiToolsConfig} from "@/model/akai";
 
 export async function chop(c: AkaiToolsConfig, opts: {
     source: string,

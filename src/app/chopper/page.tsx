@@ -1,5 +1,4 @@
 "use client"
-import {Card, CardContent, CardHeader} from "@mui/material"
 import {SampleSelectScreen} from "@/app/chopper/sample-select-screen";
 import {newClientConfig} from "@/lib/config-client";
 import {newClientOutput} from "@/lib/process-output";
@@ -7,6 +6,7 @@ import {ChopApp} from "@/app/chopper/chop-app";
 import {ChopDetailScreen} from "@/app/chopper/chop-detail-screen";
 import React, {useState} from "react";
 import {chopSample} from "@/lib/client-translator";
+import {AkaiDiskView} from "@/app/chopper/akai-disk-view";
 
 
 const config = newClientConfig()
@@ -21,8 +21,8 @@ export default function Page() {
                 <div className="mt-5 text-2xl text-red-600">Akai S3000XL Chopper</div>
             </div>
             <div className="flex gap-10" style={{maxHeight: '100vh'}}>
-                <SampleSelectScreen app={app} onSelect={v => setFile(v)}/>
-                <ChopDetailScreen app={app} defaultDirectory="/"
+                <SampleSelectScreen onSelect={v => setFile(v)}/>
+                <ChopDetailScreen defaultDirectory="/"
                                   file={file}
                                   doIt={(prefix: string, samplesPerBeat, beatsPerChop) => {
                                       if (file) {
@@ -30,6 +30,8 @@ export default function Page() {
                                       }
                                   }}
                                   onErrors={(e) => console.log(e)}/>
+                <AkaiDiskView/>
+
             </div>
         </div>)
 }

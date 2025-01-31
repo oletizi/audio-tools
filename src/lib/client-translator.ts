@@ -14,6 +14,10 @@ export async function chopSample(path:string, prefix: string, samplesPerBeat: nu
     })
 }
 
+export async function getAkaiDisk(){
+    return await client.get(root + '/akaidisk')
+}
+
 export async function getMeta(path:string) {
     return await client.get(root + '/meta/' + path)
 }
