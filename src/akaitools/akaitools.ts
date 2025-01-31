@@ -60,6 +60,7 @@ export interface AkaiPartition extends AkaiRecord {
 }
 
 export interface AkaiDisk {
+    timestamp: number
     name: string
     partitions: AkaiPartition[]
 }
@@ -214,7 +215,7 @@ export async function readAkaiData(file: string) {
 
 export async function readAkaiDisk(c: AkaiToolsConfig) {
     let parsed = path.parse(c.diskFile);
-    const disk: AkaiDisk = {name: parsed.name + parsed.ext, partitions: []}
+    const disk: AkaiDisk = {timestamp: new Date().getTime(), name: parsed.name + parsed.ext, partitions: []}
     const rv: AkaiDiskResult = {data: disk, errors: []}
 
     for (let i = 1; i < 50; i++) { // partitions start at 1. Asking for partition 0 is the same as asking for partition 1
