@@ -22,7 +22,7 @@ export function ChopDetailScreen(
     }: {
         file: string | null,
         onErrors: (e: Error | Error[]) => void,
-        doIt: (prefix: string, samplesPerBeat: number, beatsPerChop: number) => void
+        doIt: (partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) => void
     }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
     const [bpm, setBpm] = useState<number>(120)
@@ -97,7 +97,7 @@ export function ChopDetailScreen(
                                 <TextField label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
                                 <CardActions>
                                     <Button variant="contained"
-                                            onClick={() => doIt(prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
+                                            onClick={() => doIt(1, prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
                                 </CardActions>
                             </>) :
                         (<></>)

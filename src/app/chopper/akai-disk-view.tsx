@@ -18,19 +18,14 @@ import StorageIcon from '@mui/icons-material/Storage';
 import SaveIcon from '@mui/icons-material/Save';
 import {AudioFile, ExpandLess, ExpandMore} from "@mui/icons-material";
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import {getAkaiDisk} from "@/lib/client-translator";
+import {ChopApp} from "@/app/chopper/chop-app";
 
-export function AkaiDiskView() {
+export function AkaiDiskView({app}: { app: ChopApp }) {
     const [disk, setDisk] = useState<AkaiDisk>({name: "Default", partitions: [], timestamp: 0})
-    const [refresh , setRefresh] = useState<number>(0)
-    useEffect(() => {
-        getAkaiDisk().then(d => {
-            if (d.errors.length === 0) {
-                setDisk(d.data)
-            }
-        })
-    }, [refresh])
-
+    app.addDiskListener((d: AkaiDisk) => {
+        setDisk(d)
+    })
+    useEffect(() => app.fetchDisk(), [])
     let items = 0
     return (
         <Card elevation={3} sx={{minWidth: '200px'}}>
@@ -46,7 +41,7 @@ export function AkaiDiskView() {
             </CardContent>
             <CardActions>
                 <Button onClick={() => {
-                    setRefresh(refresh + 1)
+                    app.fetchDisk()
                 }}><RefreshIcon/></Button>
             </CardActions>
         </Card>)

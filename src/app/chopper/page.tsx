@@ -24,14 +24,13 @@ export default function Page() {
                 <SampleSelectScreen onSelect={v => setFile(v)}/>
                 <ChopDetailScreen defaultDirectory="/"
                                   file={file}
-                                  doIt={(prefix: string, samplesPerBeat, beatsPerChop) => {
+                                  doIt={(partition: number, prefix: string, samplesPerBeat, beatsPerChop) => {
                                       if (file) {
-                                          chopSample(file, prefix, samplesPerBeat, beatsPerChop).then()
+                                          chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop).then()
                                       }
                                   }}
                                   onErrors={(e) => console.log(e)}/>
-                <AkaiDiskView/>
-
+                <AkaiDiskView app={app}/>
             </div>
         </div>)
 }

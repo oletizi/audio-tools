@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
         const opts = {
             source: absolute,
             target: target,
+            partition: data.partition,
             prefix: data.prefix,
             samplesPerBeat: data.samplesPerBeat,
             beatsPerChop: data.beatsPerChop,

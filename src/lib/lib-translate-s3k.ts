@@ -25,6 +25,7 @@ import {AkaiToolsConfig} from "@/model/akai";
 export async function chop(c: AkaiToolsConfig, opts: {
     source: string,
     target: string,
+    partition: number,
     prefix: string,
     samplesPerBeat: number,
     beatsPerChop: number,
@@ -75,7 +76,7 @@ export async function chop(c: AkaiToolsConfig, opts: {
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
         for (const f of await fs.readdir(opts.target)) {
             if (f.endsWith('a3s')) {
-                const result = await akaiWrite(c, path.join(opts.target, f), `/${opts.prefix}`)
+                const result = await akaiWrite(c, path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
                 if (result.errors.length !== 0) {
                     rv.errors = rv.errors.concat(rv.errors, result.errors)
                     return rv
@@ -123,7 +124,7 @@ export async function chop(c: AkaiToolsConfig, opts: {
             }
             const programPath = path.join(opts.target, opts.prefix + '.a3p');
             await writeAkaiProgram(programPath, p)
-            await akaiWrite(c, programPath, `/${opts.prefix}`)
+            await akaiWrite(c, programPath, `/${opts.prefix}`, opts.partition)
         }
     }
     if (rv.errors.length === 0){
