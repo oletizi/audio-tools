@@ -65,12 +65,10 @@ export function ChopDetailScreen(
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>
                                 <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
-                                        <TableRow><TableCell>BPM</TableCell><TableCell>{bpm}</TableCell></TableRow>
-                                        <TableRow><TableCell>Beats per Chop</TableCell><TableCell>{beatsPerChop}</TableCell></TableRow>
-                                    </TableBody></Table>
-                                    <Table><TableBody>
                                         <TableRow><TableCell>Total Beats</TableCell>
                                             <TableCell>{getTotalBeats()}</TableCell></TableRow>
+                                    </TableBody></Table>
+                                    <Table><TableBody>
                                         <TableRow><TableCell>Total Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
                                     </TableBody> </Table>
                                 </Paper>
@@ -98,7 +96,8 @@ export function ChopDetailScreen(
                                 </Paper>
                                 <TextField label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
                                 <CardActions>
-                                    <Button variant="contained" onClick={() => doIt(prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
+                                    <Button variant="contained"
+                                            onClick={() => doIt(prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
                                 </CardActions>
                             </>) :
                         (<></>)
