@@ -2,7 +2,6 @@ import {
     wav2Akai,
     akaiFormat,
     akaiList,
-    AkaiRecordType,
     akaiWrite,
     validateConfig,
     readAkaiData,
@@ -11,14 +10,12 @@ import {
     writeAkaiProgram,
     RAW_LEADER,
     CHUNK_LENGTH,
-    AkaiToolsConfig,
     newAkaiToolsConfig,
     akaiRead,
     remoteVolumes,
     remoteUnmount,
-    RemoteDisk,
     remoteMount, parseRemoteVolumes, remoteSync, readAkaiDisk
-} from "../../src/akaitools/akaitools";
+} from "@/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
@@ -29,10 +26,11 @@ import {
     parseSampleHeader,
     ProgramHeader, ProgramHeader_writeGROUPS, ProgramHeader_writePRNAME,
     SampleHeader
-} from "../../src/midi/devices/s3000xl";
+} from "@/midi/devices/s3000xl";
 import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 import {newServerConfig} from "../../src/lib/config-server";
+import {AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@/model/akai";
 
 
 describe(`Read akai disk image.`, async () => {
