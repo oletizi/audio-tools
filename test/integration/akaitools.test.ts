@@ -14,7 +14,7 @@ import {
     akaiRead,
     remoteVolumes,
     remoteUnmount,
-    remoteMount, parseRemoteVolumes, remoteSync, readAkaiDisk
+    remoteMount, parseRemoteVolumes, remoteSync, readAkaiDisk, parseAkaiList
 } from "@/akaitools/akaitools";
 import path from "path";
 import {expect} from "chai";
@@ -30,10 +30,12 @@ import {
 import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
 import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
 import {newServerConfig} from "../../src/lib/config-server";
-import {AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@/model/akai";
+import {AkaiDiskResult, AkaiRecordResult, AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@/model/akai";
+import {it} from "mocha";
 
 
 describe(`Read akai disk image.`, async () => {
+
 
     it(`Reads an akai disk image`, async function () {
         this.timeout(2 * 1000)
@@ -48,7 +50,7 @@ describe(`Read akai disk image.`, async () => {
         for (let i = 0; i < partitionCount; i++) {
             let sourcePath = path.join('test', 'data', 's3000xl', 'instruments', 'test_program.a3p');
             er = await akaiWrite(c, sourcePath, '/vol 1', i + 1)
-            er.errors.forEach(e=>console.error(e))
+            er.errors.forEach(e => console.error(e))
             expect(er.errors.length).eq(0)
         }
 
@@ -69,6 +71,7 @@ describe(`Read akai disk image.`, async () => {
     })
 })
 
+
 describe('Test interaction w/ akaitools and akai files.', async () => {
     const diskFile = path.join('build', `akai-${new Date().getTime()}.img`)
 
@@ -87,6 +90,62 @@ describe('Test interaction w/ akaitools and akai files.', async () => {
 
     it('Validates config', async () => {
         expect(await validateConfig(newConfig()))
+    })
+
+    it(`Parses akailist output and constructs a model of an Akai disk.`, async () => {
+        const output = `
+S3000 VOLUME           3         0 /chop.03
+S3000 VOLUME         214         0 /chop.01
+S3000 SAMPLE           5    211872 /chop.03/chop.03.00-l
+S3000 SAMPLE          31    211872 /chop.03/chop.03.00-r
+S3000 SAMPLE          57    211872 /chop.03/chop.03.01-l
+S3000 SAMPLE          83    211872 /chop.03/chop.03.01-r
+S3000 SAMPLE         109    211872 /chop.03/chop.03.02-l
+S3000 SAMPLE         135    211872 /chop.03/chop.03.02-r
+S3000 SAMPLE         161    211872 /chop.03/chop.03.03-l
+S3000 SAMPLE         187    211872 /chop.03/chop.03.03-r
+S3000 PROGRAM        213       960 /chop.03/chop.03
+S3000 SAMPLE         216    211872 /chop.01/chop.01.00-l
+S3000 SAMPLE         242    211872 /chop.01/chop.01.00-r
+S3000 SAMPLE         268    211872 /chop.01/chop.01.01-l
+S3000 SAMPLE         294    211872 /chop.01/chop.01.01-r
+S3000 SAMPLE         320    211872 /chop.01/chop.01.02-l
+S3000 SAMPLE         346    211872 /chop.01/chop.01.02-r
+S3000 SAMPLE         372    211872 /chop.01/chop.01.03-l
+S3000 SAMPLE         398    211872 /chop.01/chop.01.03-r
+S3000 PROGRAM        424       960 /chop.01/chop.01`
+        const parsed = parseAkaiList(output);
+        expect(parsed).to.exist
+        expect(parsed.length).eq(20)
+        expect(parsed[0].type).eq(AkaiRecordType.VOLUME)
+        expect(parsed[1].type).eq(AkaiRecordType.VOLUME)
+
+        const c = await newAkaiToolsConfig()
+        function listFunction(cfg: AkaiToolsConfig, akaiPath: string, partitionNumber: number ) {
+            const result: AkaiRecordResult = {data: parsed, errors: []}
+            return Promise.resolve(result)
+        }
+        const diskResult = await readAkaiDisk(c, listFunction)
+        expect(diskResult).to.exist
+        expect(diskResult.errors.length).eq(0)
+
+        const disk = diskResult.data
+        expect(disk).to.exist
+        expect(disk.partitions).to.exist
+        expect(disk.partitions.length).gte(1)
+
+        const partition = disk.partitions[0]
+        expect(partition.volumes).to.exist
+        expect(partition.volumes.length).eq(2)
+
+        const volume1 = partition.volumes[0]
+        expect(volume1).to.exist
+        expect(volume1.records).to.exist
+        expect(volume1.records.length).to.eq(9)
+
+        const volume2 = partition.volumes[1]
+        expect(volume2.records.length).to.eq(9)
+
     })
 
     it(`Formats an Akai disk image`, async function () {

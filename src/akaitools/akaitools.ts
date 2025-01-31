@@ -13,9 +13,12 @@ import {newServerConfig} from "@/lib/config-server";
 import {
     AkaiDisk,
     AkaiDiskResult,
-    AkaiPartition, AkaiProgramFile, AkaiRecord, AkaiRecordResult,
+    AkaiPartition,
+    AkaiProgramFile,
+    AkaiRecord,
+    AkaiRecordResult,
     AkaiRecordType,
-    AkaiToolsConfig, AkaiVolume,
+    AkaiToolsConfig,
     RemoteDisk,
     RemoteVolumeResult
 } from "@/model/akai";
@@ -30,8 +33,6 @@ export const CHUNK_LENGTH = 384
 // This is an artifact of the auto-generated code assuming a sysex environment which has 7 bytes of midi and housekeeping
 // data in the raw midi data. This should probably sorted out in the auto-generated code.
 export const RAW_LEADER = 7
-
-
 
 
 export interface ExecutionResult {
@@ -163,13 +164,13 @@ export async function readAkaiData(file: string) {
     return data;
 }
 
-export async function readAkaiDisk(c: AkaiToolsConfig) {
+export async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function = akaiList) {
     let parsed = path.parse(c.diskFile);
     const disk: AkaiDisk = {timestamp: new Date().getTime(), name: parsed.name + parsed.ext, partitions: []}
     const rv: AkaiDiskResult = {data: disk, errors: []}
 
     for (let i = 1; i < 50; i++) { // partitions start at 1. Asking for partition 0 is the same as asking for partition 1
-        const result = await akaiList(c, '/', i)
+        const result = await listFunction(c, '/', i)//akaiList(c, '/', i)
         if (result.errors.length > 0) {
             // This is what akailist does when the partition doesn't exist
             if (result.errors[0].message.includes('Operation not supported by device')) {
@@ -187,24 +188,24 @@ export async function readAkaiDisk(c: AkaiToolsConfig) {
             volumes: []
         }
         disk.partitions.push(partition)
-        let currentVolume: AkaiVolume
         for (const r of result.data) {
             switch (r.type) {
                 case AkaiRecordType.VOLUME:
-                    currentVolume = {
+                    partition.volumes.push({
                         block: r.block,
                         name: r.name,
                         records: [],
                         size: r.size,
                         type: AkaiRecordType.VOLUME
-                    }
-                    partition.volumes.push(currentVolume)
+                    })
                     break
                 case AkaiRecordType.PROGRAM:
-                    currentVolume?.records.push(r)
-                    break
                 case AkaiRecordType.SAMPLE:
-                    currentVolume?.records.push(r)
+                    partition.volumes.forEach(v => {
+                        if (r.name.startsWith(v.name)) {
+                            v.records.push(r)
+                        }
+                    })
                     break
             }
         }
@@ -304,33 +305,34 @@ export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPat
     )
 }
 
+export function parseAkaiList(data: string) {
+    const rv: AkaiRecord[] = []
+    for (const line of String(data).split('\n')) {
+        if (line.trim() === '') {
+            continue
+        }
+        const record: AkaiRecord = {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
+        record.type = line.slice(0, 15).trim() as AkaiRecordType
+        record.block = Number.parseInt(line.slice(15, 25).trim())
+        record.size = Number.parseInt(line.slice(25, 34).trim())
+        record.name = line.slice(35).trim()
+        rv.push(record)
+    }
+    return rv
+}
+
 export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
     await validateConfig(c)
     const rv: AkaiRecordResult = {data: [], errors: []}
     const bin = path.join(c.akaiToolsPath, 'akailist')
     const args = ['-f', `${c.diskFile}`, '-l', '-R', '-p', String(partition), '-u', `"${akaiPath}"`]
     process.env['PERL5LIB'] = c.akaiToolsPath
-    let parsing = false
-
-    function newRecord(): AkaiRecord {
-        return {block: 0, name: "", size: 0, type: AkaiRecordType.NULL}
-    }
 
     const result = await doSpawn(bin, args, {
         onStart: () => {
         },
         onData: (data) => {
-            for (const line of String(data).split('\n')) {
-                if (line.trim() === '') {
-                    continue
-                }
-                const record = newRecord()
-                record.type = line.slice(0, 23).trim() as AkaiRecordType
-                record.block = Number.parseInt(line.slice(23, 25).trim())
-                record.size = Number.parseInt(line.slice(25, 34).trim())
-                record.name = line.slice(35).trim()
-                rv.data.push(record)
-            }
+            parseAkaiList(data).forEach(r => rv.data.push(r))
         }
     })
     rv.errors = rv.errors.concat(result.errors)
