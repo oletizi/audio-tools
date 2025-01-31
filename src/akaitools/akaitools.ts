@@ -203,7 +203,9 @@ export async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function = 
                 case AkaiRecordType.SAMPLE:
                     partition.volumes.forEach(v => {
                         if (r.name.startsWith(v.name)) {
+                            console.log(`Pushing r: ${r.name} to v: ${v.name}`)
                             v.records.push(r)
+
                         }
                     })
                     break
