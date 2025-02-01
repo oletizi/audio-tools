@@ -87,7 +87,7 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
                 <List sx={{width: '100%'}} dense={true} disablePadding>
                     {data.records.map(record => {
                         return (
-                            <ListItem className="bg-gray-100" sx={{pl: 2}} key={record.name} disableGutters><RecordsView
+                            <ListItem className="bg-gray-50" sx={{pl: 2}} key={record.name} disableGutters><RecordsView
                                 record={record}/></ListItem>)
                     })}
                 </List>
