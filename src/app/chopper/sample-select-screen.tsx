@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {DirectorySpec, FileSet, FileSpec} from "@/lib/lib-fs-api";
-import {listSource} from "@/lib/client-translator";
+import {cdSource, listSource} from "@/lib/client-translator";
 import {FileList, newItemAdornments} from "@/components/file-list"
 import {Card, CardContent, CardHeader} from "@mui/material";
 
@@ -16,7 +16,7 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
                 onErrors(r.errors)
             } else {
                 setFiles(r.data)
-                setDir('/' + r.data.path.join('/'))
+                setDir(r.data.path.join('/'))
             }
         })
     }, [dir])
@@ -26,7 +26,7 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
         rv.clickable = item.isDirectory
         rv.translatable = (!item.isDirectory) && item.name.toUpperCase().endsWith('.WAV')
         rv.onClick = () => {
-            setDir(item.name)
+            cdSource(item.name).then(() => setDir(item.name))
         }
         rv.onTranslate = () => {
             //app.setScreen(<ChopDetailScreen file={item.name}/>)
@@ -36,11 +36,11 @@ export function SampleSelectScreen({onSelect, onErrors = e => console.error(e)}:
     }
 
     return (
-            <Card elevation={3}>
-                <CardHeader className="shadow-md" title="Pick a Sample" subheader={dir}/>
-                <CardContent style={{maxHeight: 'calc((100vh / 12) * 8)', overflow: 'auto'}}>
-                    <FileList className="border-t-2" data={files} visit={visitItem}/>
-                </CardContent>
-            </Card>
+        <Card elevation={3} className="w-2/5">
+            <CardHeader className="shadow-md" title="Pick a Sample" subheader={dir}/>
+            <CardContent style={{maxHeight: 'calc((100vh / 12) * 8)', overflow: 'auto'}}>
+                <FileList className="border-t-2" data={files} visit={visitItem}/>
+            </CardContent>
+        </Card>
     )
 }

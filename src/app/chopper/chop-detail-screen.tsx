@@ -26,7 +26,6 @@ export function ChopDetailScreen(
         app: ChopApp,
         file: string | null,
         onErrors: (e: Error | Error[]) => void,
-        doIt: (partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) => void
     }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
     const [bpm, setBpm] = useState<number>(120)
@@ -54,7 +53,7 @@ export function ChopDetailScreen(
         }
     }, [file])
 
-    function validateChop(file: string, partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) {
+    function validateChop(file: string, partition: number, prefix: string) {
         let rv = partition > 0 && partition <= disk.partitions.length
         if (rv) {
             for (const v of disk.partitions[partition - 1].volumes) {
@@ -134,8 +133,8 @@ export function ChopDetailScreen(
                                             onClick={() => {
                                                 if (file) {
                                                     const partition = 1
-                                                    if (validateChop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop)) {
-                                                        app.chop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop).then(r =>{
+                                                    if (validateChop(file, partition, prefix)) {
+                                                        app.chop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop).then(r => {
                                                             if (r.errors?.length > 0) {
                                                                 setSnackbarSeverity("warning")
                                                                 setSnackbarMessage(r.errors[0].message)

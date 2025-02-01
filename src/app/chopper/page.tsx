@@ -24,11 +24,6 @@ export default function Page() {
                 <SampleSelectScreen onSelect={v => setFile(v)}/>
                 <ChopDetailScreen app={app} defaultDirectory="/"
                                   file={file}
-                                  doIt={(partition: number, prefix: string, samplesPerBeat, beatsPerChop) => {
-                                      if (file) {
-
-                                      }
-                                  }}
                                   onErrors={(e) => console.log(e)}/>
                 <AkaiDiskView app={app}/>
             </div>
