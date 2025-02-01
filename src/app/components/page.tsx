@@ -1,18 +1,31 @@
 "use client"
 import {Knob} from "@/components/knob";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Button, Stack} from "@mui/material";
 
 import {DoubleThrowSwitch} from "@/components/components-core";
-import {AkaiDiskView} from "@/app/chopper/akai-disk-view";
 import {AkaiDisk} from "@/model/akai";
+import {getAudioData} from "@/lib/client-translator";
+import {WaveformView} from "@/components/waveform-view";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
     const [value, setValue] = useState(1)
     const [thingy, setThingy] = useState(0)
-    const json = '{ "timestamp": "0", "name":"akai-1738276851687.img","partitions":[{"block":0,"name":"1","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"},{"block":5,"name":"/vol_1/sample1","size":384000,"type":"S3000 SAMPLE"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"2","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"3","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]}]}';
-    const akaiDisk: AkaiDisk = JSON.parse(json)
+    const akaiDiskJson = '{ "timestamp": "0", "name":"akai-1738276851687.img","partitions":[{"block":0,"name":"1","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"},{"block":5,"name":"/vol_1/sample1","size":384000,"type":"S3000 SAMPLE"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"2","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"3","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]}]}';
+    const audiodataPath = '/DK.SHIBO1.wav'
+    const akaiDisk: AkaiDisk = JSON.parse(akaiDiskJson)
+    const audioDataListeners = []
+    useEffect(() => {
+        console.log(`Fetching audio data...`)
+        getAudioData(audiodataPath).then(r => {
+            r.errors.forEach(e => console.error(e))
+            if (r.errors.length < 1) {
+                audioDataListeners.forEach(l => l(r.data))
+            }
+        }).catch(e => console.error(e))
+    }, [])
+
     const subscribers = new Set()
     const dataSource = {
         subscribe: ((onStoreChange) => {
@@ -24,13 +37,13 @@ export default function Page() {
         getSnapshot: () => value,
         getServerSnapshot: () => 0
     }
+
+
     return (<div className="container pt-10">
         <div className="flex gap-5">
-        <AkaiDiskView data={akaiDisk} update={() => {
-            const rv = JSON.parse(json)
-            rv.timestamp = new Date().getTime()
-            return rv
-        }}/>
+            <WaveformView width={500} height={100} listen={(l) => {
+                audioDataListeners.push(l)
+            }}/>
             <Stack className="flex flex-col items-center gap-5">
                 <Knob strokeWidth={3}
                       onChange={(v) => {

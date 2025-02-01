@@ -64,6 +64,8 @@ export interface Sample {
      * @param stream
      */
     writeToStream(stream: WriteStream): Promise<number>
+
+    getSampleData(): Float64Array;
 }
 
 class WavSample implements Sample {
@@ -83,7 +85,6 @@ class WavSample implements Sample {
     //   dwNumSampleLoops: 0,
     //   dwSamplerData: 18,
     getMetadata(): SampleMetadata {
-
         const rv = {} as SampleMetadata
         const smpl = this.wav.smpl
         if (smpl) {
@@ -165,5 +166,9 @@ class WavSample implements Sample {
             dwSampleLength: this.wav.data.chunkSize / this.wav.fmt["numChannels"]
         }
         return this
+    }
+
+    getSampleData(): Float64Array {
+        return this.wav.getSamples(true)
     }
 }
