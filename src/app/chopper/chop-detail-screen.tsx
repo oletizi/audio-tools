@@ -135,7 +135,18 @@ export function ChopDetailScreen(
                                                 if (file) {
                                                     const partition = 1
                                                     if (validateChop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop)) {
-                                                        app.chop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop)
+                                                        app.chop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop).then(r =>{
+                                                            if (r.errors?.length > 0) {
+                                                                setSnackbarSeverity("warning")
+                                                                setSnackbarMessage(r.errors[0].message)
+                                                                setSnackbarOpen(true)
+                                                            } else {
+                                                                setSnackbarSeverity("success")
+                                                                setSnackbarMessage(`Chop ${prefix} created.`)
+                                                                setSnackbarOpen(true)
+                                                                app.fetchDisk()
+                                                            }
+                                                        })
                                                     }
                                                 }
                                             }}>Do It!</Button>

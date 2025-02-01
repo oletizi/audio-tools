@@ -28,7 +28,7 @@ export function AkaiDiskView({app}: { app: ChopApp }) {
     useEffect(() => app.fetchDisk(), [])
     let items = 0
     return (
-        <Card elevation={3} sx={{minWidth: '200px'}}>
+        <Card elevation={3} sx={{minWidth: '250px'}}>
             <CardHeader className="shadow-md" title="Your Disk So Far" subheader={disk.name}/>
             <CardContent style={{height: 'calc((100vh / 12) * 7)', overflow: 'auto'}}>
                 {disk.partitions.map(partition => {
@@ -75,7 +75,7 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
     return (<>
             <ListItemButton onClick={() => setOpen(!open)}>
                 <ListItemIcon><SaveIcon/></ListItemIcon>
-                <ListItemText primary={`Vol: ${data.name.split('/').pop()}`}/>
+                <ListItemText primary={data.name.split('/').pop()}/>
                 {open ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
             <Collapse in={open}>

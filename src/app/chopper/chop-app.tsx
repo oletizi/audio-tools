@@ -30,6 +30,6 @@ export class ChopApp {
     }
 
     chop(file: string, partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) {
-        chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop).then()
+        return chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop)
     }
 }
