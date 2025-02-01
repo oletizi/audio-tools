@@ -35,6 +35,7 @@ export function ChopDetailScreen(
     const [disk, setDisk] = useState<AkaiDisk>({name: "", partitions: [], timestamp: 0})
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
     const [snackbarMessage, setSnackbarMessage] = useState<string>("Hi. I'm a snackbar!")
+    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "info" | "warning" | "error">("warning")
     app.addDiskListener((d: AkaiDisk) => {
         setDisk(d)
     })
@@ -60,12 +61,14 @@ export function ChopDetailScreen(
                 const volumeName = v.name.split('/').pop()?.trim()
                 if (volumeName === prefix.trim()) {
                     setSnackbarMessage(`${prefix} already exists. Choose a different program name.`)
+                    setSnackbarSeverity("warning")
                     setSnackbarOpen(true)
                     return false
                 }
             }
         } else {
             setSnackbarMessage(`Invalid disk partition: ${partition}`)
+            setSnackbarSeverity("warning")
             setSnackbarOpen(true)
         }
         return rv
@@ -142,7 +145,7 @@ export function ChopDetailScreen(
                                         onClose={() => setSnackbarOpen(false)}>
                                         <Alert
                                             onClose={() => setSnackbarOpen(false)}
-                                            severity="warning"
+                                            severity={snackbarSeverity}
                                             variant="filled"
                                             sx={{width: '100%'}}>
                                             {snackbarMessage}
