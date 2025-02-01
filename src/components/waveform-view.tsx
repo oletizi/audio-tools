@@ -1,13 +1,9 @@
-import {Box, Skeleton} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
-import {WaveFile} from "wavefile";
 import {Sample} from "@/model/sample";
 import {scale} from "@/lib/lib-core";
 
-export function WaveformView({listen, width, height, color = "#aaa"}: { listen: Function, color: string }) {
-    const [sample, setSample] = useState<Sample>(null)
-    listen(setSample)
-    return <Box>{sample ? <Waveform sample={sample} width={width} height={height} color={color}/> : <Skeleton/>}</Box>
+export function WaveformView({sample, width, height, color = "#aaa"}: { color: string }) {
+    return <Waveform sample={sample} width={width} height={height} color={color}/>
 }
 
 function Waveform({sample, width, height, color}: { sample: Sample }) {

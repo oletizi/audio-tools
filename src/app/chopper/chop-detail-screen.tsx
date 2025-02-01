@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {SampleMetadata} from "@/model/sample";
-import {getMeta} from "@/lib/client-translator";
+import {Sample, SampleMetadata} from "@/model/sample";
+import {getAudioData, getMeta} from "@/lib/client-translator";
 import {
     Alert,
     Button,
@@ -8,6 +8,7 @@ import {
     CardContent,
     CardHeader,
     Paper,
+    Skeleton,
     Slider, Snackbar,
     Table, TableBody,
     TableCell,
@@ -16,6 +17,7 @@ import {
 } from "@mui/material";
 import {ChopApp} from "@/app/chopper/chop-app";
 import {AkaiDisk} from "@/model/akai";
+import {WaveformView} from "@/components/waveform-view";
 
 export function ChopDetailScreen(
     {
@@ -28,6 +30,7 @@ export function ChopDetailScreen(
         onErrors: (e: Error | Error[]) => void,
     }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
+    const [sample, setSample] = useState<Sample>(null)
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
     const [prefix, setPrefix] = useState<string>('chop.01')
@@ -35,6 +38,7 @@ export function ChopDetailScreen(
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
     const [snackbarMessage, setSnackbarMessage] = useState<string>("Hi. I'm a snackbar!")
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "info" | "warning" | "error">("warning")
+
     app.addDiskListener((d: AkaiDisk) => {
         setDisk(d)
     })
@@ -48,6 +52,13 @@ export function ChopDetailScreen(
                     onErrors(r.errors)
                 } else {
                     setMeta(r.data)
+                }
+            })
+            getAudioData(file).then(r => {
+                if (r.errors.length) {
+                    onErrors(r.errors)
+                } else {
+                    setSample(r.data)
                 }
             })
         }
@@ -92,6 +103,7 @@ export function ChopDetailScreen(
             <CardContent>
 
                 <div className="flex flex-col gap-4">
+                    {sample ? (<WaveformView sample={sample} height={30} color="#666"/>) : <Skeleton height={30}/>}
                     {meta ? (
                             <>
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>

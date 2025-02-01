@@ -1,16 +1,15 @@
 import {ClientConfig} from "@/lib/config-client";
 import {ProcessOutput} from "@/lib/process-output";
-import {chopSample, getAkaiDisk, syncRemote} from "@/lib/client-translator";
+import {chopSample, getAkaiDisk, getAudioData, syncRemote} from "@/lib/client-translator";
 
 // type AppListener = (Element) => void
 
 type AkaiDiskListener = (AkaiDisk) => void
-
+type SampleListener = (Sample) => void
 export class ChopApp {
     private readonly config: ClientConfig;
     private readonly out: ProcessOutput;
     private readonly diskListeners: AkaiDiskListener[] = []
-
     constructor(config: ClientConfig, out: ProcessOutput) {
         this.config = config;
         this.out = out;
@@ -35,4 +34,5 @@ export class ChopApp {
     syncRemote() {
         return syncRemote()
     }
+
 }
