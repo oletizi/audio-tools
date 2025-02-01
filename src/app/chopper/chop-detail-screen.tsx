@@ -2,24 +2,28 @@ import React, {useEffect, useState} from "react";
 import {SampleMetadata} from "@/model/sample";
 import {getMeta} from "@/lib/client-translator";
 import {
+    Alert,
     Button,
     Card, CardActions,
     CardContent,
     CardHeader,
     Paper,
-    Slider,
+    Slider, Snackbar,
     Table, TableBody,
     TableCell,
     TableRow,
     TextField
 } from "@mui/material";
+import {ChopApp} from "@/app/chopper/chop-app";
+import {AkaiDisk} from "@/model/akai";
 
 export function ChopDetailScreen(
     {
+        app,
         file,
-        onErrors = (e) => console.error(e),
-        doIt
+        onErrors = (e) => console.error(e)
     }: {
+        app: ChopApp,
         file: string | null,
         onErrors: (e: Error | Error[]) => void,
         doIt: (partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) => void
@@ -28,6 +32,15 @@ export function ChopDetailScreen(
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
     const [prefix, setPrefix] = useState<string>('chop.01')
+    const [disk, setDisk] = useState<AkaiDisk>({name: "", partitions: [], timestamp: 0})
+    const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
+    const [snackbarMessage, setSnackbarMessage] = useState<string>("Hi. I'm a snackbar!")
+    app.addDiskListener((d: AkaiDisk) => {
+        setDisk(d)
+    })
+    useEffect(() => {
+        app.fetchDisk()
+    }, [])
     useEffect(() => {
         if (file) {
             getMeta(file).then(r => {
@@ -38,8 +51,25 @@ export function ChopDetailScreen(
                 }
             })
         }
-
     }, [file])
+
+    function validateChop(file: string, partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) {
+        let rv = partition > 0 && partition <= disk.partitions.length
+        if (rv) {
+            for (const v of disk.partitions[partition - 1].volumes) {
+                const volumeName = v.name.split('/').pop()?.trim()
+                if (volumeName === prefix.trim()) {
+                    setSnackbarMessage(`${prefix} already exists. Choose a different program name.`)
+                    setSnackbarOpen(true)
+                    return false
+                }
+            }
+        } else {
+            setSnackbarMessage(`Invalid disk partition: ${partition}`)
+            setSnackbarOpen(true)
+        }
+        return rv
+    }
 
     function getSamplesPerBeat() {
         return Math.round(meta?.sampleRate / (bpm / 60))
@@ -95,9 +125,29 @@ export function ChopDetailScreen(
                                         </TableBody></Table>
                                 </Paper>
                                 <TextField label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
+
                                 <CardActions>
                                     <Button variant="contained"
-                                            onClick={() => doIt(1, prefix, getSamplesPerBeat(), beatsPerChop)}>Do It!</Button>
+                                            onClick={() => {
+                                                if (file) {
+                                                    const partition = 1
+                                                    if (validateChop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop)) {
+                                                        app.chop(file, partition, prefix, getSamplesPerBeat(), beatsPerChop)
+                                                    }
+                                                }
+                                            }}>Do It!</Button>
+                                    <Snackbar
+                                        open={snackbarOpen}
+                                        autoHideDuration={6000}
+                                        onClose={() => setSnackbarOpen(false)}>
+                                        <Alert
+                                            onClose={() => setSnackbarOpen(false)}
+                                            severity="warning"
+                                            variant="filled"
+                                            sx={{width: '100%'}}>
+                                            {snackbarMessage}
+                                        </Alert>
+                                    </Snackbar>
                                 </CardActions>
                             </>) :
                         (<></>)

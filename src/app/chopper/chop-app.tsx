@@ -1,7 +1,7 @@
 import {ClientConfig} from "@/lib/config-client";
 import {ProcessOutput} from "@/lib/process-output";
 import {AkaiDisk} from "@/model/akai";
-import {getAkaiDisk} from "@/lib/client-translator";
+import {chopSample, getAkaiDisk} from "@/lib/client-translator";
 
 // type AppListener = (Element) => void
 
@@ -10,7 +10,7 @@ type AkaiDiskListener = (AkaiDisk) => void
 export class ChopApp {
     private readonly config: ClientConfig;
     private readonly out: ProcessOutput;
-    private readonly diskListeners : AkaiDiskListener[] = []
+    private readonly diskListeners: AkaiDiskListener[] = []
 
     constructor(config: ClientConfig, out: ProcessOutput) {
         this.config = config;
@@ -27,5 +27,9 @@ export class ChopApp {
                 this.diskListeners.forEach(l => l(r.data))
             }
         })
+    }
+
+    chop(file: string, partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) {
+        chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop).then()
     }
 }

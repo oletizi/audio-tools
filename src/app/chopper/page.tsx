@@ -22,11 +22,11 @@ export default function Page() {
             </div>
             <div className="flex gap-10" style={{maxHeight: '100vh'}}>
                 <SampleSelectScreen onSelect={v => setFile(v)}/>
-                <ChopDetailScreen defaultDirectory="/"
+                <ChopDetailScreen app={app} defaultDirectory="/"
                                   file={file}
                                   doIt={(partition: number, prefix: string, samplesPerBeat, beatsPerChop) => {
                                       if (file) {
-                                          chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop).then()
+
                                       }
                                   }}
                                   onErrors={(e) => console.log(e)}/>
