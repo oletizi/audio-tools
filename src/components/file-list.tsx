@@ -103,7 +103,7 @@ export function FileList({data, className, visit = nullVisitItem}: {
                         } : () => {
                         }}>
                             <ListItemIcon><InsertDriveFileIcon/></ListItemIcon>
-                            <ListItemText>{item.name}</ListItemText>
+                            <ListItemText><Typography variant="body2">{item.name}</Typography></ListItemText>
                             {deleteButton}
                             {translateButton}
                         </ListItem>
