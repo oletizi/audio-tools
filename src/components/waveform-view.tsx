@@ -12,8 +12,11 @@ function Waveform({sample, width, height, color}: { sample: Sample }) {
     useEffect(() => {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
-        ctx.fillStyle = color
-        // ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+        ctx.strokeStyle = color
         ctx.beginPath()
         ctx.moveTo(0, ctx.canvas.height / 2)
         ctx.lineTo(ctx.canvas.width, ctx.canvas.height / 2)
@@ -50,7 +53,7 @@ function Waveform({sample, width, height, color}: { sample: Sample }) {
             }
         }
         ctx.stroke()
-    }, [])
+    }, [sample])
 
     return <canvas ref={canvasRef} height={height} width={width}/>
 

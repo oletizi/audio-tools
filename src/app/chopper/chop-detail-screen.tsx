@@ -63,7 +63,6 @@ export function ChopDetailScreen(
             })
         }
     }, [file])
-
     function validateChop(file: string, partition: number, prefix: string) {
         let rv = partition > 0 && partition <= disk.partitions.length
         if (rv) {
