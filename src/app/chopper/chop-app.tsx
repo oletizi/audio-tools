@@ -1,7 +1,6 @@
 import {ClientConfig} from "@/lib/config-client";
 import {ProcessOutput} from "@/lib/process-output";
-import {AkaiDisk} from "@/model/akai";
-import {chopSample, getAkaiDisk} from "@/lib/client-translator";
+import {chopSample, getAkaiDisk, syncRemote} from "@/lib/client-translator";
 
 // type AppListener = (Element) => void
 
@@ -31,5 +30,9 @@ export class ChopApp {
 
     chop(file: string, partition: number, prefix: string, samplesPerBeat: number, beatsPerChop: number) {
         return chopSample(file, partition, prefix, samplesPerBeat, beatsPerChop)
+    }
+
+    syncRemote() {
+        return syncRemote()
     }
 }

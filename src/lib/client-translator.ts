@@ -14,6 +14,10 @@ export async function chopSample(path:string, partition: number,  prefix: string
     })
 }
 
+export async function syncRemote() {
+    return await client.post(root + '/syncremote', {})
+}
+
 export async function getAkaiDisk(){
     return await client.get(root + '/akaidisk')
 }

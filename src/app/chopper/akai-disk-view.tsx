@@ -18,6 +18,8 @@ import StorageIcon from '@mui/icons-material/Storage';
 import SaveIcon from '@mui/icons-material/Save';
 import {AudioFile, ExpandLess, ExpandMore} from "@mui/icons-material";
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import SyncIcon from '@mui/icons-material/Sync';
+
 import {ChopApp} from "@/app/chopper/chop-app";
 
 export function AkaiDiskView({app}: { app: ChopApp }) {
@@ -43,6 +45,9 @@ export function AkaiDiskView({app}: { app: ChopApp }) {
                 <Button onClick={() => {
                     app.fetchDisk()
                 }}><RefreshIcon/></Button>
+                <Button onClick={()=>{
+                    app.syncRemote()
+                }}><SyncIcon/>Sync Remote</Button>
             </CardActions>
         </Card>)
 }
@@ -92,7 +97,6 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
 }
 
 function RecordsView({record}: { record: AkaiRecord }) {
-
     return (
         <ListItem key={record.name} disableGutters>
             <ListItemIcon>{record.type === AkaiRecordType.SAMPLE ? <AudioFile/> :
