@@ -3,7 +3,7 @@ import {newClientCommon} from "@/lib/client-common";
 import {JobId} from "@/lib/lib-jobs";
 import {WaveFile} from "wavefile";
 import {Result} from "@/lib/lib-core";
-import {newSampleFromBuffer} from "@/model/sample";
+import {newSampleFromBuffer, Sample} from "@/model/sample";
 
 const root = '/api/t'
 const client = newClientCommon((msg) => console.log(msg), (msg) => console.error(msg))
@@ -30,14 +30,18 @@ export async function getMeta(path: string) {
     return client.get(root + '/meta/' + path)
 }
 
+export interface AudioDataResult extends Result {
+    data: ArrayBuffer
+    sample: Sample
+}
+
 export async function getAudioData(path: string) {
     const r = await fetch(root + '/audiodata/' + path)
-    const rv = {errors: [], data: null} as Result
+    const rv = {errors: [], data: null, sample: null} as AudioDataResult
 
     if (r.ok) {
-        const b = await r.blob()
-        const buf = await b.arrayBuffer()
-        rv.data = newSampleFromBuffer(new Uint8Array(buf))
+        rv.data = await r.arrayBuffer()
+        rv.sample = newSampleFromBuffer(new Uint8Array(rv.data))
         // r.blob().then(b => b.arrayBuffer().then(buf => wav.fromBuffer(new Uint8Array(buf))))
     } else {
         rv.errors.push(new Error(r.statusText))

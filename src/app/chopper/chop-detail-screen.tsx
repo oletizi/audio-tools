@@ -18,6 +18,7 @@ import {
 import {ChopApp} from "@/app/chopper/chop-app";
 import {AkaiDisk} from "@/model/akai";
 import {WaveformView} from "@/components/waveform-view";
+import {Transport} from "@/components/transport";
 
 export function ChopDetailScreen(
     {
@@ -31,6 +32,7 @@ export function ChopDetailScreen(
     }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
     const [sample, setSample] = useState<Sample>(null)
+    const [audioSource, setAudioSource] = useState<AudioBufferSourceNode>(null)
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
     const [chops, setChops] = useState<{ start: number, end: number }[]>(null)
@@ -40,13 +42,15 @@ export function ChopDetailScreen(
     const [snackbarMessage, setSnackbarMessage] = useState<string>("Hi. I'm a snackbar!")
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "info" | "warning" | "error">("warning")
 
+    const audioContext = new AudioContext()
+
     app.addDiskListener((d: AkaiDisk) => {
         setDisk(d)
     })
     useEffect(() => {
         app.fetchDisk()
     }, [])
-    useEffect(() =>{
+    useEffect(() => {
         setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
     }, [meta, bpm, beatsPerChop])
     useEffect(() => {
@@ -62,7 +66,14 @@ export function ChopDetailScreen(
                 if (r.errors.length) {
                     onErrors(r.errors)
                 } else {
-                    setSample(r.data)
+                    const s: Sample = r.sample
+                    setSample(s)
+                    audioContext.decodeAudioData(r.data).then((audioBuffer) => {
+                        const source = audioContext.createBufferSource()
+                        source.buffer = audioBuffer
+                        source.connect(audioContext.destination)
+                        setAudioSource(source)
+                    })
                 }
             })
         }
@@ -104,10 +115,10 @@ export function ChopDetailScreen(
         console.log(`Getting chops...`)
         const rv = []
         if (meta) {
-            const samplesPerChop = samplesPerBeat* beatsPerChop
+            const samplesPerChop = samplesPerBeat * beatsPerChop
             console.log(`Samples per chop: ${samplesPerChop}`)
             console.log(`Total chops: ${totalChops}`)
-            for (let i=0; i< totalChops; i++) {
+            for (let i = 0; i < totalChops; i++) {
                 const start = i * samplesPerChop;
                 console.log(`Start [${i}]: ${start}; end: ${start + samplesPerChop}`)
                 rv.push({start: start, end: start + samplesPerChop})
@@ -125,7 +136,8 @@ export function ChopDetailScreen(
             <CardContent>
 
                 <div className="flex flex-col gap-4">
-                    {sample ? (<WaveformView sample={sample} height={30} color="#666" chops={chops}/>) : <Skeleton height={30}/>}
+                    {sample ? (<WaveformView sample={sample} height={30} color="#666" chops={chops}/>) :
+                        <Skeleton height={30}/>}
                     {meta ? (
                             <>
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>
@@ -188,6 +200,9 @@ export function ChopDetailScreen(
                                                     }
                                                 }
                                             }}>Do It!</Button>
+                                    <Transport listener={(playing) => {
+                                        playing ? audioSource.stop(0) : audioSource.start(0)
+                                    }}/>
                                     <Snackbar
                                         open={snackbarOpen}
                                         autoHideDuration={6000}
