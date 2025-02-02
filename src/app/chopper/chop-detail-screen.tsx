@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Sample, SampleMetadata} from "@/model/sample";
 import {getAudioData, getMeta} from "@/lib/client-translator";
+import {Howl} from 'howler'
 import {
     Alert,
     Button,
@@ -32,7 +33,7 @@ export function ChopDetailScreen(
     }) {
     const [meta, setMeta] = useState<SampleMetadata | null>(null)
     const [sample, setSample] = useState<Sample>(null)
-    const [audioSource, setAudioSource] = useState<AudioBufferSourceNode>(null)
+    const [audioSource, setAudioSource] = useState<Howl>(null)
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
     const [chops, setChops] = useState<{ start: number, end: number }[]>(null)
@@ -41,8 +42,6 @@ export function ChopDetailScreen(
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
     const [snackbarMessage, setSnackbarMessage] = useState<string>("Hi. I'm a snackbar!")
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "info" | "warning" | "error">("warning")
-
-    const audioContext = new AudioContext()
 
     app.addDiskListener((d: AkaiDisk) => {
         setDisk(d)
@@ -68,12 +67,10 @@ export function ChopDetailScreen(
                 } else {
                     const s: Sample = r.sample
                     setSample(s)
-                    audioContext.decodeAudioData(r.data).then((audioBuffer) => {
-                        const source = audioContext.createBufferSource()
-                        source.buffer = audioBuffer
-                        source.connect(audioContext.destination)
-                        setAudioSource(source)
-                    })
+                    setAudioSource(new Howl({
+                        src: [URL.createObjectURL(new Blob([r.data], {type:'audio/wav'}))],
+                        format: ['wav']
+                    }))
                 }
             })
         }
@@ -201,7 +198,7 @@ export function ChopDetailScreen(
                                                 }
                                             }}>Do It!</Button>
                                     <Transport listener={(playing) => {
-                                        playing ? audioSource.stop(0) : audioSource.start(0)
+                                        playing ? audioSource.stop() : audioSource.play()
                                     }}/>
                                     <Snackbar
                                         open={snackbarOpen}
