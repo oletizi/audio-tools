@@ -38,8 +38,7 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         const data = sample.getSampleData()
 
         let sum = 0
-        let x = 0
-        const chunkLength = Math.round(scale(1, 0, ctx.canvas.width, 0, data.length / sample.getChannelCount()))
+
         const mid = ctx.canvas.height / 2
 
         const chopRegions = []
@@ -66,8 +65,9 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         ctx.lineTo(ctx.canvas.width, mid)
         ctx.stroke()
 
-        // Draw waveform
-        ctx.beginPath()
+        // Calculate waveform
+        const chunkLength = Math.round(scale(1, 0, ctx.canvas.width, 0, data.length / sample.getChannelCount()))
+        const waveformData = []
         for (let i = 0; i < data.length; i += sample.getChannelCount()) {
             const datum = Math.abs(data[i])
             sum += datum * datum
@@ -76,11 +76,18 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
                 const rms = Math.sqrt(sum / chunkLength)
                 const max = Math.pow(2, sample.getBitDepth()) / 2
                 const rmsScaled = Math.round(scale(rms, 0, max, 0, mid))
-                ctx.moveTo(x, mid - rmsScaled)
-                ctx.lineTo(x, mid + rmsScaled)
+                waveformData.push(rmsScaled)
                 sum = 0
-                x++
             }
+        }
+
+        // Draw waveform
+        ctx.beginPath()
+        let x = 0
+        for (const rms of waveformData) {
+                ctx.moveTo(x, mid - rms)
+                ctx.lineTo(x, mid + rms)
+            x++
         }
         ctx.stroke()
 
