@@ -2,11 +2,14 @@ import {useEffect, useRef, useState} from "react";
 import {Sample} from "@/model/sample";
 import {scale} from "@/lib/lib-core";
 
-export function WaveformView({sample, width, height, color = "#aaa"}: { color: string }) {
-    return <Waveform sample={sample} width={width} height={height} color={color}/>
+export function WaveformView({sample, width, height, color = "#aaa", chops}: {
+    sample: Sample,
+    chops: { start: number, end: number }[]
+}) {
+    return <Waveform sample={sample} width={width} height={height} color={color} chops={chops}/>
 }
 
-function Waveform({sample, width, height, color}: { sample: Sample }) {
+function Waveform({sample, width, height, color, chops}: { sample: Sample, chops: { start: number, end: number }[] }) {
     const canvasRef = useRef(null)
 
     useEffect(() => {
@@ -53,7 +56,24 @@ function Waveform({sample, width, height, color}: { sample: Sample }) {
             }
         }
         ctx.stroke()
-    }, [sample])
+        chops?.forEach(c => {
+            ctx.strokeStyle = "blue"
+
+            const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
+            const endX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
+
+            ctx.beginPath()
+            ctx.moveTo(startX, 0)
+            ctx.lineTo(startX, ctx.canvas.height)
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.moveTo(endX, 0)
+            ctx.lineTo(endX, ctx.canvas.height)
+            ctx.stroke()
+        })
+
+    }, [sample, chops])
 
     return <canvas ref={canvasRef} height={height} width={width}/>
 

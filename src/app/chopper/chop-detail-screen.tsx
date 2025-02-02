@@ -33,6 +33,7 @@ export function ChopDetailScreen(
     const [sample, setSample] = useState<Sample>(null)
     const [bpm, setBpm] = useState<number>(120)
     const [beatsPerChop, setBeatsPerChop] = useState<number>(4)
+    const [chops, setChops] = useState<{ start: number, end: number }[]>(null)
     const [prefix, setPrefix] = useState<string>('chop.01')
     const [disk, setDisk] = useState<AkaiDisk>({name: "", partitions: [], timestamp: 0})
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
@@ -63,6 +64,7 @@ export function ChopDetailScreen(
             })
         }
     }, [file])
+
     function validateChop(file: string, partition: number, prefix: string) {
         let rv = partition > 0 && partition <= disk.partitions.length
         if (rv) {
@@ -95,6 +97,24 @@ export function ChopDetailScreen(
         return Math.round(meta?.sampleLength / getSamplesPerBeat())
     }
 
+    function getChops(samplesPerBeat, beatsPerChop, totalChops) {
+        console.log(`Getting chops...`)
+        const rv = []
+        if (meta) {
+            const samplesPerChop = samplesPerBeat* beatsPerChop
+            console.log(`Samples per chop: ${samplesPerChop}`)
+            console.log(`Total chops: ${totalChops}`)
+            for (let i=0; i< totalChops; i++) {
+                const start = i * samplesPerChop;
+                console.log(`Start [${i}]: ${start}; end: ${start + samplesPerChop}`)
+                rv.push({start: start, end: start + samplesPerChop})
+            }
+        }
+        console.log(`Returning chops:`)
+        console.log(JSON.stringify(rv))
+        return rv
+    }
+
     return (
         <Card className="grow" elevation="3">
             <CardHeader className="shadow-md" title={`Chop it!`}
@@ -102,7 +122,7 @@ export function ChopDetailScreen(
             <CardContent>
 
                 <div className="flex flex-col gap-4">
-                    {sample ? (<WaveformView sample={sample} height={30} color="#666"/>) : <Skeleton height={30}/>}
+                    {sample ? (<WaveformView sample={sample} height={30} color="#666" chops={chops}/>) : <Skeleton height={30}/>}
                     {meta ? (
                             <>
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>
@@ -122,7 +142,10 @@ export function ChopDetailScreen(
                                                                            max={200}
                                                                            step={1}
                                                                            shiftStep={5}
-                                                                           onChange={e => setBpm(e.target.value)}/></TableCell>
+                                                                           onChange={e => {
+                                                                               setBpm(e.target.value)
+                                                                               setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
+                                                                           }}/></TableCell>
                                         </TableRow>
                                     </TableBody>
                                     </Table>
@@ -133,7 +156,11 @@ export function ChopDetailScreen(
                                                     <Slider value={beatsPerChop} min={1} max={32} marks
                                                             step={1}
                                                             shiftStep={4}
-                                                            onChange={e => setBeatsPerChop(e.target.value)}/></TableCell>
+                                                            onChange={e => {
+                                                                setBeatsPerChop(e.target.value)
+                                                                setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
+                                                            }
+                                                            }/></TableCell>
                                             </TableRow>
                                         </TableBody></Table>
                                 </Paper>
