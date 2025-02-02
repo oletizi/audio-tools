@@ -30,7 +30,32 @@ export function WaveformView({sample, width, height, color = "#aaa", chops}: {
 
 function Waveform({sample, width, height, color, chops}: { sample: Sample, chops: { start: number, end: number }[] }) {
     const [regions, setRegions] = useState<Region[]>([])
+    const [waveformData, setWaveformData] = useState<number[]>([])
     const canvasRef = useRef(null)
+
+    useEffect(() => {
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+        const data = sample.getSampleData()
+        const mid = ctx.canvas.height / 2
+        let sum = 0
+        // Calculate waveform
+        const chunkLength = Math.round(scale(1, 0, ctx.canvas.width, 0, data.length / sample.getChannelCount()))
+        waveformData.length = 0
+        for (let i = 0; i < data.length; i += sample.getChannelCount()) {
+            const datum = Math.abs(data[i])
+            sum += datum * datum
+
+            if (i % (chunkLength * sample.getChannelCount()) === 0) {
+                const rms = Math.sqrt(sum / chunkLength)
+                const max = Math.pow(2, sample.getBitDepth()) / 2
+                const rmsScaled = Math.round(scale(rms, 0, max, 0, mid))
+                waveformData.push(rmsScaled)
+                sum = 0
+            }
+        }
+        setWaveformData(waveformData)
+    }, [sample])
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -65,28 +90,12 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         ctx.lineTo(ctx.canvas.width, mid)
         ctx.stroke()
 
-        // Calculate waveform
-        const chunkLength = Math.round(scale(1, 0, ctx.canvas.width, 0, data.length / sample.getChannelCount()))
-        const waveformData = []
-        for (let i = 0; i < data.length; i += sample.getChannelCount()) {
-            const datum = Math.abs(data[i])
-            sum += datum * datum
-
-            if (i % (chunkLength * sample.getChannelCount()) === 0) {
-                const rms = Math.sqrt(sum / chunkLength)
-                const max = Math.pow(2, sample.getBitDepth()) / 2
-                const rmsScaled = Math.round(scale(rms, 0, max, 0, mid))
-                waveformData.push(rmsScaled)
-                sum = 0
-            }
-        }
-
         // Draw waveform
         ctx.beginPath()
         let x = 0
         for (const rms of waveformData) {
-                ctx.moveTo(x, mid - rms)
-                ctx.lineTo(x, mid + rms)
+            ctx.moveTo(x, mid - rms)
+            ctx.lineTo(x, mid + rms)
             x++
         }
         ctx.stroke()
