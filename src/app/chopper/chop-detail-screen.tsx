@@ -46,6 +46,9 @@ export function ChopDetailScreen(
     useEffect(() => {
         app.fetchDisk()
     }, [])
+    useEffect(() =>{
+        setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
+    }, [meta, bpm, beatsPerChop])
     useEffect(() => {
         if (file) {
             getMeta(file).then(r => {
@@ -144,7 +147,6 @@ export function ChopDetailScreen(
                                                                            shiftStep={5}
                                                                            onChange={e => {
                                                                                setBpm(e.target.value)
-                                                                               setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
                                                                            }}/></TableCell>
                                         </TableRow>
                                     </TableBody>
@@ -158,7 +160,6 @@ export function ChopDetailScreen(
                                                             shiftStep={4}
                                                             onChange={e => {
                                                                 setBeatsPerChop(e.target.value)
-                                                                setChops(getChops(getSamplesPerBeat(), beatsPerChop, getTotalChops()))
                                                             }
                                                             }/></TableCell>
                                             </TableRow>

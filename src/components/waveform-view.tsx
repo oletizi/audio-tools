@@ -57,6 +57,7 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         }
         ctx.stroke()
         if (chops) {
+            console.log(`Waveform: Chop count: ${chops.length}`)
             ctx.strokeStyle = "blue"
             for (const c of chops) {
 
