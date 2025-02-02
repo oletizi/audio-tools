@@ -63,14 +63,13 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         const data = sample.getSampleData()
         const mid = ctx.canvas.height / 2
 
+        // calculate regions
         const chopRegions = []
-
         if (chops) {
             for (const c of chops) {
 
                 const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
                 const endX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
-
                 chopRegions.push({x: startX, y: 0, width: endX - startX, height: ctx.canvas.height, isActive: false})
             }
             setRegions(chopRegions)
@@ -88,7 +87,8 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         }}/>
 }
 
-function paint(ctx, color, mid: number, waveformData: number[], chopRegions: any[]) {
+
+function paint(ctx, color, mid: number, waveformData: number[], chopRegions: Region[]) {
     // Clear canvas
     ctx.fillStyle = 'white'
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -99,8 +99,16 @@ function paint(ctx, color, mid: number, waveformData: number[], chopRegions: any
     ctx.moveTo(0, mid)
     ctx.lineTo(ctx.canvas.width, mid)
     ctx.stroke()
+    paintWaveform(ctx, color, waveformData, mid);
 
+    // Draw chops
+    let chopColor = "rgb(25, 118, 210)";
+    paintChops(ctx, chopColor, chopRegions);
+}
+
+function paintWaveform(ctx, color: string, waveformData: number[], mid: number) {
     // Draw waveform
+    ctx.strokeStyle = color
     ctx.beginPath()
     let x = 0
     for (const rms of waveformData) {
@@ -109,13 +117,10 @@ function paint(ctx, color, mid: number, waveformData: number[], chopRegions: any
         x++
     }
     ctx.stroke()
-
-    // Draw chop marks
-    ctx.strokeStyle = "rgb(25, 118, 210)"
-    paintChops(chopRegions, ctx);
 }
 
-function paintChops(chopRegions: any[], ctx) {
+function paintChops(ctx, chopColor: string, chopRegions: any[]) {
+    ctx.strokeStyle = chopColor
     for (const r of chopRegions) {
         const startX = r.x
         const endX = r.x + r.width
