@@ -28,6 +28,33 @@ export function WaveformView({sample, width, height, color = "#aaa", chops}: {
 }
 
 
+function paint(ctx, color, mid: number, waveformData: number[], chopRegions: any[]) {
+    // Clear canvas
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+    ctx.strokeStyle = color
+    // Draw midline
+    ctx.beginPath()
+    ctx.moveTo(0, mid)
+    ctx.lineTo(ctx.canvas.width, mid)
+    ctx.stroke()
+
+    // Draw waveform
+    ctx.beginPath()
+    let x = 0
+    for (const rms of waveformData) {
+        ctx.moveTo(x, mid - rms)
+        ctx.lineTo(x, mid + rms)
+        x++
+    }
+    ctx.stroke()
+
+    // Draw chop marks
+    ctx.strokeStyle = "rgb(25, 118, 210)"
+    paintChops(chopRegions, ctx);
+}
+
 function Waveform({sample, width, height, color, chops}: { sample: Sample, chops: { start: number, end: number }[] }) {
     const [regions, setRegions] = useState<Region[]>([])
     const [waveformData, setWaveformData] = useState<number[]>([])
@@ -61,9 +88,6 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
         const data = sample.getSampleData()
-
-        let sum = 0
-
         const mid = ctx.canvas.height / 2
 
         const chopRegions = []
@@ -78,31 +102,7 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
             }
             setRegions(chopRegions)
         }
-
-        // Clear canvas
-        ctx.fillStyle = 'white'
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-
-        ctx.strokeStyle = color
-        // Draw midline
-        ctx.beginPath()
-        ctx.moveTo(0, mid)
-        ctx.lineTo(ctx.canvas.width, mid)
-        ctx.stroke()
-
-        // Draw waveform
-        ctx.beginPath()
-        let x = 0
-        for (const rms of waveformData) {
-            ctx.moveTo(x, mid - rms)
-            ctx.lineTo(x, mid + rms)
-            x++
-        }
-        ctx.stroke()
-
-        // Draw chop marks
-        ctx.strokeStyle = "rgb(25, 118, 210)"
-        paintChops(chopRegions, ctx);
+        paint(ctx, color, mid, waveformData, chopRegions);
 
     }, [sample, chops])
 
