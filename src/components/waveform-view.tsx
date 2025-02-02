@@ -33,6 +33,12 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
     const [waveformData, setWaveformData] = useState<number[]>([])
     const canvasRef = useRef(null)
 
+    useEffect(() =>{
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+        paint(ctx, color, waveformData, regions)
+    }, [regions])
+
     useEffect(() => {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
@@ -61,7 +67,6 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
         const data = sample.getSampleData()
-        const mid = ctx.canvas.height / 2
 
         // calculate regions
         const chopRegions = []
@@ -69,12 +74,12 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
             for (const c of chops) {
 
                 const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
-                const endX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
+                const endX = scale(c.end, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
                 chopRegions.push({x: startX, y: 0, width: endX - startX, height: ctx.canvas.height, isActive: false})
             }
             setRegions(chopRegions)
         }
-        paint(ctx, color, mid, waveformData, chopRegions);
+        paint(ctx, color, waveformData, chopRegions);
 
     }, [sample, chops])
 
@@ -84,15 +89,26 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
         width={width}
         onMouseMove={e => {
 
+            const ctx = canvasRef.current.getContext('2d')
+            const rect = canvasRef.current.getBoundingClientRect()
+            // Calculate mouse coordinates relative to the canvas
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            for (const r of regions) {
+                r.isActive = isInRect(x, y, r)
+            }
+            paint(ctx, color, waveformData, regions)
         }}/>
 }
 
 
-function paint(ctx, color, mid: number, waveformData: number[], chopRegions: Region[]) {
+function paint(ctx, color, waveformData: number[], chopRegions: Region[]) {
     // Clear canvas
     ctx.fillStyle = 'white'
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
+    const mid = ctx.canvas.height / 2
     ctx.strokeStyle = color
     // Draw midline
     ctx.beginPath()
@@ -102,8 +118,7 @@ function paint(ctx, color, mid: number, waveformData: number[], chopRegions: Reg
     paintWaveform(ctx, color, waveformData, mid);
 
     // Draw chops
-    let chopColor = "rgb(25, 118, 210)";
-    paintChops(ctx, chopColor, chopRegions);
+    paintChops(ctx, "rgb(25, 118, 210, .3)", chopRegions);
 }
 
 function paintWaveform(ctx, color: string, waveformData: number[], mid: number) {
@@ -119,13 +134,17 @@ function paintWaveform(ctx, color: string, waveformData: number[], mid: number) 
     ctx.stroke()
 }
 
-function paintChops(ctx, chopColor: string, chopRegions: any[]) {
+function paintChops(ctx, chopColor: string, chopRegions: Region[]) {
     ctx.strokeStyle = chopColor
+    ctx.fillStyle = chopColor
     for (const r of chopRegions) {
+
         const startX = r.x
         const endX = r.x + r.width
         const startY = r.y
         const endY = r.y + r.height
+
+
         ctx.beginPath()
         ctx.moveTo(startX, startY)
         ctx.lineTo(startX, endY)
@@ -135,5 +154,8 @@ function paintChops(ctx, chopColor: string, chopRegions: any[]) {
         ctx.moveTo(endX, startY)
         ctx.lineTo(endX, endY)
         ctx.stroke()
+        if (r.isActive) {
+            ctx.fillRect(startX, startY, r.width, r.height)
+        }
     }
 }
