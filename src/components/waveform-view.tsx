@@ -56,22 +56,24 @@ function Waveform({sample, width, height, color, chops}: { sample: Sample, chops
             }
         }
         ctx.stroke()
-        chops?.forEach(c => {
+        if (chops) {
             ctx.strokeStyle = "blue"
+            for (const c of chops) {
 
-            const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
-            const endX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
+                const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
+                const endX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, ctx.canvas.width)
 
-            ctx.beginPath()
-            ctx.moveTo(startX, 0)
-            ctx.lineTo(startX, ctx.canvas.height)
-            ctx.stroke()
+                ctx.beginPath()
+                ctx.moveTo(startX, 0)
+                ctx.lineTo(startX, ctx.canvas.height)
+                ctx.stroke()
 
-            ctx.beginPath()
-            ctx.moveTo(endX, 0)
-            ctx.lineTo(endX, ctx.canvas.height)
-            ctx.stroke()
-        })
+                ctx.beginPath()
+                ctx.moveTo(endX, 0)
+                ctx.lineTo(endX, ctx.canvas.height)
+                ctx.stroke()
+            }
+        }
 
     }, [sample, chops])
 
