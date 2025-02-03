@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {Sample} from "@/model/sample";
 import {scale} from "@/lib/lib-core";
-import {Canvas, Line, Polyline, XY} from "fabric"
+import {Canvas, Group, Line, Polyline, XY} from "fabric"
 
 interface Rect {
     x: number;
@@ -12,6 +12,7 @@ interface Rect {
 
 interface Region extends Rect {
     isActive: boolean
+    group: Group
 }
 
 export function WaveformView({sample, width, height, color, chops}: {
@@ -111,30 +112,45 @@ export function WaveformView({sample, width, height, color, chops}: {
         const container = canvasContainerRef.current
         const canvas = fabricRef.current
         if (container && canvas) {
-            // const ctx = canvas.getContext('2d')
+
             const width = container.clientWidth
             const height = container.clientHeight
             const data = sample.getSampleData()
 
-
             // calculate regions
-            const chopRegions = []
+            const chopRegions: Region[] = []
             if (chops) {
                 for (const c of chops) {
-
                     const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, width)
                     const endX = scale(c.end, 0, data.length / sample.getChannelCount(), 0, width)
-                    chopRegions.push({
+                    let region = {
                         x: startX,
                         y: 0,
                         width: endX - startX,
-                        height: height,//ctx.canvas.height,
-                        isActive: false
+                        height: height,
+                        isActive: false,
+                        group: new Group()
+
+                    }
+                    const chopTickColor = 'rgb(25, 118, 210)'
+                    const chopRegionColor = 'rgb(25, 118, 210, 0.3)'
+                    const lineStart = new Line([region.x, region.y, region.x, region.height], {
+                        stroke: chopTickColor,
+                        strokeWidth: 1
                     })
+                    region.group.add(lineStart)
+                    fabricRef.current?.add(region.group)
+                    chopRegions.push(region)
                 }
+                if (regions) {
+                    // remove the old regions
+                    for (const region of regions) {
+                        fabricRef.current?.remove(region.group)
+                    }
+                }
+
                 setRegions(chopRegions)
             }
-            // paint(canvas, color, waveformData, chopRegions);
             paint()
         }
     }, [sample, chops])
