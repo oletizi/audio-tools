@@ -1,10 +1,13 @@
 import {WaveFile} from "wavefile";
 import {WriteStream} from "fs";
+import {types} from "sass";
+import Number = types.Number;
+import {start} from "repl";
+import {Buffer} from "buffer/";
+import e from "express";
 
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
-    const wav = new WaveFile()
-    wav.fromBuffer(buf)
-    return new WavSample(wav)
+    return new WavSample(buf)
 }
 
 // https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
@@ -66,12 +69,18 @@ export interface Sample {
     writeToStream(stream: WriteStream): Promise<number>
 
     getSampleData(): Float64Array;
+
+    getRawData(): Uint8Array
 }
 
 class WavSample implements Sample {
     private readonly wav: WaveFile;
+    private buf: Uint8Array;
 
-    constructor(wav: WaveFile) {
+    constructor(buf: Uint8Array) {
+        this.buf = buf
+        const wav = new WaveFile()
+        wav.fromBuffer(buf)
         this.wav = wav
     }
 
@@ -119,7 +128,7 @@ class WavSample implements Sample {
     }
 
     getBitDepth(): number {
-        return Number.parseInt(this.wav.bitDepth)
+        return parseInt(this.wav.bitDepth)
     }
 
     setRootNote(r: number) {
@@ -170,5 +179,9 @@ class WavSample implements Sample {
 
     getSampleData(): Float64Array {
         return this.wav.getSamples(true)
+    }
+
+    getRawData(): Uint8Array {
+        return this.buf
     }
 }

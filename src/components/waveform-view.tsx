@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {Sample} from "@/model/sample";
 import {scale} from "@/lib/lib-core";
 import {Canvas, Group, Line, Polyline, Rect, XY} from "fabric"
+import {Howl} from "howler";
 
 interface Rectangle {
     x: number;
@@ -21,6 +22,7 @@ export function WaveformView({sample, width, height, color, chops}: {
 }) {
     const [regions, setRegions] = useState<Region[]>([])
     const [waveformData, setWaveformData] = useState<number[]>([])
+    const audioSourceRef = useRef<Howl | null>(null)
     const canvasContainerRef = useRef<HTMLDivElement | null>(null)
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const fabricRef = useRef<Canvas | null>(null)
@@ -38,6 +40,7 @@ export function WaveformView({sample, width, height, color, chops}: {
         }
     }
 
+    // prepare waveform canvas
     useEffect(() => {
         const canvas = canvasRef.current
         if (canvas) {
@@ -55,8 +58,9 @@ export function WaveformView({sample, width, height, color, chops}: {
         }
     }, [])
 
-    // Calculate waveform on new sample
+    //  Calculate waveform on new sample
     useEffect(() => {
+
         const container = canvasContainerRef.current
         if (container) {
             const width = container.clientWidth
@@ -80,9 +84,8 @@ export function WaveformView({sample, width, height, color, chops}: {
                     sum = 0
                 }
             }
-            // setWaveformData(waveformData)
 
-            // Paint waveform
+            // Construct waveform object
             const points: XY[] = []
             let x = 0
             for (const v of waveformData) {
@@ -106,11 +109,12 @@ export function WaveformView({sample, width, height, color, chops}: {
         }
     }, [sample])
 
-    // Calculate chop regions and paint on sample or chops
+    // Calculate chop regions to superimpose on waveform
     useEffect(() => {
         // const canvas = canvasRef.current
         const container = canvasContainerRef.current
         const canvas = fabricRef.current
+
         if (container && canvas) {
 
             const width = container.clientWidth
@@ -120,9 +124,17 @@ export function WaveformView({sample, width, height, color, chops}: {
             // calculate regions
             const chopRegions: Region[] = []
             if (chops) {
+                const sprite = {}
+                const sampleMillis = ((data.length / sample.getChannelCount()) / sample.getSampleRate()) * 1000
                 for (const c of chops) {
                     const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, width)
                     const endX = scale(c.end, 0, data.length / sample.getChannelCount(), 0, width)
+
+                    const spriteId = String('sprite-' + chopRegions.length)
+                    const spriteStart = scale(c.start, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
+                    const spriteEnd = scale(c.end, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
+                    sprite[spriteId] = [spriteStart, spriteEnd]
+
                     let region: Region = {
                         x: startX,
                         y: 0,
@@ -130,7 +142,6 @@ export function WaveformView({sample, width, height, color, chops}: {
                         height: height,
                         isActive: false,
                         group: new Group()
-
                     }
                     const chopTickColor = 'rgb(25, 118, 210)'
                     const chopRegionColor = 'rgb(25, 118, 210, 0.3)'
@@ -139,7 +150,7 @@ export function WaveformView({sample, width, height, color, chops}: {
                         strokeWidth: 1,
                         selectable: false
                     })
-                    const regionRect :Rect = new Rect({
+                    const regionRect: Rect = new Rect({
                         left: region.x,
                         top: 0,
                         fill: 'transparent', // no fill, so only the stroke is visible
@@ -151,13 +162,18 @@ export function WaveformView({sample, width, height, color, chops}: {
                     region.group.on('mouseover', () => {
                         regionRect.set('fill', chopRegionColor)
                         paint()
-                        // canvas.renderAll()
 
                     })
-                    region.group.on('mouseout', () =>{
+                    region.group.on('mouseout', () => {
                         regionRect.set('fill', 'transparent')
                         paint()
-                        // canvas.renderAll()
+                    })
+
+                    region.group.on('mousedown', () => {
+                        audioSourceRef.current?.play(spriteId)
+                    })
+                    region.group.on('mouseup', () => {
+                        audioSourceRef.current?.stop()
                     })
 
                     region.group.add(lineStart)
@@ -171,10 +187,18 @@ export function WaveformView({sample, width, height, color, chops}: {
                         fabricRef.current?.remove(region.group)
                     }
                 }
-
+                audioSourceRef.current?.unload()
+                audioSourceRef.current = new Howl({
+                    src: [URL.createObjectURL(new Blob([sample.getRawData()], {type: 'audio/wav'}))],
+                    sprite: sprite,
+                    format: ['wav']
+                })
                 setRegions(chopRegions)
             }
             paint()
+        }
+        return () => {
+            audioSourceRef.current?.unload()
         }
     }, [sample, chops])
 
@@ -194,74 +218,4 @@ export function WaveformView({sample, width, height, color, chops}: {
     return <div ref={canvasContainerRef} className="border-2">
         <canvas ref={canvasRef} height={height} width={width}/>
     </div>
-}
-
-
-// function paint(canvas: Canvas, color, waveformData: number[], chopRegions: Region[]) {
-// Clear canvas
-// canvas.clear()
-// ctx.fillStyle = 'white'
-
-// ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-// const width = canvas.width
-// const height = canvas.height
-// const mid = height / 2// ctx.canvas.height / 2
-// ctx.strokeStyle = color
-
-// Draw midline
-// canvas.add(new Line([0, mid, width, mid], {stroke: color, strokeWidth: 2}))
-
-// Paint waveform
-// const points: XY[] = []
-// let x = 0
-// for (const v of waveformData) {
-//     points.push({x: x, y: mid + v})
-//     points.push({x: x, y: mid - v})
-//     x++
-// }
-// const waveform = new Polyline(points)
-// canvas.add(waveform)
-// Draw chops
-// paintChops(ctx, "rgb(25, 118, 210, .3)", chopRegions);
-//
-//     .renderAll()
-// }
-
-function paintWaveform(ctx, color: string, waveformData: number[], mid: number) {
-    // Draw waveform
-    ctx.strokeStyle = color
-    ctx.beginPath()
-    let x = 0
-    for (const rms of waveformData) {
-        ctx.moveTo(x, mid - rms)
-        ctx.lineTo(x, mid + rms)
-        x++
-    }
-    ctx.stroke()
-}
-
-function paintChops(ctx, chopColor: string, chopRegions: Region[]) {
-    ctx.strokeStyle = chopColor
-    ctx.fillStyle = chopColor
-    for (const r of chopRegions) {
-
-        const startX = r.x
-        const endX = r.x + r.width
-        const startY = r.y
-        const endY = r.y + r.height
-
-
-        ctx.beginPath()
-        ctx.moveTo(startX, startY)
-        ctx.lineTo(startX, endY)
-        ctx.stroke()
-
-        ctx.beginPath()
-        ctx.moveTo(endX, startY)
-        ctx.lineTo(endX, endY)
-        ctx.stroke()
-        if (r.isActive) {
-            ctx.fillRect(startX, startY, r.width, r.height)
-        }
-    }
 }
