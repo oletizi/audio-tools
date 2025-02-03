@@ -1,16 +1,16 @@
 import {useEffect, useRef, useState} from "react";
 import {Sample} from "@/model/sample";
 import {scale} from "@/lib/lib-core";
-import {Canvas, Group, Line, Polyline, XY} from "fabric"
+import {Canvas, Group, Line, Polyline, Rect, XY} from "fabric"
 
-interface Rect {
+interface Rectangle {
     x: number;
     y: number;
     width: number;
     height: number;
 }
 
-interface Region extends Rect {
+interface Region extends Rectangle {
     isActive: boolean
     group: Group
 }
@@ -123,7 +123,7 @@ export function WaveformView({sample, width, height, color, chops}: {
                 for (const c of chops) {
                     const startX = scale(c.start, 0, data.length / sample.getChannelCount(), 0, width)
                     const endX = scale(c.end, 0, data.length / sample.getChannelCount(), 0, width)
-                    let region = {
+                    let region: Region = {
                         x: startX,
                         y: 0,
                         width: endX - startX,
@@ -138,7 +138,26 @@ export function WaveformView({sample, width, height, color, chops}: {
                         stroke: chopTickColor,
                         strokeWidth: 1
                     })
+                    const regionRect :Rect = new Rect({
+                        left: region.x,
+                        top: 0,
+                        fill: 'transparent', // no fill, so only the stroke is visible
+                        stroke: 'transparent',      // stroke color
+                        width: region.width, //150,
+                        height: height,
+                    })
+                    region.group.on('mouseover', () => {
+                        regionRect.set('fill', chopRegionColor)
+                        canvas.renderAll()
+
+                    })
+                    region.group.on('mouseout', () =>{
+                        regionRect.set('fill', 'transparent')
+                        canvas.renderAll()
+                    })
+
                     region.group.add(lineStart)
+                    region.group.add(regionRect)
                     fabricRef.current?.add(region.group)
                     chopRegions.push(region)
                 }
