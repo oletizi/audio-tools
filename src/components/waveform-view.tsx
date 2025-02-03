@@ -132,8 +132,8 @@ export function WaveformView({sample, width, height, color, chops}: {
 
                     const spriteId = String('sprite-' + chopRegions.length)
                     const spriteStart = scale(c.start, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
-                    const spriteEnd = scale(c.end, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
-                    sprite[spriteId] = [spriteStart, spriteEnd]
+                    const spriteDuration = scale(c.end - c.start, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
+                    sprite[spriteId] = [spriteStart, spriteDuration]
 
                     let region: Region = {
                         x: startX,
