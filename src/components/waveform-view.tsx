@@ -44,7 +44,8 @@ export function WaveformView({sample, width, height, color, chops}: {
             const height = canvas.clientHeight
             const width = canvas.clientWidth
             const mid = Math.round(height / 2)
-            fabricRef.current = new Canvas(canvas)
+            const c = fabricRef.current = new Canvas(canvas, {selection: false})
+            c.hoverCursor = 'default'
             resizeCanvas()
             fabricRef.current?.add(new Line([0, mid, width, mid], {stroke: color, strokeWidth: 2}))
             paint()
@@ -94,10 +95,9 @@ export function WaveformView({sample, width, height, color, chops}: {
             if (waveform) {
                 fabricRef.current?.remove(waveform)
             }
-            waveform = new Polyline(points, {stroke: color, strokeWidth: 1})
+            waveform = new Polyline(points, {stroke: color, strokeWidth: 1, selectable: false})
             waveformRef.current = waveform
             if (fabricRef.current instanceof Canvas) {
-                console.log(`Adding waveform`)
                 fabricRef.current.add(waveform)
             }
 
@@ -136,7 +136,8 @@ export function WaveformView({sample, width, height, color, chops}: {
                     const chopRegionColor = 'rgb(25, 118, 210, 0.3)'
                     const lineStart = new Line([region.x, region.y, region.x, region.height], {
                         stroke: chopTickColor,
-                        strokeWidth: 1
+                        strokeWidth: 1,
+                        selectable: false
                     })
                     const regionRect :Rect = new Rect({
                         left: region.x,
@@ -145,15 +146,18 @@ export function WaveformView({sample, width, height, color, chops}: {
                         stroke: 'transparent',      // stroke color
                         width: region.width, //150,
                         height: height,
+                        selectable: false
                     })
                     region.group.on('mouseover', () => {
                         regionRect.set('fill', chopRegionColor)
-                        canvas.renderAll()
+                        paint()
+                        // canvas.renderAll()
 
                     })
                     region.group.on('mouseout', () =>{
                         regionRect.set('fill', 'transparent')
-                        canvas.renderAll()
+                        paint()
+                        // canvas.renderAll()
                     })
 
                     region.group.add(lineStart)
@@ -179,10 +183,9 @@ export function WaveformView({sample, width, height, color, chops}: {
         if (canvas) {
             const width = canvas.width
             const height = canvas.height
-            console.log(`paint()`)
-            console.log(`canvas width: ${canvas.width}, height: ${canvas.height}`)
             canvas.getObjects().forEach(o => {
-                console.log(`  obj: x: ${o.getX()}, y: ${o.getY()}, width: ${o.width}, height: ${o.height}`)
+                // console.log(`  obj: x: ${o.getX()}, y: ${o.getY()}, width: ${o.width}, height: ${o.height}`)
+                o.selectable = false
             })
             canvas.renderAll()
         }
