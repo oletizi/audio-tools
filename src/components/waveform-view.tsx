@@ -84,7 +84,7 @@ export function WaveformView({sample, width, height, color, chops}: {
                     sum = 0
                 }
             }
-
+            setWaveformData(waveformData)
             // Construct waveform object
             const points: XY[] = []
             let x = 0
@@ -133,7 +133,7 @@ export function WaveformView({sample, width, height, color, chops}: {
                     const spriteId = String('sprite-' + chopRegions.length)
                     const spriteStart = scale(c.start, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
                     const spriteDuration = scale(c.end - c.start, 0, data.length / sample.getChannelCount(), 0, sampleMillis)
-                    sprite[spriteId] = [spriteStart, spriteDuration]
+                    sprite[spriteId] = [spriteStart, spriteDuration, true]
 
                     let region: Region = {
                         x: startX,
@@ -205,10 +205,7 @@ export function WaveformView({sample, width, height, color, chops}: {
     function paint() {
         const canvas = fabricRef.current
         if (canvas) {
-            const width = canvas.width
-            const height = canvas.height
             canvas.getObjects().forEach(o => {
-                // console.log(`  obj: x: ${o.getX()}, y: ${o.getY()}, width: ${o.width}, height: ${o.height}`)
                 o.selectable = false
             })
             canvas.renderAll()
