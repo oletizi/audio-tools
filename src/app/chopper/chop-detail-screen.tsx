@@ -145,7 +145,7 @@ export function ChopDetailScreen(
                                     </TableBody></Table>
                                     <Table><TableBody>
                                         <TableRow><TableCell>Total Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
-                                    </TableBody> </Table>
+                                    </TableBody></Table>
                                 </Paper>
                                 <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
