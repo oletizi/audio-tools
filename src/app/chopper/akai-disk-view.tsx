@@ -22,6 +22,8 @@ import SyncIcon from '@mui/icons-material/Sync';
 
 import {ChopApp} from "@/app/chopper/chop-app";
 
+let seq = 0
+
 export function AkaiDiskView({app}: { app: ChopApp }) {
     const [disk, setDisk] = useState<AkaiDisk>({name: "Default", partitions: [], timestamp: 0})
     app.addDiskListener((d: AkaiDisk) => {
@@ -36,7 +38,7 @@ export function AkaiDiskView({app}: { app: ChopApp }) {
                 {disk.partitions.map(partition => {
                     items++
                     return (
-                        <List key={partition.name} sx={{width: '100%'}}>
+                        <List key={partition.name + '-' + seq} sx={{width: '100%'}}>
                             <PartitionView data={partition} openDefault={items === 1}/>
                         </List>)
                 })}
@@ -45,8 +47,10 @@ export function AkaiDiskView({app}: { app: ChopApp }) {
                 <Button onClick={() => {
                     app.fetchDisk()
                 }}><RefreshIcon/></Button>
-                <Button onClick={()=>{
-                    app.syncRemote()
+                <Button onClick={() => {
+                    app.syncRemote().then(r => {
+                        console.log(`Sync result: ${r}`)
+                    })
                 }}><SyncIcon/>Sync Remote</Button>
             </CardActions>
         </Card>)
@@ -75,8 +79,6 @@ function PartitionView({data, openDefault}: { data: AkaiPartition, openDefault: 
 
 function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolean }) {
     const [open, setOpen] = useState(openDefault)
-    console.log(`Akai volume: ${data.name}`)
-    console.log(`  Volume has ${data.records.length} records.`)
     return (<>
             <ListItemButton onClick={() => setOpen(!open)}>
                 <ListItemIcon><SaveIcon/></ListItemIcon>
@@ -87,20 +89,16 @@ function VolumeView({data, openDefault}: { data: AkaiVolume, openDefault: boolea
                 <List sx={{width: '100%'}} dense={true} disablePadding>
                     {data.records.map(record => {
                         return (
-                            <ListItem className="bg-gray-50" sx={{pl: 2}} key={record.name} disableGutters><RecordsView
-                                record={record}/></ListItem>)
+                            <ListItem className="bg-gray-50" sx={{pl: 2}} key={record.name + '-' + seq++} disableGutters>
+                                <ListItemIcon>
+                                    {record.type === AkaiRecordType.SAMPLE ? <AudioFile/> :
+                                        <LibraryBooksIcon/>}
+                                </ListItemIcon>
+                                <ListItemText primary={record.name.split('/').pop()}/>
+                            </ListItem>)
                     })}
                 </List>
             </Collapse>
         </>
     )
-}
-
-function RecordsView({record}: { record: AkaiRecord }) {
-    return (
-        <ListItem key={record.name} disableGutters>
-            <ListItemIcon>{record.type === AkaiRecordType.SAMPLE ? <AudioFile/> :
-                <LibraryBooksIcon/>}</ListItemIcon>
-            <ListItemText primary={record.name.split('/').pop()}/>
-        </ListItem>)
 }
