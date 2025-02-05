@@ -12,7 +12,7 @@ import {
     ListItemText
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {AkaiDisk, AkaiPartition, AkaiRecord, AkaiRecordType, AkaiVolume} from "@/model/akai";
+import {AkaiDisk, AkaiPartition, AkaiRecordType, AkaiVolume} from "@/model/akai";
 import RefreshIcon from '@mui/icons-material/Refresh'
 import StorageIcon from '@mui/icons-material/Storage';
 import SaveIcon from '@mui/icons-material/Save';
