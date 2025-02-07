@@ -37,6 +37,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-alpha.6",
     "@chakra-ui/react": "^3.2.0",
     "@emotion/cache": "^11.13.5",
     "@emotion/react": "^11.13.5",

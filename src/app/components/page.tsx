@@ -1,60 +1,41 @@
 "use client"
-import {Knob} from "@/components/knob";
-import {useEffect, useState} from "react";
-import {Button, Stack} from "@mui/material";
+import {Knob} from "@/components/knob"
+import React, {useState} from "react"
+import {Button, Stack} from "@mui/material"
 
-import {DoubleThrowSwitch} from "@/components/components-core";
-import {AkaiDisk} from "@/model/akai";
-import {getAudioData} from "@/lib/client-translator";
-import {WaveformView} from "@/components/waveform-view";
+import {DoubleThrowSwitch} from "@/components/components-core"
+import {NumberField} from "@base-ui-components/react/number-field"
+import styles from "./index.module.css"
 
 export default function Page() {
     const mainColor = "#aaaaaa"
     const [value, setValue] = useState(1)
     const [thingy, setThingy] = useState(0)
-    const akaiDiskJson = '{ "timestamp": "0", "name":"akai-1738276851687.img","partitions":[{"block":0,"name":"1","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"},{"block":5,"name":"/vol_1/sample1","size":384000,"type":"S3000 SAMPLE"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"2","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]},{"block":0,"name":"3","size":0,"type":"S3000 PARTITION","volumes":[{"block":3,"name":"/vol_1","records":[{"block":5,"name":"/vol_1/test_program","size":384,"type":"S3000 PROGRAM"}],"size":0,"type":"S3000 VOLUME"}]}]}';
-    const audiodataPath = '/DK.SHIBO1.wav'
-    const akaiDisk: AkaiDisk = JSON.parse(akaiDiskJson)
-    const audioDataListeners = []
-    useEffect(() => {
-        console.log(`Fetching audio data...`)
-        getAudioData(audiodataPath).then(r => {
-            r.errors.forEach(e => console.error(e))
-            if (r.errors.length < 1) {
-                audioDataListeners.forEach(l => l(r.data))
-            }
-        }).catch(e => console.error(e))
-    }, [])
-
-    const subscribers = new Set()
-    const dataSource = {
-        subscribe: ((onStoreChange) => {
-            subscribers.add(onStoreChange)
-            return () => {
-                subscribers.delete(onStoreChange)
-            }
-        }),
-        getSnapshot: () => value,
-        getServerSnapshot: () => 0
-    }
-
-
+    const id = React.useId()
     return (<div className="container pt-10">
+
         <div className="flex gap-5">
-            <WaveformView width={500} height={100} listen={(l) => {
-                audioDataListeners.push(l)
-            }}/>
+            <NumberField.Root id={id} defaultValue={60} className={styles.Field}>
+                <NumberField.ScrubArea className={styles.ScrubArea}>
+                    <label htmlFor={id} className={styles.Label}>
+                        Amount
+                    </label>
+                    <NumberField.ScrubAreaCursor className={styles.ScrubAreaCursor}>
+                        <CursorGrowIcon />
+                    </NumberField.ScrubAreaCursor>
+                </NumberField.ScrubArea>
+
+                <NumberField.Group className={styles.Group}>
+                    <NumberField.Decrement className={styles.Decrement}>
+                        <MinusIcon />
+                    </NumberField.Decrement>
+                    <NumberField.Input className={styles.Input} />
+                    <NumberField.Increment className={styles.Increment}>
+                        <PlusIcon />
+                    </NumberField.Increment>
+                </NumberField.Group>
+            </NumberField.Root>
             <Stack className="flex flex-col items-center gap-5">
-                <Knob strokeWidth={3}
-                      onChange={(v) => {
-                          console.log(`new value: ${v}`)
-                          setValue(v)
-                      }}
-                      min={0}
-                      max={5}
-                      step={1}
-                      dataSource={dataSource}
-                      defaultValue={value}/>
                 <div style={{color: mainColor}}>{value}</div>
                 <Button onClick={() => setValue(4)}>Set Value to 4</Button>
                 {thingy ? <><Knob defaultValue={64} min={0} max={127}/>
@@ -70,3 +51,52 @@ export default function Page() {
     </div>)
 }
 
+function CursorGrowIcon(props: React.ComponentProps<'svg'>) {
+    return (
+        <svg
+            width="26"
+            height="14"
+            viewBox="0 0 24 14"
+            fill="black"
+            stroke="white"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+        >
+            <path d="M19.5 5.5L6.49737 5.51844V2L1 6.9999L6.5 12L6.49737 8.5L19.5 8.5V12L25 6.9999L19.5 2V5.5Z" />
+        </svg>
+    );
+}
+
+function PlusIcon(props: React.ComponentProps<'svg'>) {
+    return (
+        <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            stroke="currentcolor"
+            strokeWidth="1.6"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+        >
+            <path d="M0 5H5M10 5H5M5 5V0M5 5V10" />
+        </svg>
+    );
+}
+
+function MinusIcon(props: React.ComponentProps<'svg'>) {
+    return (
+        <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            stroke="currentcolor"
+            strokeWidth="1.6"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+        >
+            <path d="M0 5H10" />
+        </svg>
+    );
+}

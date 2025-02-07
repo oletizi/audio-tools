@@ -3,7 +3,7 @@ import {Sample, SampleMetadata} from "@/model/sample";
 import {getAudioData, getMeta} from "@/lib/client-translator";
 import {Howl} from 'howler'
 import {
-    Alert,
+    Alert, Box,
     Button,
     Card, CardActions,
     CardContent,
@@ -16,6 +16,7 @@ import {
     TableRow,
     TextField
 } from "@mui/material";
+import { NumberField } from '@base-ui-components/react/number-field'
 import {ChopApp} from "@/app/chopper/chop-app";
 import {AkaiDisk} from "@/model/akai";
 import {WaveformView} from "@/components/waveform-view";
@@ -68,7 +69,7 @@ export function ChopDetailScreen(
                     const s: Sample = r.sample
                     setSample(s)
                     setAudioSource(new Howl({
-                        src: [URL.createObjectURL(new Blob([r.data], {type:'audio/wav'}))],
+                        src: [URL.createObjectURL(new Blob([r.data], {type: 'audio/wav'}))],
                         format: ['wav']
                     }))
                 }
@@ -174,8 +175,11 @@ export function ChopDetailScreen(
                                             </TableRow>
                                         </TableBody></Table>
                                 </Paper>
-                                <TextField label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
-
+                                <Box className="flex" gap={4}>
+                                    <TextField className="grow" label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
+                                    <Slider min={20} max={127} step={1} shiftStep={5}/>
+                                    <NumberField.Root></NumberField.Root>
+                                </Box>
                                 <CardActions>
                                     <Button variant="contained"
                                             onClick={() => {
