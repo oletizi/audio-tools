@@ -11,9 +11,6 @@ import {
     Paper,
     Skeleton,
     Snackbar,
-    Table, TableBody,
-    TableCell,
-    TableRow,
     TextField
 } from "@mui/material";
 import NumberInput from "@/components/number-input"
@@ -139,20 +136,20 @@ export function ChopDetailScreen(
                         <Skeleton height={30}/>}
                     {meta ? (
                             <>
-                                <Paper variant="outlined"><Metadata meta={meta}/></Paper>
-                                <Paper variant="outlined" className="flex gap-5">
-                                    <FieldDisplay className="p-3" label="Total Beats" value={getTotalBeats()}/>
-                                    <FieldDisplay className="p-3" label="Total Chops" value={getTotalChops()}/>
+                                <Paper variant="outlined"><Metadata meta={meta} padding={3} gap={5}/></Paper>
+                                <Paper variant="outlined" className="flex gap-10 p-3">
+                                    <FieldDisplay className="w-1/2" label="Total Beats" value={getTotalBeats()}/>
+                                    <FieldDisplay className="w-1/2" label="Total Chops" value={getTotalChops()}/>
                                 </Paper>
                                 <Box className="flex gap-4">
-                                    <NumberInput className="grow"
+                                    <NumberInput className="w-1/2"
                                                  label="BPM"
                                                  defaultValue={bpm}
                                                  min={1}
                                                  max={300}
                                                  onChange={(v) => setBpm(v)}/>
 
-                                    <NumberInput className="grow"
+                                    <NumberInput className="w-1/2"
                                                  label="Beats per Chop"
                                                  defaultValue={beatsPerChop}
                                                  min={1}
@@ -209,39 +206,20 @@ export function ChopDetailScreen(
     )
 }
 
-function Metadata({meta}: { meta: SampleMetadata | null }) {
+function Metadata({meta, className = '', gap = 4, padding = 3}: { meta: SampleMetadata | null }) {
     if (!meta) {
         return (<></>)
     }
     return (
-        <div className="flex gap-5">
-            <Table>
-                <TableBody>
-                    <TableRow>
-                        <TableCell className="">Sample Rate</TableCell><TableCell>{meta.sampleRate}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>Channel Count</TableCell><TableCell>{meta.channelCount}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-            <Table>
-                <TableBody>
-                    <TableRow>
-                        <TableCell>Bit Depth</TableCell><TableCell>{meta.bitDepth}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>Sample Length</TableCell><TableCell>{meta.sampleLength}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+        <div className="flex-col gap-4">
+            <Box className={`flex gap-${gap} grow ${className}`}>
+                <FieldDisplay className={`w-1/2 p-${padding}`} label="Sample Rate" value={meta.sampleRate}/>
+                <FieldDisplay className={`w-1/2 p-${padding}`} label="Channel Count" value={meta.channelCount}/>
+            </Box>
+            <Box className={`flex gap-${gap} grow ${className}`}>
+                <FieldDisplay className={`w-1/2 p-${padding}`} label="Bit Depth" value={meta.bitDepth}/>
+                <FieldDisplay className={`w-1/2 p-${padding}`} label="Sample Length" value={meta.sampleLength}/>
+            </Box>
         </div>
     )
-    // return (
-    //     <div className="flex flex-col gap-4">
-    //         <FieldDisplay label="Sample Rate" value={meta.sampleRate}/>
-    //         <FieldDisplay label="Bit Depth" value={meta.bitDepth}/>
-    //         <FieldDisplay label="Channel Count" value={meta.channelCount}/>
-    //         <FieldDisplay label="Sample Length" value={meta.sampleLength}/>
-    //     </div>)
 }
