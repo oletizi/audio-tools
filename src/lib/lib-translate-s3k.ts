@@ -22,6 +22,17 @@ import {
 } from "@/midi/devices/s3000xl";
 import {AkaiToolsConfig} from "@/model/akai";
 
+export type Map2Midi = (name: string) => number
+
+// export async function map(c: AkaiToolsConfig, mapper: Map2Midi, opts: {
+//     source: string,
+//     target: string
+// }) : Promise<ExecutionResult> {
+//     const rv = { code: -1, errors: []}
+//
+//     return rv
+// }
+
 export async function chop(c: AkaiToolsConfig, opts: {
     source: string,
     target: string,

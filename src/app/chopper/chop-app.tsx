@@ -1,11 +1,9 @@
 import {ClientConfig} from "@/lib/config-client";
 import {ProcessOutput} from "@/lib/process-output";
-import {chopSample, getAkaiDisk, getAudioData, syncRemote} from "@/lib/client-translator";
-
-// type AppListener = (Element) => void
+import {chopSample, getAkaiDisk, syncRemote} from "@/lib/client-translator";
 
 type AkaiDiskListener = (AkaiDisk) => void
-type SampleListener = (Sample) => void
+
 export class ChopApp {
     private readonly config: ClientConfig;
     private readonly out: ProcessOutput;

@@ -7,3 +7,9 @@
 
 *storybook.log
 /.DS_Store
+/translate/.idea/
+/translate/.nyc_output/
+/translate/coverage/
+/translate/mochawesome-report/
+/translate/dist/
+/translate/node_modules/

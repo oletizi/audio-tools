@@ -1,0 +1,38 @@
+{
+  "name": "@oletizi/translate",
+  "version": "1.0.0",
+  "description": "Sampler format translation utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "nyc mocha",
+    "prepublish": "tsc"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "all": true
+  },
+  "author": "Orion Letizi",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "tsx": "^4.19.2",
+    "mocha": "^11.1.0",
+    "chai": "^5.1.2",
+    "nyc": "^17.1.0",
+    "typescript": "^5.7.3"
+  }
+}
