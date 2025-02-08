@@ -10,7 +10,7 @@ import {
     CardHeader,
     Paper,
     Skeleton,
-    Slider, Snackbar,
+    Snackbar,
     Table, TableBody,
     TableCell,
     TableRow,
