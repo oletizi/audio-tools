@@ -1,13 +1,13 @@
 {
   "name": "@oletizi/translate",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Sampler format translation utilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "test": "c8 mocha",
-    "do:publish": "npm version patch && npm publish --access=public"
+    "do:publish": "npm test && npm version patch && npm publish --access=public"
   },
   "author": "Orion Letizi",
   "license": "ISC",
