@@ -1,14 +1,12 @@
 import {TextField} from "@mui/material";
 import React, {useRef, useState} from "react";
 
-export default function NumberInput({label, defaultValue, min, max, onChange}:
-                                        { label: string, min: number, max: number, onChange: (number) => void}) {
+export default function NumberInput({label, defaultValue, min, max, onChange, className = ''}:
+                                        { label: string, min: number, max: number, onChange: (number) => void }) {
     const id = React.useId()
     const [value, setValue] = useState<number>(defaultValue)
-    return (<form onSubmit={(e) => {
-        e.preventDefault()
-        onChange(value)
-    }}><TextField
+    return (<TextField
+        className={className}
         id={id}
         type="number"
         label={label}
@@ -25,5 +23,5 @@ export default function NumberInput({label, defaultValue, min, max, onChange}:
                 onChange(v)
             }
         }}
-    /></form>)
+    />)
 }

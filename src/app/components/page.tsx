@@ -7,6 +7,7 @@ import {DoubleThrowSwitch} from "@/components/components-core"
 import {NumberField} from "@base-ui-components/react/number-field"
 import styles from "./index.module.css"
 import NumberInput from "@/components/number-input";
+import FieldDisplay from "@/components/field-display";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
@@ -14,8 +15,26 @@ export default function Page() {
     const [thingy, setThingy] = useState(0)
     const id = React.useId()
     return (<div className="container pt-10 flex-column gap-4">
+        <div className="flex">
+            <div className="flex-column border-2">
+                <div className="flex gap-4 w-full border-2">
+                    <div className="grow">Label</div>
+                    <div>Value</div>
+                </div>
+                <FieldDisplay label="Value" value={value}/>
+                <FieldDisplay label="Thingy" value={thingy}/>
+            </div>
+            <div className="flex-column border-2">
+                <div className="flex gap-4 w-full border-2">
+                    <div className="grow">Label</div>
+                    <div>Value</div>
+                </div>
+                <FieldDisplay label="Value" value={value}/>
+                <FieldDisplay label="Thingy" value={thingy}/>
+            </div>
+        </div>
         <div className="flex gap-4">
-            <NumberInput label="Number Input" onChange={(v) => setValue(v)}/>
+            <NumberInput label="Number Input" value={value} min={1} max={100} onChange={(v) => setValue(v)}/>
             <NumberField.Root id={id} defaultValue={60} className={styles.Field}>
                 <NumberField.ScrubArea className={styles.ScrubArea}>
                     <label htmlFor={id} className={styles.Label}>

@@ -21,6 +21,7 @@ import {ChopApp} from "@/app/chopper/chop-app";
 import {AkaiDisk} from "@/model/akai";
 import {WaveformView} from "@/components/waveform-view";
 import {Transport} from "@/components/transport";
+import FieldDisplay from "@/components/field-display";
 
 export function ChopDetailScreen(
     {
@@ -140,40 +141,24 @@ export function ChopDetailScreen(
                             <>
                                 <Paper variant="outlined"><Metadata meta={meta}/></Paper>
                                 <Paper variant="outlined" className="flex gap-5">
-                                    <Table><TableBody>
-                                        <TableRow><TableCell>Total Beats</TableCell>
-                                            <TableCell>{getTotalBeats()}</TableCell></TableRow>
-                                    </TableBody></Table>
-                                    <Table><TableBody>
-                                        <TableRow><TableCell>Total Chops</TableCell><TableCell>{getTotalChops()}</TableCell></TableRow>
-                                    </TableBody></Table>
+                                    <FieldDisplay className="p-3" label="Total Beats" value={getTotalBeats()}/>
+                                    <FieldDisplay className="p-3" label="Total Chops" value={getTotalChops()}/>
                                 </Paper>
-                                <Paper variant="outlined" className="flex gap-5">
-                                    <Table><TableBody>
-                                        <TableRow>
-                                            <TableCell>
-                                                <NumberInput label="BPM"
-                                                             defaultValue={bpm}
-                                                             min={1}
-                                                             max={300}
-                                                             onChange={(v) => setBpm(v)}/>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                    </Table>
-                                    <Table>
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <NumberInput label="Beats per Chop"
-                                                                 defaultValue={beatsPerChop}
-                                                                 min={1}
-                                                                 max={32}
-                                                                 onChange={(v) => setBeatsPerChop(v)}/>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody></Table>
-                                </Paper>
+                                <Box className="flex gap-4">
+                                    <NumberInput className="grow"
+                                                 label="BPM"
+                                                 defaultValue={bpm}
+                                                 min={1}
+                                                 max={300}
+                                                 onChange={(v) => setBpm(v)}/>
+
+                                    <NumberInput className="grow"
+                                                 label="Beats per Chop"
+                                                 defaultValue={beatsPerChop}
+                                                 min={1}
+                                                 max={32}
+                                                 onChange={(v) => setBeatsPerChop(v)}/>
+                                </Box>
                                 <Box className="flex" gap={4}>
                                     <TextField className="grow" label="Prog. Name" value={prefix}
                                                onChange={e => setPrefix(e.target.value)}/>
