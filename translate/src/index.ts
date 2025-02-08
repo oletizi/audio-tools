@@ -2,5 +2,5 @@ export function hello() {
     return "Hello"
 }
 
-export {description} from "@/lib-translate"
+export * from "./lib-translate"
 
