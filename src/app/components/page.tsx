@@ -6,35 +6,38 @@ import {Button, Stack} from "@mui/material"
 import {DoubleThrowSwitch} from "@/components/components-core"
 import {NumberField} from "@base-ui-components/react/number-field"
 import styles from "./index.module.css"
+import NumberInput from "@/components/number-input";
 
 export default function Page() {
     const mainColor = "#aaaaaa"
     const [value, setValue] = useState(1)
     const [thingy, setThingy] = useState(0)
     const id = React.useId()
-    return (<div className="container pt-10">
-
-        <div className="flex gap-5">
+    return (<div className="container pt-10 flex-column gap-4">
+        <div className="flex gap-4">
+            <NumberInput label="Number Input" onChange={(v) => setValue(v)}/>
             <NumberField.Root id={id} defaultValue={60} className={styles.Field}>
                 <NumberField.ScrubArea className={styles.ScrubArea}>
                     <label htmlFor={id} className={styles.Label}>
                         Amount
                     </label>
                     <NumberField.ScrubAreaCursor className={styles.ScrubAreaCursor}>
-                        <CursorGrowIcon />
+                        <CursorGrowIcon/>
                     </NumberField.ScrubAreaCursor>
                 </NumberField.ScrubArea>
 
                 <NumberField.Group className={styles.Group}>
                     <NumberField.Decrement className={styles.Decrement}>
-                        <MinusIcon />
+                        <MinusIcon/>
                     </NumberField.Decrement>
-                    <NumberField.Input className={styles.Input} />
+                    <NumberField.Input className={styles.Input}/>
                     <NumberField.Increment className={styles.Increment}>
-                        <PlusIcon />
+                        <PlusIcon/>
                     </NumberField.Increment>
                 </NumberField.Group>
             </NumberField.Root>
+        </div>
+        <div className="flex gap-5">
             <Stack className="flex flex-col items-center gap-5">
                 <div style={{color: mainColor}}>{value}</div>
                 <Button onClick={() => setValue(4)}>Set Value to 4</Button>
@@ -62,7 +65,7 @@ function CursorGrowIcon(props: React.ComponentProps<'svg'>) {
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
-            <path d="M19.5 5.5L6.49737 5.51844V2L1 6.9999L6.5 12L6.49737 8.5L19.5 8.5V12L25 6.9999L19.5 2V5.5Z" />
+            <path d="M19.5 5.5L6.49737 5.51844V2L1 6.9999L6.5 12L6.49737 8.5L19.5 8.5V12L25 6.9999L19.5 2V5.5Z"/>
         </svg>
     );
 }
@@ -79,7 +82,7 @@ function PlusIcon(props: React.ComponentProps<'svg'>) {
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
-            <path d="M0 5H5M10 5H5M5 5V0M5 5V10" />
+            <path d="M0 5H5M10 5H5M5 5V0M5 5V10"/>
         </svg>
     );
 }
@@ -96,7 +99,7 @@ function MinusIcon(props: React.ComponentProps<'svg'>) {
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
-            <path d="M0 5H10" />
+            <path d="M0 5H10"/>
         </svg>
     );
 }

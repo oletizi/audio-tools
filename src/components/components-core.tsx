@@ -1,5 +1,5 @@
 import {Box, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, TextField} from "@mui/material";
-import {useState} from "react";
+import React, {useState} from "react";
 import FormControl from "@mui/material/FormControl";
 
 export function DoubleThrowSwitch({color = "#777", aLabel, bLabel, onChange = () => void 0}: {
@@ -44,15 +44,6 @@ export function LabeledBorder({
         </Box>
     )
 }
-
-export function FieldDisplay({label, value}: { label: string, value: any }) {
-    return (
-        <div className="flex gap-4">
-            <div className="w-1/2">{label}</div>
-            <div className="grow">{String(value)}</div>
-        </div>)
-}
-
 export default function IntField({
                              onSubmit,
                              label = "",

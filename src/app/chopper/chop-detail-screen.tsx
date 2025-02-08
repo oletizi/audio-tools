@@ -16,7 +16,7 @@ import {
     TableRow,
     TextField
 } from "@mui/material";
-import { NumberField } from '@base-ui-components/react/number-field'
+import NumberInput from "@/components/number-input"
 import {ChopApp} from "@/app/chopper/chop-app";
 import {AkaiDisk} from "@/model/akai";
 import {WaveformView} from "@/components/waveform-view";
@@ -151,34 +151,32 @@ export function ChopDetailScreen(
                                 <Paper variant="outlined" className="flex gap-5">
                                     <Table><TableBody>
                                         <TableRow>
-                                            <TableCell>BPM ({bpm}) <Slider value={bpm} min={60}
-                                                                           max={200}
-                                                                           step={1}
-                                                                           shiftStep={5}
-                                                                           onChange={e => {
-                                                                               setBpm(e.target.value)
-                                                                           }}/></TableCell>
+                                            <TableCell>
+                                                <NumberInput label="BPM"
+                                                             defaultValue={bpm}
+                                                             min={1}
+                                                             max={300}
+                                                             onChange={(v) => setBpm(v)}/>
+                                            </TableCell>
                                         </TableRow>
                                     </TableBody>
                                     </Table>
                                     <Table>
                                         <TableBody>
                                             <TableRow>
-                                                <TableCell>Beats per Chop ({beatsPerChop})
-                                                    <Slider value={beatsPerChop} min={1} max={32} marks
-                                                            step={1}
-                                                            shiftStep={4}
-                                                            onChange={e => {
-                                                                setBeatsPerChop(e.target.value)
-                                                            }
-                                                            }/></TableCell>
+                                                <TableCell>
+                                                    <NumberInput label="Beats per Chop"
+                                                                 defaultValue={beatsPerChop}
+                                                                 min={1}
+                                                                 max={32}
+                                                                 onChange={(v) => setBeatsPerChop(v)}/>
+                                                </TableCell>
                                             </TableRow>
                                         </TableBody></Table>
                                 </Paper>
                                 <Box className="flex" gap={4}>
-                                    <TextField className="grow" label="Prog. Name" value={prefix} onChange={e => setPrefix(e.target.value)}/>
-                                    <Slider min={20} max={127} step={1} shiftStep={5}/>
-                                    <NumberField.Root></NumberField.Root>
+                                    <TextField className="grow" label="Prog. Name" value={prefix}
+                                               onChange={e => setPrefix(e.target.value)}/>
                                 </Box>
                                 <CardActions>
                                     <Button variant="contained"

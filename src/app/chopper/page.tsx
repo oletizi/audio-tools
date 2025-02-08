@@ -5,7 +5,6 @@ import {newClientOutput} from "@/lib/process-output";
 import {ChopApp} from "@/app/chopper/chop-app";
 import {ChopDetailScreen} from "@/app/chopper/chop-detail-screen";
 import React, {useState} from "react";
-import {chopSample} from "@/lib/client-translator";
 import {AkaiDiskView} from "@/app/chopper/akai-disk-view";
 
 
