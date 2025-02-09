@@ -1,19 +1,23 @@
-import {chop, map} from "../../src/lib/lib-translate-s3k";
+import {chop, map, ChopOpts} from "@/lib/lib-translate-s3k";
 import path from "path";
-import {akaiFormat, newAkaiToolsConfig} from "../../src/akaitools/akaitools";
+import {akaiFormat, newAkaiToolsConfig} from "@/akaitools/akaitools";
 import {expect} from "chai";
 import fs from "fs/promises";
+// import {AbstractProgram} from "@oletizi/translate"
 
 describe('Integration tests for lib-translate-s3k', async () => {
 
-    // it(`Maps samples`, async function () {
-    //     const c = await newAkaiToolsConfig()
-    //     const source = path.join('test', 'data', 'auto', 'J8.01')
-    //     const mapper = (v) => {
-    //         return 0
-    //     }
-    //     map(c, mapper, {source: source, target: ""})
-    // })
+    it(`Maps samples`, async function () {
+        const c = await newAkaiToolsConfig()
+        const source = path.join('test', 'data', 'auto', 'J8.01')
+        const result = await map(c, {source: source, target: ""})
+        expect(result.errors.length).eq(0)
+        expect(result.data).exist
+        const program = result.data
+        expect(program.keygroups).exist
+
+
+    })
 
     it(`Chops samples`, async function () {
         this.timeout(5000)
@@ -34,7 +38,8 @@ describe('Integration tests for lib-translate-s3k', async () => {
         const prefix = 'loop96'
         const samplesPerBeat = 27563
         const beatsPerChop = 4
-        const opts = {
+        const opts: ChopOpts = {
+            partition: 0,
             source: sourcepath,
             target: targetpath,
             prefix: prefix,

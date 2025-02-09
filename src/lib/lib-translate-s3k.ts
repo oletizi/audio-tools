@@ -9,7 +9,7 @@ import fs from "fs/promises"
 import {createWriteStream} from 'fs'
 import {newSampleFromBuffer} from "@/model/sample";
 import path from "path";
-import {pad} from "@/lib/lib-core";
+import {pad, Result} from "@/lib/lib-core";
 import {newServerConfig} from "@/lib/config-server";
 import {
     KeygroupHeader_writeCP1, KeygroupHeader_writeCP2,
@@ -21,27 +21,31 @@ import {
     SampleHeader
 } from "@/midi/devices/s3000xl";
 import {AkaiToolsConfig} from "@/model/akai";
+import {mapProgram, mapLogicAutoSampler, AbstractProgram} from "@oletizi/translate";
 
-export type Map2Midi = (name: string) => number
+export interface AbstractProgramResult extends Result {
+    data: AbstractProgram
+}
 
-// export async function map(c: AkaiToolsConfig, mapper: Map2Midi, opts: {
-//     source: string,
-//     target: string
-// }) : Promise<ExecutionResult> {
-//     const rv = { code: -1, errors: []}
-//
-//     return rv
-// }
-
-export async function chop(c: AkaiToolsConfig, opts: {
+export async function map(c: AkaiToolsConfig, opts: {
     source: string,
-    target: string,
-    partition: number,
-    prefix: string,
-    samplesPerBeat: number,
-    beatsPerChop: number,
-    wipeDisk: boolean
-}) {
+    target: string
+}): Promise<AbstractProgramResult> {
+    const program = mapProgram(mapLogicAutoSampler, opts)
+    return {data: program, errors: []}
+}
+
+export interface ChopOpts {
+    source: string;
+    target: string;
+    partition: number;
+    prefix: string;
+    samplesPerBeat: number;
+    beatsPerChop: number;
+    wipeDisk: boolean;
+}
+
+export async function chop(c: AkaiToolsConfig, opts: ChopOpts) {
     const cfg = await newServerConfig()
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
@@ -138,7 +142,7 @@ export async function chop(c: AkaiToolsConfig, opts: {
             await akaiWrite(c, programPath, `/${opts.prefix}`, opts.partition)
         }
     }
-    if (rv.errors.length === 0){
+    if (rv.errors.length === 0) {
         rv.code = 0
     }
     return rv

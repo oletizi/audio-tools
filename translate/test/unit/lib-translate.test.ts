@@ -1,4 +1,4 @@
-import {AudioMetadata, AudioSource, description, Keygroup, mapLogicAutoSampler, mapProgram} from "@/index"
+import {AudioMetadata, AudioSource, description, AbstractKeygroup, mapLogicAutoSampler, mapProgram} from "@/index"
 import {expect} from "chai";
 import path from "path";
 import {midiNoteToNumber} from "@/lib-midi";
@@ -25,7 +25,7 @@ describe(`Core translator mapper tests`, async () => {
         try {
             // @ts-ignore
             await mapProgram(() => {
-                return {} as Keygroup
+                return {} as AbstractKeygroup
                 // @ts-ignore
             }, null)
             expect.fail(failMessage)
@@ -39,7 +39,7 @@ describe(`Core translator mapper tests`, async () => {
     it(`Maps samples to a program`, async () => {
         const mapFunctionCalls = []
 
-        function mapFunction(s: AudioSource[]): Keygroup[] {
+        function mapFunction(s: AudioSource[]): AbstractKeygroup[] {
             mapFunctionCalls.push(s)
 
             return s.map((v) => {

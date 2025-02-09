@@ -8,12 +8,12 @@ export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
 }
 
-export interface Program {
-    keygroups: Keygroup[]
+export interface AbstractProgram {
+    keygroups: AbstractKeygroup[]
 }
 
-export interface Keygroup {
-    zones: Zone[]
+export interface AbstractKeygroup {
+    zones: AbstractZone[]
 }
 
 export interface AudioMetadata {
@@ -30,16 +30,16 @@ export interface AudioSource {
     url: string
 }
 
-export interface Zone {
+export interface AbstractZone {
     audioSource: AudioSource
     lowNote: number
     highNote: number
 }
 
-export type MapFunction = (s: AudioSource[]) => Keygroup[]
+export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
 
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
-    const rv: Keygroup[] = []
+    const rv: AbstractKeygroup[] = []
 
     // const note2Samples = new Map<number, AudioSource[]>()
     const note2Samples = new Map<number, AudioSource[]>()
@@ -60,7 +60,7 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     }
     let start = 0
     Array.from(note2Samples.keys()).sort((a, b) => {return a - b}).forEach(i => {
-        const zones: Zone[] = []
+        const zones: AbstractZone[] = []
         _(note2Samples.get(i)).each(s => {
             zones.push({audioSource: s, highNote: i, lowNote: start})
         })
