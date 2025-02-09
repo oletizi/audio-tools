@@ -69,7 +69,7 @@ describe(`Core library functions`, () => {
         expect(bytes2numberBE(b)).to.eq(256)
     })
 
-    it(`Converts a byte to two little-endian nibbles`, () => {
+    it(`Converts a byte to two little-endian nibbles and back again.`, () => {
 
         let nibbles = byte2nibblesLE(0)
         expect(nibbles[0]).to.eq(0)
@@ -89,7 +89,7 @@ describe(`Core library functions`, () => {
             throw new Error(`Barf`)
         } catch (e) {
             if (e.message === 'Barf') {
-                expect.fail('Should throw exception if input in bounds.')
+                expect.fail('Should throw exception if input out of bounds.')
             }
         }
         try {
@@ -97,8 +97,45 @@ describe(`Core library functions`, () => {
             throw new Error(`Barf`)
         } catch (e) {
             if (e.message === 'Barf') {
-                expect.fail(`Should throw exception if input in bounds`)
+                expect.fail(`Should throw exception if input out of bounds`)
             }
         }
+
+        try {
+            nibbles2byte(-1, 0)
+            throw new Error('Barf')
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail(`Should throw exception if input out of bounds`)
+            }
+        }
+
+        try {
+            nibbles2byte(0, -1)
+            throw new Error('Barf')
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail(`Should throw exception if input out of bounds`)
+            }
+        }
+
+        try {
+            nibbles2byte(16, 0)
+            throw new Error('Barf')
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail(`Should throw exception if input out of bounds`)
+            }
+        }
+
+        try {
+            nibbles2byte(0, 16)
+            throw new Error('Barf')
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail(`Should throw exception if input out of bounds`)
+            }
+        }
+
     })
 })
