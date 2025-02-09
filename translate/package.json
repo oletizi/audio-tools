@@ -17,7 +17,8 @@
   "author": "Orion Letizi",
   "license": "ISC",
   "dependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.2"
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "music-metadata": "^10.9.0"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
