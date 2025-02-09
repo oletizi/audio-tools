@@ -1,0 +1,18 @@
+{
+  "name": "@oletizi/midi-devices",
+  "version": "0.0.1",
+  "description": "Module for communicating with old midi devices",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "c8 mocha",
+    "gen:s3000xl": "tsx src/gen-s3000xl.ts src/devices"
+  },
+  "author": "Orion Letizi",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/node": "^22.13.1",
+    "typescript": "^5.7.3",
+    "yaml": "^2.7.0"
+  }
+}

@@ -7,14 +7,21 @@
 
 *storybook.log
 /.DS_Store
-/translate/.idea/
-/translate/.nyc_output/
-/translate/coverage/
-/translate/mochawesome-report/
-/translate/dist/
-/translate/node_modules/
+/sampler-translate/.idea/
+/sampler-translate/.nyc_output/
+/sampler-translate/coverage/
+/sampler-translate/mochawesome-report/
+/sampler-translate/dist/
+/sampler-translate/node_modules/
 /sampler-interface/coverage/
 /sampler-interface/.idea/
 /sampler-interface/mochawesome-report/
 /sampler-interface/node_modules/
 /sampler-interface/.next/
+/sampler-devices/coverage/
+/sampler-devices/mochawesome-report/
+/sampler-devices/node_modules/
+/sampler-devices/.idea/
+/sampler-lib/coverage/
+/sampler-lib/mochawesome-report/
+/sampler-lib/node_modules/

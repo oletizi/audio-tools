@@ -15,17 +15,18 @@
   "license": "ISC",
   "devDependencies": {
     "c8": "^10.1.3",
-    "mocha": "^11.1.0"
-  },
-  "dependencies": {
-    "@tsconfig/recommended": "^1.0.8",
-    "@types/chai": "^5.0.1",
-    "@types/mocha": "^10.0.10",
     "chai": "^5.1.2",
-    "next": "^15.1.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@types/chai": "^5.0.1",
+    "mocha": "^11.1.0",
+    "@types/mocha": "^10.0.10",
+    "@tsconfig/recommended": "^1.0.8",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@oletizi/sampler-translate": "^0.0.24",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

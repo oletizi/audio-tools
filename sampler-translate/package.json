@@ -1,5 +1,5 @@
 {
-  "name": "@oletizi/translate",
+  "name": "@oletizi/sampler-translate",
   "version": "0.0.20",
   "description": "Sampler format translation utilities",
   "main": "dist/index.js",
