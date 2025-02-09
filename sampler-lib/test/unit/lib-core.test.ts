@@ -1,8 +1,9 @@
 import {
+    byte2nibblesLE,
     bytes2numberBE,
     bytes2numberLE,
     natural2real,
-    newSequence,
+    newSequence, nibbles2byte,
     pad,
     parseNote,
     real2natural,
@@ -64,5 +65,22 @@ describe(`Core library functions`, () => {
         let b = [1, 0]
         expect(bytes2numberLE(b)).to.eq(1)
         expect(bytes2numberBE(b)).to.eq(256)
+    })
+
+    it(`Converts a byte to two little-endian nibbles`, () => {
+
+        let nibbles = byte2nibblesLE(0)
+        expect(nibbles[0]).to.eq(0)
+        expect(nibbles[1]).to.eq(0)
+
+        nibbles = byte2nibblesLE(1)
+        expect(nibbles[0]).to.eq(1)
+        expect(nibbles[1]).to.eq(0)
+
+        nibbles = byte2nibblesLE(255)
+        expect(nibbles[0]).to.eq(15)
+        expect(nibbles[1]).to.eq(15)
+
+        expect(nibbles2byte(nibbles[0], nibbles[1])).to.eq(255)
     })
 })
