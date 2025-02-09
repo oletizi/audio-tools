@@ -24,9 +24,3 @@ export function midiNoteToNumber(note: string): number | null {
 
     return (octave + 1) * 12 + noteValue;
 }
-
-// Example usage:
-console.log(midiNoteToNumber("C4"));   // Output: 60
-console.log(midiNoteToNumber("A#5"));  // Output: 82
-console.log(midiNoteToNumber("Bb3"));  // Output: 58
-console.log(midiNoteToNumber("invalid")); // Output: null
