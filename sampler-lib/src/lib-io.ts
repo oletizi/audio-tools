@@ -1,12 +1,11 @@
 import {timestamp} from "@/lib-core";
-// import {Buffer} from "buffer";
 
 export interface Output {
-    log(msg: string | Buffer | Object)
+    log(msg: string | Object)
 
     error(msg: string | Error | Object)
 
-    write(data: string | Buffer | Object)
+    write(data: string | Object)
 }
 
 class BasicOutput implements Output {
