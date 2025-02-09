@@ -1,6 +1,8 @@
 import fs from "fs/promises"
 import path from "path"
+import _ from "lodash"
 import {parseFile} from "music-metadata"
+import {midiNoteToNumber} from "@/lib-midi";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
@@ -38,11 +40,36 @@ export type MapFunction = (s: AudioSource[]) => Keygroup[]
 
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     const rv: Keygroup[] = []
+
+    // const note2Samples = new Map<number, AudioSource[]>()
+    const note2Samples = new Map<number, AudioSource[]>()
     for (const s of sources) {
-        rv.push({
-            zones: [{audioSource: s, lowNote: 0, highNote: 127}]
-        })
+        const match = s.url.match(/-([A-G][#b]*[0-9])-/)
+        if (match && match[1]) {
+            const noteName = match[1]
+            const noteNumber = midiNoteToNumber(noteName)
+            if (noteNumber != null) {
+                console.log(`Note number: ${noteNumber}`)
+                if (note2Samples.get(noteNumber)) {
+                    note2Samples.get(noteNumber)?.push(s)
+                } else {
+                    note2Samples.set(noteNumber, [s])
+                }
+            }
+        }
     }
+    let start = 0
+    Array.from(note2Samples.keys()).sort((a, b) => {return a - b}).forEach(i => {
+        const zones: Zone[] = []
+        _(note2Samples.get(i)).each(s => {
+            zones.push({audioSource: s, highNote: i, lowNote: start})
+        })
+        rv.push({
+            zones: zones
+        })
+        start = i + 1
+    })
+
     return rv
 }
 
@@ -67,7 +94,6 @@ export async function mapProgram(mapFunction: MapFunction, opts: { source: strin
                     sampleCount: format.numberOfSamples,
                     sampleRate: format.sampleRate
                 }
-
                 sources.push({meta: m, url: `file://${filepath}`})
             }
 

@@ -83,6 +83,7 @@ describe(`Core translator mapper tests`, async () => {
             "J8-OVMR.01-F#3-V127.aif",
             "J8-XTC0.01-C3-V127.aif",
             "J8-1DY0.01-C4-V127.aif",
+            "J8-1DY0.01-C4-V64.aif",
             "J8-BP6I.01-F#4-V127.aif",
             "J8-GGQ0.01-C5-V127.aif",
             "J8-L5KB.01-B5-V127.aif",
@@ -103,7 +104,16 @@ describe(`Core translator mapper tests`, async () => {
         expect(zone1).to.exist
         expect(zone1.audioSource.url.endsWith(files[0]))
         expect(zone1.lowNote).eq(midiNoteToNumber('C0') - 12)
-        // expect(zone1.highNote).eq(midiNoteToNumber('F1'))
+        expect(zone1.highNote).eq(midiNoteToNumber('C1'))
+
+        const k2 = keygroups[1]
+        expect(k2).to.exist
+        expect(k2.zones).to.exist
+        expect(k2.zones.length).to.eq(1)
+        const zone2 = k2.zones[0]
+        expect(zone2).to.exist
+        expect(zone2.lowNote).eq(midiNoteToNumber('C#1'))
+        expect(zone2.highNote).eq(midiNoteToNumber('F#1'))
 
     })
 })
