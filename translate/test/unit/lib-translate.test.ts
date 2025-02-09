@@ -96,6 +96,5 @@ describe(`Core translator mapper tests`, async () => {
         expect(zone2).to.exist
         expect(zone2.lowNote).eq(midiNoteToNumber('C#1'))
         expect(zone2.highNote).eq(midiNoteToNumber('F#1'))
-
     })
 })
