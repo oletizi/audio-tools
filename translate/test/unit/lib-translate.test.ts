@@ -43,13 +43,12 @@ describe(`Core translator mapper tests`, async () => {
             return {} as Keygroup
         }
 
-
         const source = path.join('test', 'data', 'auto', 'J8.01')
         const target = path.join('build')
-        await mapProgram(mapFunction, {source: source, target: target})
-        expect(mapFunctionCalls.length).eq(11)
-        // expect(program).to.exist
-        // expect(program.keygroups).to.exist
-        // expect(program.keygroups.length).eq(11)
+        const program = await mapProgram(mapFunction, {source: source, target: target})
+        expect(mapFunctionCalls.length).eq(12)
+        expect(program).to.exist
+        expect(program.keygroups).to.exist
+        expect(program.keygroups.length).eq(12)
     })
 })
