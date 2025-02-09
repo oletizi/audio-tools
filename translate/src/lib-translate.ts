@@ -34,7 +34,17 @@ export interface Zone {
     highNote: number
 }
 
-export type MapFunction = (s: AudioSource) => Keygroup
+export type MapFunction = (s: AudioSource[]) => Keygroup[]
+
+export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
+    const rv: Keygroup[] = []
+    for (const s of sources) {
+        rv.push({
+            zones: [{audioSource: s, lowNote: 0, highNote: 127}]
+        })
+    }
+    return rv
+}
 
 export async function mapProgram(mapFunction: MapFunction, opts: { source: string, target: string }) {
     if (!mapFunction) {
@@ -43,7 +53,7 @@ export async function mapProgram(mapFunction: MapFunction, opts: { source: strin
     if (!opts) {
         throw new Error(`Options undefined.`)
     }
-    const rv: Program = {keygroups: []}
+    const sources: AudioSource[] = []
     for (const item of await fs.readdir(opts.source)) {
 
         const filepath = path.join(opts.source, item);
@@ -57,12 +67,14 @@ export async function mapProgram(mapFunction: MapFunction, opts: { source: strin
                     sampleCount: format.numberOfSamples,
                     sampleRate: format.sampleRate
                 }
-                rv.keygroups.push(mapFunction({meta: m, url: `file://${filepath}`}))
+
+                sources.push({meta: m, url: `file://${filepath}`})
             }
+
         } catch (e) {
             // probably check to see what's wrong
         }
     }
 
-    return rv
+    return {keygroups: mapFunction(sources)}
 }
