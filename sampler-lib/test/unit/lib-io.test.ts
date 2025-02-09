@@ -1,4 +1,4 @@
-import {newStreamOutput} from "@/lib-io";
+import {newClientOutput, newServerOutput, newStreamOutput} from "@/lib-io";
 import {expect} from "chai";
 
 describe(`Input output functions`, () => {
@@ -31,6 +31,19 @@ describe(`Input output functions`, () => {
         out.error('Error')
         expect(stderrWrites[0].endsWith('Error'))
 
+        stdoutWrites.length = 0
+        const outNoDebug = newStreamOutput(stdout, stderr, false)
+        outNoDebug.log('Test')
+        expect(stdoutWrites.length).eq(0)
 
+        outNoDebug.write('Test')
+        expect(stdoutWrites.length).eq(1)
+        expect(stdoutWrites[0]).eq('Test')
+
+        const serverOut = newServerOutput()
+        expect(serverOut).to.exist
+
+        const clientOut = newClientOutput()
+        expect(clientOut).to.exist
     })
 })
