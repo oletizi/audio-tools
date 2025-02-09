@@ -1,4 +1,4 @@
-import {newSequence, pad, timestamp} from "@/lib-core";
+import {newSequence, pad, parseNote, timestamp} from "@/lib-core";
 import {expect} from "chai";
 
 describe(`Core library functions`, () => {
@@ -25,5 +25,11 @@ describe(`Core library functions`, () => {
     it(`Pads a number with leading zeroes`, () => {
         expect(pad(1, 2)).eq('01')
         expect(pad(10, 4)).eq('0010')
+    })
+
+    it(`Parses midi note number`, () => {
+        expect(parseNote('C3')).eq(60)
+        expect(parseNote('C0')).eq(24)
+        expect(parseNote('C#3')).eq(61)
     })
 })
