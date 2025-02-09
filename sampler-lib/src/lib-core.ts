@@ -19,27 +19,27 @@ export function pad(v: number, size: number) {
     return s
 }
 
-const degrees = {
-    'C': 0,
-    'C#': 1,
-    'Db': 1,
-    'D': 2,
-    'D#': 3,
-    'Eb': 3,
-    'E': 4,
-    'E#': 5,
-    'F': 5,
-    'F#': 6,
-    'Gb': 6,
-    'G': 7,
-    'G#': 8,
-    'Ab': 8,
-    'A': 9,
-    'A#': 10,
-    'Bb': 10,
-    'B': 11,
-    'Cb': 11
-}
+const degrees: Map<string, number> = new Map([
+    ['C', 0],
+    ['C#', 1],
+    ['Db', 1],
+    ['D', 2],
+    ['D#', 3],
+    ['Eb', 3],
+    ['E', 4],
+    ['E#', 5],
+    ['F', 5],
+    ['F#', 6],
+    ['Gb', 6],
+    ['G', 7],
+    ['G#', 8],
+    ['Ab', 8],
+    ['A', 9],
+    ['A#', 10],
+    ['Bb', 10],
+    ['B', 11],
+    ['Cb', 11]
+])
 export const C3 = 60
 export const C0 = C3 - 3 * 12
 
@@ -51,7 +51,7 @@ export function parseNote(n: string) {
         const letter = (n.length == 3 ? n.substring(0, 2) : n.substring(0, 1)).toUpperCase()
         const octave = Number.parseInt(n.charAt(n.length - 1))
         if (!Number.isNaN(octave)) {
-            const degree = degrees[letter]
+            const degree = degrees.get(letter)
             if (degree != undefined) {
                 rv = C0 + (12 * octave) + degree
             }
@@ -123,7 +123,7 @@ export function bytes2numberBE(b: number[]) {
     return rv
 }
 
-export function byte2nibblesLE(byte) {
+export function byte2nibblesLE(byte: number) {
     // Ensure the input is a valid byte (0-255)
     if (byte < 0 || byte > 255) {
         throw new Error("Input must be a valid byte (0-255).");
@@ -134,7 +134,7 @@ export function byte2nibblesLE(byte) {
     return [lowNibble, highNibble]
 }
 
-export function nibbles2byte(lowNibble, highNibble) {
+export function nibbles2byte(lowNibble: number, highNibble: number) {
     if (highNibble < 0 || highNibble > 15 || lowNibble < 0 || lowNibble > 15) {
         throw new Error("Both nibbles must be between 0 and 15.");
     }

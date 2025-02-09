@@ -1,22 +1,25 @@
 import {timestamp} from "@/lib-core";
 
 export interface Output {
-    log(msg: string | Object)
+    log(msg: string | Object): void
 
-    error(msg: string | Error | Object)
+    error(msg: string | Error | Object): void
 
-    write(data: string | Object)
+    write(data: string | Object): void
 }
+
+export type WriteFunction = (v: string | Object) => void
+export type ErrorFunction = (v: string | Object | Error) => void
 
 class BasicOutput implements Output {
     private readonly debug: boolean;
 
-    private readonly writeFunction: Function
-    private readonly errorFunction: Function;
+    private readonly writeFunction: WriteFunction
+    private readonly errorFunction: ErrorFunction
     private readonly newline: string;
     private readonly prefix: string;
 
-    constructor(writeFunction, errorFunction, newline = '\n', debug = true, prefix: string) {
+    constructor(writeFunction: WriteFunction, errorFunction: ErrorFunction, newline = '\n', debug = true, prefix: string) {
         this.newline = newline
         this.writeFunction = writeFunction
         this.errorFunction = errorFunction
@@ -40,12 +43,16 @@ class BasicOutput implements Output {
 }
 
 
-export function newStreamOutput(outstream, errstream, debug = true, prefix = ''): Output {
-    return new BasicOutput((msg) => outstream.write(msg), (msg) => errstream.write(msg), '\n', debug, prefix)
+export interface Writeable {
+    write(v: string | Object): void
+}
+
+export function newStreamOutput(outstream: Writeable, errstream: Writeable, debug = true, prefix = ''): Output {
+    return new BasicOutput((msg: string | Object) => outstream.write(msg), (msg) => errstream.write(msg), '\n', debug, prefix)
 }
 
 export function newServerOutput(debug = true, prefix = ''): Output {
-    return new BasicOutput((msg) => process.stdout.write(msg), (msg) => console.error(msg), '\n', debug, prefix)
+    return new BasicOutput((msg: string | Object) => process.stdout.write(String(msg)), (msg: string | Object) => console.error(String(msg)), '\n', debug, prefix)
 }
 
 export function newClientOutput(debug = true, prefix = ''): Output {
