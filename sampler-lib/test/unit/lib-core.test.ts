@@ -1,3 +1,5 @@
+// noinspection ExceptionCaughtLocallyJS
+
 import {
     byte2nibblesLE,
     bytes2numberBE,
@@ -82,5 +84,21 @@ describe(`Core library functions`, () => {
         expect(nibbles[1]).to.eq(15)
 
         expect(nibbles2byte(nibbles[0], nibbles[1])).to.eq(255)
+        try {
+            byte2nibblesLE(-1)
+            throw new Error(`Barf`)
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail('Should throw exception if input in bounds.')
+            }
+        }
+        try {
+            byte2nibblesLE(256)
+            throw new Error(`Barf`)
+        } catch (e) {
+            if (e.message === 'Barf') {
+                expect.fail(`Should throw exception if input in bounds`)
+            }
+        }
     })
 })
