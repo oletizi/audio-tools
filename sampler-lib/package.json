@@ -4,7 +4,9 @@
   "description": "Library code for sampler stuff",
   "main": "src/index.ts",
   "scripts": {
-    "test": "c8 mocha"
+    "test": "c8 mocha",
+    "build": "tsup",
+    "do:publish": "npm test && npm version patch && npm publish --access=public"
   },
   "author": "",
   "license": "ISC",
@@ -12,8 +14,12 @@
     "@tsconfig/recommended": "^1.0.8",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.1",
     "chai": "^5.1.2",
     "mocha": "^11.1.0",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13"
   }
 }
