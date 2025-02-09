@@ -1,4 +1,4 @@
-import {newSequence, timestamp} from "@/lib-core";
+import {newSequence, pad, timestamp} from "@/lib-core";
 import {expect} from "chai";
 
 describe(`Core library functions`, () => {
@@ -20,5 +20,10 @@ describe(`Core library functions`, () => {
         const t2 = timestamp()
         expect(t1).exist
         expect(t1).not.eq(t2)
+    })
+
+    it(`Pads a number with leading zeroes`, () => {
+        expect(pad(1, 2)).eq('01')
+        expect(pad(10, 4)).eq('0010')
     })
 })
