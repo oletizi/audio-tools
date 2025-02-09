@@ -6,7 +6,7 @@
     "strict": true,
     "paths": {
       "@/*": [
-        "./src/*",
+        "./src/*"
       ],
       "tests/*": ["./test/*"]
     },
@@ -23,7 +23,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "jsx": "react"
   },
   "include": [
     "./src/**/*",
