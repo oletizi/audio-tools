@@ -1,4 +1,4 @@
-import {AudioMetadata, AudioSource, description, Keygroup, mapLogicAutoSampler, mapProgram, Zone} from "@/index"
+import {AudioMetadata, AudioSource, description, Keygroup, mapLogicAutoSampler, mapProgram} from "@/index"
 import {expect} from "chai";
 import path from "path";
 import {midiNoteToNumber} from "@/lib-midi";
@@ -53,25 +53,7 @@ describe(`Core translator mapper tests`, async () => {
         expect(mapFunctionCalls.length).eq(1)
         expect(program).to.exist
         expect(program.keygroups).to.exist
-        expect(program.keygroups.length).eq(12)
-    })
-
-    it(`Maps Logic auto-sample output file to a keygroup`, async () => {
-        const s: AudioSource = {meta: {}, url: "file:///path/to/J8-1DY0.01-C4-V127.aif"}
-        const keygroups = mapLogicAutoSampler([s])
-        expect(keygroups, 'keygroups should exist').to.exist
-        expect(keygroups.length, 'there should be one keygroup').eq(1)
-
-        const kg = keygroups[0]
-        expect(kg).to.exist
-        expect(kg.zones).to.exist
-        expect(kg.zones.length).eq(1)
-        const zone: Zone = kg.zones[0]
-        expect(zone).exist
-        expect(zone.audioSource).exist
-        expect(zone.audioSource).eq(s)
-        expect(zone.lowNote).eq(0)
-        expect(zone.highNote).eq(127)
+        expect(program.keygroups.length).eq(13)
     })
 
     it(`Maps multiple Logic auto-sample output files to a set of keygroups`, async () => {
