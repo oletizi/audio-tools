@@ -2,7 +2,12 @@
   "name": "@oletizi/midi-devices",
   "version": "0.0.1",
   "description": "Module for communicating with old midi devices",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "c8 mocha",
     "gen:s3000xl": "tsx src/gen-s3000xl.ts src/devices"
