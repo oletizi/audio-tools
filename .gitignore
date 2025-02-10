@@ -27,3 +27,6 @@
 /sampler-lib/node_modules/
 /sampler-lib/.idea/
 /sampler-lib/dist/
+/sampler-akaitools/coverage/
+/sampler-akaitools/mochawesome-report/
+/sampler-akaitools/node_modules/

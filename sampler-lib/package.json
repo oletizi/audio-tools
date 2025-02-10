@@ -13,7 +13,7 @@
     "build": "npm test & tsup",
     "do:publish": "npm run build && npm version patch && npm publish --access=public --auth=legacy"
   },
-  "author": "",
+  "author": "Orion Letizi",
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
