@@ -368,7 +368,7 @@ async function doSpawn(bin: string, args: readonly string[],
             rv.errors.push(e);
             resolve(rv)
         })
-        child.on('close', (code, signal) => {
+        child.on('close', (code) => {
             if (code !== null) {
                 rv.code = code
                 resolve(rv)
