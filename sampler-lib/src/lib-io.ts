@@ -1,6 +1,6 @@
 import {timestamp} from "@/lib-core";
 
-export interface Output {
+export interface ProcessOutput {
     log(msg: string | Object): void
 
     error(msg: string | Error | Object): void
@@ -11,7 +11,7 @@ export interface Output {
 export type WriteFunction = (v: string | Object) => void
 export type ErrorFunction = (v: string | Object | Error) => void
 
-class BasicOutput implements Output {
+class BasicOutput implements ProcessOutput {
     private readonly debug: boolean;
 
     private readonly writeFunction: WriteFunction
@@ -47,15 +47,15 @@ export interface Writeable {
     write(v: string | Object): void
 }
 
-export function newStreamOutput(outstream: Writeable, errstream: Writeable, debug = true, prefix = ''): Output {
+export function newStreamOutput(outstream: Writeable, errstream: Writeable, debug = true, prefix = ''): ProcessOutput {
     return new BasicOutput((msg: string | Object) => outstream.write(msg), (msg) => errstream.write(msg), '\n', debug, prefix)
 }
 
-export function newServerOutput(debug = true, prefix = ''): Output {
+export function newServerOutput(debug = true, prefix = ''): ProcessOutput {
     return new BasicOutput((msg: string | Object) => process.stdout.write(String(msg)), (msg: string | Object) => console.error(String(msg)), '\n', debug, prefix)
 }
 
-export function newClientOutput(debug = true, prefix = ''): Output {
+export function newClientOutput(debug = true, prefix = ''): ProcessOutput {
     return new BasicOutput(console.info, console.error, '', debug, prefix)
 }
 
