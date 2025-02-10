@@ -5,9 +5,9 @@ import {ClientConfig, newClientConfig} from "@/lib-config-client";
 import {objectFromFile} from "@/lib-io";
 import {pad} from "@/lib-core";
 
-const DEFAULT_DATA_DIR = path.join(process.env.HOME, '.akai-sampler')
-const DEFAULT_SOURCE_DIR = path.join(DEFAULT_DATA_DIR, 'source')
-const DEFAULT_TARGET_DIR = path.join(DEFAULT_DATA_DIR, 'target')
+const DEFAULT_DATA_DIR: string = path.join(process.env.HOME ? process.env.HOME: "/", '.akai-sampler')
+const DEFAULT_SOURCE_DIR: string = path.join(DEFAULT_DATA_DIR, 'source')
+const DEFAULT_TARGET_DIR: string = path.join(DEFAULT_DATA_DIR, 'target')
 const out: ProcessOutput = newServerOutput(false)
 
 export interface ServerConfig {
@@ -26,9 +26,15 @@ export interface ServerConfig {
 }
 
 async function validate(cfg: ServerConfig) {
-    if (!cfg) {throw new Error('Config is undefined')}
-    if (cfg.s3kScsiId === undefined) {throw new Error('S3000XL disk SCSI ID is undefined.')}
-    if (! cfg.piscsiHost) {throw new Error('piscsi hostis undefined.')}
+    if (!cfg) {
+        throw new Error('Config is undefined')
+    }
+    if (cfg.s3kScsiId === undefined) {
+        throw new Error('S3000XL disk SCSI ID is undefined.')
+    }
+    if (!cfg.piscsiHost) {
+        throw new Error('piscsi hostis undefined.')
+    }
     await fs.mkdir(cfg.sourceRoot)
     await fs.mkdir(cfg.targetRoot)
     await fs.mkdir(cfg.sessionRoot)
@@ -84,7 +90,7 @@ export async function loadClientConfig(dataDir = DEFAULT_DATA_DIR): Promise<Clie
         rv.midiOutput = storedConfig.midiOutput
         rv.midiInput = storedConfig.midiInput
     } catch (err) {
-        out.log(`Error reading config from: ${configPath}: ${err.message}`)
+        out.log(`Error reading config from: ${configPath}: ${(err as Error).message}`)
     }
     return rv
 }
