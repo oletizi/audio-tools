@@ -6,14 +6,15 @@ import {
     ProgramHeader, Sample,
     SampleHeader
 } from "@/devices/s3000xl";
-import midi from "midi";
+import midi, {MidiMessage} from "midi";
 import {ExecutionResult} from "@/client/akaitools.js";
+import EventEmitter from "events";
 
 export interface Device {
 
     init(): Promise<void>
 
-    getCurrentProgram(): Program
+    getCurrentProgram(): Program | undefined
 
     fetchSampleNames(names: any[]): Promise<String[]>
 
@@ -25,7 +26,7 @@ export interface Device {
 
     getProgramNames(names: string[]): string[]
 
-    getProgramHeader(programName: string): ProgramHeader
+    getProgramHeader(programName: string): ProgramHeader | undefined
 
     fetchProgramHeader(programNumber: number, header: ProgramHeader): Promise<ProgramHeader>
 
@@ -39,9 +40,9 @@ export interface Device {
 
     writeProgramPolyphony(header: ProgramHeader, polyphony: number): Promise<void>
 
-    send(opcode: number, data: number[])
+    send(opcode: number, data: number[]): Promise<number[]>
 
-    sendRaw(message: number[])
+    sendRaw(message: number[]): Promise<number[]>
 
     format(partitionSize: number, partitionCount: number): Promise<ExecutionResult>
 }
@@ -109,9 +110,9 @@ class s3000xl implements Device {
     private readonly midiInput: midi.Input;
     private readonly midiOutput: midi.Output;
     private readonly programNames: string[] = []
-    private readonly programs = {}
+    private readonly programs = new Map<string, ProgramHeader>()
     private readonly sampleNames: string[] = []
-    private currentProgram: Program
+    private currentProgram: Program | undefined
 
     private readonly out: ProcessOutput
 
@@ -130,7 +131,7 @@ class s3000xl implements Device {
         await this.fetchSampleNames([])
     }
 
-    getCurrentProgram(): Program {
+    getCurrentProgram(): Program | undefined {
         return this.currentProgram
     }
 
@@ -180,8 +181,8 @@ class s3000xl implements Device {
         return names
     }
 
-    getProgramHeader(programName: string): ProgramHeader {
-        return this.programs[programName]
+    getProgramHeader(programName: string): ProgramHeader | undefined {
+        return this.programs.get(programName)
     }
 
     async fetchProgramHeader(programNumber: number, header: ProgramHeader) {
@@ -195,7 +196,8 @@ class s3000xl implements Device {
         }
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
-        header['PNUMBER'] = nextByte(m, v).value
+        // header['PNUMBER'] = nextByte(m, v).value
+        nextByte(m, v)
         out.log(`ProgramHeader header data offset: ${v.offset}`)
         const headerData = m.slice(v.offset, m.length - 1)
         parseProgramHeader(headerData, 1, header)
@@ -204,13 +206,13 @@ class s3000xl implements Device {
         return header
     }
 
-    async getProgram(programNumber) {
+    async getProgram(programNumber: number) {
         const header = await this.fetchProgramHeader(programNumber, {} as ProgramHeader)
         return new Program(this, header)
     }
 
     async getSample(sampleName: string) {
-        const names = []
+        const names: string[] = []
         let rv = null
         await this.fetchSampleNames(names)
         let sampleNumber = -1
@@ -273,10 +275,12 @@ class s3000xl implements Device {
         const m = await this.send(Opcode.RKDATA, byte2nibblesLE(programNumber).concat(keygroupNumber))
         const v = {value: 0, offset: 5}
         out.log(`PNUMBER: offset: ${v.offset}`)
-        header['PNUMBER'] = nextByte(m, v).value
+        // header['PNUMBER'] = nextByte(m, v).value
+        nextByte(m, v)
 
         out.log(`KNUMBER: offset: ${v.offset}`)
-        header['KNUMBER'] = m[v.offset++]
+        // header['KNUMBER'] = m[v.offset++]
+
         out.log(`offset after KNUMBER: ${v.offset}`)
 
         const headerData = m.slice(v.offset, m.length - 1)
@@ -292,7 +296,8 @@ class s3000xl implements Device {
 
         const v = {value: 0, offset: 5}
         out.log(`SNUMBER: offset: ${v.offset}`)
-        header['SNUMBER'] = nextByte(m, v).value
+        // header['SNUMBER'] = nextByte(m, v).value
+        nextByte(m, v)
 
         parseSampleHeader(m.slice(v.offset, m.length - 1), 0, header)
         out.log(header)
@@ -318,8 +323,9 @@ class s3000xl implements Device {
         const output = this.midiOutput
         const response = new Promise<number[]>((resolve) => {
             function listener(delta: number, message: midi.MidiMessage) {
+                // This is some weird TypeScript nonsense to satisfy tsup.
+                ((input as unknown) as EventEmitter).removeListener('message', listener)
                 // TODO: make sure the opcode in the response message is correct
-                input.removeListener('message', listener)
                 resolve(message)
             }
 
@@ -327,7 +333,7 @@ class s3000xl implements Device {
         })
 
         out.log(`Sending message...`)
-        output.sendMessage(message)
+        output.sendMessage(message as MidiMessage)
         return response
     }
 
@@ -376,7 +382,7 @@ export function string2AkaiBytes(s: string) {
     return data
 }
 
-export function nextByte(nibbles, v: { value: number, offset: number }) {
+export function nextByte(nibbles: number[], v: { value: number, offset: number }) {
     v.value = nibbles2byte(nibbles[v.offset], nibbles[v.offset + 1])
     v.offset += 2
     return v
