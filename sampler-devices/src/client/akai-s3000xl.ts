@@ -7,7 +7,7 @@ import {
     SampleHeader
 } from "@/devices/s3000xl";
 import midi from "midi";
-import {ExecutionResult} from "@/akaitools/akaitools.js";
+import {ExecutionResult} from "@/client/akaitools.js";
 
 export interface Device {
 
