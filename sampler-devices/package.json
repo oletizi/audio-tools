@@ -1,6 +1,6 @@
 {
   "name": "@oletizi/midi-devices",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Module for communicating with old midi devices",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
