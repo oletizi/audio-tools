@@ -1,12 +1,17 @@
 {
   "name": "@oletizi/sampler-lib",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Library code for sampler stuff",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "c8 mocha",
     "build": "npm test & tsup",
-    "do:publish": "npm test && npm version patch && npm publish --access=public"
+    "do:publish": "npm run build && npm version patch && npm publish --access=public --auth=legacy"
   },
   "author": "",
   "license": "ISC",
