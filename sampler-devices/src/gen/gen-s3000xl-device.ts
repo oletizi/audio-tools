@@ -28,7 +28,7 @@ export function genImports() {
 // GENERATED ${new Date()}. DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
-import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
+import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/akai-s3000xl"
     
 `
 }
