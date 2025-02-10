@@ -1,5 +1,5 @@
-import {KeygroupHeader, ProgramHeader} from "@/midi/devices/s3000xl";
-import {Result} from "@/lib/lib-core";
+import {KeygroupHeader, ProgramHeader} from "@/devices/s3000xl";
+import {Result} from "@oletizi/sampler-lib";
 
 export interface AkaiToolsConfig {
     diskFile: string

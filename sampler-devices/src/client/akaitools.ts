@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import {spawn} from 'child_process'
+import {ChildProcess, spawn} from 'child_process'
 import path from "path";
 import {byte2nibblesLE, nibbles2byte, newServerConfig} from "@oletizi/sampler-lib"
 import {
@@ -22,6 +22,7 @@ import {
     RemoteDisk,
     RemoteVolumeResult
 } from "@/model/akai";
+import {Writable} from "stream";
 
 
 export const CHUNK_LENGTH = 384
@@ -62,7 +63,7 @@ export async function remoteSync(c: AkaiToolsConfig) {
     if (result.errors.length !== 0) {
         return rv
     }
-    let targetVolume: RemoteDisk
+    let targetVolume: RemoteDisk | undefined
     for (const v of result.data) {
         if (v.scsiId === c.scsiId) {
             targetVolume = v
@@ -143,7 +144,7 @@ export async function remoteVolumes(c: AkaiToolsConfig) {
     } else {
         const result = await doSpawn('ssh', [c.piscsiHost, '"scsictl -l"'], {
             onData: data => {
-                rv.data = rv.data.concat(parseRemoteVolumes(data))
+                rv.data = rv.data.concat(parseRemoteVolumes(String(data)))
             },
             onStart: () => {
             }
@@ -168,6 +169,7 @@ export async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function = 
     let parsed = path.parse(c.diskFile);
     const disk: AkaiDisk = {timestamp: new Date().getTime(), name: parsed.name + parsed.ext, partitions: []}
     const rv: AkaiDiskResult = {data: disk, errors: []}
+    // const rv: AkaiDiskResult = {data: disk}
 
     for (let i = 1; i < 50; i++) { // partitions start at 1. Asking for partition 0 is the same as asking for partition 1
         const result = await listFunction(c, '/', i)//akaiList(c, '/', i)
@@ -267,7 +269,9 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
         {
             onData: voidFunction,
             onStart: (child) => {
-                child.stdin.write('y\n')
+                if (child.stdin instanceof Writable) {
+                    child.stdin.write('y\n')
+                }
             }
         }
     )
@@ -334,7 +338,7 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
         onStart: () => {
         },
         onData: (data) => {
-            parseAkaiList(data).forEach(r => rv.data.push(r))
+            parseAkaiList(String(data)).forEach(r => rv.data.push(r))
         }
     })
     rv.errors = rv.errors.concat(result.errors)
@@ -347,11 +351,11 @@ function voidFunction() {
 
 async function doSpawn(bin: string, args: readonly string[],
                        opts: {
-                           onData: (Buffer, ChildProcess) => void,
-                           onStart: (ChildProcess) => void
+                           onData: (buf: Buffer, child: ChildProcess) => void,
+                           onStart: (child: ChildProcess) => void
                        } = {onData: voidFunction, onStart: voidFunction}) {
     return new Promise<ExecutionResult>((resolve, reject) => {
-        const rv = {errors: [], code: -1}
+        const rv : ExecutionResult = {errors: [], code: -1}
         console.log(`akaitools: ${bin} ${args.join(' ')}`)
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
