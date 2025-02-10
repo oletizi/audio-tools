@@ -1,4 +1,6 @@
 import {timestamp} from "@/lib-core";
+import {Result} from "@/lib-core";
+import fs from "fs/promises";
 
 export interface ProcessOutput {
     log(msg: string | Object): void
@@ -59,3 +61,15 @@ export function newClientOutput(debug = true, prefix = ''): ProcessOutput {
     return new BasicOutput(console.info, console.error, '', debug, prefix)
 }
 
+export async function objectFromFile(filename: string) {
+    const rv: Result = {
+        errors: [],
+        data: null
+    } as Result
+    try {
+        rv.data = JSON.parse((await fs.readFile(filename)).toString())
+    } catch (e) {
+        rv.errors.push(e)
+    }
+    return rv
+}

@@ -64,7 +64,7 @@ export function parseNote(n: string) {
  * The data and possible errors from an operation (e.g., http requests or midi sysex)
  */
 export interface Result {
-    errors: Error[]
+    errors: any[]
     data: any
 }
 
