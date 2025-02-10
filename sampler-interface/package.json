@@ -25,7 +25,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@oletizi/sampler-lib": "^1.0.4",
+    "@oletizi/sampler-lib": "^1.0.6",
     "@oletizi/sampler-translate": "^0.0.21",
     "next": "^15.1.6",
     "react": "^19.0.0",

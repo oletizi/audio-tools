@@ -1,0 +1,1 @@
+export * from "@/devices/s3000xl"

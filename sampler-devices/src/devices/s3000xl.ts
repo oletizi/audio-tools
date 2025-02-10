@@ -1,8 +1,7 @@
 //
-// GENERATED Sat Feb 08 2025 22:14:19 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Sun Feb 09 2025 18:47:11 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
-import {byte2nibblesLE, bytes2numberLE, nibbles2byte} from "@/lib/lib-core"
-import {newClientOutput} from "@/lib/process-output"
+import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
 import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/midi/akai-s3000xl"
     
 export interface ProgramHeader {

@@ -9,15 +9,26 @@
     "dist"
   ],
   "scripts": {
+    "gen": "tsx src/gen-s3000xl.ts src/devices",
     "test": "c8 mocha",
-    "gen:s3000xl": "tsx src/gen-s3000xl.ts src/devices"
+    "build": "npm test & tsup",
+    "do:publish": "npm run build && npm version patch && npm publish --access=public --auth=legacy"
   },
   "author": "Orion Letizi",
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
     "@types/node": "^22.13.1",
+    "chai": "^5.1.2",
+    "mocha": "^11.1.0",
+    "mochawesome": "^7.1.3",
     "typescript": "^5.7.3",
     "yaml": "^2.7.0"
+  },
+  "dependencies": {
+    "@oletizi/sampler-lib": "^1.0.6",
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "midi": "^2.0.0"
   }
 }
