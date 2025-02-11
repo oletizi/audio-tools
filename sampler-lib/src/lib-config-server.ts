@@ -1,13 +1,16 @@
 import fs from "fs/promises";
-import path from "node-path";
+import {createWriteStream} from "fs";
+import path from "pathe";
 import {newServerOutput, ProcessOutput} from "@/lib-io";
 import {ClientConfig, newClientConfig} from "@/lib-config-client";
 import {objectFromFile} from "@/lib-io";
 import {pad} from "@/lib-core";
+import {mkdir} from "@/lib-fs-server"
+import * as os from "os";
 
-const DEFAULT_DATA_DIR: string = path.join(process.env.HOME ? process.env.HOME: "/", '.akai-sampler')
-const DEFAULT_SOURCE_DIR: string = path.join(DEFAULT_DATA_DIR, 'source')
-const DEFAULT_TARGET_DIR: string = path.join(DEFAULT_DATA_DIR, 'target')
+const DEFAULT_DATA_DIR: string = path.join(process.env.HOME ? process.env.HOME : "/", '.akai-sampler')
+// const DEFAULT_SOURCE_DIR: string = path.join(DEFAULT_DATA_DIR, 'source')
+// const DEFAULT_TARGET_DIR: string = path.join(DEFAULT_DATA_DIR, 'target')
 const out: ProcessOutput = newServerOutput(false)
 
 export interface ServerConfig {
@@ -35,35 +38,39 @@ async function validate(cfg: ServerConfig) {
     if (!cfg.piscsiHost) {
         throw new Error('piscsi hostis undefined.')
     }
-    await fs.mkdir(cfg.sourceRoot)
-    await fs.mkdir(cfg.targetRoot)
-    await fs.mkdir(cfg.sessionRoot)
-    await fs.mkdir(cfg.s3k)
-    await fs.stat(cfg.akaiTools)
+    await mkdir(cfg.sourceRoot)
+    await mkdir(cfg.targetRoot)
+    await mkdir(cfg.sessionRoot)
+    await mkdir(cfg.s3k)
 }
 
 export async function newServerConfig(dataDir = DEFAULT_DATA_DIR): Promise<ServerConfig> {
+    const targetDir = path.join(dataDir, 'target')
+    const sourceDir = path.join(dataDir, 'source')
     const rv: ServerConfig = {
         piscsiHost: "pi-scsi2.local", s3kScsiId: 4,
         getS3kDefaultProgramPath(keygroupCount: number): string {
             return path.join('data', 's3000xl', 'defaults', `kg_${pad(keygroupCount, 2)}.a3p`)
         },
-        sourceRoot: DEFAULT_SOURCE_DIR,
-        targetRoot: DEFAULT_TARGET_DIR,
+        sourceRoot: sourceDir,
+        targetRoot: targetDir,
         jobsRoot: path.join(dataDir, 'jobs'),
         sessionRoot: path.join(dataDir, 'sessions'),
         logfile: path.join(dataDir, 'log.txt'),
-        s3k: path.join(DEFAULT_TARGET_DIR, 's3k'),
-        akaiDisk: path.join(DEFAULT_TARGET_DIR, 's3k', 'HD4.hds'),
+        s3k: path.join(targetDir, 's3k'),
+        akaiDisk: path.join(targetDir, 's3k', 'HD4.hds'),
         akaiTools: path.join(dataDir, 'akaitools-1.5')
     }
     const configPath = path.join(dataDir, 'server-config.json')
-    const storedConfig = (await objectFromFile(configPath)).data
-    await validate(storedConfig)
-    rv.piscsiHost = storedConfig.piscsiHost
-    rv.s3kScsiId = storedConfig.s3kScsiId
-    rv.sourceRoot = storedConfig.sourceRoot
-    rv.targetRoot = storedConfig.targetRoot
+    try {
+        const storedConfig = (await objectFromFile(configPath)).data
+        rv.piscsiHost = storedConfig.piscsiHost
+        rv.s3kScsiId = storedConfig.s3kScsiId
+        rv.sourceRoot = storedConfig.sourceRoot
+        rv.targetRoot = storedConfig.targetRoot
+    } catch (e) {
+    }
+    await validate(rv)
     return rv
 }
 
