@@ -31,3 +31,4 @@
 /sampler-akaitools/mochawesome-report/
 /sampler-akaitools/node_modules/
 /sampler-devices/dist/
+/sampler-devices/.tsup/

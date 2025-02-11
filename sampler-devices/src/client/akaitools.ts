@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import {ChildProcess, spawn} from 'child_process'
-import path from "path";
+import path from "pathe";
 import {byte2nibblesLE, nibbles2byte, newServerConfig} from "@oletizi/sampler-lib"
 import {
     KeygroupHeader,
@@ -21,7 +21,7 @@ import {
     AkaiToolsConfig,
     RemoteDisk,
     RemoteVolumeResult
-} from "@/model/akai";
+} from "@/model/model-akai-s3000xl";
 import {Writable} from "stream";
 
 
@@ -142,14 +142,13 @@ export async function remoteVolumes(c: AkaiToolsConfig) {
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined.'))
     } else {
-        const result = await doSpawn('ssh', [c.piscsiHost, '"scsictl -l"'], {
+        await doSpawn('ssh', [c.piscsiHost, '"scsictl -l"'], {
             onData: data => {
                 rv.data = rv.data.concat(parseRemoteVolumes(String(data)))
             },
             onStart: () => {
             }
-        })
-
+        });
     }
     return rv
 }

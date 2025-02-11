@@ -1,8 +1,8 @@
 //
-// GENERATED Sun Feb 09 2025 18:59:03 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Mon Feb 10 2025 22:30:11 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
-import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/akai-s3000xl"
+import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/client-akai-s3000xl"
     
 export interface ProgramHeader {
   KGRP1: number    // Block address of first keygroup (internal use)
