@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import path from "path";
+import path from "node-path";
 import {newServerOutput, ProcessOutput} from "@/lib-io";
 import {ClientConfig, newClientConfig} from "@/lib-config-client";
 import {objectFromFile} from "@/lib-io";
