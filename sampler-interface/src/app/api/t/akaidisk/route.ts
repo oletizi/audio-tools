@@ -1,10 +1,7 @@
-import {NextRequest, NextResponse} from "next/server";
-// import {newAkaiToolsConfig, readAkaiDisk} from "@oletizi/sampler-devices"
-import fs from "fs/promises";
-import {AkaiToolsConfig} from "@/model/akai";
-import {newAkaiToolsConfig, readAkaiDisk} from "@oletizi/sampler-devices";
+import {NextResponse} from "next/server";
+import {newAkaiToolsConfig, readAkaiDisk} from "@oletizi/sampler-devices/s3k";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         return NextResponse.json(await readAkaiDisk(await newAkaiToolsConfig()))
     } catch (e) {

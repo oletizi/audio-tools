@@ -1,3 +1,7 @@
+## TSUP & npm multiple entrypoints
+* https://tsup.egoist.dev/#multiple-entrypoints for how to generate multiple entrypoints with tsup
+* also look at "exports" configuration in sampler-devices/package.json for how to configure the package to point the entrypoint to the proper files in dist/ for a more elegant import (minus the '../dist/..' part)
+
 ## Look at:
 ### Components
 * https://www.radix-ui.com/
