@@ -3,6 +3,20 @@
   "version": "0.0.6",
   "description": "Module for communicating with old midi devices",
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs"
+    },
+    "./s3k": {
+      "types": "./dist/s3k.d.ts",
+      "require": "./dist/s3k.cjs"
+    },
+    "./s5k": {
+      "types": "./dist/s5k.d.ts",
+      "require": "./dist/s5k.cjs"
+    }
+  },
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "type": "module",
