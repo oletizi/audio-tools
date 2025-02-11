@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@oletizi/sampler-devices": "^0.0.4",
-    "@oletizi/sampler-lib": "^1.0.7",
+    "@oletizi/sampler-lib": "^1.0.9",
     "@oletizi/sampler-translate": "^0.0.21",
     "next": "^15.1.6",
     "node-path": "^0.0.3",

@@ -12,6 +12,7 @@
   "scripts": {
     "gen": "tsx src/gen-s3000xl.ts src/devices",
     "test": "c8 mocha",
+    "integration": "c8 mocha test/integration/**/*.test.ts",
     "build": "npm test & tsup",
     "do:publish": "npm run build && npm version patch && npm publish --access=public --auth=legacy"
   },
@@ -31,7 +32,7 @@
     "yaml": "^2.7.0"
   },
   "dependencies": {
-    "@oletizi/sampler-lib": "^1.0.8",
+    "@oletizi/sampler-lib": "^1.0.9",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
     "midi": "^2.0.0"

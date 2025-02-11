@@ -1,9 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {getSessionData, getSessionId} from "@/lib/lib-session";
-import path from "path";
-import {newServerConfig} from "@/lib/config-server";
-import {chop} from "@/lib/lib-translate-s3k";
-import {akaiFormat, newAkaiToolsConfig, readAkaiDisk, remoteSync} from "@/akaitools/akaitools";
+import {newAkaiToolsConfig, readAkaiDisk} from "@oletizi/sampler-devices"
 import fs from "fs/promises";
 import {AkaiToolsConfig} from "@/model/akai";
 
