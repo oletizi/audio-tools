@@ -13,7 +13,7 @@
     "gen": "tsx src/gen-s3000xl.ts src/devices",
     "test": "c8 mocha",
     "integration": "c8 mocha test/integration/**/*.test.ts",
-    "build": "npm test & tsup",
+    "build": "npm test && tsup",
     "do:publish": "npm run build && npm version patch && npm publish --access=public --auth=legacy"
   },
   "author": "Orion Letizi",
