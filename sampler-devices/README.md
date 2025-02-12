@@ -1,8 +1,6 @@
 # Sampler Devices
 Typescript/Javascript module that auto-generates code to talk to old samplers and make them do things.
 
-
-
 ![sampler-devices](https://github.com/oletizi/akai-sampler/actions/workflows/sampler-devices.yml/badge.svg)
 
 npm i [@oletizi/sampler-devices](https://www.npmjs.com/package/@oletizi/sampler-devices)
