@@ -11,3 +11,4 @@ npm i [@oletizi/sampler-devices](https://www.npmjs.com/package/@oletizi/sampler-
 ___
 Notes:
 [ ] Make rtmidi compilation work in CI environment.
+    Maybe adding sudo will work?
