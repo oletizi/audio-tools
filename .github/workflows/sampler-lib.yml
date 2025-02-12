@@ -5,15 +5,21 @@ name: Node.js CI
 
 on:
   push:
+    paths:
+      - "sampler-lib/**"
     branches: [ "main" ]
   pull_request:
+    paths:
+      - "sampler-lib/**"
     branches: [ "main" ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    defaults:
+        run:
+          working-directory: ./sampler-lib
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
