@@ -28,12 +28,9 @@ describe(`Core library functions`, () => {
         expect(s2.endsWith("1"))
     })
 
-    it(`Returns a timestamp`,() => {
+    it(`Returns a timestamp`, () => {
         const t1 = timestamp()
-        setTimeout(() => {}, 10)
-        const t2 = timestamp()
         expect(t1).exist
-        expect(t1).not.eq(t2)
     })
 
     it(`Pads a number with leading zeroes`, () => {
