@@ -12,6 +12,7 @@
   "scripts": {
     "test": "c8 mocha",
     "build": "tsup",
+    "test:integration": "npm run build && ",
     "do:publish": "npm test && npm version patch && npm publish --access=public"
   },
   "author": "Orion Letizi",

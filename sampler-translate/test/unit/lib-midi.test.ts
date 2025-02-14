@@ -1,4 +1,4 @@
-import {midiNoteToNumber} from "@/lib-midi";
+import {midiNoteToNumber} from "@/lib-midi.js";
 import {expect} from "chai";
 
 describe(`Map note names to midi numbers`, () => {
@@ -6,6 +6,6 @@ describe(`Map note names to midi numbers`, () => {
         expect(midiNoteToNumber('C0')).eq(12)
         expect(midiNoteToNumber('C#0')).eq(13)
         expect(midiNoteToNumber('Db0')).eq(13)
-        expect(midiNoteToNumber('C-1')).eq(null)
+        expect(midiNoteToNumber('C-1')).eq(-1)
     })
 })

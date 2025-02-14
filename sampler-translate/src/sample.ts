@@ -1,5 +1,5 @@
-import {WaveFile} from "wavefile";
 import {WriteStream} from "fs";
+import * as wavefile from "wavefile"
 
 // Possible alternatives to wavefile:
 // * https://www.npmjs.com/package/node-wav
@@ -9,18 +9,7 @@ export function newSampleFromBuffer(buf: Uint8Array): Sample {
     return new WavSample(buf)
 }
 
-// https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
-//
-//   dwManufacturer: 16777287,
-//   dwProduct: 94,
-//   dwSamplePeriod: 20833,
-//   dwMIDIUnityNote: 60,
-//   dwMIDIPitchFraction: 0,
-//   dwSMPTEFormat: 0,
-//   dwSMPTEOffset: 0,
-//   dwNumSampleLoops: 0,
-//   dwSamplerData: 18,
-//   loops: []
+// See: https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
 export interface SampleMetadata {
     manufacturerId: number
     productId: number
@@ -73,25 +62,16 @@ export interface Sample {
 }
 
 class WavSample implements Sample {
-    private readonly wav: WaveFile;
+    private readonly wav: any
     private buf: Uint8Array;
 
     constructor(buf: Uint8Array) {
         this.buf = buf
-        const wav = new WaveFile()
+        const wav = new wavefile.default.WaveFile()
         wav.fromBuffer(buf)
         this.wav = wav
     }
 
-    //   dwManufacturer: 16777287,
-    //   dwProduct: 94,
-    //   dwSamplePeriod: 20833,
-    //   dwMIDIUnityNote: 60,
-    //   dwMIDIPitchFraction: 0,
-    //   dwSMPTEFormat: 0,
-    //   dwSMPTEOffset: 0,
-    //   dwNumSampleLoops: 0,
-    //   dwSamplerData: 18,
     getMetadata(): SampleMetadata {
         const rv = {} as SampleMetadata
         const smpl = this.wav.smpl
@@ -159,7 +139,7 @@ class WavSample implements Sample {
         // @ts-ignore
         const channelCount = this.wav.fmt["numChannels"]
         const trimmedSamples = this.wav.getSamples(true).slice(start * channelCount, end * channelCount)
-        const trimmed = new WaveFile()
+        const trimmed = new wavefile.default.WaveFile()
         // @ts-ignore
         trimmed.fromScratch(channelCount, this.wav.fmt.sampleRate, this.wav.bitDepth, trimmedSamples)
         return newSampleFromBuffer(trimmed.toBuffer())
