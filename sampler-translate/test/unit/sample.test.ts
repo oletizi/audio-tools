@@ -2,6 +2,9 @@ import {newSampleFromBuffer} from "@/sample.js";
 import fs from "fs/promises";
 import {expect} from "chai";
 import * as wavefile from "wavefile"
+import {tmpdir} from "node:os";
+import path from "pathe";
+import {createWriteStream} from "fs";
 
 describe('wavefile', () => {
     it(`Can read a wavefile`, async () => {
@@ -70,5 +73,23 @@ describe('sample', () => {
         expect(trimmed.getSampleData().length).eq(10 * 2)
     })
 
+    it(`Writes a wave file`, async () => {
+        const tmp = tmpdir()
+        const outfile = path.join(tmp, 'test.wav')
+
+        const inbuf = await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV');
+        const s = newSampleFromBuffer(inbuf)
+        const buf = Buffer.of(s.getSampleData().length)
+
+        s.write(buf)
+        expect(inbuf.equals(buf))
+
+        const outstream = createWriteStream(outfile)
+        await s.writeToStream(outstream)
+
+        const re = newSampleFromBuffer(await fs.readFile(outfile))
+        expect(re.getSampleCount()).eq(s.getSampleCount())
+        expect(re.getSampleData().length).eq(s.getSampleData().length)
+    })
 
 })

@@ -52,7 +52,7 @@ export interface Sample {
 
     cleanup(): Sample
 
-    write(buf: Buffer, offset: number): number
+    write(buf: Buffer, offset?: number): number
 
     /**
      * Writes sample data to stream; returns the number of bytes written
@@ -160,7 +160,7 @@ class WavSample implements Sample {
         return newSampleFromBuffer(trimmed.toBuffer())
     }
 
-    write(buf: Buffer, offset: number) {
+    write(buf: Buffer, offset: number = 0) {
         const wavBuffer = Buffer.from(this.wav.toBuffer())
         wavBuffer.copy(buf, offset, 0, wavBuffer.length)
         return wavBuffer.length
