@@ -17,11 +17,12 @@
   "author": "Orion Letizi",
   "license": "ISC",
   "dependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@oletizi/sampler-devices": "^0.0.10",
     "lodash": "^4.17.21",
     "music-metadata": "^10.9.0"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@tsconfig/recommended": "^1.0.8",
     "@types/chai": "^5.0.1",
     "@types/lodash": "^4.17.15",

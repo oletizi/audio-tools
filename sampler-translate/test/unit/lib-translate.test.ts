@@ -85,7 +85,7 @@ describe(`Core translator mapper tests`, async () => {
         const zone1 = kg1.zones[0]
         expect(zone1).to.exist
         expect(zone1.audioSource.url.endsWith(files[0]))
-        expect(zone1.lowNote).eq(midiNoteToNumber('C0') - 12)
+        expect(zone1?.lowNote).to.eq(midiNoteToNumber('C0') - 12)
         expect(zone1.highNote).eq(midiNoteToNumber('C1'))
 
         const k2 = keygroups[1]

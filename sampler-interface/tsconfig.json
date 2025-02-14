@@ -15,6 +15,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "moduleResolution": "nodenext",
     "allowJs": true,
     "incremental": false,
     "resolveJsonModule": true,

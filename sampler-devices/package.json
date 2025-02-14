@@ -1,19 +1,22 @@
 {
   "name": "@oletizi/sampler-devices",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "description": "Module for communicating with old midi devices",
   "main": "./dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./s3k": {
       "types": "./dist/s3k.d.ts",
+      "import": "./dist/s3k.js",
       "require": "./dist/s3k.cjs"
     },
     "./s5k": {
       "types": "./dist/s5k.d.ts",
+      "import": "./dist/s5k.js",
       "require": "./dist/s5k.cjs"
     }
   },

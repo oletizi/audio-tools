@@ -1,9 +1,9 @@
-export function midiNoteToNumber(note: string): number | null {
+export function midiNoteToNumber(note: string): number {
     const noteRegex = /^([a-gA-G])([#b]?)(\d)$/;
     const match = note.match(noteRegex);
 
     if (!match) {
-        return null; // Invalid note format
+        return -1; // Invalid note format
     }
 
     const noteName = match[1].toUpperCase();
