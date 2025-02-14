@@ -38,7 +38,7 @@ describe('sample', () => {
         const currentRootNote = s.getMetadata().rootNote
         expect(currentRootNote).eq(60)
 
-         s.setRootNote(currentRootNote + 1)
+        s.setRootNote(currentRootNote + 1)
         expect(s.getMetadata().rootNote).eq(currentRootNote + 1)
 
         const s2 = newSampleFromBuffer(await fs.readFile("test/data/decent/Samples/Oscar.wav"))
@@ -57,6 +57,17 @@ describe('sample', () => {
         s2.to441()
         expect(s2.getSampleRate()).eq(44100)
 
+    })
+
+    it(`Trims a wave file`, async () => {
+        const s = newSampleFromBuffer(await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV'))
+        const initialSampleCount = s.getSampleCount()
+        expect(initialSampleCount).eq(655726)
+        expect(s.getSampleData().length).eq(initialSampleCount * 2)
+
+        const trimmed = s.trim(0, 10)
+        expect(trimmed.getSampleCount()).eq(10)
+        expect(trimmed.getSampleData().length).eq(10 * 2)
     })
 
 
