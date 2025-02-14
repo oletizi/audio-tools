@@ -2,7 +2,7 @@ import fs from "fs/promises"
 import path from "path"
 import _ from "lodash"
 import {parseFile} from "music-metadata"
-import {midiNoteToNumber} from "@/lib-midi";
+import {midiNoteToNumber} from "@/lib-midi.js";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."

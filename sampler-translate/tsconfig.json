@@ -19,7 +19,8 @@
     "incremental": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleResolution": "node16",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "plugins": [
       {
         "name": "next"

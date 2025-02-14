@@ -2,5 +2,5 @@ export function hello() {
     return "Hello"
 }
 
-export * from "./lib-translate"
+export * from "@/lib-translate.js"
 
