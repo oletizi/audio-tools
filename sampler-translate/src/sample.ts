@@ -44,7 +44,11 @@ export interface Sample {
 
     to16Bit(): Sample
 
+    to24Bit(): Sample
+
     to441(): Sample
+
+    to48(): Sample
 
     cleanup(): Sample
 
@@ -59,6 +63,7 @@ export interface Sample {
     getSampleData(): Float64Array;
 
     getRawData(): Uint8Array
+
 }
 
 class WavSample implements Sample {
@@ -130,8 +135,18 @@ class WavSample implements Sample {
         return this
     }
 
+    to24Bit(): Sample {
+        this.wav.toBitDepth("24")
+        return this
+    }
+
     to441(): Sample {
         this.wav.toSampleRate(44100)
+        return this
+    }
+
+    to48(): Sample {
+        this.wav.toSampleRate(48000)
         return this
     }
 

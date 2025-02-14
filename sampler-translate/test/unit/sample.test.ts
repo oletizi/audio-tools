@@ -33,4 +33,31 @@ describe('sample', () => {
         expect(meta.smpteFormat).eq(25)
         expect(meta.smpteOffset).eq(0)
     })
+    it(`Manipulates wave file`, async () => {
+        const s = newSampleFromBuffer(await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV'))
+        const currentRootNote = s.getMetadata().rootNote
+        expect(currentRootNote).eq(60)
+
+         s.setRootNote(currentRootNote + 1)
+        expect(s.getMetadata().rootNote).eq(currentRootNote + 1)
+
+        const s2 = newSampleFromBuffer(await fs.readFile("test/data/decent/Samples/Oscar.wav"))
+        expect(s2.getBitDepth()).eq(24)
+        expect(s2.getSampleRate()).eq(44100)
+
+        s2.to16Bit()
+        expect(s2.getBitDepth()).eq(16)
+
+        s2.to24Bit()
+        expect(s2.getBitDepth()).eq(24)
+
+        s2.to48()
+        expect(s2.getSampleRate()).eq(48000)
+
+        s2.to441()
+        expect(s2.getSampleRate()).eq(44100)
+
+    })
+
+
 })
