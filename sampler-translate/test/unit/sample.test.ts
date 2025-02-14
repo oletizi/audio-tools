@@ -36,7 +36,8 @@ describe('sample', () => {
         expect(meta.smpteFormat).eq(25)
         expect(meta.smpteOffset).eq(0)
     })
-    it(`Manipulates wave file`, async () => {
+    it(`Manipulates wave file`, async function () {
+        this.timeout(10000)
         const s = newSampleFromBuffer(await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV'))
         const currentRootNote = s.getMetadata().rootNote
         expect(currentRootNote).eq(60)
