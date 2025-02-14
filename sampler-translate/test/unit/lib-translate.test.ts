@@ -1,7 +1,14 @@
-import {AudioMetadata, AudioSource, description, AbstractKeygroup, mapLogicAutoSampler, mapProgram} from "@/index"
 import {expect} from "chai";
 import path from "path";
-import {midiNoteToNumber} from "@/lib-midi";
+import {midiNoteToNumber} from "@/lib-midi.js"
+import {
+    AbstractKeygroup,
+    AudioMetadata,
+    AudioSource,
+    description,
+    mapLogicAutoSampler,
+    mapProgram
+} from "@/lib-translate.js";
 
 describe('Test lib-translate exports', () => {
     it('Exports description()', () => {

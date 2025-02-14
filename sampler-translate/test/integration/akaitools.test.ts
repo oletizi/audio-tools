@@ -15,7 +15,7 @@ import {
     remoteVolumes,
     remoteUnmount,
     remoteMount, parseRemoteVolumes, remoteSync, readAkaiDisk, parseAkaiList
-} from "@/akaitools/akaitools";
+} from "@oletizi/sampler-devices/s3k"
 import path from "path";
 import {expect} from "chai";
 import fs from "fs/promises";
@@ -26,11 +26,11 @@ import {
     parseSampleHeader,
     ProgramHeader, ProgramHeader_writeGROUPS, ProgramHeader_writePRNAME,
     SampleHeader
-} from "@/midi/devices/s3000xl";
-import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
-import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
-import {newServerConfig} from "../../src/lib/config-server";
-import {AkaiDiskResult, AkaiRecordResult, AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@/model/akai";
+} from "@oletizi/sampler-devices/s3k";
+import {byte2nibblesLE, nibbles2byte} from "@oletizi/sampler-lib";
+import {akaiByte2String, nextByte} from "@oletizi/sampler-devices/s3k";
+import {newServerConfig} from "@oletizi/sampler-lib";
+import {AkaiRecordResult, AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@oletizi/sampler-devices/s3k";
 import {it} from "mocha";
 
 
@@ -121,10 +121,12 @@ S3000 PROGRAM        424       960 /chop.01/chop.01`
         expect(parsed[1].type).eq(AkaiRecordType.VOLUME)
 
         const c = await newAkaiToolsConfig()
-        function listFunction(cfg: AkaiToolsConfig, akaiPath: string, partitionNumber: number ) {
+
+        function listFunction(_cfg: AkaiToolsConfig, _akaiPath: string, _partitionNumber: number) {
             const result: AkaiRecordResult = {data: parsed, errors: []}
             return Promise.resolve(result)
         }
+
         const diskResult = await readAkaiDisk(c, listFunction)
         expect(diskResult).to.exist
         expect(diskResult.errors.length).eq(0)
@@ -222,8 +224,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const samplePath = path.join('test', 'data', 's3000xl', 'instruments', 'sine.a3s')
         const data = await readAkaiData(samplePath);
         let header = {} as SampleHeader
-        const bytesRead = parseSampleHeader(data, 0, header)
-        console.log(`bytes read: ${bytesRead}`)
+        parseSampleHeader(data, 0, header)
         console.log(`data size : ${data.length}`)
         expect(header.SHNAME).equal('SINE        ')
     })
@@ -232,8 +233,7 @@ describe(`Test parsing Akai objects read by akaitools`, async () => {
         const programPath = path.join('test', 'data', 's3000xl', 'instruments', 'test_4_kgs.a3p')
         const data = await readAkaiData(programPath)
         const programHeader = {} as ProgramHeader
-        const bytesRead = parseProgramHeader(data, 1, programHeader)
-        console.log(`bytes read: ${bytesRead}`)
+        parseProgramHeader(data, 1, programHeader)
         console.log(`data size : ${data.length}`)
         console.log(`Keygroup count: ${programHeader.GROUPS}`)
         expect(programHeader.PRNAME).equal('TEST 4 KGS  ')
