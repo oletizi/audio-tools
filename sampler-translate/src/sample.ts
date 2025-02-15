@@ -50,8 +50,6 @@ export interface Sample {
 
     to48(): Sample
 
-    cleanup(): Sample
-
     write(buf: Buffer, offset?: number): number
 
     /**
@@ -142,11 +140,13 @@ class WavSample implements Sample {
 
     to441(): Sample {
         this.wav.toSampleRate(44100)
+        this.cleanup()
         return this
     }
 
     to48(): Sample {
         this.wav.toSampleRate(48000)
+        this.cleanup()
         return this
     }
 
@@ -175,7 +175,7 @@ class WavSample implements Sample {
         })
     }
 
-    cleanup(): Sample {
+    private cleanup(): Sample {
         // @ts-ignore
         const sampleLength = this.wav.data.chunkSize / this.wav.fmt["numChannels"];
         this.wav.fact = {
