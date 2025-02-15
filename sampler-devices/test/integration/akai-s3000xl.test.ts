@@ -1,18 +1,8 @@
 import midi from 'midi'
 import {expect} from "chai";
-import {akaiByte2String, newDevice, string2AkaiBytes} from "@/midi/akai-s3000xl";
-import {
-    KeygroupHeader,
-    ProgramHeader,
-    Program,
-    ProgramHeader_writePLAYLO,
-    SampleHeader, parseProgramHeader, ProgramHeader_writePRNAME
-} from "@/midi/devices/s3000xl";
-import path from "path";
-import fs from "fs/promises";
-import {byte2nibblesLE} from "../../src/lib/lib-core";
+import {string2AkaiBytes, akaiByte2String} from "@/s3k"
 
-function listenForMessage(input) {
+function listenForMessage(input: midi.Input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {
         input.on('message', function (deltaTime, message) {
             resolve(message)
@@ -21,7 +11,7 @@ function listenForMessage(input) {
     })
 }
 
-function init(io) {
+function init<T extends midi.Input | midi.Output>(io: T): T {
     for (let i = 0; i < io.getPortCount(); i++) {
         if (io.getPortName(i).startsWith('IAC')) {
             continue
@@ -33,7 +23,7 @@ function init(io) {
     return io
 }
 
-let input, output
+let input: midi.Input, output: midi.Output
 
 function midiSetup() {
     output = init(new midi.Output())
@@ -65,7 +55,7 @@ describe('akai-s3000xl tests', () => {
 
     it('fetches resident sample names', async () => {
         const device = newDevice(input, output)
-        const names = []
+        const names: string[] = []
         await device.fetchSampleNames(names)
         expect(names).not.empty
     })
@@ -76,7 +66,7 @@ describe('akai-s3000xl tests', () => {
         const sampleNumber = 8
         await device.fetchSampleHeader(sampleNumber, header)
         console.log(header)
-        expect(header['SNUMBER']).eq(sampleNumber)
+        expect((header as any)['SNUMBER']).eq(sampleNumber)
         expect(header.SHIDENT).eq(3) // Akai magic value
         expect(header.SSRVLD).eq(0x80) // Akai magic value
     })
@@ -84,7 +74,7 @@ describe('akai-s3000xl tests', () => {
     it('fetches resident program names', async () => {
         const device = newDevice(input, output)
 
-        const names = []
+        const names: string[] = []
         await device.fetchProgramNames(names)
         console.log(`Sample names:`)
         console.log(names)
@@ -184,9 +174,9 @@ describe('akai-s3000xl tests', () => {
         for (const field of Object.getOwnPropertyNames(header)) {
             if (!field.endsWith('Label')) {
                 console.log(`${field}:`)
-                console.log(`  old: ${header[field]}`)
-                console.log(`  new: ${h2[field]}`)
-                if (header[field] !== h2[field]) {
+                console.log(`  old: ${header[field as keyof ProgramHeader]}`)
+                console.log(`  new: ${h2[field as keyof ProgramHeader]}`)
+                if (header[field as keyof ProgramHeader] !== h2[field as keyof ProgramHeader]) {
                     console.log(`  DIFFERENT!!!!`)
                 }
             }
@@ -219,8 +209,8 @@ describe('akai-s3000xl tests', () => {
         const keygroupNumber = 1
         const header = {} as KeygroupHeader
         await device.fetchKeygroupHeader(programNumber, keygroupNumber, header)
-        expect(header['PNUMBER']).equal(programNumber)
-        expect(header['KNUMBER']).equal(keygroupNumber)
+        expect((header as any)['PNUMBER']).equal(programNumber)
+        expect((header as any)['KNUMBER']).equal(keygroupNumber)
         expect(header.KGIDENT).equal(2) // magic Akai number
         console.log(header)
     })
@@ -241,7 +231,7 @@ describe('basic sysex tests', () => {
         let listener = listenForMessage(input)
         data = [0xF0, 0x47, 0x00, 0x04, 0x48, 0xF7]
         console.log(`Requesting names of resident samples...`)
-        output.sendMessage(data)
+        output.sendMessage(data as [number, number, number])
 
         let message = await listener
         console.log(`Received message.`)
@@ -251,7 +241,7 @@ describe('basic sysex tests', () => {
         listener = listenForMessage(input)
         data = [0xF0, 0x47, 0x00, 0x0a, 0x48, 0x09, 0x00, 0xf7]
         console.log(`Requesting header for sample 0x09...`)
-        output.sendMessage(data)
+        output.sendMessage(data as [number, number, number])
         message = await listener
         console.log(`Received message:`)
         console.log(message)
@@ -298,7 +288,7 @@ describe('basic node midi tests', () => {
         output.openPort(0)
 
         const data = [176, 22, 1];
-        output.sendMessage(data)
+        output.sendMessage(data as [number, number, number])
 
         const m = await received
         for (let i = 0; i < data.length; i++) {

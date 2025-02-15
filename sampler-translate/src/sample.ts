@@ -1,13 +1,40 @@
 import {WriteStream} from "fs";
 import * as wavefile from "wavefile"
+import fs from "fs/promises";
 
 // Possible alternatives to wavefile:
 // * https://www.npmjs.com/package/node-wav
 //
 
+
+export enum AudioFormat{
+    // Someday there might be support for more audio formats
+    WAV = "wav",
+}
+
+export interface SampleSource {
+    newSampleFromBuffer(buf: Uint8Array, format: AudioFormat): Sample
+    newSampleFromUrl(url: string): Promise<Sample>
+}
+
+export function newSampleSource(): SampleSource {
+    return {
+        newSampleFromBuffer: (buf: Uint8Array, format: AudioFormat) => {
+            if (format === AudioFormat.WAV) {
+                return newSampleFromBuffer(buf);
+            }
+            throw new Error(`Unsupported format: ${format}`);
+        },
+        newSampleFromUrl: async (url: string) => {
+            return newSampleFromBuffer(await fs.readFile(url))
+        }
+    };
+}
+
 export function newSampleFromBuffer(buf: Uint8Array): Sample {
     return new WavSample(buf)
 }
+
 
 // See: https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
 export interface SampleMetadata {

@@ -1,10 +1,10 @@
-import {newSampleFromBuffer} from "@/sample.js";
-import fs from "fs/promises";
+import {AudioFormat, newSampleFromBuffer, newSampleSource, SampleSource} from "@/sample.js";
 import {expect} from "chai";
 import * as wavefile from "wavefile"
 import {tmpdir} from "node:os";
-import path from "pathe";
 import {createWriteStream} from "fs";
+import fs from "fs/promises";
+import path from "pathe";
 
 describe('wavefile', () => {
     it(`Can read a wavefile`, async () => {
@@ -62,7 +62,52 @@ describe('sample', () => {
         expect(s2.getSampleRate()).eq(44100)
 
     })
+describe("newSampleSource", () => {
+    let source: SampleSource;
 
+    beforeEach(() => {
+        source = newSampleSource();
+    });
+
+    it("Should create a valid SampleSource instance", () => {
+        expect(source).to.have.property("newSampleFromBuffer").that.is.a("function");
+        expect(source).to.have.property("newSampleFromUrl").that.is.a("function");
+    });
+
+    it("Should parse a WAV file buffer into a Sample (newSampleFromBuffer)", async () => {
+        const testFile = "test/data/mpc/Dub Tao A Kit.WAV";
+        const buffer = await fs.readFile(testFile);
+
+        const sample = source.newSampleFromBuffer(buffer, AudioFormat.WAV);
+        expect(sample).exist
+        expect(sample.getSampleRate()).to.equal(44100);
+        expect(sample.getChannelCount()).to.equal(2);
+    });
+
+    it("Should throw an error for unsupported audio formats in newSampleFromBuffer", () => {
+        const buffer = new Uint8Array([0, 1, 2, 3]);
+        expect(() => source.newSampleFromBuffer(buffer, "MP3" as AudioFormat)).to.throw("Unsupported format: MP3");
+    });
+
+    it("Should parse a WAV file from a URL (newSampleFromUrl)", async () => {
+        const testFile = path.resolve("test/data/mpc/Dub Tao A Kit.WAV");
+
+        const sample = await source.newSampleFromUrl(testFile);
+        expect(sample).exist
+        expect(sample.getSampleRate()).to.equal(44100);
+        expect(sample.getChannelCount()).to.equal(2);
+    });
+
+    it("Should handle errors in newSampleFromUrl for invalid paths", async () => {
+        const invalidPath = "test/data/invalid.WAV";
+        try {
+            await source.newSampleFromUrl(invalidPath);
+            expect.fail("Expected error for invalid file path");
+        } catch (error: any) {
+            expect(error.message).to.include("ENOENT");
+        }
+    });
+});
     it(`Trims a wave file`, async () => {
         const s = newSampleFromBuffer(await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV'))
         const initialSampleCount = s.getSampleCount()

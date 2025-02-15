@@ -16,7 +16,7 @@ import {
 } from "@oletizi/sampler-devices/s3k"
 import {AbstractProgram, mapLogicAutoSampler, mapProgram} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-import {newSampleFromBuffer} from "@/sample.js";
+import {AudioFormat, newSampleSource, SampleSource} from "@/sample.js";
 
 
 export interface AbstractProgramResult extends Result {
@@ -41,25 +41,29 @@ export interface ChopOpts {
     wipeDisk: boolean;
 }
 
-export async function chop(c: AkaiToolsConfig, opts: ChopOpts) {
+export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource(), opts: ChopOpts) {
     const cfg = await newServerConfig()
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
-        throw new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`)
+        rv.errors.push(new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`))
+        return rv
     }
     if (!(await fs.stat(opts.source)).isFile()) {
-        throw new Error(`Source is not a regular file: ${opts.source}`)
+        rv.errors.push(new Error(`Source is not a regular file: ${opts.source}`))
+        return rv
     }
     try {
         const stats = await fs.stat(opts.target)
         if (!stats.isDirectory()) {
-            throw new Error(`Target is not a directory: ${opts.target}`)
+            rv.errors.push(new Error(`Target is not a directory: ${opts.target}`))
+            return rv
         }
     } catch (e) {
         await fs.mkdir(opts.target)
     }
 
-    const sample = newSampleFromBuffer(await fs.readFile(opts.source))
+    const sample = await s.newSampleFromUrl(opts.source)
+
     if (sample.getMetadata().sampleRate > 44100) {
         sample.to441()
     }
