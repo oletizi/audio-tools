@@ -6,9 +6,8 @@ import {
     KeygroupHeader,
     parseKeygroupHeader,
     parseProgramHeader,
-    ProgramHeader,
-    ProgramHeader_writeGROUPS
-} from "@/devices/s3000xl";
+    ProgramHeader
+} from "@/devices/s3000xl.js";
 
 import {
     AkaiDisk,
@@ -21,7 +20,7 @@ import {
     AkaiToolsConfig,
     RemoteDisk,
     RemoteVolumeResult
-} from "@/model/model-akai-s3000xl";
+} from "@/model/model-akai-s3000xl.js";
 import {Writable} from "stream";
 
 
@@ -51,7 +50,97 @@ export async function newAkaiToolsConfig() {
     return rv
 }
 
-export async function remoteSync(c: AkaiToolsConfig) {
+export interface Akaitools {
+    readAkaiDisk: () => Promise<AkaiDiskResult>
+    readAkaiProgram: (file: string) => Promise<AkaiProgramFile>
+    writeAkaiProgram: (file: string, p: AkaiProgramFile) => Promise<void>
+    akaiFormat: (partitionSize?: number, partitionCount?: number) => Promise<ExecutionResult>
+    akaiWrite: (sourcePath: string, targetPath: string, partition?: number) => Promise<ExecutionResult>
+    akaiRead: (sourcePath: string, targetPath: string, partition?: number, recursive?: boolean) => Promise<ExecutionResult>
+    wav2Akai: (sourcePath: string, targetPath: string, targetName: string) => Promise<ExecutionResult>
+    akaiList: (akaiPath: string, partition?: number) => Promise<AkaiRecordResult>
+    remoteSync: () => Promise<ExecutionResult>
+
+    parseAkaiList(data: string): AkaiRecord[]
+
+    parseRemoteVolumes(data: string): RemoteDisk[]
+
+    remoteVolumes(): Promise<RemoteVolumeResult>
+
+    remoteUnmount(v: RemoteDisk): Promise<ExecutionResult>;
+
+    remoteMount(v: RemoteDisk): Promise<ExecutionResult>;
+}
+
+export function newAkaitools(c: AkaiToolsConfig): Akaitools {
+    return new BasicAkaiTools(c)
+}
+
+class BasicAkaiTools implements Akaitools {
+    private c: AkaiToolsConfig
+
+    constructor(c: AkaiToolsConfig) {
+        this.c = c
+    }
+
+    remoteMount(v: RemoteDisk): Promise<ExecutionResult> {
+        return remoteMount(this.c, v)
+    }
+
+    remoteUnmount(v: RemoteDisk): Promise<ExecutionResult> {
+        return remoteUnmount(this.c, v)
+    }
+
+    remoteVolumes(): Promise<RemoteVolumeResult> {
+        return remoteVolumes(this.c)
+    }
+
+    parseRemoteVolumes(data: string): RemoteDisk[] {
+        return parseRemoteVolumes(data)
+    }
+
+    readAkaiDisk(): Promise<AkaiDiskResult> {
+        return readAkaiDisk(this.c, this.akaiList.bind(this));
+    }
+
+    readAkaiProgram(file: string): Promise<AkaiProgramFile> {
+        return readAkaiProgram(file);
+    }
+
+    writeAkaiProgram(file: string, p: AkaiProgramFile): Promise<void> {
+        return writeAkaiProgram(file, p);
+    }
+
+    akaiFormat(partitionSize: number = 60, partitionCount: number = 1): Promise<ExecutionResult> {
+        return akaiFormat(this.c, partitionSize, partitionCount);
+    }
+
+    akaiWrite(sourcePath: string, targetPath: string, partition?: number): Promise<ExecutionResult> {
+        return akaiWrite(this.c, sourcePath, targetPath, partition);
+    }
+
+    akaiRead(sourcePath: string, targetPath: string, partition?: number, recursive?: boolean): Promise<ExecutionResult> {
+        return akaiRead(this.c, sourcePath, targetPath, partition, recursive);
+    }
+
+    wav2Akai(sourcePath: string, targetPath: string, targetName: string): Promise<ExecutionResult> {
+        return wav2Akai(this.c, sourcePath, targetPath, targetName);
+    }
+
+    akaiList(akaiPath: string, partition?: number): Promise<AkaiRecordResult> {
+        return akaiList(this.c, akaiPath, partition);
+    }
+
+    remoteSync(): Promise<ExecutionResult> {
+        return remoteSync(this.c);
+    }
+
+    parseAkaiList(data: string): AkaiRecord[] {
+        return parseAkaiList(data);
+    }
+}
+
+async function remoteSync(c: AkaiToolsConfig) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (!c.piscsiHost || c.scsiId === undefined) {
         rv.errors.push(new Error('Remote host not defined.'))
@@ -98,7 +187,7 @@ export async function remoteSync(c: AkaiToolsConfig) {
 
 }
 
-export async function remoteUnmount(c: AkaiToolsConfig, v: RemoteDisk) {
+async function remoteUnmount(c: AkaiToolsConfig, v: RemoteDisk) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined.'))
@@ -110,7 +199,7 @@ export async function remoteUnmount(c: AkaiToolsConfig, v: RemoteDisk) {
     return rv
 }
 
-export async function remoteMount(c: AkaiToolsConfig, v: RemoteDisk) {
+async function remoteMount(c: AkaiToolsConfig, v: RemoteDisk) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined'))
@@ -122,7 +211,7 @@ export async function remoteMount(c: AkaiToolsConfig, v: RemoteDisk) {
     return rv
 }
 
-export function parseRemoteVolumes(data: string): RemoteDisk[] {
+function parseRemoteVolumes(data: string): RemoteDisk[] {
     const rv: RemoteDisk[] = []
     data.split('\n').forEach(i => {
         const match = i.match(/\|\s*(\d+).*/)
@@ -137,7 +226,7 @@ export function parseRemoteVolumes(data: string): RemoteDisk[] {
     return rv
 }
 
-export async function remoteVolumes(c: AkaiToolsConfig) {
+async function remoteVolumes(c: AkaiToolsConfig) {
     const rv: RemoteVolumeResult = {data: [], errors: []}
     if (!c.piscsiHost) {
         rv.errors.push(new Error('Piscsi host is not defined.'))
@@ -164,7 +253,7 @@ export async function readAkaiData(file: string) {
     return data;
 }
 
-export async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function = akaiList) {
+async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function) {
     let parsed = path.parse(c.diskFile);
     const disk: AkaiDisk = {timestamp: new Date().getTime(), name: parsed.name + parsed.ext, partitions: []}
     const rv: AkaiDiskResult = {data: disk, errors: []}
@@ -217,7 +306,7 @@ export async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function = 
     return rv
 }
 
-export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
+async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     const data = await readAkaiData(file)
     const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
     parseProgramHeader(data, 1, rv.program)
@@ -233,18 +322,7 @@ export async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     return rv
 }
 
-export function addKeygroup(p: AkaiProgramFile) {
-    const proto = p.keygroups[p.keygroups.length - 1]
-    const kg = {} as KeygroupHeader
-    // const kgData = proto.raw.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * p.keygroups.length)
-    const kgData = proto.raw.slice(CHUNK_LENGTH + CHUNK_LENGTH * p.keygroups.length)
-    parseKeygroupHeader(kgData, 0, kg)
-    kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
-    p.keygroups.push(kg)
-    ProgramHeader_writeGROUPS(p.program, p.keygroups.length)
-}
-
-export async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
+async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
     const nibbles = p.program.raw.slice(RAW_LEADER)
     for (let i = 0; i < p.keygroups.length; i++) {
         const kgData = p.keygroups[i].raw.slice(RAW_LEADER)
@@ -260,7 +338,7 @@ export async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
     await fs.writeFile(file, Buffer.from(outdata))
 }
 
-export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
+async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     return doSpawn(
         path.join(c.akaiToolsPath, 'akaiformat'),
@@ -276,7 +354,7 @@ export async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, 
     )
 }
 
-export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
+async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     console.log(`akaiwrite: sourcePath: ${sourcePath}`)
     console.log(`akaiwrite: targetPath: ${targetPath}`)
@@ -285,7 +363,7 @@ export async function akaiWrite(c: AkaiToolsConfig, sourcePath: string, targetPa
         ['-f', c.diskFile, '-p', String(partition), '-d', `"${targetPath}"`, `"${sourcePath}"`])
 }
 
-export async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1, recursive: boolean = true) {
+async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPath: string, partition: number = 1, recursive: boolean = true) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     console.log(`akairead: sourcePath: ${sourcePath}`)
     console.log(`akairead: targetPath: ${targetPath}`)
@@ -302,7 +380,7 @@ export async function akaiRead(c: AkaiToolsConfig, sourcePath: string, targetPat
  * @param targetPath path to output directory on local filesystem (**not** in an Akai disk) to write converted sample files to
  * @param targetName name of the converted sample. Should obey Akai name requirements (<= 12 characters, alpha+a few extra characters)
  */
-export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPath: string, targetName: string) {
+async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPath: string, targetName: string) {
     process.env['PERL5LIB'] = c.akaiToolsPath
     return doSpawn(
         path.join(c.akaiToolsPath, 'wav2akai'),
@@ -310,7 +388,7 @@ export async function wav2Akai(c: AkaiToolsConfig, sourcePath: string, targetPat
     )
 }
 
-export function parseAkaiList(data: string) {
+function parseAkaiList(data: string) {
     const rv: AkaiRecord[] = []
     for (const line of String(data).split('\n')) {
         if (line.trim() === '') {
@@ -326,7 +404,7 @@ export function parseAkaiList(data: string) {
     return rv
 }
 
-export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
+async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', partition = 1) {
     await validateConfig(c)
     const rv: AkaiRecordResult = {data: [], errors: []}
     const bin = path.join(c.akaiToolsPath, 'akailist')
@@ -348,13 +426,13 @@ export async function akaiList(c: AkaiToolsConfig, akaiPath: string = '/', parti
 function voidFunction() {
 }
 
-async function doSpawn(bin: string, args: readonly string[],
-                       opts: {
-                           onData: (buf: Buffer, child: ChildProcess) => void,
-                           onStart: (child: ChildProcess) => void
-                       } = {onData: voidFunction, onStart: voidFunction}) {
+function doSpawn(bin: string, args: readonly string[],
+                 opts: {
+                     onData: (buf: Buffer, child: ChildProcess) => void,
+                     onStart: (child: ChildProcess) => void
+                 } = {onData: voidFunction, onStart: voidFunction}) {
     return new Promise<ExecutionResult>((resolve, reject) => {
-        const rv : ExecutionResult = {errors: [], code: -1}
+        const rv: ExecutionResult = {errors: [], code: -1}
         console.log(`akaitools: ${bin} ${args.join(' ')}`)
         const child = spawn(bin, args, {shell: true})
         child.stdout.setEncoding('utf8')
@@ -384,7 +462,7 @@ async function doSpawn(bin: string, args: readonly string[],
     })
 }
 
-export async function validateConfig(c: AkaiToolsConfig) {
+async function validateConfig(c: AkaiToolsConfig) {
     let s
     try {
         s = await fs.stat(c.diskFile)

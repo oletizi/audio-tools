@@ -5,7 +5,7 @@ import {
     parseSampleHeader, Program,
     ProgramHeader, Sample,
     SampleHeader
-} from "@/devices/s3000xl";
+} from "@/devices/s3000xl.js";
 import midi, {MidiMessage} from "midi";
 import {ExecutionResult} from "@/client/akaitools.js";
 import EventEmitter from "events";
@@ -340,7 +340,6 @@ class s3000xl implements Device {
     format(partitionSize: number, partitionCount: number): Promise<ExecutionResult> {
         return Promise.resolve({errors: [], code: 0})
     }
-
 
 }
 

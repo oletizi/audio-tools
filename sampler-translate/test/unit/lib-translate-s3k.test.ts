@@ -1,4 +1,5 @@
 import {chop, ChopOpts} from '@/lib-translate-s3k.js';
+import * as devices from "@oletizi/sampler-devices/s3k";
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -6,7 +7,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 import fs from 'fs/promises';
 import {stub} from 'sinon';
-import {AkaiToolsConfig, newAkaiToolsConfig} from "@oletizi/sampler-devices/s3k";
+import {AkaiToolsConfig, newAkaiToolsConfig, writeAkaiProgram} from "@oletizi/sampler-devices/s3k";
 import {newSampleSource, Sample, SampleSource} from "@/sample.js";
 
 describe('chop', () => {
@@ -106,6 +107,8 @@ describe('chop', () => {
 
         newSample.returns(Promise.resolve(s))
         readdirStub.resolves([]);
+
+        stub(devices, 'writeAkaiProgram').resolves();
 
         const result = await chop(c, ss, opts);
         expect(result.code).to.equal(0);
