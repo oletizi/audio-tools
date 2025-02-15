@@ -93,4 +93,10 @@ describe('sample', () => {
         expect(re.getSampleData().length).eq(s.getSampleData().length)
     })
 
+    it(`Returns raw data`, async () => {
+        const inbuf = await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV');
+        const s = newSampleFromBuffer(inbuf)
+        const buf = s.getRawData()
+        expect(buf).eq(inbuf)
+    })
 })
