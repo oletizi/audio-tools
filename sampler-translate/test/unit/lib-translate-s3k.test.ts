@@ -4,7 +4,8 @@ import chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-import fs from 'fs/promises';
+import fsp from 'fs/promises';
+import fs from 'fs'
 import {stub} from 'sinon';
 import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
 import {newSampleSource, Sample, SampleSource} from "@/sample.js";
@@ -15,11 +16,11 @@ describe('chop error conditions', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any
 
     beforeEach(async () => {
-        statStub = stub(fs, 'stat');
-        mkdirStub = stub(fs, 'mkdir');
-        readFileStub = stub(fs, 'readFile');
-        writefileStub = stub(fs, 'writeFile');
-        readdirStub = stub(fs, 'readdir');
+        statStub = stub(fsp, 'stat');
+        mkdirStub = stub(fsp, 'mkdir');
+        readFileStub = stub(fsp, 'readFile');
+        writefileStub = stub(fsp, 'writeFile');
+        readdirStub = stub(fsp, 'readdir');
     });
 
     afterEach(() => {
@@ -69,16 +70,18 @@ describe(`chop happy path`, async () => {
         const beatsPerChop = 10
         const sampleCount = 100
 
-        let statStub: any, mkdirStub: any, readFileStub: any, readdirStub: any
-        statStub = stub(fs, 'stat');
-        mkdirStub = stub(fs, 'mkdir');
-        readFileStub = stub(fs, 'readFile');
-        readdirStub = stub(fs, 'readdir');
+        let statStub: any, mkdirStub: any, readFileStub: any, readdirStub: any, createWriteStreamStub: any
+        statStub = stub(fsp, 'stat')
+        mkdirStub = stub(fsp, 'mkdir')
+        readFileStub = stub(fsp, 'readFile')
+        readdirStub = stub(fsp, 'readdir')
+        createWriteStreamStub = stub(fs, 'createWriteStream')
 
-        statStub.withArgs('source.wav').resolves({isFile: () => true});
-        statStub.withArgs(targetDir).onCall(0).rejects(new Error("ENOENT: no such file or directory"));
-        statStub.withArgs(targetDir).onCall(1).resolves({isFile: () => false});
+        statStub.withArgs('source.wav').resolves({isFile: () => true})
+        statStub.withArgs(targetDir).onCall(0).rejects(new Error("ENOENT: no such file or directory"))
+        statStub.withArgs(targetDir).onCall(1).resolves({isFile: () => false})
         mkdirStub.resolves();
+        createWriteStreamStub.returns({write: () => true})
 
         const opts: ChopOpts = {
             source: 'source.wav',
@@ -140,17 +143,18 @@ describe(`chop happy path`, async () => {
 
         const result = await chop(cfg, tools, ss, opts)
 
+        const mkdirArgs = []
+        for (const call of mkdirStub.getCalls()) {
+            mkdirArgs.push(call.args[0])
+        }
+        expect(mkdirArgs.includes('/some/dir'))
+
         expect(to16BitStub.callCount).to.equal(1)
         expect(to441Stub.callCount).to.equal(1)
         expect(trimStub.callCount).to.equal(sampleCount / (samplesPerBeat * beatsPerChop))
 
         expect(result.code).to.equal(0);
 
-        const mkdirArgs = []
-        for (const call of mkdirStub.getCalls()) {
-            mkdirArgs.push(call.args[0])
-        }
-         expect(mkdirArgs.includes('/some/dir'))
-
+        expect(createWriteStreamStub.callCount).to.equal(10)
     });
 });

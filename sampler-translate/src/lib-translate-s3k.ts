@@ -1,6 +1,6 @@
 import path from "pathe";
-import fs from "fs/promises"
-import {createWriteStream} from 'fs'
+import fsp from "fs/promises"
+import fs from 'fs'
 import _ from 'lodash'
 import {Result, ServerConfig} from '@oletizi/sampler-lib'
 import {
@@ -47,18 +47,18 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: Sa
         rv.errors.push(new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`))
         return rv
     }
-    if (!(await fs.stat(opts.source)).isFile()) {
+    if (!(await fsp.stat(opts.source)).isFile()) {
         rv.errors.push(new Error(`Source is not a regular file: ${opts.source}`))
         return rv
     }
     try {
-        const stats = await fs.stat(opts.target)
+        const stats = await fsp.stat(opts.target)
         if (!stats.isDirectory()) {
             rv.errors.push(new Error(`Target is not a directory: ${opts.target}`))
             return rv
         }
     } catch (e) {
-        await fs.mkdir(opts.target)
+        await fsp.mkdir(opts.target)
     }
 
     const sample = await sampleSource.newSampleFromUrl(opts.source)
@@ -76,7 +76,7 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: Sa
         const chop = sample.trim(i, i + chopLength)
         let targetName = opts.prefix + '.' + _.pad(String(count), 2, ' ')
         const outfile = path.join(opts.target, targetName) + '.wav'
-        await chop.writeToStream(createWriteStream(outfile))
+        await chop.writeToStream(fs.createWriteStream(outfile))
         const result = await tools.wav2Akai(outfile, opts.target, targetName)
         if (result.errors.length) {
             rv.errors = rv.errors.concat(result.errors)
@@ -88,7 +88,7 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: Sa
             await tools.akaiFormat(10, 1)
         }
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
-        for (const f of await fs.readdir(opts.target)) {
+        for (const f of await fsp.readdir(opts.target)) {
             if (f.endsWith('a3s')) {
                 const result = await tools.akaiWrite(path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
                 if (result.errors.length !== 0) {
