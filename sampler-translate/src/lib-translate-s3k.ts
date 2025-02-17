@@ -4,15 +4,15 @@ import {createWriteStream} from 'fs'
 import _ from 'lodash'
 import {Result, newServerConfig} from '@oletizi/sampler-lib'
 import {
-    akaiFormat,
-    AkaiToolsConfig, akaiWrite,
+    Akaitools,
+    AkaiToolsConfig,
     KeygroupHeader_writeCP1, KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
     KeygroupHeader_writeHIVEL2, KeygroupHeader_writeLONOTE,
     KeygroupHeader_writeSNAME1, KeygroupHeader_writeSNAME2,
     parseSampleHeader,
-    ProgramHeader_writePRNAME, RAW_LEADER, readAkaiData, readAkaiProgram,
-    SampleHeader, wav2Akai, writeAkaiProgram
+    ProgramHeader_writePRNAME, RAW_LEADER, readAkaiData,
+    SampleHeader
 } from "@oletizi/sampler-devices/s3k"
 import {AbstractProgram, mapLogicAutoSampler, mapProgram} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
@@ -41,7 +41,7 @@ export interface ChopOpts {
     wipeDisk: boolean;
 }
 
-export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource(), opts: ChopOpts) {
+export async function chop(tools: Akaitools, s: SampleSource = newSampleSource(), opts: ChopOpts) {
     const cfg = await newServerConfig()
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
@@ -78,7 +78,7 @@ export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource
         let targetName = opts.prefix + '.' + _.pad(String(count), 2, ' ')
         const outfile = path.join(opts.target, targetName) + '.wav'
         await chop.writeToStream(createWriteStream(outfile))
-        const result = await wav2Akai(c, outfile, opts.target, targetName)
+        const result = await tools.wav2Akai(outfile, opts.target, targetName)
         if (result.errors.length) {
             rv.errors = rv.errors.concat(result.errors)
         }
@@ -86,12 +86,12 @@ export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource
     }
     if (rv.errors.length === 0) {
         if (opts.wipeDisk) {
-            await akaiFormat(c, 10, 1)
+            await tools.akaiFormat( 10, 1)
         }
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
         for (const f of await fs.readdir(opts.target)) {
             if (f.endsWith('a3s')) {
-                const result = await akaiWrite(c, path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
+                const result = await tools.akaiWrite( path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
                 if (result.errors.length !== 0) {
                     rv.errors = rv.errors.concat(rv.errors, result.errors)
                     return rv
@@ -116,7 +116,7 @@ export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource
 
             }
         }
-        const p = await readAkaiProgram(cfg.getS3kDefaultProgramPath(keygroupSpec.length))
+        const p = await tools.readAkaiProgram(cfg.getS3kDefaultProgramPath(keygroupSpec.length))
         if (p.keygroups.length != keygroupSpec.length) {
             rv.errors.push(new Error(`Keygroup count does not match. Program keygroups: ${p.keygroups.length}; expected keygroups: ${keygroupSpec.length}`))
             return rv
@@ -138,8 +138,8 @@ export async function chop(c: AkaiToolsConfig, s: SampleSource = newSampleSource
                 }
             }
             const programPath = path.join(opts.target, opts.prefix + '.a3p');
-            await writeAkaiProgram(programPath, p)
-            await akaiWrite(c, programPath, `/${opts.prefix}`, opts.partition)
+            await tools.writeAkaiProgram(programPath, p)
+            await tools.akaiWrite(programPath, `/${opts.prefix}`, opts.partition)
         }
     }
     if (rv.errors.length === 0) {

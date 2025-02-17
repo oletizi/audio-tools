@@ -1,5 +1,4 @@
 import {chop, ChopOpts} from '@/lib-translate-s3k.js';
-import * as devices from "@oletizi/sampler-devices/s3k";
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -7,7 +6,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 import fs from 'fs/promises';
 import {stub} from 'sinon';
-import {AkaiToolsConfig, newAkaiToolsConfig, writeAkaiProgram} from "@oletizi/sampler-devices/s3k";
+import {AkaiToolsConfig, newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
 import {newSampleSource, Sample, SampleSource} from "@/sample.js";
 
 describe('chop', () => {
@@ -40,7 +39,7 @@ describe('chop', () => {
             beatsPerChop: 2,
             wipeDisk: false,
         };
-        const rv = await chop({} as AkaiToolsConfig, {} as SampleSource, opts)
+        const rv = await chop({} as Akaitools, {} as SampleSource, opts)
         expect(rv.errors.length > 0)
     });
 
@@ -57,10 +56,10 @@ describe('chop', () => {
             wipeDisk: false,
         };
 
-        await expect(chop({} as AkaiToolsConfig, {} as SampleSource, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
+        await expect(chop({} as Akaitools, {} as SampleSource, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
     });
 
-    it('creates the target directory if it does not exist', async () => {
+    it('chops', async () => {
         statStub.withArgs('source.wav').resolves({isFile: () => true});
         statStub.withArgs('/some/dir').rejects(new Error("ENOENT: no such file or directory"));
         mkdirStub.resolves();
@@ -108,9 +107,11 @@ describe('chop', () => {
         newSample.returns(Promise.resolve(s))
         readdirStub.resolves([]);
 
-        stub(devices, 'writeAkaiProgram').resolves();
+        const c = await newAkaiToolsConfig()
+        const tools = newAkaitools(c)
+        stub(tools, 'writeAkaiProgram').resolves();
 
-        const result = await chop(c, ss, opts);
+        const result = await chop(tools, ss, opts);
         expect(result.code).to.equal(0);
         expect(mkdirStub.calledOnce).to.be.true;
     });
