@@ -79,6 +79,8 @@ describe('chop', () => {
 
         // You can stub other functions here to emulate successful operation
         const ss = newSampleSource()
+        const to16BitStub = stub()
+        const to441Stub = stub()
         const s: Sample = {
             getBitDepth(): number {
                 return 0;
@@ -94,13 +96,13 @@ describe('chop', () => {
             }, write(_buf: Buffer, _offset?: number): number {
                 return 0;
             },
-            getMetadata: stub().returns({sampleRate: 44100, bitDepth: 16}),
+            getMetadata: stub().returns({sampleRate: 48000, bitDepth: 24}),
             getSampleCount: stub().returns(0),
             getChannelCount: stub().returns(2),
             getSampleRate: stub().returns(44100),
             trim: stub(),
-            to441: stub(),
-            to16Bit: stub(),
+            to441: to441Stub.returns(this),
+            to16Bit: to16BitStub.returns(this),
             writeToStream: stub()
         };
         const newSample = stub(ss, 'newSampleFromUrl')
@@ -113,6 +115,10 @@ describe('chop', () => {
         stub(tools, 'writeAkaiProgram').resolves();
 
         const result = await chop(cfg, tools, ss, opts);
+
+        expect(to16BitStub.calledOnce).to.be.true;
+        expect(to441Stub.calledOnce).to.be.true;
+
         expect(result.code).to.equal(0);
         expect(mkdirStub.calledOnce).to.be.true;
     });
