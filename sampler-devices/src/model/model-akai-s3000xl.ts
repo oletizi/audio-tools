@@ -1,4 +1,4 @@
-import {KeygroupHeader, ProgramHeader} from "@/devices/s3000xl";
+import {KeygroupHeader, ProgramHeader} from "@/devices/s3000xl.js";
 import {Result} from "@oletizi/sampler-lib";
 
 export interface AkaiToolsConfig {

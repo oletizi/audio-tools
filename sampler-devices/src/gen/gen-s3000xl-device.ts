@@ -28,7 +28,7 @@ export function genImports() {
 // GENERATED ${new Date()}. DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
-import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/client-akai-s3000xl"
+import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/client-akai-s3000xl.js"
     
 `
 }
@@ -95,7 +95,7 @@ export async function genClass(spec: Spec) {
     return rv
 }
 
-function writeFunctionName(spec: Spec, field) {
+function writeFunctionName(spec: Spec, field: any) {
     return `${spec.name}_write${field.n}`
 }
 
