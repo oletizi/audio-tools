@@ -16,7 +16,7 @@ import {
 } from "@oletizi/sampler-devices/s3k"
 import {AbstractProgram, mapLogicAutoSampler, mapProgram} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-import {AudioFormat, newSampleSource, SampleSource} from "@/sample.js";
+import {newSampleSource, SampleSource} from "@/sample.js";
 
 
 export interface AbstractProgramResult extends Result {
@@ -41,7 +41,7 @@ export interface ChopOpts {
     wipeDisk: boolean;
 }
 
-export async function chop(cfg: ServerConfig, tools: Akaitools, s: SampleSource = newSampleSource(), opts: ChopOpts) {
+export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: SampleSource = newSampleSource(), opts: ChopOpts) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
         rv.errors.push(new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`))
@@ -61,7 +61,7 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, s: SampleSource 
         await fs.mkdir(opts.target)
     }
 
-    const sample = await s.newSampleFromUrl(opts.source)
+    const sample = await sampleSource.newSampleFromUrl(opts.source)
 
     if (sample.getMetadata().sampleRate > 44100) {
         sample.to441()
@@ -85,12 +85,12 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, s: SampleSource 
     }
     if (rv.errors.length === 0) {
         if (opts.wipeDisk) {
-            await tools.akaiFormat( 10, 1)
+            await tools.akaiFormat(10, 1)
         }
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
         for (const f of await fs.readdir(opts.target)) {
             if (f.endsWith('a3s')) {
-                const result = await tools.akaiWrite( path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
+                const result = await tools.akaiWrite(path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
                 if (result.errors.length !== 0) {
                     rv.errors = rv.errors.concat(rv.errors, result.errors)
                     return rv
