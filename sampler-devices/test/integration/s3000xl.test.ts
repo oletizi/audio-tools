@@ -1,4 +1,4 @@
-import {newDevice} from "@/client/akai-s3000xl";
+import {newDevice} from "@/client/client-akai-s3000xl.js";
 import midi from "midi";
 import {newServerOutput} from "@oletizi/sampler-lib";
 import {expect} from "chai";
