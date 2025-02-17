@@ -2,7 +2,7 @@ import path from "pathe";
 import fs from "fs/promises"
 import {createWriteStream} from 'fs'
 import _ from 'lodash'
-import {Result, newServerConfig} from '@oletizi/sampler-lib'
+import {Result, ServerConfig} from '@oletizi/sampler-lib'
 import {
     Akaitools,
     AkaiToolsConfig,
@@ -41,8 +41,7 @@ export interface ChopOpts {
     wipeDisk: boolean;
 }
 
-export async function chop(tools: Akaitools, s: SampleSource = newSampleSource(), opts: ChopOpts) {
-    const cfg = await newServerConfig()
+export async function chop(cfg: ServerConfig, tools: Akaitools, s: SampleSource = newSampleSource(), opts: ChopOpts) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
         rv.errors.push(new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`))

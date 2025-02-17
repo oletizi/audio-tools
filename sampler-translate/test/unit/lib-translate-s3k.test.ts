@@ -8,6 +8,7 @@ import fs from 'fs/promises';
 import {stub} from 'sinon';
 import {AkaiToolsConfig, newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
 import {newSampleSource, Sample, SampleSource} from "@/sample.js";
+import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 
 describe('chop', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any, c: AkaiToolsConfig;
@@ -39,7 +40,7 @@ describe('chop', () => {
             beatsPerChop: 2,
             wipeDisk: false,
         };
-        const rv = await chop({} as Akaitools, {} as SampleSource, opts)
+        const rv = await chop({} as ServerConfig, {} as Akaitools, {} as SampleSource, opts)
         expect(rv.errors.length > 0)
     });
 
@@ -56,7 +57,7 @@ describe('chop', () => {
             wipeDisk: false,
         };
 
-        await expect(chop({} as Akaitools, {} as SampleSource, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
+        await expect(chop({} as ServerConfig, {} as Akaitools, {} as SampleSource, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
     });
 
     it('chops', async () => {
@@ -106,12 +107,12 @@ describe('chop', () => {
 
         newSample.returns(Promise.resolve(s))
         readdirStub.resolves([]);
-
+        const cfg = await newServerConfig()
         const c = await newAkaiToolsConfig()
         const tools = newAkaitools(c)
         stub(tools, 'writeAkaiProgram').resolves();
 
-        const result = await chop(tools, ss, opts);
+        const result = await chop(cfg, tools, ss, opts);
         expect(result.code).to.equal(0);
         expect(mkdirStub.calledOnce).to.be.true;
     });
