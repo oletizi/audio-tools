@@ -2,37 +2,44 @@ import {WriteStream} from "fs";
 import * as wavefile from "wavefile"
 import fs from "fs/promises";
 
-// Possible alternatives to wavefile:
-// * https://www.npmjs.com/package/node-wav
-//
-
-
-export enum AudioFormat{
+export enum AudioFormat {
     // Someday there might be support for more audio formats
     WAV = "wav",
 }
 
 export interface SampleSource {
     newSampleFromBuffer(buf: Uint8Array, format: AudioFormat): Sample
+
     newSampleFromUrl(url: string): Promise<Sample>
 }
 
-export function newSampleSource(): SampleSource {
+export function newSampleSource(factory?: Function = ()=>{ return new wavefile.default.WaveFile() }): SampleSource {
     return {
         newSampleFromBuffer: (buf: Uint8Array, format: AudioFormat) => {
             if (format === AudioFormat.WAV) {
-                return newSampleFromBuffer(buf);
+                return newSampleFromBuffer(factory, buf);
             }
             throw new Error(`Unsupported format: ${format}`);
         },
         newSampleFromUrl: async (url: string) => {
-            return newSampleFromBuffer(await fs.readFile(url))
+            const parsedUrl = new URL(url);
+            if (parsedUrl.protocol === 'file:') {
+                const filePath = decodeURIComponent(parsedUrl.pathname);
+                try {
+                    return newSampleFromBuffer(factory, await fs.readFile(filePath));
+                } catch (e: any) {
+                    throw new Error(`Failed to read file: ${filePath}: ${e.message}`)
+                }
+            }
+            throw new Error(`Unsupported url: ${url}`)
         }
     };
 }
 
-export function newSampleFromBuffer(buf: Uint8Array): Sample {
-    return new WavSample(buf)
+function newSampleFromBuffer(factory: Function, buf: Uint8Array): Sample {
+    const wav = factory()
+    wav.fromBuffer(buf)
+    return new WavSample(wav, buf)
 }
 
 
@@ -93,13 +100,13 @@ export interface Sample {
 
 class WavSample implements Sample {
     private readonly wav: any
-    private buf: Uint8Array;
+    private readonly buf: Uint8Array;
 
-    constructor(buf: Uint8Array) {
+    constructor(wav: wavefile.default.WaveFile, buf: Uint8Array) {
+        this.wav = wav //new wavefile.default.WaveFile()
         this.buf = buf
-        const wav = new wavefile.default.WaveFile()
-        wav.fromBuffer(buf)
-        this.wav = wav
+
+        // this.wav = wav
     }
 
     getMetadata(): SampleMetadata {

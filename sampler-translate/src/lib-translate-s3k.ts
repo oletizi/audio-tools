@@ -41,6 +41,7 @@ export interface ChopOpts {
     wipeDisk: boolean;
 }
 
+// XXX: This is super messy and should be refactored.
 export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: SampleSource = newSampleSource(), opts: ChopOpts) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {

@@ -65,6 +65,7 @@ describe('chop error conditions', () => {
 describe(`chop happy path`, async () => {
 
     it('chops', async () => {
+        // XXX: This is still super messy.
         const targetDir = '/some/dir';
         const samplesPerBeat = 1
         const beatsPerChop = 10
