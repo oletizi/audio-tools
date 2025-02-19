@@ -1,6 +1,6 @@
 {
   "name": "@oletizi/sampler-translate",
-  "version": "0.0.21",
+  "version": "0.0.23",
   "description": "Sampler format translation utilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "test": "c8 mocha",
     "build": "tsup",
     "test:integration": "npm run build && ",
-    "do:publish": "npm test && npm version patch && npm publish --access=public"
+    "do:publish": "npm test && npm version patch && npm publish --access=public --auth=legacy"
   },
   "author": "Orion Letizi",
   "license": "ISC",
