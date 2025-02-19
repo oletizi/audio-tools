@@ -48,6 +48,13 @@ export interface AudioFactory {
 }
 
 
+export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
+
+export interface TranslateContext {
+    fs: fileio
+    audioFactory: AudioFactory
+}
+
 export function newDefaultAudioFactory(): AudioFactory {
     return {
         loadFromFile: async (filename: string) => {
@@ -72,13 +79,6 @@ export function newDefaultAudioFactory(): AudioFactory {
 
 export function newDefaultTranslateContext(): TranslateContext {
     return {audioFactory: newDefaultAudioFactory(), fs: fs}
-}
-
-export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
-
-export interface TranslateContext {
-    fs: fileio
-    audioFactory: AudioFactory
 }
 
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
