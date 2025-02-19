@@ -1,6 +1,6 @@
 {
   "name": "@oletizi/sampler-translate",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Sampler format translation utilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,8 @@
     "@oletizi/sampler-devices": "^0.0.12",
     "chai-as-promised": "^8.0.1",
     "lodash": "^4.17.21",
-    "music-metadata": "^10.9.0"
+    "music-metadata": "^10.9.0",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
