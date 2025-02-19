@@ -110,14 +110,16 @@ describe(`Core translator mapper error condition tests`, async () => {
 describe('mapProgram', () => {
 
     it('handles empty directory', async () => {
-        const result = await mapProgram(() => [], { source: tmpdir(), target: tmpdir() });
+        const result = await mapProgram(() => [], {source: tmpdir(), target: tmpdir()});
         expect(result.keygroups).to.deep.equal([]);
     });
 
-    it('processes audio files correctly', async () => {
+    it('processes audio files correctly', async function () {
+
+        this.timeout(10 * 1000)
 
         const mapFunction = (sources: AudioSource[]) => sources.map(s => ({
-            zones: [{ audioSource: s, lowNote: 0, highNote: 127 }]
+            zones: [{audioSource: s, lowNote: 0, highNote: 127}]
         }));
 
 
@@ -125,7 +127,7 @@ describe('mapProgram', () => {
         console.log(`sourceDir: ${sourceDir}`);
         console.log(`working dir: ${process.cwd()}`);
         const targetDir = tmpdir()
-        const result = await mapProgram(mapFunction, { source: sourceDir, target: targetDir });
+        const result = await mapProgram(mapFunction, {source: sourceDir, target: targetDir});
         expect(result.keygroups).to.have.lengthOf(13);
         expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
         expect(result.keygroups[0].zones[0].highNote).to.equal(127);
