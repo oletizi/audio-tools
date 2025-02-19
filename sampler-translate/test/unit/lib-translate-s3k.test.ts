@@ -8,9 +8,9 @@ import fsp from 'fs/promises';
 import fs from 'fs'
 import {stub} from 'sinon';
 import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
-import {newSampleSource, Sample, SampleSource} from "@/sample.js";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
+import {newDefaultSampleFactory, Sample, SampleFactory} from "@/sample.js";
 
 describe('chop error conditions', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any
@@ -41,7 +41,7 @@ describe('chop error conditions', () => {
             beatsPerChop: 2,
             wipeDisk: false,
         };
-        const rv = await chop({} as ServerConfig, {} as Akaitools, {} as SampleSource, opts)
+        const rv = await chop({} as ServerConfig, {} as Akaitools, opts)
         expect(rv.errors.length > 0)
     });
 
@@ -58,7 +58,7 @@ describe('chop error conditions', () => {
             wipeDisk: false,
         };
 
-        await expect(chop({} as ServerConfig, {} as Akaitools, {} as SampleSource, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
+        await expect(chop({} as ServerConfig, {} as Akaitools, opts)).to.be.eventually.rejectedWith('ENOENT: no such file or directory');
     });
 })
 
@@ -131,18 +131,17 @@ describe(`chop happy path`, async () => {
         to16BitStub.resolves(s)
         writeToStreamStub.resolves()
 
-        const ss = newSampleSource()
-        stub(ss, 'newSampleFromUrl').resolves(s);
-
         readdirStub.resolves([]);
         const cfg = await newServerConfig()
         const c = await newAkaiToolsConfig()
         const tools = newAkaitools(c)
+        const sampleFactory = newDefaultSampleFactory()
         stub(tools, 'writeAkaiProgram').resolves()
         stub(tools, 'wav2Akai').resolves({errors: [], code: 0} as ExecutionResult)
         stub(tools, 'akaiWrite').resolves({errors: [], code: 0} as ExecutionResult)
+        stub(sampleFactory, 'newSampleFromFile').resolves(s)
 
-        const result = await chop(cfg, tools, ss, opts)
+        const result = await chop(cfg, tools, opts, sampleFactory)
 
         const mkdirArgs = []
         for (const call of mkdirStub.getCalls()) {

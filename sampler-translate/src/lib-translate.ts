@@ -49,7 +49,6 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
             const noteName = match[1]
             const noteNumber = midiNoteToNumber(noteName)
             if (noteNumber != null) {
-                console.log(`Note number: ${noteNumber}`)
                 if (note2Samples.get(noteNumber)) {
                     note2Samples.get(noteNumber)?.push(s)
                 } else {

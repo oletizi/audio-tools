@@ -3,43 +3,7 @@ import * as wavefile from "wavefile"
 import fs from "fs/promises";
 
 export enum AudioFormat {
-    // Someday there might be support for more audio formats
-    WAV = "wav",
-}
-
-export interface SampleSource {
-    newSampleFromBuffer(buf: Uint8Array, format: AudioFormat): Sample
-
-    newSampleFromUrl(url: string): Promise<Sample>
-}
-
-export function newSampleSource(factory?: Function = ()=>{ return new wavefile.default.WaveFile() }): SampleSource {
-    return {
-        newSampleFromBuffer: (buf: Uint8Array, format: AudioFormat) => {
-            if (format === AudioFormat.WAV) {
-                return newSampleFromBuffer(factory, buf);
-            }
-            throw new Error(`Unsupported format: ${format}`);
-        },
-        newSampleFromUrl: async (url: string) => {
-            const parsedUrl = new URL(url);
-            if (parsedUrl.protocol === 'file:') {
-                const filePath = decodeURIComponent(parsedUrl.pathname);
-                try {
-                    return newSampleFromBuffer(factory, await fs.readFile(filePath));
-                } catch (e: any) {
-                    throw new Error(`Failed to read file: ${filePath}: ${e.message}`)
-                }
-            }
-            throw new Error(`Unsupported url: ${url}`)
-        }
-    };
-}
-
-function newSampleFromBuffer(factory: Function, buf: Uint8Array): Sample {
-    const wav = factory()
-    wav.fromBuffer(buf)
-    return new WavSample(wav, buf)
+    wav = "wav",
 }
 
 
@@ -98,15 +62,42 @@ export interface Sample {
 
 }
 
-class WavSample implements Sample {
-    private readonly wav: any
+export interface SampleFactory {
+    newSampleFromFile(filename: string): Promise<Sample>
+
+    newSampleFromBuffer(buf: Uint8Array, format: AudioFormat): Sample
+}
+
+export function newDefaultSampleFactory(): SampleFactory {
+    function wavFactory(buf: Uint8Array) {
+        const wav = new wavefile.default.WaveFile()
+        wav.fromBuffer(buf)
+        return wav
+    }
+
+    function fromBuffer(buf: Uint8Array, format: AudioFormat): Sample {
+        return new WavSample(wavFactory, buf)
+    }
+
+    async function fromFile(filename: string): Promise<Sample> {
+        return fromBuffer(await fs.readFile(filename), AudioFormat.wav)
+    }
+
+    return {
+        newSampleFromBuffer: fromBuffer,
+        newSampleFromFile: fromFile
+    }
+}
+
+export class WavSample implements Sample {
+    private readonly wav: wavefile.WaveFile
     private readonly buf: Uint8Array;
+    private readonly factory: (buf: Uint8Array) => wavefile.WaveFile;
 
-    constructor(wav: wavefile.default.WaveFile, buf: Uint8Array) {
-        this.wav = wav //new wavefile.default.WaveFile()
+    constructor(factory: (buf: Uint8Array) => wavefile.WaveFile, buf: Uint8Array) {
+        this.wav = factory(buf)
         this.buf = buf
-
-        // this.wav = wav
+        this.factory = factory
     }
 
     getMetadata(): SampleMetadata {
@@ -191,7 +182,7 @@ class WavSample implements Sample {
         const trimmed = new wavefile.default.WaveFile()
         // @ts-ignore
         trimmed.fromScratch(channelCount, this.wav.fmt.sampleRate, this.wav.bitDepth, trimmedSamples)
-        return newSampleFromBuffer(trimmed.toBuffer())
+        return new WavSample(this.factory, trimmed.toBuffer())
     }
 
     write(buf: Buffer, offset: number = 0) {

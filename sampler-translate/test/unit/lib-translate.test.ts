@@ -1,6 +1,9 @@
+import sinon from "sinon";
 import {expect} from "chai";
-import path from "path";
+import path from "pathe";
 import {midiNoteToNumber} from "@/lib-midi.js"
+import * as fs from "fs/promises";
+import * as musicMetadata from "music-metadata";
 import {
     AbstractKeygroup,
     AudioMetadata,
@@ -16,7 +19,7 @@ describe('Test lib-translate exports', () => {
     })
 })
 
-describe(`Core translator mapper tests`, async () => {
+describe(`Core translator mapper error condition tests`, async () => {
     it(`Barfs on errors`, async () => {
         const failMessage = "Should have barfed."
         try {
@@ -104,4 +107,46 @@ describe(`Core translator mapper tests`, async () => {
         expect(zone2.lowNote).eq(midiNoteToNumber('C#1'))
         expect(zone2.highNote).eq(midiNoteToNumber('F#1'))
     })
+})
+
+describe('mapProgram', () => {
+    let sandbox: sinon.SinonSandbox;
+    
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it('handles empty directory', async () => {
+        sandbox.stub(fs, 'readdir').resolves([]);
+        const result = await mapProgram((s) => [], { source: 'dummy', target: 'dummy' });
+        expect(result.keygroups).to.deep.equal([]);
+    });
+
+    it('processes audio files correctly', async () => {
+        const mockFiles = ['test1.wav', 'test2.wav'];
+        const mockMetadata = {
+            format: {
+                bitsPerSample: 16,
+                numberOfChannels: 2,
+                numberOfSamples: 1000,
+                sampleRate: 44100
+            }
+        };
+
+        sandbox.stub(fs, 'readdir').resolves(mockFiles);
+        sandbox.stub(musicMetadata, 'parseFile').resolves(mockMetadata);
+
+        const mapFunction = (sources) => sources.map(s => ({
+            zones: [{ audioSource: s, lowNote: 0, highNote: 127 }]
+        }));
+
+        const result = await mapProgram(mapFunction, { source: 'test', target: 'test' });
+        expect(result.keygroups).to.have.lengthOf(2);
+        expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
+        expect(result.keygroups[0].zones[0].highNote).to.equal(127);
+    });
 })

@@ -16,7 +16,7 @@ import {
 } from "@oletizi/sampler-devices/s3k"
 import {AbstractProgram, mapLogicAutoSampler, mapProgram} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-import {newSampleSource, SampleSource} from "@/sample.js";
+import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
 
 
 export interface AbstractProgramResult extends Result {
@@ -42,7 +42,7 @@ export interface ChopOpts {
 }
 
 // XXX: This is super messy and should be refactored.
-export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: SampleSource = newSampleSource(), opts: ChopOpts) {
+export async function chop(cfg: ServerConfig, tools: Akaitools, opts: ChopOpts, sampleFactory: SampleFactory = newDefaultSampleFactory()) {
     const rv: ExecutionResult = {code: -1, errors: []}
     if (opts.samplesPerBeat <= 0 || opts.beatsPerChop <= 0) {
         rv.errors.push(new Error(`Bad params: samplesPerBeat: ${opts.samplesPerBeat}, beatsPerChop: ${opts.beatsPerChop}`))
@@ -62,7 +62,7 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, sampleSource: Sa
         await fsp.mkdir(opts.target)
     }
 
-    const sample = await sampleSource.newSampleFromUrl(opts.source)
+    const sample = await sampleFactory.newSampleFromFile(opts.source)
 
     if (sample.getMetadata().sampleRate > 44100) {
         sample.to441()

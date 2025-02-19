@@ -1,4 +1,4 @@
-import {AudioFormat, newSampleSource, SampleSource} from "@/sample.js";
+import {AudioFormat, newDefaultSampleSource, SampleSource} from "@/sample.js";
 import {expect} from "chai";
 import * as wavefile from "wavefile"
 import {tmpdir} from "node:os";
@@ -14,9 +14,9 @@ describe('wavefile', () => {
 })
 
 describe('sample', () => {
-    const ss = newSampleSource()
+    const ss = newDefaultSampleSource()
     it('Parses a wave file', async () => {
-        const ss = newSampleSource()
+        const ss = newDefaultSampleSource()
         // const s = newSampleFromBuffer(await fs.readFile('test/data/mpc/Dub Tao A Kit.WAV'))
         const s = await ss.newSampleFromUrl('file://' + path.join(process.cwd(), 'test', 'data', 'mpc', 'Dub Tao A Kit.WAV').normalize())
         expect(s).not.eq(null)
@@ -71,7 +71,7 @@ describe('sample', () => {
         let source: SampleSource;
 
         beforeEach(() => {
-            source = newSampleSource();
+            source = newDefaultSampleSource();
         });
 
         it("Should create a valid SampleSource instance", () => {
