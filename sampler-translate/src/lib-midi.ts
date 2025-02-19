@@ -1,5 +1,14 @@
+// XXX: Does this library belong in a higher-level module?
+
 export function midiNoteToNumber(note: string): number {
-    const noteRegex = /^([a-gA-G])([#b]?)(\d)$/;
+    // MIDI note range is 0-127 (C-1 to G9)
+    const MIN_MIDI_NOTE = 0;
+    const MAX_MIDI_NOTE = 127;
+
+    // Validate note format with regex
+    // Allows for notes from C-1 to G9
+    // Format: note name + optional accidental + octave number
+    const noteRegex = /^([a-gA-G])([#b]?)(-?\d+)$/;
     const match = note.match(noteRegex);
 
     if (!match) {
@@ -22,5 +31,13 @@ export function midiNoteToNumber(note: string): number {
         noteValue -= 1;
     }
 
-    return (octave + 1) * 12 + noteValue;
+    // Calculate the MIDI note number
+    const midiNote = (octave + 1) * 12 + noteValue;
+
+    // Check if the calculated note is within valid MIDI range
+    if (midiNote < MIN_MIDI_NOTE || midiNote > MAX_MIDI_NOTE) {
+        return -1;
+    }
+
+    return midiNote;
 }
