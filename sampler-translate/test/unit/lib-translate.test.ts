@@ -7,7 +7,8 @@ import {
     AudioSource,
     description,
     mapLogicAutoSampler,
-    mapProgram, newDefaultTranslateContext
+    mapProgram, newDefaultTranslateContext,
+    newDefaultAudioFactory
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
 
@@ -16,6 +17,26 @@ describe('Test lib-translate exports', () => {
         description()
     })
 })
+
+
+describe(`default audio factory`, async () => {
+    it(`Creates a default audio factory`, async () => {
+        const factory = newDefaultAudioFactory()
+        const source = await factory.loadFromFile(path.join('test', 'data', 'decent', 'Samples', 'Oscar.wav'))
+        expect(source).to.exist
+
+        const meta = source.meta
+        expect(meta.sampleRate).to.equal(44100)
+        expect(meta.bitDepth).to.equal(24)
+        expect(meta.channelCount).to.equal(2)
+        expect(meta.container).to.equal('WAVE')
+        expect(meta.codec).to.equal("PCM")
+
+        const sample = await source.getSample()
+        expect(sample).to.exist
+    })
+})
+
 
 describe(`Core translator mapper tests`, async () => {
     it(`Barfs on errors`, async () => {
@@ -127,7 +148,10 @@ describe('mapProgram', () => {
         console.log(`sourceDir: ${sourceDir}`);
         console.log(`working dir: ${process.cwd()}`);
         const targetDir = tmpdir()
-        const result = await mapProgram(newDefaultTranslateContext(), mapFunction, {source: sourceDir, target: targetDir});
+        const result = await mapProgram(newDefaultTranslateContext(), mapFunction, {
+            source: sourceDir,
+            target: targetDir
+        });
         expect(result.keygroups).to.have.lengthOf(13);
         expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
         expect(result.keygroups[0].zones[0].highNote).to.equal(127);
