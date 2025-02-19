@@ -41,7 +41,6 @@ export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     const rv: AbstractKeygroup[] = []
 
-    // const note2Samples = new Map<number, AudioSource[]>()
     const note2Samples = new Map<number, AudioSource[]>()
     for (const s of sources) {
         const match = s.url.match(/-([A-G][#b]*[0-9])-/)
@@ -58,7 +57,9 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
         }
     }
     let start = 0
-    Array.from(note2Samples.keys()).sort((a, b) => {return a - b}).forEach(i => {
+    Array.from(note2Samples.keys()).sort((a, b) => {
+        return a - b
+    }).forEach(i => {
         const zones: AbstractZone[] = []
         _(note2Samples.get(i)).each(s => {
             zones.push({audioSource: s, highNote: i, lowNote: start})
@@ -81,7 +82,6 @@ export async function mapProgram(mapFunction: MapFunction, opts: { source: strin
     }
     const sources: AudioSource[] = []
     for (const item of await fs.readdir(opts.source)) {
-
         const filepath = path.join(opts.source, item);
         try {
             const meta = await parseFile(filepath, {duration: false, skipCovers: true});

@@ -1,9 +1,6 @@
-import sinon from "sinon";
 import {expect} from "chai";
 import path from "pathe";
 import {midiNoteToNumber} from "@/lib-midi.js"
-import * as fs from "fs/promises";
-import * as musicMetadata from "music-metadata";
 import {
     AbstractKeygroup,
     AudioMetadata,
@@ -12,6 +9,7 @@ import {
     mapLogicAutoSampler,
     mapProgram
 } from "@/lib-translate.js";
+import {tmpdir} from "node:os";
 
 describe('Test lib-translate exports', () => {
     it('Exports description()', () => {
@@ -110,42 +108,25 @@ describe(`Core translator mapper error condition tests`, async () => {
 })
 
 describe('mapProgram', () => {
-    let sandbox: sinon.SinonSandbox;
-    
-    beforeEach(() => {
-        sandbox = sinon.createSandbox();
-    });
-
-    afterEach(() => {
-        sandbox.restore();
-    });
 
     it('handles empty directory', async () => {
-        sandbox.stub(fs, 'readdir').resolves([]);
-        const result = await mapProgram((s) => [], { source: 'dummy', target: 'dummy' });
+        const result = await mapProgram(() => [], { source: tmpdir(), target: tmpdir() });
         expect(result.keygroups).to.deep.equal([]);
     });
 
     it('processes audio files correctly', async () => {
-        const mockFiles = ['test1.wav', 'test2.wav'];
-        const mockMetadata = {
-            format: {
-                bitsPerSample: 16,
-                numberOfChannels: 2,
-                numberOfSamples: 1000,
-                sampleRate: 44100
-            }
-        };
 
-        sandbox.stub(fs, 'readdir').resolves(mockFiles);
-        sandbox.stub(musicMetadata, 'parseFile').resolves(mockMetadata);
-
-        const mapFunction = (sources) => sources.map(s => ({
+        const mapFunction = (sources: AudioSource[]) => sources.map(s => ({
             zones: [{ audioSource: s, lowNote: 0, highNote: 127 }]
         }));
 
-        const result = await mapProgram(mapFunction, { source: 'test', target: 'test' });
-        expect(result.keygroups).to.have.lengthOf(2);
+
+        const sourceDir = path.join(process.cwd(), 'test', 'data', 'auto', 'J8.01').normalize();
+        console.log(`sourceDir: ${sourceDir}`);
+        console.log(`working dir: ${process.cwd()}`);
+        const targetDir = tmpdir()
+        const result = await mapProgram(mapFunction, { source: sourceDir, target: targetDir });
+        expect(result.keygroups).to.have.lengthOf(13);
         expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
         expect(result.keygroups[0].zones[0].highNote).to.equal(127);
     });

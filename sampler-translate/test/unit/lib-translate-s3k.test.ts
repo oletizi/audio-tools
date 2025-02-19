@@ -10,7 +10,7 @@ import {stub} from 'sinon';
 import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-import {newDefaultSampleFactory, Sample, SampleFactory} from "@/sample.js";
+import {newDefaultSampleFactory, Sample} from "@/sample.js";
 
 describe('chop error conditions', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any
@@ -64,6 +64,21 @@ describe('chop error conditions', () => {
 
 describe(`chop happy path`, async () => {
 
+    let statStub: any, mkdirStub: any, readFileStub: any, readdirStub: any, createWriteStreamStub: any
+    beforeEach(async () => {
+        statStub = stub(fsp, 'stat')
+        mkdirStub = stub(fsp, 'mkdir')
+        readFileStub = stub(fsp, 'readFile')
+        readdirStub = stub(fsp, 'readdir')
+    });
+
+    afterEach(() => {
+        statStub.restore();
+        mkdirStub.restore();
+        readFileStub.restore();
+        readdirStub.restore()
+    });
+
     it('chops', async () => {
         // XXX: This is still super messy.
         const targetDir = '/some/dir';
@@ -71,11 +86,6 @@ describe(`chop happy path`, async () => {
         const beatsPerChop = 10
         const sampleCount = 100
 
-        let statStub: any, mkdirStub: any, readFileStub: any, readdirStub: any, createWriteStreamStub: any
-        statStub = stub(fsp, 'stat')
-        mkdirStub = stub(fsp, 'mkdir')
-        readFileStub = stub(fsp, 'readFile')
-        readdirStub = stub(fsp, 'readdir')
         createWriteStreamStub = stub(fs, 'createWriteStream')
 
         statStub.withArgs('source.wav').resolves({isFile: () => true})
