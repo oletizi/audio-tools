@@ -1,11 +1,16 @@
 import fs from "fs/promises"
-import path from "path"
+import path from "pathe"
 import _ from "lodash"
 import {parseFile} from "music-metadata"
 import {midiNoteToNumber} from "@/lib-midi.js";
+import {newDefaultSampleFactory} from "@/sample.js";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
+}
+
+export interface fileio {
+
 }
 
 export interface AbstractProgram {
@@ -14,6 +19,12 @@ export interface AbstractProgram {
 
 export interface AbstractKeygroup {
     zones: AbstractZone[]
+}
+
+export interface AbstractZone {
+    audioSource: AudioSource
+    lowNote: number
+    highNote: number
 }
 
 export interface AudioMetadata {
@@ -28,15 +39,47 @@ export interface AudioMetadata {
 export interface AudioSource {
     meta: AudioMetadata
     url: string
+
+    getSample(): Promise<Sample>
 }
 
-export interface AbstractZone {
-    audioSource: AudioSource
-    lowNote: number
-    highNote: number
+export interface AudioFactory {
+    loadFromFile(filename: string): Promise<AudioSource>
+}
+
+
+export function newDefaultAudioFactory(): AudioFactory {
+    return {
+        loadFromFile: async (filename: string) => {
+            const m = await parseFile(filename)
+            return {
+                meta: {
+                    sampleRate: m.format.sampleRate,
+                    bitDepth: m.format.bitsPerSample,
+                    channelCount: m.format.numberOfChannels,
+                    sampleCount: m.format.numberOfSamples,
+                    container: m.format.container,
+                    codec: m.format.codec,
+                },
+                url: `file://${filename}`,
+                getSample(): Promise<Sample> {
+                    return newDefaultSampleFactory().newSampleFromFile(filename)
+                }
+            }
+        }
+    }
+}
+
+export function newDefaultTranslateContext(): TranslateContext {
+    return {audioFactory: newDefaultAudioFactory(), fs: fs}
 }
 
 export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
+
+export interface TranslateContext {
+    fs: fileio
+    audioFactory: AudioFactory
+}
 
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     const rv: AbstractKeygroup[] = []
@@ -73,7 +116,19 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     return rv
 }
 
-export async function mapProgram(mapFunction: MapFunction, opts: { source: string, target: string }) {
+export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction, opts: {
+    source: string,
+    target: string
+}) {
+    if (!ctx) {
+        throw new Error(`Translate context undefined.`)
+    }
+    if (!ctx.audioFactory) {
+        throw new Error(`Translate context audio factory undefined.`)
+    }
+    if (!ctx.fs) {
+        throw new Error(`Translate context fs undefined.`)
+    }
     if (!mapFunction) {
         throw new Error(`Map function undefined.`)
     }
@@ -81,21 +136,13 @@ export async function mapProgram(mapFunction: MapFunction, opts: { source: strin
         throw new Error(`Options undefined.`)
     }
     const sources: AudioSource[] = []
-    for (const item of await fs.readdir(opts.source)) {
+    const audioFactory = ctx.audioFactory
+    for (const item of await ctx.fs.readdir(opts.source)) {
         const filepath = path.join(opts.source, item);
         try {
-            const meta = await parseFile(filepath, {duration: false, skipCovers: true});
-            if (meta && meta.format) {
-                const format = meta.format
-                const m: AudioMetadata = {
-                    bitDepth: format.bitsPerSample,
-                    channelCount: format.numberOfChannels,
-                    sampleCount: format.numberOfSamples,
-                    sampleRate: format.sampleRate
-                }
-                sources.push({meta: m, url: `file://${filepath}`})
-            }
-
+            const audio = await audioFactory.loadFromFile(filepath)
+            const m = audio.meta
+            sources.push({meta: m, url: `file://${filepath}`})
         } catch (e) {
             // probably check to see what's wrong
         }

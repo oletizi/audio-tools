@@ -11,6 +11,33 @@ import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devi
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
+import {mapProgram} from "@/lib-translate.js"
+import {map} from "@/lib-translate-s3k.js"
+
+describe(`map`, () => {
+    let mapProgramStub: any
+
+    beforeEach(() => {
+        mapProgramStub = stub(translate, "mapProgram");
+    })
+    afterEach(() => {
+        mapProgramStub.restore();
+    })
+
+    it(`handles undefined options`, () => {
+        try {
+            const opts = undefined
+            map(opts)
+            expect.fail(`Barf.`)
+        } catch (e) {
+            // Expect an exception. Fail if barf.
+            expect(e.message).not.eq('Barf.')
+        }
+
+    })
+
+    // expect(results).to.exist
+})
 
 describe('chop error conditions', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any

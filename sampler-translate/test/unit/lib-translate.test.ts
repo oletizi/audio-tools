@@ -7,7 +7,7 @@ import {
     AudioSource,
     description,
     mapLogicAutoSampler,
-    mapProgram
+    mapProgram, newDefaultTranslateContext
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
 
@@ -17,7 +17,7 @@ describe('Test lib-translate exports', () => {
     })
 })
 
-describe(`Core translator mapper error condition tests`, async () => {
+describe(`Core translator mapper tests`, async () => {
     it(`Barfs on errors`, async () => {
         const failMessage = "Should have barfed."
         try {
@@ -57,7 +57,7 @@ describe(`Core translator mapper error condition tests`, async () => {
 
         const source = path.join('test', 'data', 'auto', 'J8.01')
         const target = path.join('build')
-        const program = await mapProgram(mapFunction, {source: source, target: target})
+        const program = await mapProgram(newDefaultTranslateContext(), mapFunction, {source: source, target: target})
         expect(mapFunctionCalls.length).eq(1)
         expect(program).to.exist
         expect(program.keygroups).to.exist
@@ -110,7 +110,7 @@ describe(`Core translator mapper error condition tests`, async () => {
 describe('mapProgram', () => {
 
     it('handles empty directory', async () => {
-        const result = await mapProgram(() => [], {source: tmpdir(), target: tmpdir()});
+        const result = await mapProgram(newDefaultTranslateContext(), () => [], {source: tmpdir(), target: tmpdir()});
         expect(result.keygroups).to.deep.equal([]);
     });
 
@@ -127,7 +127,7 @@ describe('mapProgram', () => {
         console.log(`sourceDir: ${sourceDir}`);
         console.log(`working dir: ${process.cwd()}`);
         const targetDir = tmpdir()
-        const result = await mapProgram(mapFunction, {source: sourceDir, target: targetDir});
+        const result = await mapProgram(newDefaultTranslateContext(), mapFunction, {source: sourceDir, target: targetDir});
         expect(result.keygroups).to.have.lengthOf(13);
         expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
         expect(result.keygroups[0].zones[0].highNote).to.equal(127);

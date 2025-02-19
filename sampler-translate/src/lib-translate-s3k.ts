@@ -14,6 +14,7 @@ import {
     ProgramHeader_writePRNAME, RAW_LEADER, readAkaiData,
     SampleHeader
 } from "@oletizi/sampler-devices/s3k"
+
 import {AbstractProgram, mapLogicAutoSampler, mapProgram} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
@@ -23,7 +24,7 @@ export interface AbstractProgramResult extends Result {
     data: AbstractProgram
 }
 
-export async function map(c: AkaiToolsConfig, opts: {
+export async function map(opts: {
     source: string,
     target: string
 }): Promise<AbstractProgramResult> {
