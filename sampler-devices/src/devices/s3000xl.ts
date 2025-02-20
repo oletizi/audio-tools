@@ -2530,7 +2530,7 @@ export function SampleHeader_writeSHLTO(header: SampleHeader, v: number) {
 
 
 
-export class Sample {
+export class AkaiS3kSample {
     private readonly device: Device
     private readonly header: SampleHeader
 

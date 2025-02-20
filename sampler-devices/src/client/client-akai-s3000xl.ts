@@ -3,7 +3,7 @@ import {
     KeygroupHeader, parseKeygroupHeader,
     parseProgramHeader,
     parseSampleHeader, Program,
-    ProgramHeader, Sample,
+    ProgramHeader, AkaiS3kSample,
     SampleHeader
 } from "@/devices/s3000xl.js";
 import midi, {MidiMessage} from "midi";
@@ -32,7 +32,7 @@ export interface Device {
 
     getProgram(programNumber: number): Promise<Program>
 
-    getSample(sampleName: string): Promise<Sample>
+    getSample(sampleName: string): Promise<AkaiS3kSample>
 
     fetchKeygroupHeader(programNumber: number, keygroupNumber: number, header: KeygroupHeader): Promise<KeygroupHeader>
 
@@ -224,7 +224,7 @@ class s3000xl implements Device {
         }
         if (sampleNumber >= 0) {
             const header = await this.fetchSampleHeader(sampleNumber, {} as SampleHeader)
-            rv = new Sample(this, header)
+            rv = new AkaiS3kSample(this, header)
         } else {
             throw new Error(`Can't find sample named: ${sampleName}`)
         }
