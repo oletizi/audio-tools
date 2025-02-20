@@ -41,76 +41,50 @@ describe(`default audio factory`, async () => {
 
 
 describe(`Core translator mapper tests`, async () => {
-    const failMessage = "Should have barfed."
-    it(`Checks for empty translate context`, async () => {
-        try {
-            // @ts-ignore
-            await mapProgram(undefined, stub())
-            expect.fail(failMessage)
-        } catch (e: any) {
-            if (e.message === failMessage) {
-                throw e
-            }
-        }
+    it(`Handles empty arguments`, async () => {
+        const result = await mapProgram(undefined, undefined, undefined)
+        expect(result.errors.length).to.equal(3)
     })
 
     it(`Checks for empty audio factory`, async () => {
-        try {
-            await mapProgram({audioFactory: undefined, fs: stub()}, stub())
-            expect.fail(failMessage)
-        } catch (e) {
-            if (e.message === failMessage) {
-                throw e
-            }
-        }
+        const result = await mapProgram({audioFactory: undefined, fs: stub()}, stub(), {source: stub(), target: stub()})
+        expect(result.errors.length).to.equal(1)
     })
 
     it(`Checks for empty fileio`, async () => {
-
-        try {
-            await mapProgram({
-                audioFactory: stub()
-            }, {})
-            expect.fail(failMessage)
-        } catch (e) {
-            if (e.message === failMessage) {
-                throw e
-            }
-        }
+        const result = await mapProgram({
+            audioFactory: stub(), fs: undefined
+        }, stub(), {source: stub(), target: stub()})
+        expect(result.errors.length).to.equal(1)
     })
 
     it(`Checks for empty map function`, async () => {
-        try {
-            const ctx: TranslateContext = {
-                fs: stub(),
-                audioFactory: stub()
-            }
-            await mapProgram(ctx, null, stub())
-            expect.fail(failMessage)
-        } catch (e) {
-            if (e.message === failMessage) {
-                throw e
-            }
+        const ctx: TranslateContext = {
+            fs: stub(),
+            audioFactory: stub()
         }
+        const result = await mapProgram(ctx, undefined, {source: stub(), target: stub()})
+        expect(result.errors.length).to.equal(1)
+
     })
 
-    it(`Checks for empty options`, async () => {
-
-        try {
-            const ctx: TranslateContext = {
-                fs: stub(),
-                audioFactory: stub()
-            }
-            // @ts-ignore
-            await mapProgram(ctx, stub(), null)
-            expect.fail(failMessage)
-        } catch (e: any) {
-            if (e.message === failMessage) {
-                throw e
-            }
+    it(`Checks for empty source`, async () => {
+        const ctx: TranslateContext = {
+            fs: stub(),
+            audioFactory: stub()
         }
+        const result = await mapProgram(ctx, stub(), {source: undefined, target: stub()})
+        expect(result.errors.length).to.equal(1)
     })
 
+    it (`Checks for empty target`, async () => {
+        const ctx: TranslateContext = {
+            fs: stub(),
+            audioFactory: stub()
+        }
+        const result = await mapProgram(ctx, stub(), {source: stub(), target: undefined})
+        expect(result.errors.length).to.equal(1)
+    })
 
     it(`Maps samples to a program`, async () => {
         const mapFunctionCalls = []

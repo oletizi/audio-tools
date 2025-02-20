@@ -116,24 +116,42 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     return rv
 }
 
+export interface MapProgramResult extends Result {
+    data: AbstractKeygroup[]
+}
+
 export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction, opts: {
     source: string,
     target: string
-}) {
+}): Promise<MapProgramResult> {
+    const rv = {
+        data: undefined,
+        errors: [],
+    }
     if (!ctx) {
-        throw new Error(`Translate context undefined.`)
+        rv.errors.push(new Error(`Context is empty`))
     }
-    if (!ctx.audioFactory) {
-        throw new Error(`Translate context audio factory undefined.`)
+    if (ctx && !ctx.audioFactory) {
+        // throw new Error(`Translate context audio factory undefined.`)
+        rv.errors.push(new Error(`AudioFactory is empty.`))
     }
-    if (!ctx.fs) {
-        throw new Error(`Translate context fs undefined.`)
+    if (ctx && !ctx.fs) {
+        rv.errors.push(new Error(`Translate context fs empty.`))
     }
     if (!mapFunction) {
-        throw new Error(`Map function undefined.`)
+        rv.errors.push(new Error(`Map function empty.`))
     }
     if (!opts) {
-        throw new Error(`Options undefined.`)
+        rv.errors.push(new Error(`Options empty.`))
+    }
+    if (opts && ! opts.source) {
+        rv.errors.push(new Error(`Source is empty`))
+    }
+    if (opts && ! opts.target) {
+        rv.errors.push(new Error(`Target is empty`))
+    }
+    if (rv.errors.length > 0) {
+        return rv
     }
     const sources: AudioSource[] = []
     const audioFactory = ctx.audioFactory
@@ -148,5 +166,6 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
         }
     }
 
-    return {keygroups: mapFunction(sources)}
+    rv.keygroups = mapFunction(sources)
+    return rv
 }

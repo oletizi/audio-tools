@@ -12,6 +12,7 @@ import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
 import {map} from "@/lib-translate-s3k.js"
+import {newDefaultTranslateContext} from "@/lib-translate.js";
 
 describe(`map`, async () => {
 
@@ -30,6 +31,13 @@ describe(`map`, async () => {
     it (`handles empty source and target`, async() => {
         const result = await map({ fs: stub(), audioFactory: stub()}, {source: stub(), target: stub()})
         expect(result.errors.length).to.equal(2)
+    })
+
+    it (`maps sample to an S3000XL program`, async () => {
+        const ctx = newDefaultTranslateContext()
+        const result = await map(ctx, {source: '/path/to/source/dir/', target: "/path/to/target/dir/"})
+        expect(result.errors.length).to.equal(0)
+        expect(result.data).to.exist
     })
 })
 
