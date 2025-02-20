@@ -11,32 +11,26 @@ import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devi
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
-import {mapProgram} from "@/lib-translate.js"
 import {map} from "@/lib-translate-s3k.js"
 
-describe(`map`, () => {
-    let mapProgramStub: any
+describe(`map`, async () => {
 
-    beforeEach(() => {
-        mapProgramStub = stub(translate, "mapProgram");
+    it(`handles empty arguments`, async () => {
+        const result = await map(undefined, undefined)
+        expect(result.errors.length).to.equal(2)
     })
-    afterEach(() => {
-        mapProgramStub.restore();
+    it(`handles empty translate context`, async () => {
+        const result = await map(stub(), undefined)
+        expect(result.errors.length).to.equal(3)
     })
-
-    it(`handles undefined options`, () => {
-        try {
-            const opts = undefined
-            map(opts)
-            expect.fail(`Barf.`)
-        } catch (e) {
-            // Expect an exception. Fail if barf.
-            expect(e.message).not.eq('Barf.')
-        }
-
+    it(`handles empty opts`, async () => {
+        const result = await map({ fs: stub(), audioFactory: stub()}, undefined)
+        expect(result.errors.length).to.equal(1)
     })
-
-    // expect(results).to.exist
+    it (`handles empty source and target`, async() => {
+        const result = await map({ fs: stub(), audioFactory: stub()}, {source: stub(), target: stub()})
+        expect(result.errors.length).to.equal(2)
+    })
 })
 
 describe('chop error conditions', () => {
