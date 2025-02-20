@@ -15,7 +15,7 @@ import {
     SampleHeader
 } from "@oletizi/sampler-devices/s3k"
 
-import {AbstractProgram, mapLogicAutoSampler, mapProgram, TranslateContext} from "@/lib-translate.js";
+import {AbstractProgram, MapFunction, mapLogicAutoSampler, mapProgram, TranslateContext} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
 
@@ -24,33 +24,14 @@ export interface AbstractProgramResult extends Result {
     data: AbstractProgram
 }
 
-export async function map(ctx: TranslateContext, opts: {
+export async function map(ctx: TranslateContext, mapFunction: MapFunction, opts: {
     source: string,
     target: string
 }): Promise<AbstractProgramResult> {
     const rv = {data: undefined, errors: []}
-    if (!ctx) {
-        rv.errors.push(new Error(`TranslateContext is empty`))
-    }
-    if (ctx && !ctx.audioFactory) {
-        rv.errors.push(new Error(`AudioFactory is empty`))
-    }
-    if (ctx && !ctx.fs) {
-        rv.errors.push(new Error(`Fileio is empty`))
-    }
-    if (!opts) {
-        rv.errors.push(new Error(`Opts is empty`))
-    }
-    if (opts && !opts.source) {
-        rv.errors.push(new Error(`Source is empty`))
-    }
-    if (opts && !opts.target) {
-        rv.errors.push(new Error(`Target is empty`))
-    }
-    if (rv.errors.length > 0) {
-        return rv
-    }
-    rv.data = await mapProgram(mapLogicAutoSampler, opts)
+    const result = await mapProgram(mapFunction, opts)
+    rv.errors = rv.errors.concat(result.errors)
+    rv.data = result.data
     return rv
 }
 

@@ -3,14 +3,15 @@ import path from "pathe"
 import _ from "lodash"
 import {parseFile} from "music-metadata"
 import {midiNoteToNumber} from "@/lib-midi.js";
-import {newDefaultSampleFactory} from "@/sample.js";
+import {newDefaultSampleFactory, Sample} from "@/sample.js";
+import {Result} from "@oletizi/sampler-lib";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
 }
 
 export interface fileio {
-
+    readdir(source: string): Promise<string[]>
 }
 
 export interface AbstractProgram {
@@ -117,14 +118,14 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
 }
 
 export interface MapProgramResult extends Result {
-    data: AbstractKeygroup[]
+    data: AbstractKeygroup[] | undefined
 }
 
 export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction, opts: {
     source: string,
     target: string
 }): Promise<MapProgramResult> {
-    const rv = {
+    const rv: MapProgramResult = {
         data: undefined,
         errors: [],
     }
@@ -144,10 +145,10 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
     if (!opts) {
         rv.errors.push(new Error(`Options empty.`))
     }
-    if (opts && ! opts.source) {
+    if (opts && !opts.source) {
         rv.errors.push(new Error(`Source is empty`))
     }
-    if (opts && ! opts.target) {
+    if (opts && !opts.target) {
         rv.errors.push(new Error(`Target is empty`))
     }
     if (rv.errors.length > 0) {
@@ -160,12 +161,14 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
         try {
             const audio = await audioFactory.loadFromFile(filepath)
             const m = audio.meta
-            sources.push({meta: m, url: `file://${filepath}`})
+            sources.push({
+                meta: m, url: `file://${filepath}`
+            } as AudioSource)
         } catch (e) {
-            // probably check to see what's wrong
+            // XXX: probably check to see what's wrong
         }
     }
 
-    rv.keygroups = mapFunction(sources)
+    rv.data = mapFunction(sources)
     return rv
 }

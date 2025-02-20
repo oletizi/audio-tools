@@ -13,6 +13,7 @@ import {
     newDefaultAudioFactory
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
+import { Sample } from "@/sample.js";
 
 describe('Test lib-translate exports', () => {
     it('Exports description()', () => {
@@ -42,46 +43,44 @@ describe(`default audio factory`, async () => {
 
 describe(`Core translator mapper tests`, async () => {
     it(`Handles empty arguments`, async () => {
+        // @ts-ignore
         const result = await mapProgram(undefined, undefined, undefined)
         expect(result.errors.length).to.equal(3)
     })
 
     it(`Checks for empty audio factory`, async () => {
+        // @ts-ignore
         const result = await mapProgram({audioFactory: undefined, fs: stub()}, stub(), {source: stub(), target: stub()})
         expect(result.errors.length).to.equal(1)
     })
 
     it(`Checks for empty fileio`, async () => {
-        const result = await mapProgram({
-            audioFactory: stub(), fs: undefined
-        }, stub(), {source: stub(), target: stub()})
+        // @ts-ignore
+        const result = await mapProgram({audioFactory: stub(), fs: undefined}, stub(), {source: stub(), target: stub()})
         expect(result.errors.length).to.equal(1)
     })
 
     it(`Checks for empty map function`, async () => {
-        const ctx: TranslateContext = {
-            fs: stub(),
-            audioFactory: stub()
-        }
+        // @ts-ignore
+        const ctx: TranslateContext = {fs: stub(), audioFactory: stub()}
+        // @ts-ignore
         const result = await mapProgram(ctx, undefined, {source: stub(), target: stub()})
         expect(result.errors.length).to.equal(1)
 
     })
 
     it(`Checks for empty source`, async () => {
-        const ctx: TranslateContext = {
-            fs: stub(),
-            audioFactory: stub()
-        }
+        // @ts-ignore
+        const ctx: TranslateContext = {fs: stub(), audioFactory: stub()}
+        // @ts-ignore
         const result = await mapProgram(ctx, stub(), {source: undefined, target: stub()})
         expect(result.errors.length).to.equal(1)
     })
 
-    it (`Checks for empty target`, async () => {
-        const ctx: TranslateContext = {
-            fs: stub(),
-            audioFactory: stub()
-        }
+    it(`Checks for empty target`, async () => {
+        // @ts-ignore
+        const ctx: TranslateContext = {fs: stub(), audioFactory: stub()}
+        // @ts-ignore
         const result = await mapProgram(ctx, stub(), {source: stub(), target: undefined})
         expect(result.errors.length).to.equal(1)
     })
@@ -102,8 +101,8 @@ describe(`Core translator mapper tests`, async () => {
         const program = await mapProgram(newDefaultTranslateContext(), mapFunction, {source: source, target: target})
         expect(mapFunctionCalls.length).eq(1)
         expect(program).to.exist
-        expect(program.keygroups).to.exist
-        expect(program.keygroups.length).eq(13)
+        expect(program.data).to.exist
+        expect(program.data?.length).eq(13)
     })
 
     it(`Maps multiple Logic auto-sample output files to a set of keygroups`, async () => {
@@ -122,7 +121,12 @@ describe(`Core translator mapper tests`, async () => {
             "J8-ZYRJ.01-F#5-V127.aif"]
 
         const sources: AudioSource[] = files.map(f => {
-            const rv: AudioSource = {meta: {} as AudioMetadata, url: f}
+            const rv: AudioSource = {
+                meta: {} as AudioMetadata, url: f,
+                getSample: function (): Promise<Sample> {
+                    throw new Error("Function not implemented.");
+                }
+            }
             return rv
         })
         const keygroups = mapLogicAutoSampler(sources);
@@ -153,7 +157,7 @@ describe('mapProgram', () => {
 
     it('handles empty directory', async () => {
         const result = await mapProgram(newDefaultTranslateContext(), () => [], {source: tmpdir(), target: tmpdir()});
-        expect(result.keygroups).to.deep.equal([]);
+        expect(result.data).to.deep.equal([]);
     });
 
     it('processes audio files correctly', async function () {
@@ -173,8 +177,11 @@ describe('mapProgram', () => {
             source: sourceDir,
             target: targetDir
         });
-        expect(result.keygroups).to.have.lengthOf(13);
-        expect(result.keygroups[0].zones[0].lowNote).to.equal(0);
-        expect(result.keygroups[0].zones[0].highNote).to.equal(127);
+        expect(result.data).to.have.lengthOf(13);
+        // @ts-ignore
+        expect(result.data[0].zones[0].lowNote).to.equal(0);
+        // @ts-ignore
+        expect(result.data[0].zones[0].highNote).to.equal(127);
+
     });
 })
