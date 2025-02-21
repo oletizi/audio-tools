@@ -5,7 +5,6 @@ import _ from 'lodash'
 import {pad, ServerConfig} from '@oletizi/sampler-lib'
 import {
     Akaitools,
-    AkaiToolsConfig,
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
