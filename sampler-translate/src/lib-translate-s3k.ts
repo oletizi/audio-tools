@@ -2,36 +2,67 @@ import path from "pathe";
 import fsp from "fs/promises"
 import fs from 'fs'
 import _ from 'lodash'
-import {Result, ServerConfig} from '@oletizi/sampler-lib'
+import {ServerConfig} from '@oletizi/sampler-lib'
 import {
     Akaitools,
     AkaiToolsConfig,
-    KeygroupHeader_writeCP1, KeygroupHeader_writeCP2,
+    KeygroupHeader_writeCP1,
+    KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
-    KeygroupHeader_writeHIVEL2, KeygroupHeader_writeLONOTE,
-    KeygroupHeader_writeSNAME1, KeygroupHeader_writeSNAME2,
+    KeygroupHeader_writeHIVEL2,
+    KeygroupHeader_writeLONOTE,
+    KeygroupHeader_writeSNAME1,
+    KeygroupHeader_writeSNAME2,
+    newAkaitools,
+    newAkaiToolsConfig,
     parseSampleHeader,
-    ProgramHeader_writePRNAME, RAW_LEADER, readAkaiData,
+    ProgramHeader_writePRNAME,
+    RAW_LEADER,
+    readAkaiData,
     SampleHeader
 } from "@oletizi/sampler-devices/s3k"
 
-import {AbstractProgram, MapFunction, mapLogicAutoSampler, mapProgram, TranslateContext} from "@/lib-translate.js";
+import {fileio, MapFunction, mapProgram, newDefaultAudioFactory, TranslateContext} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
 
 
-export interface AbstractProgramResult extends Result {
-    data: AbstractProgram
+export interface S3kTranslateContext extends TranslateContext {
+    akaiTools: Akaitools
 }
 
-export async function map(ctx: TranslateContext, mapFunction: MapFunction, opts: {
+export async function newDefaultTranslateContext() {
+    const rv: S3kTranslateContext = {
+        akaiTools: newAkaitools(await newAkaiToolsConfig()),
+        fs: fsp,
+        audioFactory: newDefaultAudioFactory()
+    }
+    return rv
+}
+
+export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: {
     source: string,
     target: string
-}): Promise<AbstractProgramResult> {
-    const rv = {data: undefined, errors: []}
-    const result = await mapProgram(mapFunction, opts)
-    rv.errors = rv.errors.concat(result.errors)
-    rv.data = result.data
+}) {
+    const rv = await mapProgram(ctx, mapFunction, opts)
+    if (rv.errors.length > 0 || !rv.data) {
+        return rv
+    }
+
+    const keygroups = rv.data
+    const tools = ctx.akaiTools
+    for (const keygroup of keygroups) {
+        for (const zone of keygroup.zones) {
+            const sourcePath = zone.audioSource.filepath
+            const targetPath = opts.target
+            const {name} = path.parse(sourcePath)
+            const r = await tools.wav2Akai(sourcePath, targetPath, name)
+            if (r.errors.length > 0) {
+                rv.errors = rv.errors.concat(r.errors)
+                return rv
+            }
+        }
+    }
     return rv
 }
 

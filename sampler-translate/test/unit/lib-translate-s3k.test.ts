@@ -1,4 +1,4 @@
-import {chop, ChopOpts} from '@/lib-translate-s3k.js';
+import {chop, ChopOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -12,40 +12,95 @@ import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
 import {map} from "@/lib-translate-s3k.js"
-import {TranslateContext, fileio, AudioFactory} from "@/lib-translate.js";
+import {
+    fileio,
+    AudioFactory,
+    AbstractKeygroup,
+    AbstractZone
+} from "@/lib-translate.js";
 import {afterEach} from "mocha";
 
-describe(`map`, async () => {
-    let fsStub: fileio, audioFactoryStub: AudioFactory, ctxStub: TranslateContext, mapFunctionStub, sourceStub, targetStub, optionsStub
-    beforeEach(async () => {
-        fsStub = {}
-        audioFactoryStub = {}
-        ctxStub = {
-            fs: fsStub,
-            audioFactory: audioFactoryStub
-        }
-        mapFunctionStub = stub()
-        sourceStub = stub()
-        targetStub = stub()
-        optionsStub = {source: sourceStub, target: targetStub}
-    })
-    afterEach(async () => {
-        // fsStub.restore()
-        // audioFactoryStub.restore()
-        // mapFunctionStub.restore()
-        // sourceStub.restore()
-        // targetStub.restore()
-    })
+describe(`map`,
+    async () => {
+        let audioFactory: AudioFactory,
+            audioSourceStub: any,
+            akaiTools: any,
+            ctx: S3kTranslateContext,
+            fsStub: fileio,
+            mapFunctionStub: any,
+            options: { source: string, target: string },
+            readdirStub: any,
+            serverConfig: any,
+            sourceStub,
+            targetStub
 
-    it(`maps sample to an S3000XL program`, async () => {
-        expect(audioFactoryStub)
+        beforeEach(async () => {
+            fsStub = {
+                // @ts-ignore
+                readdir: () => {
+                }
+            }
+            readdirStub = stub(fsStub, 'readdir')
+            audioFactory = {
+                // @ts-ignore
+                loadFromFile: undefined
+            }
 
-        const result = await map(ctxStub, mapFunctionStub, optionsStub)
-        console.log(result)
-        expect(result.errors.length).to.equal(0)
-        expect(result.data).to.exist
+            akaiTools = {
+                wav2Akai: stub()
+            }
+
+            serverConfig = {}
+            ctx = {
+                akaiTools: akaiTools,
+                audioFactory: audioFactory,
+                cfg: serverConfig,
+                fs: fsStub,
+            }
+            mapFunctionStub = stub()
+            sourceStub = ""
+            targetStub = ""
+            options = {source: sourceStub, target: targetStub}
+
+            audioSourceStub = {}
+        })
+        afterEach(async () => {
+            // fsStub.restore()
+            // audioFactoryStub.restore()
+            // mapFunctionStub.restore()
+            // sourceStub.restore()
+            // targetStub.restore()
+        })
+
+        it(`maps sample to an S3000XL program`, async () => {
+            expect(ctx.audioFactory).exist
+            options.source = '/path/to/source/dir'
+            options.target = '/path/to/target/dir'
+
+            readdirStub.withArgs(options.source).resolves(['a nice sample', 'another nice sample'])
+
+            const zone: AbstractZone = {
+                audioSource: audioSourceStub,
+                lowNote: 0,
+                highNote: 0
+            }
+            const kg: AbstractKeygroup = {
+                zones: [zone]
+            }
+
+            const keygroups: AbstractKeygroup[] = [kg]
+            mapFunctionStub.returns(keygroups)
+
+            const result = await map(ctx, mapFunctionStub, options)
+            expect(result.errors.length).to.equal(0)
+            expect(result.data && result.data.length > 0)
+
+            const kgs = result.data
+            expect(kgs).to.deep.equal(keygroups)
+
+            expect(akaiTools.wav2Akai.callCount).to.equal(keygroups.length)
+        })
     })
-})
 
 describe('chop error conditions', () => {
     let statStub: any, mkdirStub: any, readFileStub: any, writefileStub: any, readdirStub: any

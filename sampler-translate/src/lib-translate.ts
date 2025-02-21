@@ -1,10 +1,10 @@
-import fs from "fs/promises"
 import path from "pathe"
 import _ from "lodash"
 import {parseFile} from "music-metadata"
 import {midiNoteToNumber} from "@/lib-midi.js";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
 import {Result} from "@oletizi/sampler-lib";
+import fs from "fs/promises";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
@@ -39,8 +39,7 @@ export interface AudioMetadata {
 
 export interface AudioSource {
     meta: AudioMetadata
-    url: string
-
+    filepath: string
     getSample(): Promise<Sample>
 }
 
@@ -58,8 +57,8 @@ export interface TranslateContext {
 
 export function newDefaultAudioFactory(): AudioFactory {
     return {
-        loadFromFile: async (filename: string) => {
-            const m = await parseFile(filename)
+        loadFromFile: async (filepath: string) => {
+            const m = await parseFile(filepath)
             return {
                 meta: {
                     sampleRate: m.format.sampleRate,
@@ -69,9 +68,9 @@ export function newDefaultAudioFactory(): AudioFactory {
                     container: m.format.container,
                     codec: m.format.codec,
                 },
-                url: `file://${filename}`,
+                filepath: filepath,
                 getSample(): Promise<Sample> {
-                    return newDefaultSampleFactory().newSampleFromFile(filename)
+                    return newDefaultSampleFactory().newSampleFromFile(filepath)
                 }
             }
         }
@@ -87,7 +86,7 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
 
     const note2Samples = new Map<number, AudioSource[]>()
     for (const s of sources) {
-        const match = s.url.match(/-([A-G][#b]*[0-9])-/)
+        const match = s.filepath.match(/-([A-G][#b]*[0-9])-/)
         if (match && match[1]) {
             const noteName = match[1]
             const noteNumber = midiNoteToNumber(noteName)
@@ -133,7 +132,7 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
         rv.errors.push(new Error(`Context is empty`))
     }
     if (ctx && !ctx.audioFactory) {
-        // throw new Error(`Translate context audio factory undefined.`)
+        console.log(`Audio factory: ${ctx.audioFactory}`)
         rv.errors.push(new Error(`AudioFactory is empty.`))
     }
     if (ctx && !ctx.fs) {
@@ -156,13 +155,14 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
     }
     const sources: AudioSource[] = []
     const audioFactory = ctx.audioFactory
-    for (const item of await ctx.fs.readdir(opts.source)) {
+    const fs = ctx.fs
+    for (const item of await fs.readdir(opts.source)) {
         const filepath = path.join(opts.source, item);
         try {
             const audio = await audioFactory.loadFromFile(filepath)
             const m = audio.meta
             sources.push({
-                meta: m, url: `file://${filepath}`
+                meta: m, filepath: filepath
             } as AudioSource)
         } catch (e) {
             // XXX: probably check to see what's wrong

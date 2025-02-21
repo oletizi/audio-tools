@@ -122,7 +122,7 @@ describe(`Core translator mapper tests`, async () => {
 
         const sources: AudioSource[] = files.map(f => {
             const rv: AudioSource = {
-                meta: {} as AudioMetadata, url: f,
+                meta: {} as AudioMetadata, filepath: f,
                 getSample: function (): Promise<Sample> {
                     throw new Error("Function not implemented.");
                 }
@@ -138,7 +138,7 @@ describe(`Core translator mapper tests`, async () => {
         expect(kg1.zones.length).to.eq(1)
         const zone1 = kg1.zones[0]
         expect(zone1).to.exist
-        expect(zone1.audioSource.url.endsWith(files[0]))
+        expect(zone1.audioSource.filepath.endsWith(files[0]))
         expect(zone1?.lowNote).to.eq(midiNoteToNumber('C0') - 12)
         expect(zone1.highNote).eq(midiNoteToNumber('C1'))
 
