@@ -37,6 +37,20 @@ export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
 }
 
+export interface ProgramOpts {
+    source: string;
+    target: string;
+    partition: number;
+    prefix: string;
+    wipeDisk: boolean;
+}
+
+export interface ChopOpts extends ProgramOpts {
+    samplesPerBeat: number;
+    beatsPerChop: number;
+}
+
+
 export async function newDefaultTranslateContext() {
     const rv: S3kTranslateContext = {
         akaiTools: newAkaitools(await newAkaiToolsConfig()),
@@ -47,13 +61,7 @@ export async function newDefaultTranslateContext() {
     return rv
 }
 
-export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: {
-    source: string,
-    target: string,
-    prefix: string,
-    partition: number,
-    wipeDisk: boolean
-}) {
+export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: ProgramOpts) {
     const rv = await mapProgram(ctx, mapFunction, opts)
     if (rv.errors.length > 0 || !rv.data) {
         return rv
@@ -68,6 +76,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     if (opts.wipeDisk) {
         tools.akaiFormat(60, 1)
     }
+
     for (const keygroup of keygroups) {
         for (const zone of keygroup.zones) {
             const sourcePath = zone.audioSource.filepath
@@ -99,14 +108,39 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     return rv
 }
 
-export interface ChopOpts {
-    source: string;
-    target: string;
-    partition: number;
-    prefix: string;
-    samplesPerBeat: number;
-    beatsPerChop: number;
-    wipeDisk: boolean;
+
+// XXX: Rename
+async function handleSamples(opts: ProgramOpts, tools: Akaitools, rv: ExecutionResult, keygroupSpec: {
+    sample1: string;
+    sample2: string | null
+}[]) {
+    for (const f of await fsp.readdir(opts.target)) {
+        if (f.endsWith('a3s')) {
+            const result = await tools.akaiWrite(path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
+            if (result.errors.length !== 0) {
+                rv.errors = rv.errors.concat(rv.errors, result.errors)
+                break
+            }
+            // const buf = await fs.readFile(path.join(target, f))
+            const data = await readAkaiData(path.join(opts.target, f))
+            const sampleHeader = {} as SampleHeader
+            parseSampleHeader(data, 0, sampleHeader)
+            sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
+
+            console.log(`Checking sample name for stereo; ${sampleHeader.SHNAME}`)
+
+            if (sampleHeader.SHNAME.endsWith('-R')) {
+                keygroupSpec[keygroupSpec.length - 1].sample2 = sampleHeader.SHNAME
+            } else {
+                keygroupSpec.push({sample1: sampleHeader.SHNAME, sample2: null})
+            }
+            if (result.errors.length > 0) {
+                rv.errors = rv.errors.concat(result.errors)
+                break
+            }
+
+        }
+    }
 }
 
 // XXX: This is super messy and should be refactored.
@@ -157,32 +191,9 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, opts: ChopOpts, 
             await tools.akaiFormat(10, 1)
         }
         const keygroupSpec: { sample1: string, sample2: string | null }[] = []
-        for (const f of await fsp.readdir(opts.target)) {
-            if (f.endsWith('a3s')) {
-                const result = await tools.akaiWrite(path.join(opts.target, f), `/${opts.prefix}`, opts.partition)
-                if (result.errors.length !== 0) {
-                    rv.errors = rv.errors.concat(rv.errors, result.errors)
-                    return rv
-                }
-                // const buf = await fs.readFile(path.join(target, f))
-                const data = await readAkaiData(path.join(opts.target, f))
-                const sampleHeader = {} as SampleHeader
-                parseSampleHeader(data, 0, sampleHeader)
-                sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
-
-                console.log(`Checking sample name for stereo; ${sampleHeader.SHNAME}`)
-
-                if (sampleHeader.SHNAME.endsWith('-R')) {
-                    keygroupSpec[keygroupSpec.length - 1].sample2 = sampleHeader.SHNAME
-                } else {
-                    keygroupSpec.push({sample1: sampleHeader.SHNAME, sample2: null})
-                }
-                if (result.errors.length > 0) {
-                    rv.errors = rv.errors.concat(result.errors)
-                    return rv
-                }
-
-            }
+        await handleSamples(opts, tools, rv, keygroupSpec);
+        if (rv.errors.length > 0) {
+            return rv
         }
         const p = await tools.readAkaiProgram(cfg.getS3kDefaultProgramPath(keygroupSpec.length))
         if (p.keygroups.length != keygroupSpec.length) {
