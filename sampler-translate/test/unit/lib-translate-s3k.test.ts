@@ -16,7 +16,7 @@ import {
     fileio,
     AudioFactory,
     AbstractKeygroup,
-    AbstractZone
+    AbstractZone, AudioTranslate
 } from "@/lib-translate.js";
 import {afterEach} from "mocha";
 
@@ -28,9 +28,8 @@ describe(`map`,
             ctx: S3kTranslateContext,
             fsStub: fileio,
             mapFunctionStub: any,
-            options: { source: string, target: string },
+            options: { source: string, target: string, prefix: string },
             readdirStub: any,
-            serverConfig: any,
             sourceStub,
             targetStub
 
@@ -50,16 +49,16 @@ describe(`map`,
                 wav2Akai: stub()
             }
 
-            serverConfig = {}
             ctx = {
+                audioTranslate: {} as AudioTranslate,
                 akaiTools: akaiTools,
                 audioFactory: audioFactory,
-                fs: fsStub,
+                fs: fsStub
             }
             mapFunctionStub = stub()
             sourceStub = ""
             targetStub = ""
-            options = {source: sourceStub, target: targetStub}
+            options = {source: sourceStub, target: targetStub, prefix: "prefix"}
 
             audioSourceStub = {}
         })

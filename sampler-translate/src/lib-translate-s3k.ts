@@ -49,7 +49,10 @@ export async function newDefaultTranslateContext() {
 
 export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: {
     source: string,
-    target: string
+    target: string,
+    prefix: string,
+    partition: number,
+    wipeDisk: boolean
 }) {
     const rv = await mapProgram(ctx, mapFunction, opts)
     if (rv.errors.length > 0 || !rv.data) {
@@ -59,9 +62,12 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     const keygroups = rv.data
     const tools = ctx.akaiTools
     const audioTranslate = ctx.audioTranslate
-    const audioFactory = ctx.audioFactory
     const fs = ctx.fs
     let count = 0
+
+    if (opts.wipeDisk) {
+        tools.akaiFormat(60, 1)
+    }
     for (const keygroup of keygroups) {
         for (const zone of keygroup.zones) {
             const sourcePath = zone.audioSource.filepath
@@ -73,10 +79,20 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 rv.errors = tr.errors.concat(tr.errors)
                 return rv
             }
-            const r = await tools.wav2Akai(intermediatePath, targetPath, pad(count++, 3))
+            const targetName = pad(count++, 3);
+            const r = await tools.wav2Akai(intermediatePath, targetPath, targetName)
             if (r.errors.length > 0) {
                 rv.errors = rv.errors.concat(r.errors)
                 return rv
+            }
+        }
+    }
+    for (const filename of await fs.readdir(opts.target)) {
+        if (filename.endsWith('a3s')) {
+            // write sample file to akai disk
+            const result = await tools.akaiWrite(path.join(opts.target, filename), `/${opts.prefix}`, opts.partition)
+            if (result.errors.length > 0) {
+                rv.errors = rv.errors.concat(result.errors)
             }
         }
     }
