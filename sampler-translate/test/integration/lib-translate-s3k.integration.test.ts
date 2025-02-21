@@ -31,7 +31,6 @@ describe(`lib-translate-s3k integration test`, () => {
         }
 
         await fs.mkdir(root, {recursive: true})
-
         c.diskFile = path.join(root, `akai-${new Date().getTime()}.img`)
         const sourcepath = path.join('test', 'data', 's3000xl', 'chops', 'loop96.wav')
         const targetpath = path.join('build', 'chop')
@@ -47,7 +46,6 @@ describe(`lib-translate-s3k integration test`, () => {
             beatsPerChop: beatsPerChop,
             wipeDisk: true
         }
-        // const result = await chop(c, sourcepath, targetpath, prefix, samplesPerBeat, beatsPerChop)
         const result = await chop(await newServerConfig(), newAkaitools(c), opts)
         result.errors.forEach(e => console.error(e))
         expect(result.errors.length).eq(0)

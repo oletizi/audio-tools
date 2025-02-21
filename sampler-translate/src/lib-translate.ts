@@ -5,6 +5,9 @@ import {midiNoteToNumber} from "@/lib-midi.js";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
 import {Result} from "@oletizi/sampler-lib";
 import fs from "fs/promises";
+import {ExecutionResult} from "@oletizi/sampler-devices";
+// import {FfmpegCommand} from "fluent-ffmpeg";
+import * as ffmpeg from "fluent-ffmpeg"
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
@@ -12,6 +15,10 @@ export function description() {
 
 export interface fileio {
     readdir(source: string): Promise<string[]>
+}
+
+export interface AudioTranslate {
+    translate(source: string, target: string): Promise<ExecutionResult>
 }
 
 export interface AbstractProgram {
@@ -40,6 +47,7 @@ export interface AudioMetadata {
 export interface AudioSource {
     meta: AudioMetadata
     filepath: string
+
     getSample(): Promise<Sample>
 }
 
@@ -53,6 +61,7 @@ export type MapFunction = (s: AudioSource[]) => AbstractKeygroup[]
 export interface TranslateContext {
     fs: fileio
     audioFactory: AudioFactory
+    audioTranslate: AudioTranslate;
 }
 
 export function newDefaultAudioFactory(): AudioFactory {
@@ -78,7 +87,7 @@ export function newDefaultAudioFactory(): AudioFactory {
 }
 
 export function newDefaultTranslateContext(): TranslateContext {
-    return {audioFactory: newDefaultAudioFactory(), fs: fs}
+    return {audioFactory: newDefaultAudioFactory(), fs: fs, audioTranslate: newDefaultAudioTranslate()}
 }
 
 export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
@@ -171,4 +180,28 @@ export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction
 
     rv.data = mapFunction(sources)
     return rv
+}
+
+export function newDefaultAudioTranslate(): AudioTranslate {
+    return new FfmpegTranslate()
+}
+
+class FfmpegTranslate implements AudioTranslate {
+
+    translate(source: string, target: string): Promise<ExecutionResult> {
+        return new Promise((resolve) => {
+            const cmd = ffmpeg.default(source)
+                .output(target)
+                .on('end', () => {
+                    resolve({code: 0, errors: []})
+                })
+                .on('error', (e, stdout, stderr) => {
+                    console.log(stdout)
+                    console.error(stderr)
+                    resolve({code: -1, errors: [e]})
+                })
+            cmd.run()
+        })
+    }
+
 }

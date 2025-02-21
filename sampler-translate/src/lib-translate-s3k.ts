@@ -22,9 +22,15 @@ import {
     SampleHeader
 } from "@oletizi/sampler-devices/s3k"
 
-import {fileio, MapFunction, mapProgram, newDefaultAudioFactory, TranslateContext} from "@/lib-translate.js";
+import {
+    MapFunction,
+    mapProgram, newDefaultAudioTranslate,
+    newDefaultAudioFactory,
+    TranslateContext
+} from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
+import {tmpdir} from "node:os";
 
 
 export interface S3kTranslateContext extends TranslateContext {
@@ -35,7 +41,8 @@ export async function newDefaultTranslateContext() {
     const rv: S3kTranslateContext = {
         akaiTools: newAkaitools(await newAkaiToolsConfig()),
         fs: fsp,
-        audioFactory: newDefaultAudioFactory()
+        audioFactory: newDefaultAudioFactory(),
+        audioTranslate: newDefaultAudioTranslate()
     }
     return rv
 }
@@ -51,11 +58,21 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
     const keygroups = rv.data
     const tools = ctx.akaiTools
+    const audioTranslate = ctx.audioTranslate
+    const audioFactory = ctx.audioFactory
+    const fs = ctx.fs
     for (const keygroup of keygroups) {
         for (const zone of keygroup.zones) {
             const sourcePath = zone.audioSource.filepath
             const targetPath = opts.target
             const {name} = path.parse(sourcePath)
+            const intermediatePath = path.join(tmpdir(), name + '.wav')
+            const tr = await audioTranslate.translate(sourcePath, intermediatePath)
+            if (tr.errors.length > 0) {
+                rv.errors = tr.errors.concat(tr.errors)
+                return rv
+            }
+            // sample.writeToStream(cfs.createWriteStream(targetPath))
             const r = await tools.wav2Akai(sourcePath, targetPath, name)
             if (r.errors.length > 0) {
                 rv.errors = rv.errors.concat(r.errors)

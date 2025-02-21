@@ -10,10 +10,11 @@ import {
     description,
     mapLogicAutoSampler,
     mapProgram, newDefaultTranslateContext,
-    newDefaultAudioFactory
+    newDefaultAudioFactory, newDefaultAudioTranslate
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
-import { Sample } from "@/sample.js";
+import {Sample} from "@/sample.js";
+import {parseFile} from "music-metadata";
 
 describe('Test lib-translate exports', () => {
     it('Exports description()', () => {
@@ -184,4 +185,34 @@ describe('mapProgram', () => {
         expect(result.data[0].zones[0].highNote).to.equal(127);
 
     });
+})
+
+describe('AudioTranslate', async () => {
+
+    it(`Converts aiff to mp3`, async () => {
+        const t = newDefaultAudioTranslate()
+        const source = path.join('test', 'data', 'auto', 'J8.01', 'J8-1DY0.01-C4-V64.aif')
+        const target = path.join(tmpdir(), 'translate.mp3')
+        const result = await t.translate(source, target)
+        expect(result).to.exist
+        expect(result.errors.length).to.eq(0)
+
+        const meta = await parseFile(target)
+        expect(meta.format.container).to.eq("MPEG")
+        expect(meta.format.codec).eq('MPEG 1 Layer 3')
+    })
+
+    it(`Converts Aiff to Wav`, async () => {
+        const t = newDefaultAudioTranslate()
+        const source = path.join('test', 'data', 'auto', 'J8.01', 'J8-1DY0.01-C4-V64.aif')
+        const target = path.join(tmpdir(), 'translated.wav')
+        const result = await t.translate(source, target)
+        expect(result).to.exist
+        expect(result.errors.length).to.equal(0)
+
+        const meta = await parseFile(target);
+        expect(meta.format.container).to.equals('WAVE')
+        expect(meta.format.bitsPerSample).to.eq(16)
+        expect(meta.format.sampleRate).to.eq(44100)
+    })
 })

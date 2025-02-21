@@ -54,7 +54,6 @@ describe(`map`,
             ctx = {
                 akaiTools: akaiTools,
                 audioFactory: audioFactory,
-                cfg: serverConfig,
                 fs: fsStub,
             }
             mapFunctionStub = stub()
