@@ -2,7 +2,7 @@ import path from "pathe";
 import fsp from "fs/promises"
 import fs from 'fs'
 import _ from 'lodash'
-import {ServerConfig} from '@oletizi/sampler-lib'
+import {pad, ServerConfig} from '@oletizi/sampler-lib'
 import {
     Akaitools,
     AkaiToolsConfig,
@@ -61,6 +61,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     const audioTranslate = ctx.audioTranslate
     const audioFactory = ctx.audioFactory
     const fs = ctx.fs
+    let count = 0
     for (const keygroup of keygroups) {
         for (const zone of keygroup.zones) {
             const sourcePath = zone.audioSource.filepath
@@ -72,8 +73,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 rv.errors = tr.errors.concat(tr.errors)
                 return rv
             }
-            // sample.writeToStream(cfs.createWriteStream(targetPath))
-            const r = await tools.wav2Akai(sourcePath, targetPath, name)
+            const r = await tools.wav2Akai(intermediatePath, targetPath, pad(count++, 3))
             if (r.errors.length > 0) {
                 rv.errors = rv.errors.concat(r.errors)
                 return rv
