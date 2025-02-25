@@ -30,6 +30,8 @@ export interface AbstractKeygroup {
 }
 
 export interface AbstractZone {
+    highVelocity: number;
+    lowVelocity: number;
     audioSource: AudioSource
     lowNote: number
     highNote: number
@@ -114,7 +116,8 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
     }).forEach(i => {
         const zones: AbstractZone[] = []
         _(note2Samples.get(i)).each(s => {
-            zones.push({audioSource: s, highNote: i, lowNote: start})
+            // TODO: interrogate filename for velocity range
+            zones.push({audioSource: s, highNote: i, lowNote: start, lowVelocity: 0, highVelocity: 127})
         })
         rv.push({
             zones: zones

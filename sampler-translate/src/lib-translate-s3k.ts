@@ -2,7 +2,7 @@ import path from "pathe";
 import fsp from "fs/promises"
 import fs from 'fs'
 import _ from 'lodash'
-import {pad, ServerConfig} from '@oletizi/sampler-lib'
+import {newServerConfig, pad, ServerConfig} from '@oletizi/sampler-lib'
 import {
     Akaitools,
     KeygroupHeader_writeCP1,
@@ -25,15 +25,17 @@ import {
     MapFunction,
     mapProgram, newDefaultAudioTranslate,
     newDefaultAudioFactory,
-    TranslateContext
+    TranslateContext, AbstractKeygroup, AbstractZone
 } from "@/lib-translate.js";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
+import {newDefaultSampleFactory, Sample, SampleFactory} from "@/sample.js";
 import {tmpdir} from "node:os";
 
 
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
+
+    getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }
 
 export interface ProgramOpts {
@@ -55,7 +57,10 @@ export async function newDefaultTranslateContext() {
         akaiTools: newAkaitools(await newAkaiToolsConfig()),
         fs: fsp,
         audioFactory: newDefaultAudioFactory(),
-        audioTranslate: newDefaultAudioTranslate()
+        audioTranslate: newDefaultAudioTranslate(),
+        getS3kDefaultProgramPath: async function (keygroupCount: number): Promise<string> {
+            return (await newServerConfig()).getS3kDefaultProgramPath(keygroupCount)
+        }
     }
     return rv
 }
@@ -69,6 +74,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     const keygroups = rv.data
     const tools = ctx.akaiTools
     const audioTranslate = ctx.audioTranslate
+    const audioFactory = ctx.audioFactory
     const fs = ctx.fs
     let count = 0
 
@@ -76,18 +82,55 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         tools.akaiFormat(60, 1)
     }
 
+    type KeygroupSpec = {
+        sample1: string,
+        sample2: string | null,
+        lowNote: number,
+        highNote: number,
+        lowVelocity: number,
+        highVelocity: number
+    }
+    const specs: KeygroupSpec[] = []
+
+    function akaiSampleNames(prefix: string, sampleNumber: number, stereo: boolean, padChar: string) {
+        const rv: string[] = []
+        const root = _.padEnd(prefix + _.padStart(String(sampleNumber), 2, '0'), 10, padChar).toLowerCase()
+        rv.push(stereo ? root + '-l' : _.padEnd(root, 12, padChar));
+        rv.push(stereo ? root + '-r' : "");
+        return rv
+    }
+
     for (const keygroup of keygroups) {
         for (const zone of keygroup.zones) {
             const sourcePath = zone.audioSource.filepath
             const targetPath = opts.target
+            const {meta} = await audioFactory.loadFromFile(sourcePath)
+            const stereo = meta.channelCount === 2
             const {name} = path.parse(sourcePath)
+            const prefix = opts.prefix
+            const sampleNumber = count++
+            const [sample1, sample2] = akaiSampleNames(prefix, sampleNumber, stereo, '_')
+            console.log(`Sample1: ${sample1}; sample2: ${sample2}`);
+            const spec: KeygroupSpec = {
+                sample1: sample1,
+                sample2: sample2,
+                lowNote: zone.lowNote,
+                highNote: zone.highNote,
+                lowVelocity: zone.lowVelocity,
+                highVelocity: zone.highVelocity
+            }
+            specs.push(spec)
             const intermediatePath = path.join(tmpdir(), name + '.wav')
+            console.log(`Converting aiff to intermediate: ${intermediatePath}`)
             const tr = await audioTranslate.translate(sourcePath, intermediatePath)
             if (tr.errors.length > 0) {
                 rv.errors = tr.errors.concat(tr.errors)
                 return rv
             }
-            const targetName = pad(count++, 3);
+
+            // XXX: this is super gross. There should be one place where the naming patterns are defined.
+            const targetName = prefix.toLowerCase() + _.padStart(String(sampleNumber), 2, '0')
+            console.log(`Converting intermediate: ${intermediatePath} to: ${targetPath}/${targetName}`)
             const r = await tools.wav2Akai(intermediatePath, targetPath, targetName)
             if (r.errors.length > 0) {
                 rv.errors = rv.errors.concat(r.errors)
@@ -95,13 +138,22 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             }
         }
     }
-    for (const filename of await fs.readdir(opts.target)) {
-        if (filename.endsWith('a3s')) {
-            // write sample file to akai disk
-            const result = await tools.akaiWrite(path.join(opts.target, filename), `/${opts.prefix}`, opts.partition)
-            if (result.errors.length > 0) {
+
+    function writeSample(sampleName: string) {
+        return tools.akaiWrite(path.join(opts.target, sampleName + '.a3s'), `/${opts.prefix}`, opts.partition)
+
+    }
+
+    const p = await tools.readAkaiProgram(await ctx.getS3kDefaultProgramPath(specs.length))
+    for (const spec of specs) {
+        for (const sampleName of [spec.sample1, spec.sample2]) {
+            if (sampleName) {
+                const result = await writeSample(sampleName)
                 rv.errors = rv.errors.concat(result.errors)
             }
+        }
+        if (rv.errors.length > 0) {
+            return rv
         }
     }
     return rv
