@@ -32,7 +32,7 @@ export function midiNoteToNumber(note: string): number {
     }
 
     // Calculate the MIDI note number
-    const midiNote = (octave + 1) * 12 + noteValue;
+    const midiNote = 12 + (octave + 1) * 12 + noteValue;
 
     // Check if the calculated note is within valid MIDI range
     if (midiNote < MIN_MIDI_NOTE || midiNote > MAX_MIDI_NOTE) {

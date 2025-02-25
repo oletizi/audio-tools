@@ -112,7 +112,8 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             const {name} = path.parse(sourcePath)
             const prefix = opts.prefix
             const sampleNumber = count++
-            const [sample1, sample2] = akaiSampleNames(prefix, sampleNumber, stereo, '_')
+            // const [sample1, sample2] = akaiSampleNames(prefix, sampleNumber, stereo, '_')
+            const [sample1, sample2] = akaiSampleNames(String(zone.centerNote) + '.', sampleNumber, stereo, '_')
             console.log(`Sample1: ${sample1}; sample2: ${sample2}`);
             const spec: KeygroupSpec = {
                 sample1: sample1,
@@ -133,7 +134,8 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             }
 
             // XXX: this is super gross. There should be one place where the naming patterns are defined.
-            const targetName = prefix.toLowerCase() + _.padStart(String(sampleNumber), 2, '0')
+            // const targetName = prefix.toLowerCase() + _.padStart(String(sampleNumber), 2, '0')
+            const targetName = String(zone.centerNote) + '.' + _.padStart(String(sampleNumber), 2, '0')
             console.log(`Converting intermediate: ${intermediatePath} to: ${targetPath}/${targetName}`)
             const r = await tools.wav2Akai(intermediatePath, targetPath, targetName)
             if (r.errors.length > 0) {
