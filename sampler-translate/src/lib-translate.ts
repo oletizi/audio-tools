@@ -122,7 +122,7 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
             zones.push({
                 audioSource: s,
                 highNote: i,
-                centerNote: start,
+                centerNote: i,
                 lowNote: start,
                 lowVelocity: 0,
                 highVelocity: 127
