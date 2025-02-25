@@ -10,13 +10,14 @@ import {newServerConfig} from "@oletizi/sampler-lib";
 describe(`lib-translate-s3k integration test`, () => {
     it(`maps samples`, async function () {
         this.timeout(10 * 1000)
-        const source = path.join('test', 'data', 'auto', 'RHDS')
+        const prefix = 'RHDS'
+        const source = path.join('test', 'data', 'auto', prefix)
         const target = path.join(tmpdir(), `map-${new Date().getTime()}`)
         await fs.mkdir(target)
         const result = await map(
             await newDefaultTranslateContext(),
             mapLogicAutoSampler,
-            {source: source, target: target, prefix: 'RHDS', partition: 0, wipeDisk: true})
+            {source: source, target: target, prefix: prefix, partition: 0, wipeDisk: true})
 
         console.log(result.errors)
         expect(result.errors.length).eq(0)
