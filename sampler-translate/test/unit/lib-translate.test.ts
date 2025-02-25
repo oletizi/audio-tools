@@ -10,7 +10,7 @@ import {
     description,
     mapLogicAutoSampler,
     mapProgram, newDefaultTranslateContext,
-    newDefaultAudioFactory, newDefaultAudioTranslate
+    newDefaultAudioFactory, newDefaultAudioTranslate, MapFunction
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
 import {Sample} from "@/sample.js";
@@ -93,7 +93,7 @@ describe(`Core translator mapper tests`, async () => {
             mapFunctionCalls.push(s)
 
             return s.map((v) => {
-                return {zones: [{audioSource: v, lowNote: 0, highNote: 127}]}
+                return {zones: [{audioSource: v, lowNote: 0, highNote: 127, lowVelocity: 0, highVelocity: 127}]}
             })
         }
 
@@ -165,8 +165,8 @@ describe('mapProgram', () => {
 
         this.timeout(10 * 1000)
 
-        const mapFunction = (sources: AudioSource[]) => sources.map(s => ({
-            zones: [{audioSource: s, lowNote: 0, highNote: 127}]
+        const mapFunction: MapFunction = (sources: AudioSource[]) => sources.map(s => ({
+            zones: [{audioSource: s, lowNote: 0, highNote: 127, lowVelocity: 0, highVelocity: 127}],
         }));
 
 

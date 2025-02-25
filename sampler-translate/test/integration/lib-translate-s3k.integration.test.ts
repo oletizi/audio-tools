@@ -23,10 +23,6 @@ describe(`lib-translate-s3k integration test`, () => {
         expect(result.data).exist
         const program = result.data
         expect(program?.length).gte(1)
-
-        for (const item of await fs.readdir(target)) {
-            console.log(item)
-        }
     })
 
     it(`chops samples`, async function () {

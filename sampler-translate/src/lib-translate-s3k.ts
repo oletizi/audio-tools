@@ -7,9 +7,9 @@ import {
     Akaitools,
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
-    KeygroupHeader_writeHINOTE,
+    KeygroupHeader_writeHINOTE, KeygroupHeader_writeHIVEL1,
     KeygroupHeader_writeHIVEL2,
-    KeygroupHeader_writeLONOTE,
+    KeygroupHeader_writeLONOTE, KeygroupHeader_writeLOVEL1,
     KeygroupHeader_writeSNAME1,
     KeygroupHeader_writeSNAME2,
     newAkaitools,
@@ -141,13 +141,31 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
     function writeSample(sampleName: string) {
         return tools.akaiWrite(path.join(opts.target, sampleName + '.a3s'), `/${opts.prefix}`, opts.partition)
-
     }
 
-    const p = await tools.readAkaiProgram(await ctx.getS3kDefaultProgramPath(specs.length))
-    for (const spec of specs) {
-        for (const sampleName of [spec.sample1, spec.sample2]) {
+    const defaultProgramPath = await ctx.getS3kDefaultProgramPath(specs.length);
+    const p = await tools.readAkaiProgram(defaultProgramPath)
+    ProgramHeader_writePRNAME(p.program, opts.prefix)
+    for (let i =0; i< specs.length; i++) {
+        const spec = specs[i]
+        const keygroup = p.keygroups[i]
+
+        for (let j = 0; j < 2; j++) {
+            const sampleName = [spec.sample1, spec.sample2][j]
             if (sampleName) {
+                const data = await readAkaiData(path.join(opts.target, sampleName + '.a3s'))
+                const sampleHeader = {} as SampleHeader
+                parseSampleHeader(data, 0, sampleHeader)
+                sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
+
+
+                KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
+                KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
+                KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
+                KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
+                KeygroupHeader_writeHIVEL1(keygroup, spec.highVelocity)
+
+
                 const result = await writeSample(sampleName)
                 rv.errors = rv.errors.concat(result.errors)
             }
@@ -156,6 +174,9 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             return rv
         }
     }
+    const programPath = path.join(opts.target, opts.prefix + '.a3p');
+    await tools.writeAkaiProgram(programPath, p)
+    await tools.akaiWrite(programPath, `/${opts.prefix}`, opts.partition)
     return rv
 }
 
