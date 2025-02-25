@@ -6,7 +6,7 @@ import {
     KeygroupHeader,
     parseKeygroupHeader,
     parseProgramHeader,
-    ProgramHeader
+    ProgramHeader, SampleHeader
 } from "@/devices/s3000xl.js";
 
 import {
@@ -54,6 +54,7 @@ export interface Akaitools {
     readAkaiDisk: () => Promise<AkaiDiskResult>
     readAkaiProgram: (file: string) => Promise<AkaiProgramFile>
     writeAkaiProgram: (file: string, p: AkaiProgramFile) => Promise<void>
+    writeAkaiSample: (file: string, s: SampleHeader) => Promise<void>
     akaiFormat: (partitionSize?: number, partitionCount?: number) => Promise<ExecutionResult>
     akaiWrite: (sourcePath: string, targetPath: string, partition?: number) => Promise<ExecutionResult>
     akaiRead: (sourcePath: string, targetPath: string, partition?: number, recursive?: boolean) => Promise<ExecutionResult>
@@ -83,6 +84,7 @@ class BasicAkaiTools implements Akaitools {
         this.c = c
     }
 
+
     remoteMount(v: RemoteDisk): Promise<ExecutionResult> {
         return remoteMount(this.c, v)
     }
@@ -109,6 +111,10 @@ class BasicAkaiTools implements Akaitools {
 
     writeAkaiProgram(file: string, p: AkaiProgramFile): Promise<void> {
         return writeAkaiProgram(file, p);
+    }
+
+    writeAkaiSample(file: string, s: SampleHeader): Promise<void> {
+        return writeAkaiSample(file, s)
     }
 
     akaiFormat(partitionSize: number = 60, partitionCount: number = 1): Promise<ExecutionResult> {
@@ -253,6 +259,14 @@ export async function readAkaiData(file: string) {
     return data;
 }
 
+export async function writeAkaiData(file: string, nibbles: number[]) {
+    const outdata = []
+    for (let i = 0; i < nibbles.length; i += 2) {
+        outdata.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
+    }
+    await fs.writeFile(file, Buffer.from(outdata))
+}
+
 async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function) {
     let parsed = path.parse(c.diskFile);
     const disk: AkaiDisk = {timestamp: new Date().getTime(), name: parsed.name + parsed.ext, partitions: []}
@@ -331,11 +345,17 @@ async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
             nibbles[CHUNK_LENGTH + CHUNK_LENGTH * i + j] = kgData[j]
         }
     }
-    const outdata = []
-    for (let i = 0; i < nibbles.length; i += 2) {
-        outdata.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
-    }
-    await fs.writeFile(file, Buffer.from(outdata))
+    // const outdata = []
+    // for (let i = 0; i < nibbles.length; i += 2) {
+    //     outdata.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
+    // }
+    // await fs.writeFile(file, Buffer.from(outdata))
+    await writeAkaiData(file, nibbles)
+}
+
+async function writeAkaiSample(file: string, s: SampleHeader) {
+    const nibbles = s.raw.slice(RAW_LEADER)
+    await writeAkaiData(file, nibbles)
 }
 
 async function akaiFormat(c: AkaiToolsConfig, partitionSize: number = 1, partitionCount = 1) {

@@ -20,7 +20,7 @@ import {
     ProgramHeader_writePRNAME,
     RAW_LEADER,
     readAkaiData,
-    SampleHeader
+    SampleHeader, SampleHeader_writeSPITCH
 } from "@oletizi/sampler-devices/s3k"
 
 import {
@@ -88,6 +88,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         sample1: string,
         sample2: string | null,
         lowNote: number,
+        centerNote: number,
         highNote: number,
         lowVelocity: number,
         highVelocity: number
@@ -117,6 +118,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 sample1: sample1,
                 sample2: sample2,
                 lowNote: zone.lowNote,
+                centerNote: zone.centerNote,
                 highNote: zone.highNote,
                 lowVelocity: zone.lowVelocity,
                 highVelocity: zone.highVelocity
@@ -151,21 +153,22 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         const spec = specs[i]
         const keygroup = p.keygroups[i]
 
-        for (let j = 0; j < 2; j++) {
-            const sampleName = [spec.sample1, spec.sample2][j]
+        for (const sampleName of [spec.sample1, spec.sample2]) {
             if (sampleName) {
-                const data = await readAkaiData(path.join(opts.target, sampleName + '.a3s'))
+                // XXX: Wrap up in akaitools
+                const sampleFilepath = path.join(opts.target, sampleName + '.a3s');
+                const data = await readAkaiData(sampleFilepath)
                 const sampleHeader = {} as SampleHeader
                 parseSampleHeader(data, 0, sampleHeader)
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
-
+                SampleHeader_writeSPITCH(sampleHeader, spec.centerNote)
+                tools.writeAkaiSample(sampleFilepath, sampleHeader)
 
                 KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
                 KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
                 KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
                 KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
                 KeygroupHeader_writeHIVEL1(keygroup, spec.highVelocity)
-
 
                 const result = await writeSample(sampleName)
                 rv.errors = rv.errors.concat(result.errors)

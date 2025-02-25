@@ -30,10 +30,11 @@ export interface AbstractKeygroup {
 }
 
 export interface AbstractZone {
-    highVelocity: number;
-    lowVelocity: number;
+    highVelocity: number
+    lowVelocity: number
     audioSource: AudioSource
     lowNote: number
+    centerNote: number
     highNote: number
 }
 
@@ -100,8 +101,9 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
         const match = s.filepath.match(/-([A-G][#b]*[0-9])-/)
         if (match && match[1]) {
             const noteName = match[1]
-            const noteNumber = midiNoteToNumber(noteName)
+            let noteNumber = midiNoteToNumber(noteName)
             if (noteNumber != null) {
+                noteNumber += 24
                 if (note2Samples.get(noteNumber)) {
                     note2Samples.get(noteNumber)?.push(s)
                 } else {
@@ -117,7 +119,14 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
         const zones: AbstractZone[] = []
         _(note2Samples.get(i)).each(s => {
             // TODO: interrogate filename for velocity range
-            zones.push({audioSource: s, highNote: i, lowNote: start, lowVelocity: 0, highVelocity: 127})
+            zones.push({
+                audioSource: s,
+                highNote: i,
+                centerNote: start,
+                lowNote: start,
+                lowVelocity: 0,
+                highVelocity: 127
+            })
         })
         rv.push({
             zones: zones
