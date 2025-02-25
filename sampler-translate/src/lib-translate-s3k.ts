@@ -37,7 +37,7 @@ import {tmpdir} from "node:os";
 
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
-
+    // XXX: this doesn't really belong here
     getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }
 
@@ -53,7 +53,6 @@ export interface ChopOpts extends ProgramOpts {
     samplesPerBeat: number;
     beatsPerChop: number;
 }
-
 
 export async function newDefaultTranslateContext() {
     const rv: S3kTranslateContext = {
