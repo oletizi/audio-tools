@@ -78,7 +78,6 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     const tools = ctx.akaiTools
     const audioTranslate = ctx.audioTranslate
     const audioFactory = ctx.audioFactory
-    const fs = ctx.fs
     let count = 0
 
     if (opts.wipeDisk) {
@@ -111,10 +110,10 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             const {meta} = await audioFactory.loadFromFile(sourcePath)
             const stereo = meta.channelCount === 2
             const {name} = path.parse(sourcePath)
-            const prefix = opts.prefix
+            const prefix = _.truncate(opts.prefix, {length: 6, omission: ''})
             const sampleNumber = count++
             // const [sample1, sample2] = akaiSampleNames(prefix, sampleNumber, stereo, '_')
-            const [sample1, sample2] = akaiSampleNames(String(zone.centerNote) + '.', sampleNumber, stereo, '_')
+            const [sample1, sample2] = akaiSampleNames(prefix + String(zone.centerNote), sampleNumber, stereo, '_')
             console.log(`Sample1: ${sample1}; sample2: ${sample2}`);
             const spec: KeygroupSpec = {
                 sample1: sample1,
@@ -136,7 +135,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
             // XXX: this is super gross. There should be one place where the naming patterns are defined.
             // const targetName = prefix.toLowerCase() + _.padStart(String(sampleNumber), 2, '0')
-            const targetName = String(zone.centerNote) + '.' + _.padStart(String(sampleNumber), 2, '0')
+            const targetName = prefix + String(zone.centerNote) + _.padStart(String(sampleNumber), 2, '0')
             console.log(`Converting intermediate: ${intermediatePath} to: ${targetPath}/${targetName}`)
             const r = await tools.wav2Akai(intermediatePath, targetPath, targetName)
             if (r.errors.length > 0) {
@@ -167,6 +166,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
                 SampleHeader_writeSPITCH(sampleHeader, spec.centerNote)
                 tools.writeAkaiSample(sampleFilepath, sampleHeader)
+                console.log(`Writing keygroup sample: ${sampleHeader.SHNAME}`)
                 if (sampleHeader.SHNAME.endsWith('-R')) {
                     KeygroupHeader_writeSNAME2(keygroup, sampleHeader.SHNAME)
                     KeygroupHeader_writeVPANO1(keygroup, 0)

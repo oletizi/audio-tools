@@ -10,8 +10,9 @@ import {newServerConfig} from "@oletizi/sampler-lib";
 describe(`lib-translate-s3k integration test`, () => {
     it(`maps samples`, async function () {
         this.timeout(10 * 1000)
-        const prefix = 'RHDS'
-        const source = path.join('test', 'data', 'auto', prefix)
+        const prefix = 'ARPB'
+        const cfg = await newServerConfig()
+        const source = path.join(cfg.sourceRoot, 'auto', prefix)
         const target = path.join(tmpdir(), `map-${new Date().getTime()}`)
         await fs.mkdir(target)
         const result = await map(
