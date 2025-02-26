@@ -13,7 +13,7 @@ import {
     KeygroupHeader_writeLONOTE,
     KeygroupHeader_writeLOVEL1,
     KeygroupHeader_writeSNAME1,
-    KeygroupHeader_writeSNAME2,
+    KeygroupHeader_writeSNAME2, KeygroupHeader_writeVPANO1, KeygroupHeader_writeVPANO2,
     newAkaitools,
     newAkaiToolsConfig,
     parseSampleHeader,
@@ -37,6 +37,7 @@ import {tmpdir} from "node:os";
 
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
+
     // XXX: this doesn't really belong here
     getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }
@@ -151,11 +152,12 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
     const p = await tools.readAkaiProgram(await ctx.getS3kDefaultProgramPath(specs.length))
     ProgramHeader_writePRNAME(p.program, opts.prefix)
-    for (let i =0; i< specs.length; i++) {
+    for (let i = 0; i < specs.length; i++) {
         const spec = specs[i]
         const keygroup = p.keygroups[i]
 
         for (const sampleName of [spec.sample1, spec.sample2]) {
+            console.log(`Writing sample ${sampleName}`)
             if (sampleName) {
                 // XXX: Wrap up in akaitools
                 const sampleFilepath = path.join(opts.target, sampleName + '.a3s');
@@ -165,8 +167,14 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
                 SampleHeader_writeSPITCH(sampleHeader, spec.centerNote)
                 tools.writeAkaiSample(sampleFilepath, sampleHeader)
-
-                KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
+                if (sampleHeader.SHNAME.endsWith('-R')) {
+                    KeygroupHeader_writeSNAME2(keygroup, sampleHeader.SHNAME)
+                    KeygroupHeader_writeVPANO1(keygroup, 0)
+                    KeygroupHeader_writeVPANO2(keygroup, 127)
+                    KeygroupHeader_writeHIVEL2(keygroup, 127)
+                } else {
+                    KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
+                }
                 KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
                 KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
                 KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
