@@ -1,7 +1,6 @@
 import {expect} from "chai";
 import {stub} from "sinon";
 import path from "pathe";
-import {midiNoteToNumber} from "@/lib-midi.js"
 import {
     AbstractKeygroup,
     AudioMetadata,
@@ -148,8 +147,8 @@ describe(`Core translator mapper tests`, async () => {
         const zone1 = kg1.zones[0]
         expect(zone1).to.exist
         expect(zone1.audioSource.filepath.endsWith(files[0]))
-        expect(zone1?.lowNote).to.eq(midiNoteToNumber('C0') - 12)
-        expect(zone1.highNote).eq(midiNoteToNumber('C1'))
+        expect(zone1?.lowNote).to.eq(0)
+        expect(zone1.highNote).eq(36)
 
         const k2 = keygroups[1]
         expect(k2).to.exist
@@ -157,8 +156,8 @@ describe(`Core translator mapper tests`, async () => {
         expect(k2.zones.length).to.eq(1)
         const zone2 = k2.zones[0]
         expect(zone2).to.exist
-        expect(zone2.lowNote).eq(midiNoteToNumber('C#1'))
-        expect(zone2.highNote).eq(midiNoteToNumber('F#1'))
+        expect(zone2.lowNote).eq(37)
+        expect(zone2.highNote).eq(42)
     })
 })
 
