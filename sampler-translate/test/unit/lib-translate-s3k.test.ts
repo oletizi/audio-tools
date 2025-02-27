@@ -1,4 +1,4 @@
-import {chop, ChopOpts, ProgramOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
+import {chop, ChopOpts, newDefaultTranslateContext, ProgramOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -26,6 +26,13 @@ import {
     AbstractZone, AudioTranslate, AudioMetadata, AudioSource
 } from "@/lib-translate.js";
 import {afterEach} from "mocha";
+
+describe('translate context', async () => {
+    it('creates a default translate context', async () => {
+        const ctx = await newDefaultTranslateContext();
+        expect(ctx).to.exist
+    })
+})
 
 describe(`map`,
     async () => {
