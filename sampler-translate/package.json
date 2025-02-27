@@ -18,7 +18,7 @@
   "author": "Orion Letizi",
   "license": "ISC",
   "dependencies": {
-    "@oletizi/sampler-devices": "^0.0.15",
+    "@oletizi/sampler-devices": "^0.0.16",
     "chai-as-promised": "^8.0.1",
     "fluent-ffmpeg": "^2.1.3",
     "lodash": "^4.17.21",

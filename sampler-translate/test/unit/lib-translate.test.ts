@@ -10,7 +10,7 @@ import {
     description,
     mapLogicAutoSampler,
     mapProgram, newDefaultTranslateContext,
-    newDefaultAudioFactory, newDefaultAudioTranslate, MapFunction
+    newDefaultAudioFactory, newDefaultAudioTranslate, MapFunction, AbstractZone
 } from "@/lib-translate.js";
 import {tmpdir} from "node:os";
 import {Sample} from "@/sample.js";
@@ -93,7 +93,15 @@ describe(`Core translator mapper tests`, async () => {
             mapFunctionCalls.push(s)
 
             return s.map((v) => {
-                return {zones: [{audioSource: v, lowNote: 0, highNote: 127, lowVelocity: 0, highVelocity: 127}]}
+                const zone: AbstractZone = {
+                    centerNote: 60,
+                    audioSource: v,
+                    lowNote: 0,
+                    highNote: 127,
+                    lowVelocity: 0,
+                    highVelocity: 127
+                };
+                return {zones: [zone]}
             })
         }
 
@@ -103,7 +111,7 @@ describe(`Core translator mapper tests`, async () => {
         expect(mapFunctionCalls.length).eq(1)
         expect(program).to.exist
         expect(program.data).to.exist
-        expect(program.data?.length).eq(13)
+        expect(program.data?.length).eq(11)
     })
 
     it(`Maps multiple Logic auto-sample output files to a set of keygroups`, async () => {
@@ -165,9 +173,16 @@ describe('mapProgram', () => {
 
         this.timeout(10 * 1000)
 
-        const mapFunction: MapFunction = (sources: AudioSource[]) => sources.map(s => ({
-            zones: [{audioSource: s, lowNote: 0, highNote: 127, lowVelocity: 0, highVelocity: 127}],
-        }));
+        const mapFunction: MapFunction = (sources: AudioSource[]) => sources.map(s => {
+
+            const zone: AbstractZone = {
+                centerNote: 60,
+                audioSource: s, lowNote: 0, highNote: 127, lowVelocity: 0, highVelocity: 127
+            };
+            return {
+                zones: [zone],
+            }
+        });
 
 
         const sourceDir = path.join(process.cwd(), 'test', 'data', 'auto', 'J8.01').normalize();
@@ -178,7 +193,7 @@ describe('mapProgram', () => {
             source: sourceDir,
             target: targetDir
         });
-        expect(result.data).to.have.lengthOf(13);
+        expect(result.data).to.have.lengthOf(11);
         // @ts-ignore
         expect(result.data[0].zones[0].lowNote).to.equal(0);
         // @ts-ignore

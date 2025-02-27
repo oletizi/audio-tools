@@ -112,7 +112,6 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             const {name} = path.parse(sourcePath)
             const prefix = _.truncate(opts.prefix, {length: 6, omission: ''})
             const sampleNumber = count++
-            // const [sample1, sample2] = akaiSampleNames(prefix, sampleNumber, stereo, '_')
             const [sample1, sample2] = akaiSampleNames(prefix + String(zone.centerNote), sampleNumber, stereo, '_')
             console.log(`Sample1: ${sample1}; sample2: ${sample2}`);
             const spec: KeygroupSpec = {
@@ -168,6 +167,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 const sampleHeader = {} as SampleHeader
                 parseSampleHeader(data, 0, sampleHeader)
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)
+                // TODO: swith to using the AkaiS3kSample class
                 SampleHeader_writeSPITCH(sampleHeader, spec.centerNote)
                 tools.writeAkaiSample(sampleFilepath, sampleHeader)
                 console.log(`Writing keygroup sample: ${sampleHeader.SHNAME}`)
@@ -176,14 +176,22 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                     // KeygroupHeader_writeVPANO1(keygroup, 0)
                     // KeygroupHeader_writeVPANO2(keygroup, 127)
                     // KeygroupHeader_writeHIVEL2(keygroup, 127)
-
+                    // TODO: figure out negative numbers for pan
+                    keygroup.setSampleName2(sampleHeader.SHNAME)
+                    keygroup.setLowVelocity1(spec.lowVelocity)
+                    keygroup.setHighVelocity2(spec.highVelocity)
                 } else {
-                    KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
+                    // KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
+                    keygroup.setSampleName1(sampleHeader.SHNAME)
                 }
-                KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
-                KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
-                KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
-                KeygroupHeader_writeHIVEL1(keygroup, spec.highVelocity)
+                // KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
+                // KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
+                // KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
+                // KeygroupHeader_writeHIVEL1(keygroup, spec.highVelocity)
+                keygroup.setLowNote(spec.lowNote)
+                keygroup.setHighNote(spec.highNote)
+                keygroup.setLowVelocity1(spec.lowVelocity)
+                keygroup.setHighVelocity1(spec.highVelocity)
 
                 const result = await writeSample(sampleName)
                 rv.errors = rv.errors.concat(result.errors)
