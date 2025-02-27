@@ -4,27 +4,28 @@ import fs from 'fs'
 import _ from 'lodash'
 import {newServerConfig, ServerConfig} from '@oletizi/sampler-lib'
 import {
-    Akaitools, Keygroup,
+    Akaitools,
+    Keygroup,
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
-    KeygroupHeader_writeHIVEL1,
     KeygroupHeader_writeHIVEL2,
     KeygroupHeader_writeLONOTE,
-    KeygroupHeader_writeLOVEL1,
     KeygroupHeader_writeSNAME1,
-    KeygroupHeader_writeSNAME2, KeygroupHeader_writeVPANO1, KeygroupHeader_writeVPANO2,
+    KeygroupHeader_writeSNAME2,
     newAkaitools,
     newAkaiToolsConfig,
     parseSampleHeader,
     ProgramHeader_writePRNAME,
     RAW_LEADER,
-    SampleHeader, SampleHeader_writeSPITCH
+    SampleHeader,
+    SampleHeader_writeSPITCH
 } from "@oletizi/sampler-devices/s3k"
 
 import {
     MapFunction,
-    mapProgram, MapProgramResult,
+    mapProgram,
+    MapProgramResult,
     newDefaultAudioFactory,
     newDefaultAudioTranslate,
     TranslateContext
@@ -143,10 +144,6 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         }
     }
 
-    function writeSample(sampleName: string) {
-        return tools.akaiWrite(path.join(opts.target, sampleName + '.a3s'), `/${opts.prefix}`, opts.partition)
-    }
-
     const filepath = await ctx.getS3kDefaultProgramPath(specs.length);
     const r = await tools.readAkaiProgram(filepath)
     if (!r.data) {
@@ -208,7 +205,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 keygroup.setLowVelocity1(spec.lowVelocity)
                 keygroup.setHighVelocity1(spec.highVelocity)
 
-                const result = await writeSample(sampleName)
+                const result = await tools.akaiWrite(path.join(opts.target, sampleName + '.a3s'), `/${opts.prefix}`, opts.partition)
                 rv.errors = rv.errors.concat(result.errors)
             }
         }
@@ -217,7 +214,9 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         }
     }
     const programPath = path.join(opts.target, opts.prefix + '.a3p');
-    await tools.writeAkaiProgram(programPath, p)
+     await tools.writeAkaiProgram(programPath, p)
+
+
     await tools.akaiWrite(programPath, `/${opts.prefix}`, opts.partition)
     return rv
 }

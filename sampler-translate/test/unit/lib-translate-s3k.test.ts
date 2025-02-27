@@ -7,7 +7,14 @@ const expect = chai.expect;
 import fsp from 'fs/promises';
 import fs from 'fs'
 import {stub} from 'sinon';
-import {newAkaiToolsConfig, newAkaitools, Akaitools, Program, Keygroup} from "@oletizi/sampler-devices/s3k";
+import {
+    newAkaiToolsConfig,
+    newAkaitools,
+    Akaitools,
+    Keygroup,
+    Device,
+    KeygroupHeader
+} from "@oletizi/sampler-devices/s3k";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
@@ -29,16 +36,24 @@ describe(`map`,
             readAkaiProgramStub: any,
             akaiProgramFile: any,
             akaiProgramFileResult: any,
+            writeAkaiDataStub: any,
+            writeAkaiSampleStub: any,
+            writeAkaiProgramStub: any,
+            akaiWriteStub: any,
             program: any,
             keygroups: any,
             keygroup: Keygroup,
+            setSampleFactory: any,
             setProgramNameStub: any,
+            setSampleName1Stub: any,
+            setLowNoteStub: any,
+            setHighNoteStub: any,
+            setLowVelocity1Stub: any,
+            setHighVelocity1Stub: any,
             ctx: S3kTranslateContext,
             getS3kDefaultProgramPathStub: any,
             readAkaiDataStub: any,
             byteArrayResult: any,
-            writeAkaiDataStub: any,
-            writeAkaiSampleStub: any,
             fsStub: fileio,
             mapFunctionStub: any,
             options: ProgramOpts,
@@ -66,7 +81,9 @@ describe(`map`,
                 wav2Akai: wav2AkaiStub = stub(),
                 readAkaiProgram: readAkaiProgramStub = stub(),
                 readAkaiData: readAkaiDataStub = stub(),
-                writeAkaiSample: writeAkaiSampleStub = stub()
+                writeAkaiSample: writeAkaiSampleStub = stub(),
+                akaiWrite: akaiWriteStub = stub(),
+                writeAkaiProgram: writeAkaiProgramStub = stub(),
             }
             byteArrayResult = {
                 data: [],
@@ -78,9 +95,16 @@ describe(`map`,
             program = {
                 setProgramName: setProgramNameStub = stub()
             }
+
+            keygroup = new Keygroup({} as Device, {} as KeygroupHeader)
+            setSampleName1Stub = stub(keygroup, 'setSampleName1')
+            setLowNoteStub = stub(keygroup, 'setLowNote')
+            setHighNoteStub = stub(keygroup, 'setHighNote')
+            setLowVelocity1Stub = stub(keygroup, 'setLowVelocity1')
+            setHighVelocity1Stub = stub(keygroup, 'setHighVelocity1')
             akaiProgramFile = {
                 program: program,
-                keygroups: keygroups = []
+                keygroups: keygroups = [keygroup]
             }
             akaiProgramFileResult = {
                 errors: [],
@@ -152,6 +176,7 @@ describe(`map`,
             translateStub.resolves(successResult)
             wav2AkaiStub.resolves(successResult)
             readAkaiProgramStub.resolves(akaiProgramFileResult)
+            akaiWriteStub.resolves(successResult)
 
 
             const result = await map(ctx, mapFunctionStub, options)
@@ -236,6 +261,7 @@ describe(`chop happy path`, async () => {
     });
 
     it('chops', async () => {
+        expect.fail(`TODO: Fix me.`)
         // XXX: This is still super messy.
         const targetDir = '/some/dir';
         const samplesPerBeat = 1

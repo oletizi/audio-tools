@@ -164,6 +164,7 @@ describe(`Core translator mapper tests`, async () => {
 describe('mapProgram', () => {
 
     it('handles empty directory', async () => {
+        expect.fail(`Fix me. I time out for some reason.`)
         const result = await mapProgram(newDefaultTranslateContext(), () => [], {source: tmpdir(), target: tmpdir()});
         expect(result.data).to.deep.equal([]);
     });
