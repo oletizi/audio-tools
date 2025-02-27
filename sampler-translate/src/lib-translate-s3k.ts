@@ -34,7 +34,6 @@ import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, SampleFactory} from "@/sample.js";
 import {tmpdir} from "node:os";
 
-
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
 

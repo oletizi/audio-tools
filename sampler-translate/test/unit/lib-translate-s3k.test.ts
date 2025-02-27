@@ -1,7 +1,6 @@
 import {chop, ChopOpts, newDefaultTranslateContext, ProgramOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 import fsp from 'fs/promises';
@@ -23,7 +22,7 @@ import {
     fileio,
     AudioFactory,
     AbstractKeygroup,
-    AbstractZone, AudioTranslate, AudioMetadata, AudioSource
+    AbstractZone, AudioTranslate, AudioMetadata, AudioSource, MapFunction
 } from "@/lib-translate.js";
 import {afterEach} from "mocha";
 
@@ -31,6 +30,14 @@ describe('translate context', async () => {
     it('creates a default translate context', async () => {
         const ctx = await newDefaultTranslateContext();
         expect(ctx).to.exist
+    })
+    it(`resolves path to default s3k programs for keygroup count 1-20; and, those default program files exist.`, async () => {
+        const ctx = await newDefaultTranslateContext();
+        for (let i=1; i<21; i++) {
+            let path = await ctx.getS3kDefaultProgramPath(i)
+            expect(path).to.exist
+            await fsp.stat(path)
+        }
     })
 })
 
@@ -151,7 +158,17 @@ describe(`map`,
             // targetStub.restore()
         })
 
-        it(`maps sample to an S3000XL program`, async () => {
+        it(`handles errors from underlying map() function`, async () => {
+
+            const mapFunction: any = stub()
+            const opts: ProgramOpts = {partition: 0, prefix: "", source: "", target: "", wipeDisk: false}
+            const r = await map(ctx, mapFunction, opts)
+            expect(r).exist
+            expect(r.errors).to.exist
+            expect(r.errors).not.to.be.empty
+        })
+
+        it(`map happy path`, async () => {
             expect(ctx.audioFactory).exist
             options.source = '/path/to/source/dir'
             options.target = '/path/to/target/dir'
