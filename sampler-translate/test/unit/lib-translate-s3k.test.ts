@@ -7,7 +7,7 @@ const expect = chai.expect;
 import fsp from 'fs/promises';
 import fs from 'fs'
 import {stub} from 'sinon';
-import {newAkaiToolsConfig, newAkaitools, Akaitools} from "@oletizi/sampler-devices/s3k";
+import {newAkaiToolsConfig, newAkaitools, Akaitools, Program} from "@oletizi/sampler-devices/s3k";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
@@ -28,7 +28,9 @@ describe(`map`,
             wav2AkaiStub: any,
             readAkaiProgramStub: any,
             akaiProgramFile: any,
-            programHeader: any,
+            program: any,
+            keygroups: any,
+            setProgramNameStub: any,
             ctx: S3kTranslateContext,
             getS3kDefaultProgramPathStub: any,
             fsStub: fileio,
@@ -59,9 +61,13 @@ describe(`map`,
                 readAkaiProgram: readAkaiProgramStub = stub(),
             }
 
-            programHeader = {}
+
+            program = {
+                setProgramName: setProgramNameStub = stub()
+            }
             akaiProgramFile = {
-                program: programHeader
+                program: program,
+                keygroups: keygroups = []
             }
 
             audioTranslate = {

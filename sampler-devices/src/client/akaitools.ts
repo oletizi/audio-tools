@@ -1,7 +1,8 @@
 import fs from "fs/promises";
 import {ChildProcess, spawn} from 'child_process'
 import path from "pathe";
-import {byte2nibblesLE, nibbles2byte, newServerConfig} from "@oletizi/sampler-lib"
+import * as _ from 'lodash'
+import {byte2nibblesLE, nibbles2byte, newServerConfig, ByteArrayResult} from "@oletizi/sampler-lib"
 import {
     Keygroup,
     KeygroupHeader,
@@ -14,7 +15,7 @@ import {
     AkaiDisk,
     AkaiDiskResult,
     AkaiPartition,
-    AkaiProgramFile,
+    AkaiProgramFile, AkaiProgramFileResult,
     AkaiRecord,
     AkaiRecordResult,
     AkaiRecordType,
@@ -54,7 +55,7 @@ export async function newAkaiToolsConfig() {
 
 export interface Akaitools {
     readAkaiDisk: () => Promise<AkaiDiskResult>
-    readAkaiProgram: (file: string) => Promise<AkaiProgramFile>
+    readAkaiProgram: (file: string) => Promise<AkaiProgramFileResult>
     writeAkaiProgram: (file: string, p: AkaiProgramFile) => Promise<void>
     writeAkaiSample: (file: string, s: SampleHeader) => Promise<void>
     akaiFormat: (partitionSize?: number, partitionCount?: number) => Promise<ExecutionResult>
@@ -73,6 +74,11 @@ export interface Akaitools {
     remoteUnmount(v: RemoteDisk): Promise<ExecutionResult>;
 
     remoteMount(v: RemoteDisk): Promise<ExecutionResult>;
+
+    readAkaiData(file: string): Promise<ByteArrayResult>
+
+    writeAkaiData(file: string, nibbles: number[]): Promise<ExecutionResult>
+
 }
 
 export function newAkaitools(c: AkaiToolsConfig): Akaitools {
@@ -107,7 +113,7 @@ class BasicAkaiTools implements Akaitools {
         return readAkaiDisk(this.c, this.akaiList.bind(this));
     }
 
-    readAkaiProgram(file: string): Promise<AkaiProgramFile> {
+    readAkaiProgram(file: string): Promise<AkaiProgramFileResult> {
         return readAkaiProgram(file);
     }
 
@@ -146,6 +152,15 @@ class BasicAkaiTools implements Akaitools {
     parseAkaiList(data: string): AkaiRecord[] {
         return parseAkaiList(data);
     }
+
+    readAkaiData(file: string) {
+        return readAkaiData(file)
+    }
+
+    writeAkaiData(file: string, nibbles: number[]) {
+        return writeAkaiData(file, nibbles);
+    }
+
 }
 
 async function remoteSync(c: AkaiToolsConfig) {
@@ -250,23 +265,34 @@ async function remoteVolumes(c: AkaiToolsConfig) {
     return rv
 }
 
-export async function readAkaiData(file: string) {
+async function readAkaiData(file: string): Promise<ByteArrayResult> {
     const buffer = await fs.readFile(file)
-    const data = []
+    const rv: ByteArrayResult = {
+        data: [],
+        errors: []
+    }
     for (let i = 0; i < buffer.length; i++) {
         const nibbles = byte2nibblesLE(buffer[i])
-        data.push(nibbles[0])
-        data.push(nibbles[1])
+        rv.data.push(nibbles[0])
+        rv.data.push(nibbles[1])
     }
-    return data;
+    return rv;
 }
 
-export async function writeAkaiData(file: string, nibbles: number[]) {
+async function writeAkaiData(file: string, nibbles: number[]) {
     const outdata = []
+    const rv: ExecutionResult = {code: -1, errors: []}
     for (let i = 0; i < nibbles.length; i += 2) {
         outdata.push(nibbles2byte(nibbles[i], nibbles[i + 1]))
     }
-    await fs.writeFile(file, Buffer.from(outdata))
+    try {
+        await fs.writeFile(file, Buffer.from(outdata))
+        rv.code = 0
+    } catch (e) {
+        // @ts-ignore
+        rv.errors.push(e)
+    }
+    return rv
 }
 
 async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function) {
@@ -322,9 +348,19 @@ async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function) {
     return rv
 }
 
-async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
-    const data = await readAkaiData(file)
-    const program= {} as ProgramHeader
+async function readAkaiProgram(file: string): Promise<AkaiProgramFileResult> {
+    const rv: AkaiProgramFileResult = {
+        data: undefined,
+        errors: []
+    }
+    const r = await readAkaiData(file)
+    const data = r.data
+    if (r.errors.length > 0) {
+        rv.errors = _.concat(rv.errors, r.errors)
+        return rv
+    }
+
+    const program = {} as ProgramHeader
     const keygroups: KeygroupHeader[] = []
     // const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
     parseProgramHeader(data, 1, program)
@@ -339,7 +375,7 @@ async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     }
 
     const device = {} as Device
-    const rv: AkaiProgramFile = {
+    rv.data = {
         keygroups: keygroups.map(kg => new Keygroup(device, kg)),
         program: new Program(device, program)
     }

@@ -15,6 +15,10 @@ export interface AkaiProgramFile {
     keygroups: Keygroup[]
 }
 
+export interface AkaiProgramFileResult extends Result {
+    data: AkaiProgramFile | undefined
+}
+
 export enum AkaiRecordType {
     NULL = 'NULL',
     PARTITION = 'S3000 PARTITION',
