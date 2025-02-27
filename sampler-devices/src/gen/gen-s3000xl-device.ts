@@ -47,6 +47,7 @@ export async function genInterface(spec: Spec) {
 }
 
 export async function genClass(spec: Spec) {
+    console.log(`Generating ${spec.className}...`)
     let rv = `export class ${spec.className} {\n`
 
     rv += `    private readonly device: Device\n`

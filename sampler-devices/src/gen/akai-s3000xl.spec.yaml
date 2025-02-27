@@ -316,7 +316,7 @@ specs:
         d: 'Effects Bus Select; 0 to 4'
 
   - name: SampleHeader
-    className: Sample
+    className: AkaiS3kSample
     headerOffset: 0
     fields:
       # n: field name;
@@ -487,9 +487,11 @@ specs:
         s: 2
 
       - n: 'LONOTE'
+        f: 'lowNote'
         d: 'Lower limit of keyrange; Range: 21 to 127 represents A1 to G8'
 
       - n: 'HINOTE'
+        f: 'highNote'
         d: 'Upper limit of keyrange'
 
       - n: 'KGTUNO'
@@ -578,14 +580,17 @@ specs:
         d: 'Calculated right keygroup crossfade factor (internal)'
 
       - n: 'SNAME1'
+        f: 'sampleName1'
         d: 'Sample name used in velocity zone 1'
         s: 12
         t: 'string'
 
       - n: 'LOVEL1'
+        f: 'lowVelocity1'
         d: 'Lower limit of velocity range; 0-127'
 
       - n: 'HIVEL1'
+        f: 'highVelocity1'
         d: 'Upper limit of velocity range'
 
       - n: 'VTUNO1'
@@ -615,14 +620,17 @@ specs:
         s: 2
 
       - n: 'SNAME2'
+        f: 'sampleName2'
         d: 'Sample name used in velocity zone 2'
         s: 12
         t: 'string'
 
       - n: 'LOVEL2'
+        f: 'lowVelocity2'
         d: 'Lower limit of velocity range 2'
 
       - n: 'HIVEL2'
+        f: 'highVelocity2'
         d: 'Upper limit of velocity range 2'
 
       - n: 'VTUNO2'
@@ -652,14 +660,17 @@ specs:
         s: 2
 
       - n: 'SNAME3'
+        f: 'sampleName3'
         d: 'Sample name used in velocity zone 3'
         s: 12
         t: 'string'
 
       - n: 'LOVEL3'
+        f: 'lowVelocity3'
         d: 'Lower limit of velocity range 3'
 
       - n: 'HIVEL3'
+        f: 'highVelocity3'
         d: 'Upper limit of velocity range 3'
 
       - n: 'VTUNO3'
@@ -689,14 +700,17 @@ specs:
         s: 2
 
       - n: 'SNAME4'
+        f: 'sampleName4'
         d: 'Sample name used in velocity zone 4'
         s: 12
         t: 'string'
 
       - n: 'LOVEL4'
+        f: 'lowVelocity4'
         d: 'Lower limit of velocity range 4'
 
       - n: 'HIVEL4'
+        f: 'highVelocity4'
         d: 'Upper limit of velocity range 4'
 
       - n: 'VTUNO4'

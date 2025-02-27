@@ -1,5 +1,5 @@
 //
-// GENERATED Mon Feb 17 2025 06:49:55 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Wed Feb 26 2025 18:19:31 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
 import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/client-akai-s3000xl.js"
@@ -5355,6 +5355,174 @@ export class Keygroup {
 
     async save() {
         return this.device.sendRaw(this.header.raw)
+    }
+
+    getLowNote(): number { 
+        return this.header.LONOTE
+    }
+    setLowNote(v: number) {
+        const out = newClientOutput(false, 'setLowNote')
+        KeygroupHeader_writeLONOTE(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getHighNote(): number { 
+        return this.header.HINOTE
+    }
+    setHighNote(v: number) {
+        const out = newClientOutput(false, 'setHighNote')
+        KeygroupHeader_writeHINOTE(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getSampleName1(): string { 
+        return this.header.SNAME1
+    }
+    setSampleName1(v: string) {
+        const out = newClientOutput(false, 'setSampleName1')
+        KeygroupHeader_writeSNAME1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getLowVelocity1(): number { 
+        return this.header.LOVEL1
+    }
+    setLowVelocity1(v: number) {
+        const out = newClientOutput(false, 'setLowVelocity1')
+        KeygroupHeader_writeLOVEL1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getHighVelocity1(): number { 
+        return this.header.HIVEL1
+    }
+    setHighVelocity1(v: number) {
+        const out = newClientOutput(false, 'setHighVelocity1')
+        KeygroupHeader_writeHIVEL1(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getSampleName2(): string { 
+        return this.header.SNAME2
+    }
+    setSampleName2(v: string) {
+        const out = newClientOutput(false, 'setSampleName2')
+        KeygroupHeader_writeSNAME2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getLowVelocity2(): number { 
+        return this.header.LOVEL2
+    }
+    setLowVelocity2(v: number) {
+        const out = newClientOutput(false, 'setLowVelocity2')
+        KeygroupHeader_writeLOVEL2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getHighVelocity2(): number { 
+        return this.header.HIVEL2
+    }
+    setHighVelocity2(v: number) {
+        const out = newClientOutput(false, 'setHighVelocity2')
+        KeygroupHeader_writeHIVEL2(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getSampleName3(): string { 
+        return this.header.SNAME3
+    }
+    setSampleName3(v: string) {
+        const out = newClientOutput(false, 'setSampleName3')
+        KeygroupHeader_writeSNAME3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getLowVelocity3(): number { 
+        return this.header.LOVEL3
+    }
+    setLowVelocity3(v: number) {
+        const out = newClientOutput(false, 'setLowVelocity3')
+        KeygroupHeader_writeLOVEL3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getHighVelocity3(): number { 
+        return this.header.HIVEL3
+    }
+    setHighVelocity3(v: number) {
+        const out = newClientOutput(false, 'setHighVelocity3')
+        KeygroupHeader_writeHIVEL3(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getSampleName4(): string { 
+        return this.header.SNAME4
+    }
+    setSampleName4(v: string) {
+        const out = newClientOutput(false, 'setSampleName4')
+        KeygroupHeader_writeSNAME4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getLowVelocity4(): number { 
+        return this.header.LOVEL4
+    }
+    setLowVelocity4(v: number) {
+        const out = newClientOutput(false, 'setLowVelocity4')
+        KeygroupHeader_writeLOVEL4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
+    }
+
+    getHighVelocity4(): number { 
+        return this.header.HIVEL4
+    }
+    setHighVelocity4(v: number) {
+        const out = newClientOutput(false, 'setHighVelocity4')
+        KeygroupHeader_writeHIVEL4(this.header, v)
+        // this is dumb. parse should be able to read the raw data; but, it doesn't. You should change that.
+        out.log('Parsing header from 7 with header offset: 0')
+        const tmp = this.header.raw.slice(7, this.header.raw.length - 1)
+        parseKeygroupHeader(tmp, 0, this.header)
     }
 
 }
