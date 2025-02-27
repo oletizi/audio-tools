@@ -10,7 +10,7 @@ import {newServerConfig} from "@oletizi/sampler-lib";
 describe(`lib-translate-s3k integration test`, () => {
     it(`maps samples`, async function () {
         this.timeout(10 * 1000)
-        const prefix = 'MOOGB'
+        const prefix = 'MOOGC'
         const cfg = await newServerConfig()
         const source = path.join(cfg.sourceRoot, 'auto', prefix)
         const target = path.join(tmpdir(), `map-${new Date().getTime()}`)

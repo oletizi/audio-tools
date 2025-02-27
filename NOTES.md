@@ -1,3 +1,10 @@
+## Backup (& Restore) S3K Disks
+
+```zsh
+for ((i=0; i<20; i++ )); do mkdir part-${i} && akairead -R -d part-${i} -f HD5.hds -p ${i} /; done
+```
+
+
 ## TSUP & npm multiple entrypoints
 * https://tsup.egoist.dev/#multiple-entrypoints for how to generate multiple entrypoints with tsup
 * also look at "exports" configuration in sampler-devices/package.json for how to configure the package to point the entrypoint to the proper files in dist/ for a more elegant import (minus the '../dist/..' part)
