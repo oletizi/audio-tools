@@ -4,7 +4,7 @@ import fs from 'fs'
 import _ from 'lodash'
 import {newServerConfig, ServerConfig} from '@oletizi/sampler-lib'
 import {
-    Akaitools,
+    Akaitools, Keygroup,
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
@@ -150,10 +150,14 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     }
 
     const p = await tools.readAkaiProgram(await ctx.getS3kDefaultProgramPath(specs.length))
-    ProgramHeader_writePRNAME(p.program, opts.prefix)
+    const program = p.program
+    // ProgramHeader_writePRNAME(p.program, opts.prefix)
+    program.setProgramName(opts.prefix)
+
+
     for (let i = 0; i < specs.length; i++) {
         const spec = specs[i]
-        const keygroup = p.keygroups[i]
+        const keygroup: Keygroup = p.keygroups[i]
 
         for (const sampleName of [spec.sample1, spec.sample2]) {
             console.log(`Writing sample ${sampleName}`)
@@ -168,10 +172,11 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 tools.writeAkaiSample(sampleFilepath, sampleHeader)
                 console.log(`Writing keygroup sample: ${sampleHeader.SHNAME}`)
                 if (sampleHeader.SHNAME.endsWith('-R')) {
-                    KeygroupHeader_writeSNAME2(keygroup, sampleHeader.SHNAME)
-                    KeygroupHeader_writeVPANO1(keygroup, 0)
-                    KeygroupHeader_writeVPANO2(keygroup, 127)
-                    KeygroupHeader_writeHIVEL2(keygroup, 127)
+                    // KeygroupHeader_writeSNAME2(keygroup, sampleHeader.SHNAME)
+                    // KeygroupHeader_writeVPANO1(keygroup, 0)
+                    // KeygroupHeader_writeVPANO2(keygroup, 127)
+                    // KeygroupHeader_writeHIVEL2(keygroup, 127)
+
                 } else {
                     KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
                 }

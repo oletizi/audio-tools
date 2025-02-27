@@ -3,9 +3,10 @@ import {ChildProcess, spawn} from 'child_process'
 import path from "pathe";
 import {byte2nibblesLE, nibbles2byte, newServerConfig} from "@oletizi/sampler-lib"
 import {
+    Keygroup,
     KeygroupHeader,
     parseKeygroupHeader,
-    parseProgramHeader,
+    parseProgramHeader, Program,
     ProgramHeader, SampleHeader
 } from "@/devices/s3000xl.js";
 
@@ -22,6 +23,7 @@ import {
     RemoteVolumeResult
 } from "@/model/model-akai-s3000xl.js";
 import {Writable} from "stream";
+import {Device} from "@/client/client-akai-s3000xl.js";
 
 
 export const CHUNK_LENGTH = 384
@@ -322,24 +324,33 @@ async function readAkaiDisk(c: AkaiToolsConfig, listFunction: Function) {
 
 async function readAkaiProgram(file: string): Promise<AkaiProgramFile> {
     const data = await readAkaiData(file)
-    const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
-    parseProgramHeader(data, 1, rv.program)
-    rv.program.raw = new Array(RAW_LEADER).fill(0).concat(data)
-    for (let i = 0; i < rv.program.GROUPS; i++) {
+    const program= {} as ProgramHeader
+    const keygroups: KeygroupHeader[] = []
+    // const rv: AkaiProgramFile = {keygroups: [], program: {} as ProgramHeader}
+    parseProgramHeader(data, 1, program)
+    program.raw = new Array(RAW_LEADER).fill(0).concat(data)
+    for (let i = 0; i < program.GROUPS; i++) {
         const kg = {} as KeygroupHeader
         // const kgData = data.slice(KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i);
         const kgData = data.slice(CHUNK_LENGTH + CHUNK_LENGTH * i)
         parseKeygroupHeader(kgData, 0, kg)
         kg.raw = new Array(RAW_LEADER).fill(0).concat(kgData)
-        rv.keygroups.push(kg)
+        keygroups.push(kg)
+    }
+
+    const device = {} as Device
+    const rv: AkaiProgramFile = {
+        keygroups: keygroups.map(kg => new Keygroup(device, kg)),
+        program: new Program(device, program)
     }
     return rv
 }
 
 async function writeAkaiProgram(file: string, p: AkaiProgramFile) {
-    const nibbles = p.program.raw.slice(RAW_LEADER)
+
+    const nibbles = p.program.getHeader().raw.slice(RAW_LEADER)
     for (let i = 0; i < p.keygroups.length; i++) {
-        const kgData = p.keygroups[i].raw.slice(RAW_LEADER)
+        const kgData = p.keygroups[i].getHeader().raw.slice(RAW_LEADER)
         for (let j = 0; j < kgData.length; j++) {
             // nibbles[KEYGROUP1_START_OFFSET + KEYGROUP_LENGTH * i  + j] = kgData[j]
             nibbles[CHUNK_LENGTH + CHUNK_LENGTH * i + j] = kgData[j]

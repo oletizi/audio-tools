@@ -1,4 +1,4 @@
-import {KeygroupHeader, ProgramHeader} from "@/devices/s3000xl.js";
+import {Keygroup, Program} from "@/devices/s3000xl.js";
 import {Result} from "@oletizi/sampler-lib";
 
 export interface AkaiToolsConfig {
@@ -8,10 +8,11 @@ export interface AkaiToolsConfig {
     scsiId?: number
 }
 
-
 export interface AkaiProgramFile {
-    program: ProgramHeader
-    keygroups: KeygroupHeader[]
+    // program: ProgramHeader
+    // keygroups: KeygroupHeader[]
+    program: Program
+    keygroups: Keygroup[]
 }
 
 export enum AkaiRecordType {

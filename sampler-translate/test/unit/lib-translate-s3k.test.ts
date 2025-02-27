@@ -1,4 +1,4 @@
-import {chop, ChopOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
+import {chop, ChopOpts, ProgramOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -16,22 +16,31 @@ import {
     fileio,
     AudioFactory,
     AbstractKeygroup,
-    AbstractZone, AudioTranslate
+    AbstractZone, AudioTranslate, AudioMetadata, AudioSource
 } from "@/lib-translate.js";
 import {afterEach} from "mocha";
 
 describe(`map`,
     async () => {
         let audioFactory: AudioFactory,
-            audioSourceStub: any,
+            audioSource: AudioSource,
             akaiTools: any,
+            wav2AkaiStub: any,
+            readAkaiProgramStub: any,
+            akaiProgramFile: any,
+            programHeader: any,
             ctx: S3kTranslateContext,
+            getS3kDefaultProgramPathStub: any,
             fsStub: fileio,
             mapFunctionStub: any,
-            options: { source: string, target: string, prefix: string },
+            options: ProgramOpts,
             readdirStub: any,
-            sourceStub,
-            targetStub
+            source: string,
+            target: string,
+            loadFromFileStub: any,
+            meta: AudioMetadata,
+            audioTranslate: AudioTranslate,
+            translateStub: any
 
         beforeEach(async () => {
             fsStub = {
@@ -42,25 +51,43 @@ describe(`map`,
             readdirStub = stub(fsStub, 'readdir')
             audioFactory = {
                 // @ts-ignore
-                loadFromFile: undefined
+                loadFromFile: loadFromFileStub = stub()
             }
 
             akaiTools = {
-                wav2Akai: stub()
+                wav2Akai: wav2AkaiStub = stub(),
+                readAkaiProgram: readAkaiProgramStub = stub(),
             }
 
+            programHeader = {}
+            akaiProgramFile = {
+                program: programHeader
+            }
+
+            audioTranslate = {
+                translate: translateStub = stub(),
+            }
             ctx = {
-                audioTranslate: {} as AudioTranslate,
+                getS3kDefaultProgramPath: getS3kDefaultProgramPathStub = stub(),
+                audioTranslate: audioTranslate,
                 akaiTools: akaiTools,
                 audioFactory: audioFactory,
                 fs: fsStub
             }
             mapFunctionStub = stub()
-            sourceStub = ""
-            targetStub = ""
-            options = {source: sourceStub, target: targetStub, prefix: "prefix"}
-
-            audioSourceStub = {}
+            source = ""
+            target = ""
+            options = {partition: 0, wipeDisk: false, source: source, target: target, prefix: "prefix"}
+            meta = {
+                channelCount: 2
+            }
+            audioSource = {
+                filepath: "",
+                getSample: () => {
+                    return Promise.resolve({} as Sample);
+                },
+                meta: meta
+            }
         })
         afterEach(async () => {
             // fsStub.restore()
@@ -78,9 +105,12 @@ describe(`map`,
             readdirStub.withArgs(options.source).resolves(['a nice sample', 'another nice sample'])
 
             const zone: AbstractZone = {
-                audioSource: audioSourceStub,
+                audioSource: audioSource,
                 lowNote: 0,
-                highNote: 0
+                highNote: 0,
+                highVelocity: 127,
+                lowVelocity: 0,
+                centerNote: 60
             }
             const kg: AbstractKeygroup = {
                 zones: [zone]
@@ -88,6 +118,18 @@ describe(`map`,
 
             const keygroups: AbstractKeygroup[] = [kg]
             mapFunctionStub.returns(keygroups)
+
+
+            loadFromFileStub.resolves(audioSource)
+
+            let successResult: ExecutionResult = {
+                errors: [],
+                code: 0
+            }
+            translateStub.resolves(successResult)
+            wav2AkaiStub.resolves(successResult)
+            readAkaiProgramStub.resolves(akaiProgramFile)
+
 
             const result = await map(ctx, mapFunctionStub, options)
             expect(result.errors.length).to.equal(0)

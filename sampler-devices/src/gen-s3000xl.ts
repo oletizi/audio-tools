@@ -1,4 +1,11 @@
-import {genClass, genImports, genInterface, genParser, genSetters, readSpecs} from "@/gen/gen-s3000xl-device";
+import {
+    genClass,
+    genImports,
+    genInterface,
+    genParser,
+    genSetters,
+    readSpecs
+} from "@/gen/gen-s3000xl-device.js";
 import fs from "fs";
 import path from "path";
 
