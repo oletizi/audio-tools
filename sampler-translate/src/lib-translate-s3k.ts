@@ -19,13 +19,12 @@ import {
     parseSampleHeader,
     ProgramHeader_writePRNAME,
     RAW_LEADER,
-    readAkaiData,
     SampleHeader, SampleHeader_writeSPITCH
 } from "@oletizi/sampler-devices/s3k"
 
 import {
     MapFunction,
-    mapProgram,
+    mapProgram, MapProgramResult,
     newDefaultAudioFactory,
     newDefaultAudioTranslate,
     TranslateContext
@@ -68,7 +67,7 @@ export async function newDefaultTranslateContext() {
     return rv
 }
 
-export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: ProgramOpts) {
+export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: ProgramOpts): Promise<MapProgramResult> {
     const rv = await mapProgram(ctx, mapFunction, opts)
     if (rv.errors.length > 0 || !rv.data) {
         return rv
@@ -148,11 +147,21 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         return tools.akaiWrite(path.join(opts.target, sampleName + '.a3s'), `/${opts.prefix}`, opts.partition)
     }
 
-    const p = await tools.readAkaiProgram(await ctx.getS3kDefaultProgramPath(specs.length))
-    const program = p.program
-    // ProgramHeader_writePRNAME(p.program, opts.prefix)
-    program.setProgramName(opts.prefix)
+    const filepath = await ctx.getS3kDefaultProgramPath(specs.length);
+    const r = await tools.readAkaiProgram(filepath)
+    if (!r.data) {
+        rv.errors.push(new Error(`Akai program is undefined for: ${filepath}`))
+        return rv
+    }
 
+    const p = r.data
+    const program = p.program
+    if (p.keygroups.length < specs.length) {
+        rv.errors.push(new Error(`Incorrect keygroup count in default program from: ${filepath}. Expected ${specs.length} but found: ${p.keygroups.length}`))
+        return rv
+    }
+
+    program.setProgramName(opts.prefix)
 
     for (let i = 0; i < specs.length; i++) {
         const spec = specs[i]
@@ -163,7 +172,13 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
             if (sampleName) {
                 // XXX: Wrap up in akaitools
                 const sampleFilepath = path.join(opts.target, sampleName + '.a3s');
-                const data = await readAkaiData(sampleFilepath)
+                const r = await tools.readAkaiData(sampleFilepath)
+                if (r.errors.length > 0) {
+                    rv.errors = _.concat(rv.errors, r.errors)
+                    return rv
+                }
+
+                const data = r.data
                 const sampleHeader = {} as SampleHeader
                 parseSampleHeader(data, 0, sampleHeader)
                 sampleHeader.raw = new Array(RAW_LEADER).fill(0).concat(data)

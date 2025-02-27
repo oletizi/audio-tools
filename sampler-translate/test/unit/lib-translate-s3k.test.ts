@@ -7,7 +7,7 @@ const expect = chai.expect;
 import fsp from 'fs/promises';
 import fs from 'fs'
 import {stub} from 'sinon';
-import {newAkaiToolsConfig, newAkaitools, Akaitools, Program} from "@oletizi/sampler-devices/s3k";
+import {newAkaiToolsConfig, newAkaitools, Akaitools, Program, Keygroup} from "@oletizi/sampler-devices/s3k";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import {newDefaultSampleFactory, Sample} from "@/sample.js";
@@ -28,11 +28,17 @@ describe(`map`,
             wav2AkaiStub: any,
             readAkaiProgramStub: any,
             akaiProgramFile: any,
+            akaiProgramFileResult: any,
             program: any,
             keygroups: any,
+            keygroup: Keygroup,
             setProgramNameStub: any,
             ctx: S3kTranslateContext,
             getS3kDefaultProgramPathStub: any,
+            readAkaiDataStub: any,
+            byteArrayResult: any,
+            writeAkaiDataStub: any,
+            writeAkaiSampleStub: any,
             fsStub: fileio,
             mapFunctionStub: any,
             options: ProgramOpts,
@@ -59,7 +65,14 @@ describe(`map`,
             akaiTools = {
                 wav2Akai: wav2AkaiStub = stub(),
                 readAkaiProgram: readAkaiProgramStub = stub(),
+                readAkaiData: readAkaiDataStub = stub(),
+                writeAkaiSample: writeAkaiSampleStub = stub()
             }
+            byteArrayResult = {
+                data: [],
+                errors: []
+            }
+            readAkaiDataStub.resolves(byteArrayResult)
 
 
             program = {
@@ -68,6 +81,10 @@ describe(`map`,
             akaiProgramFile = {
                 program: program,
                 keygroups: keygroups = []
+            }
+            akaiProgramFileResult = {
+                errors: [],
+                data: akaiProgramFile
             }
 
             audioTranslate = {
@@ -134,10 +151,13 @@ describe(`map`,
             }
             translateStub.resolves(successResult)
             wav2AkaiStub.resolves(successResult)
-            readAkaiProgramStub.resolves(akaiProgramFile)
+            readAkaiProgramStub.resolves(akaiProgramFileResult)
 
 
             const result = await map(ctx, mapFunctionStub, options)
+            for (const e of result.errors) {
+                console.error(e)
+            }
             expect(result.errors.length).to.equal(0)
             expect(result.data && result.data.length > 0)
 

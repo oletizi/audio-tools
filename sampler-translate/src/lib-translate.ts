@@ -6,7 +6,6 @@ import {newDefaultSampleFactory, Sample} from "@/sample.js";
 import {Result} from "@oletizi/sampler-lib";
 import fs from "fs/promises";
 import {ExecutionResult} from "@oletizi/sampler-devices";
-// import {FfmpegCommand} from "fluent-ffmpeg";
 import * as ffmpeg from "fluent-ffmpeg"
 
 export function description() {
