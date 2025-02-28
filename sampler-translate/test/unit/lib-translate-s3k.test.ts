@@ -13,7 +13,7 @@ import {
     Akaitools,
     Keygroup,
     Device,
-    KeygroupHeader
+    KeygroupHeader, AkaiProgramFileResult
 } from "@oletizi/sampler-devices/s3k";
 import {newServerConfig, ServerConfig} from "@oletizi/sampler-lib";
 import {ExecutionResult} from "@oletizi/sampler-devices";
@@ -234,7 +234,25 @@ describe(`map`,
             translateStub.resolves(errorExecutionResult)
             const r = await map(ctx, stub(), options)
             expect(r.errors).to.exist
-            expect(r.errors).to.be.include(e)
+            expect(r.errors).to.include(e)
+        })
+
+        it(`handles wav2Akai errors`, async () => {
+            const e = new Error(`A nice error.`);
+            let errorExecutionResult : ExecutionResult = {code: -1, errors: [e]}
+            wav2AkaiStub.resolves(errorExecutionResult)
+            const r = await map(ctx, stub(), options)
+            expect(r.errors).to.exist
+            expect(r.errors).to.include(e)
+        })
+
+        it(`handles readAkaiProgram errors`, async () => {
+            const e = new Error(`A nice error.`);
+            let errorExecutionResult : AkaiProgramFileResult = {data: undefined, errors: [e]}
+            readAkaiProgramStub.resolves(errorExecutionResult)
+            const r = await map(ctx, stub(), options)
+            expect(r.errors).to.exist
+            expect(r.errors).to.include(e)
         })
 
         it(`Formats (or not) the akai disk based on options`, async () => {

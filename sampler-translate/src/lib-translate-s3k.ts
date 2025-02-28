@@ -157,8 +157,8 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
     const filepath = await ctx.getS3kDefaultProgramPath(specs.length);
     const r = await tools.readAkaiProgram(filepath)
-    if (!r.data) {
-        rv.errors.push(new Error(`Akai program is undefined for: ${filepath}`))
+    if (r.errors.length > 0) {
+        rv.errors = _.concat(rv.errors, r.errors)
         return rv
     }
 
