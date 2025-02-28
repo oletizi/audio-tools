@@ -76,6 +76,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
     const mapProgramResult = await ctx.mapProgramFunction(ctx, mapFunction, opts)//await mapProgram(ctx, mapFunction, opts)
     if (!mapProgramResult) {
         rv.errors.push(new Error(`mapProgram function returned empty result`))
+        return rv
     }
     if (mapProgramResult.errors.length > 0) {
         rv.errors = _.concat(rv.errors, mapProgramResult.errors)

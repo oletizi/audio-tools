@@ -183,7 +183,13 @@ describe(`map`,
             }
 
 
-            options = {partition: 0, wipeDisk: false, source: "/path/to/source", target: "/path/to/target", prefix: "prefix"}
+            options = {
+                partition: 0,
+                wipeDisk: false,
+                source: "/path/to/source",
+                target: "/path/to/target",
+                prefix: "prefix"
+            }
 
             successResult = {
                 errors: [],
@@ -208,9 +214,15 @@ describe(`map`,
             const mapFunction: any = stub()
             mapProgramResult.errors.push(new Error(`A nice error.`))
             mapProgramFunctionStub.resolves(mapProgramResult)
-            const opts: ProgramOpts = {partition: 0, prefix: "", source: "", target: "", wipeDisk: false}
-            const r = await map(ctx, mapFunction, opts)
+            let r = await map(ctx, mapFunction, options)
             expect(r).exist
+            expect(r.errors).to.exist
+            expect(r.errors).not.to.be.empty
+        })
+
+        it(`handles empty result from underlying map() function`, async () => {
+            mapProgramFunctionStub.resolves(null)
+            const r = await map(ctx, stub(), options)
             expect(r.errors).to.exist
             expect(r.errors).not.to.be.empty
         })
