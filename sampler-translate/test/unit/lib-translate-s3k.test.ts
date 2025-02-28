@@ -156,7 +156,6 @@ describe(`map`,
             mapFunctionStub.returns(abstractKeygroups)
 
 
-
             byteArrayResult = {
                 data: [],
                 errors: []
@@ -217,9 +216,14 @@ describe(`map`,
         })
 
         it(`Formats (or not) the akai disk based on options`, async () => {
-            options.wipeDisk = true
+            options.wipeDisk = false
             const r = await map(ctx, mapFunctionStub, options)
             expect(r.errors).to.be.empty
+            expect(akaiFormatStub.callCount).to.equal(0)
+
+            options.wipeDisk = true
+            await map(ctx, mapFunctionStub, options)
+            expect(akaiFormatStub.callCount).to.equal(1)
         })
 
         it(`map happy path`, async () => {
