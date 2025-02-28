@@ -24,7 +24,7 @@ import {
 
 import {
     MapFunction,
-    mapProgram,
+    mapProgram, MapProgramFunction,
     MapProgramResult,
     newDefaultAudioFactory,
     newDefaultAudioTranslate,
@@ -36,7 +36,7 @@ import {tmpdir} from "node:os";
 
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
-
+    mapProgramFunction: MapProgramFunction
     // XXX: this doesn't really belong here
     getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }
@@ -61,17 +61,28 @@ export async function newDefaultTranslateContext() {
         audioFactory: newDefaultAudioFactory(),
         audioTranslate: newDefaultAudioTranslate(),
         getS3kDefaultProgramPath: async function (keygroupCount: number): Promise<string> {
-            return (await newServerConfig()).getS3kDefaultProgramPath(keygroupCount)
-        }
+            return (await newServerConfig()).getS3kDefaultProgramPath(keygroupCount);
+        },
+        mapProgramFunction: mapProgram,
     }
     return rv
 }
 
 export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: ProgramOpts): Promise<MapProgramResult> {
-    const rv = await mapProgram(ctx, mapFunction, opts)
-    if (rv.errors.length > 0 || !rv.data) {
+    const rv : MapProgramResult = {
+        data: undefined,
+        errors: []
+    }
+    const mapProgramResult = await ctx.mapProgramFunction(ctx, mapFunction, opts)//await mapProgram(ctx, mapFunction, opts)
+    if (!mapProgramResult) {
+        rv.errors.push(new Error(`mapProgram function returned empty result`))
+    }
+    if (mapProgramResult.errors.length > 0) {
+        rv.errors = _.concat(rv.errors, mapProgramResult.errors)
         return rv
     }
+
+    rv.data = mapProgramResult.data
 
     const keygroups = rv.data
     const tools = ctx.akaiTools

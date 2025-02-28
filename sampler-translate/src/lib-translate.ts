@@ -7,6 +7,7 @@ import {Result} from "@oletizi/sampler-lib";
 import fs from "fs/promises";
 import {ExecutionResult} from "@oletizi/sampler-devices";
 import * as ffmpeg from "fluent-ffmpeg"
+import {ProgramOpts} from "@/lib-translate-s3k.js";
 
 export function description() {
     return "lib-translate is a collection of functions to translate between sampler formats."
@@ -138,6 +139,11 @@ export const mapLogicAutoSampler: MapFunction = (sources: AudioSource[]) => {
 export interface MapProgramResult extends Result {
     data: AbstractKeygroup[] | undefined
 }
+
+export type MapProgramFunction = (ctx: TranslateContext, mapFunction: MapFunction, opts: {
+    source: string,
+    target: string
+}) => Promise<MapProgramResult>
 
 export async function mapProgram(ctx: TranslateContext, mapFunction: MapFunction, opts: {
     source: string,
