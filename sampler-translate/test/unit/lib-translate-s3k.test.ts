@@ -210,9 +210,10 @@ describe(`map`,
             // targetStub.restore()
         })
 
+        const e = new Error(`A nice error.`);
         it(`handles errors from underlying map() function`, async () => {
             const mapFunction: any = stub()
-            mapProgramResult.errors.push(new Error(`A nice error.`))
+            mapProgramResult.errors.push(e)
             mapProgramFunctionStub.resolves(mapProgramResult)
             let r = await map(ctx, mapFunction, options)
             expect(r).exist
@@ -225,6 +226,15 @@ describe(`map`,
             const r = await map(ctx, stub(), options)
             expect(r.errors).to.exist
             expect(r.errors).not.to.be.empty
+        })
+
+        it(`handles audioTranslate.translate errors`, async () => {
+            const e = new Error(`A nice error.`);
+            let errorExecutionResult : ExecutionResult = {code: -1, errors: [e]}
+            translateStub.resolves(errorExecutionResult)
+            const r = await map(ctx, stub(), options)
+            expect(r.errors).to.exist
+            expect(r.errors).to.be.include(e)
         })
 
         it(`Formats (or not) the akai disk based on options`, async () => {
