@@ -195,22 +195,13 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
                 tools.writeAkaiSample(sampleFilepath, sampleHeader)
                 console.log(`Writing keygroup sample: ${sampleHeader.SHNAME}`)
                 if (sampleHeader.SHNAME.endsWith('-R')) {
-                    // KeygroupHeader_writeSNAME2(keygroup, sampleHeader.SHNAME)
-                    // KeygroupHeader_writeVPANO1(keygroup, 0)
-                    // KeygroupHeader_writeVPANO2(keygroup, 127)
-                    // KeygroupHeader_writeHIVEL2(keygroup, 127)
                     // TODO: figure out negative numbers for pan
                     keygroup.setSampleName2(sampleHeader.SHNAME)
                     keygroup.setLowVelocity1(spec.lowVelocity)
                     keygroup.setHighVelocity2(spec.highVelocity)
                 } else {
-                    // KeygroupHeader_writeSNAME1(keygroup, sampleHeader.SHNAME)
                     keygroup.setSampleName1(sampleHeader.SHNAME)
                 }
-                // KeygroupHeader_writeLONOTE(keygroup, spec.lowNote)
-                // KeygroupHeader_writeHINOTE(keygroup, spec.highNote)
-                // KeygroupHeader_writeLOVEL1(keygroup, spec.lowVelocity)
-                // KeygroupHeader_writeHIVEL1(keygroup, spec.highVelocity)
                 keygroup.setLowNote(spec.lowNote)
                 keygroup.setHighNote(spec.highNote)
                 keygroup.setLowVelocity1(spec.lowVelocity)

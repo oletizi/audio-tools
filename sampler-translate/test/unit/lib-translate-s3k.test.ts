@@ -1,4 +1,4 @@
-import {chop, ChopOpts, newDefaultTranslateContext, ProgramOpts, S3kTranslateContext} from '@/lib-translate-s3k.js';
+import {chop, ChopOpts, newDefaultTranslateContext, ProgramOpts} from '@/lib-translate-s3k.js';
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -74,11 +74,8 @@ describe(`map`,
             getS3kDefaultProgramPathStub: any,
             readAkaiDataStub: any,
             byteArrayResult: any,
-            fsStub: fileio,
             mapFunctionStub: any,
             options: ProgramOpts,
-            source: string,
-            target: string,
             loadFromFileStub: any,
             meta: AudioMetadata,
             audioTranslate: AudioTranslate,
@@ -155,13 +152,11 @@ describe(`map`,
 
             mapFunctionStub.returns(abstractKeygroups)
 
-
             byteArrayResult = {
                 data: [],
                 errors: []
             }
             readAkaiDataStub.resolves(byteArrayResult)
-
 
             program = {
                 setProgramName: setProgramNameStub = stub()
@@ -182,7 +177,6 @@ describe(`map`,
                 data: akaiProgramFile
             }
 
-
             options = {
                 partition: 0,
                 wipeDisk: false,
@@ -195,6 +189,7 @@ describe(`map`,
                 errors: [],
                 code: 0
             }
+
             translateStub.resolves(successResult)
             wav2AkaiStub.resolves(successResult)
             readAkaiProgramStub.resolves(akaiProgramFileResult)
@@ -250,6 +245,14 @@ describe(`map`,
             const e = new Error(`A nice error.`);
             let errorExecutionResult : AkaiProgramFileResult = {data: undefined, errors: [e]}
             readAkaiProgramStub.resolves(errorExecutionResult)
+            const r = await map(ctx, stub(), options)
+            expect(r.errors).to.exist
+            expect(r.errors).to.include(e)
+        })
+
+        it(`handles readAkaiData errors`, async () => {
+            const e = new Error(`A nice error.`);
+            readAkaiDataStub.resolves({data: undefined, errors: [e]})
             const r = await map(ctx, stub(), options)
             expect(r.errors).to.exist
             expect(r.errors).to.include(e)
