@@ -37,6 +37,7 @@ import {tmpdir} from "node:os";
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
     mapProgramFunction: MapProgramFunction
+
     // XXX: this doesn't really belong here
     getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }
@@ -69,7 +70,7 @@ export async function newDefaultTranslateContext() {
 }
 
 export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, opts: ProgramOpts): Promise<MapProgramResult> {
-    const rv : MapProgramResult = {
+    const rv: MapProgramResult = {
         data: undefined,
         errors: []
     }
@@ -157,11 +158,10 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
 
     const filepath = await ctx.getS3kDefaultProgramPath(specs.length);
     const r = await tools.readAkaiProgram(filepath)
-    if (r.errors.length > 0) {
+    if (!r.data || r.errors.length > 0) {
         rv.errors = _.concat(rv.errors, r.errors)
         return rv
     }
-
     const p = r.data
     const program = p.program
     if (p.keygroups.length < specs.length) {
@@ -225,8 +225,7 @@ export async function map(ctx: S3kTranslateContext, mapFunction: MapFunction, op
         }
     }
     const programPath = path.join(opts.target, opts.prefix + '.a3p');
-     await tools.writeAkaiProgram(programPath, p)
-
+    await tools.writeAkaiProgram(programPath, p)
 
     await tools.akaiWrite(programPath, `/${opts.prefix}`, opts.partition)
     return rv

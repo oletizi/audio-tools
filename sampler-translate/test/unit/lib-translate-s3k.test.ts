@@ -255,6 +255,13 @@ describe(`map`,
             expect(r.errors).to.include(e)
         })
 
+        it(`handles mismatch between abstract keygroup count and default akai program keygroup count`, async () => {
+            akaiProgramFile.keygroups.length = 0
+            const r = await map(ctx, stub(), options)
+            expect(r.errors).to.exist
+            expect(r.errors).not.to.be.empty
+        })
+
         it(`Formats (or not) the akai disk based on options`, async () => {
             options.wipeDisk = false
             const r = await map(ctx, mapFunctionStub, options)
@@ -279,7 +286,12 @@ describe(`map`,
             const kgs = result.data
             expect(kgs).to.deep.equal(abstractKeygroups)
 
-            expect(akaiTools.wav2Akai.callCount).to.equal(keygroups.length)
+            // Ensure wav2Akai was called for each abstract keygroup
+            expect(akaiTools.wav2Akai.callCount).to.equal(abstractKeygroups.length)
+
+            // Ensure the program name was set to options.prefix
+            expect(setProgramNameStub.callCount).to.equal(1)
+            expect(setProgramNameStub.getCall(0).args[0]).to.eq(options.prefix)
         })
     })
 
