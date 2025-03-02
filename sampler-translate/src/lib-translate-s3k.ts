@@ -4,7 +4,7 @@ import fs from 'fs'
 import _ from 'lodash'
 import {newServerConfig, ServerConfig} from '@oletizi/sampler-lib'
 import {
-    Akaitools,
+    Akaitools, Device,
     Keygroup,
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
@@ -37,7 +37,7 @@ import {tmpdir} from "node:os";
 export interface S3kTranslateContext extends TranslateContext {
     akaiTools: Akaitools
     mapProgramFunction: MapProgramFunction
-
+    device: Device
     // XXX: this doesn't really belong here
     getS3kDefaultProgramPath(keygroupCount: number): Promise<string>
 }

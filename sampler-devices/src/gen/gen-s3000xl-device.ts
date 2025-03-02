@@ -50,11 +50,12 @@ export async function genClass(spec: Spec) {
     console.log(`Generating ${spec.className}...`)
     let rv = `export class ${spec.className} {\n`
 
-    rv += `    private readonly device: Device\n`
+    // rv += `    private readonly device: Device\n`
     rv += `    private readonly header: ${spec.name}\n`
     rv += `\n`
-    rv += `    constructor(device: Device, header: ${spec.name}) {\n`
-    rv += `        this.device = device\n`
+    // rv += `    constructor(device: Device, header: ${spec.name}) {\n`
+    rv += `    constructor(header: ${spec.name}) {\n`
+    // rv += `        this.device = device\n`
     rv += `        this.header = header\n`
     rv += `    }\n`
     rv += `\n`
@@ -68,10 +69,10 @@ export async function genClass(spec: Spec) {
     // rv += `        return new ${spec.className}(this.device, h)\n`
     // rv += `    }\n`
     // rv += `\n`
-    rv += '    async save() {\n'
-    rv += `        return this.device.sendRaw(this.header.raw)\n`
-    rv += '    }\n'
-    rv += `\n`
+    // rv += '    async save() {\n'
+    // rv += `        return this.device.sendRaw(this.header.raw)\n`
+    // rv += '    }\n'
+    // rv += `\n`
     for (const field of spec.fields) {
         if (field.f) {
             // const parseOffset = HEADER_START

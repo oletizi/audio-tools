@@ -208,7 +208,7 @@ class s3000xl implements Device {
 
     async getProgram(programNumber: number) {
         const header = await this.fetchProgramHeader(programNumber, {} as ProgramHeader)
-        return new Program(this, header)
+        return new Program(header)
     }
 
     async getSample(sampleName: string) {
@@ -224,7 +224,7 @@ class s3000xl implements Device {
         }
         if (sampleNumber >= 0) {
             const header = await this.fetchSampleHeader(sampleNumber, {} as SampleHeader)
-            rv = new AkaiS3kSample(this, header)
+            rv = new AkaiS3kSample(header)
         } else {
             throw new Error(`Can't find sample named: ${sampleName}`)
         }

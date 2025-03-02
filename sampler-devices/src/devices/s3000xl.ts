@@ -1,5 +1,5 @@
 //
-// GENERATED Wed Feb 26 2025 18:19:31 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
+// GENERATED Sun Mar 02 2025 09:38:19 GMT-0800 (Pacific Standard Time). DO NOT EDIT.
 //    
 import {byte2nibblesLE, bytes2numberLE, nibbles2byte, newClientOutput} from "@oletizi/sampler-lib"
 import {Device, nextByte, akaiByte2String, string2AkaiBytes} from "@/client/client-akai-s3000xl.js"
@@ -1642,20 +1642,14 @@ export function ProgramHeader_writePFXCHAN(header: ProgramHeader, v: number) {
 
 
 export class Program {
-    private readonly device: Device
     private readonly header: ProgramHeader
 
-    constructor(device: Device, header: ProgramHeader) {
-        this.device = device
+    constructor(header: ProgramHeader) {
         this.header = header
     }
 
     getHeader(): ProgramHeader {
         return this.header
-    }
-
-    async save() {
-        return this.device.sendRaw(this.header.raw)
     }
 
     getProgramName(): string { 
@@ -2531,20 +2525,14 @@ export function SampleHeader_writeSHLTO(header: SampleHeader, v: number) {
 
 
 export class AkaiS3kSample {
-    private readonly device: Device
     private readonly header: SampleHeader
 
-    constructor(device: Device, header: SampleHeader) {
-        this.device = device
+    constructor(header: SampleHeader) {
         this.header = header
     }
 
     getHeader(): SampleHeader {
         return this.header
-    }
-
-    async save() {
-        return this.device.sendRaw(this.header.raw)
     }
 
     getBandwidth(): number { 
@@ -5341,20 +5329,14 @@ export function KeygroupHeader_writeKFXSLEV(header: KeygroupHeader, v: number) {
 
 
 export class Keygroup {
-    private readonly device: Device
     private readonly header: KeygroupHeader
 
-    constructor(device: Device, header: KeygroupHeader) {
-        this.device = device
+    constructor(header: KeygroupHeader) {
         this.header = header
     }
 
     getHeader(): KeygroupHeader {
         return this.header
-    }
-
-    async save() {
-        return this.device.sendRaw(this.header.raw)
     }
 
     getLowNote(): number { 

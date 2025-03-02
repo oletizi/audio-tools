@@ -276,6 +276,12 @@ describe(`map`,
             expect(akaiFormatStub.callCount).to.equal(1)
         })
 
+        it(`handles stereo`, async () => {
+
+            const r = await map(ctx, mapFunctionStub, options)
+            expect(r.errors).to.be.empty
+        })
+
         it(`map happy path`, async () => {
             expect(ctx.audioFactory).exist
 

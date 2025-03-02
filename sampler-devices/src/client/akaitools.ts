@@ -24,7 +24,6 @@ import {
     RemoteVolumeResult
 } from "@/model/model-akai-s3000xl.js";
 import {Writable} from "stream";
-import {Device} from "@/client/client-akai-s3000xl.js";
 
 
 export const CHUNK_LENGTH = 384
@@ -374,10 +373,9 @@ async function readAkaiProgram(file: string): Promise<AkaiProgramFileResult> {
         keygroups.push(kg)
     }
 
-    const device = {} as Device
     rv.data = {
-        keygroups: keygroups.map(kg => new Keygroup(device, kg)),
-        program: new Program(device, program)
+        keygroups: keygroups.map(kg => new Keygroup(kg)),
+        program: new Program(program)
     }
     return rv
 }
