@@ -1,7 +1,7 @@
 **/*~
 **/*.DS_Store
 **/*storybook.log
-**/.idea/
+**/.idea
 **/.tsup
 **/build
 **/coverage
