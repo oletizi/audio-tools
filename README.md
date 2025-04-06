@@ -1,6 +1,6 @@
-# Sampler Tools
+# Audio Tools
 
-Still mostly experimental tools for manipulating old samplers & synthesizers.
+Monorepo of experimental tools for manipulating software and hardware audio devices.
 
 ## Sampler Lib
 ![sampler-lib](https://github.com/oletizi/akai-sampler/actions/workflows/sampler-lib.yml/badge.svg)
