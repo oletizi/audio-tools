@@ -1,6 +1,6 @@
 import {bytes2numberBE, bytes2numberLE, natural2real, parseNote, real2natural, scale} from "@/lib/lib-core"
 import {expect} from "chai";
-import {bytes2Number} from "../src/lib/lib-akai-s56k";
+import {bytes2Number} from "../src-deprecated/lib/lib-akai-s56k";
 
 describe('Core lib', () => {
     it('scale', () => {

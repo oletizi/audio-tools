@@ -1,8 +1,8 @@
-import {newFileApp, newMidiApp} from "../../src/cli/cli-app";
-import {loadClientConfig} from "../../src/lib/config-server";
-import {newServerOutput} from "../../src/lib/process-output";
+import {newFileApp, newMidiApp} from "../../src-deprecated/cli/cli-app";
+import {loadClientConfig} from "../../src-deprecated/lib/config-server";
+import {newServerOutput} from "../../src-deprecated/lib/process-output";
 import midi from "midi";
-import {Device} from "../../src/midi/akai-s3000xl";
+import {Device} from "../../src-deprecated/midi/akai-s3000xl";
 import {expect} from "chai";
 
 describe(`CliApp implementations`, async () => {

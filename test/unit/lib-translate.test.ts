@@ -3,7 +3,7 @@ import {Keygroup, newProgramFromBuffer} from "@/lib/lib-akai-s56k"
 import fs from "fs/promises"
 import {expect} from "chai"
 import path from "path"
-import {decent2Sxk, mpc2Sxk} from "../../src/lib/lib-translate-s56k";
+import {decent2Sxk, mpc2Sxk} from "../../src-deprecated/lib/lib-translate-s56k";
 
 describe(`Translate`, async () => {
     let cleanup = false

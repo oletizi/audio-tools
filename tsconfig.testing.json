@@ -5,5 +5,7 @@
     "target": "es6",
     "moduleResolution": "Bundler"
   },
-  "include": ["test/**/*.test.ts", "src/**/*.ts"]
+  "include": ["test/**/*.test.ts",
+    "src-deprecated/**/*.ts"
+  ]
 }

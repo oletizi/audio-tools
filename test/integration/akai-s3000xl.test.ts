@@ -10,7 +10,7 @@ import {
 } from "@/midi/devices/s3000xl";
 import path from "path";
 import fs from "fs/promises";
-import {byte2nibblesLE} from "../../src/lib/lib-core";
+import {byte2nibblesLE} from "../../src-deprecated/lib/lib-core";
 
 function listenForMessage(input) {
     return new Promise<midi.MidiMessage>((resolve, reject) => {

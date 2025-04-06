@@ -28,7 +28,7 @@
     ]
   },
   "include": [
-    "src/**/*",
+    "src-deprecated/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": [

@@ -27,9 +27,9 @@ import {
     ProgramHeader, ProgramHeader_writeGROUPS, ProgramHeader_writePRNAME,
     SampleHeader
 } from "@/midi/devices/s3000xl";
-import {byte2nibblesLE, nibbles2byte, pad} from "../../src/lib/lib-core";
-import {akaiByte2String, nextByte} from "../../src/midi/akai-s3000xl";
-import {newServerConfig} from "../../src/lib/config-server";
+import {byte2nibblesLE, nibbles2byte, pad} from "../../src-deprecated/lib/lib-core";
+import {akaiByte2String, nextByte} from "../../src-deprecated/midi/akai-s3000xl";
+import {newServerConfig} from "../../src-deprecated/lib/config-server";
 import {AkaiDiskResult, AkaiRecordResult, AkaiRecordType, AkaiToolsConfig, RemoteDisk} from "@/model/akai";
 import {it} from "mocha";
 

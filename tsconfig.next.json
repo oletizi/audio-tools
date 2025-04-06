@@ -30,12 +30,12 @@
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "./src/app/**/*.ts",
-    "./src/app/**/*.tsx",
-    "./src/components/**/*.ts",
-    "./src/components/**/*.tsx",
-    "./src/**/*.ts",
-    "./src/**/*.tsx",
+    "./src-deprecated/app/**/*.ts",
+    "./src-deprecated/app/**/*.tsx",
+    "./src-deprecated/components/**/*.ts",
+    "./src-deprecated/components/**/*.tsx",
+    "./src-deprecated/**/*.ts",
+    "./src-deprecated/**/*.tsx"
   ],
   "exclude": [
     "node_modules"
