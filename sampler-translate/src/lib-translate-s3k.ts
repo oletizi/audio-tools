@@ -8,13 +8,10 @@ import {
     KeygroupHeader_writeCP1,
     KeygroupHeader_writeCP2,
     KeygroupHeader_writeHINOTE,
-    KeygroupHeader_writeHIVEL1,
     KeygroupHeader_writeHIVEL2,
     KeygroupHeader_writeLONOTE,
-    KeygroupHeader_writeLOVEL1,
     KeygroupHeader_writeSNAME1,
-    KeygroupHeader_writeSNAME2, KeygroupHeader_writeVPANO1, KeygroupHeader_writeVPANO2,
-    newAkaitools,
+    KeygroupHeader_writeSNAME2, newAkaitools,
     newAkaiToolsConfig,
     parseSampleHeader,
     ProgramHeader_writePRNAME,
@@ -292,10 +289,10 @@ export async function chop(cfg: ServerConfig, tools: Akaitools, opts: ChopOpts, 
             rv.errors.push(new Error(`Keygroup count does not match. Program keygroups: ${p.keygroups.length}; expected keygroups: ${keygroupSpec.length}`))
             return rv
         } else {
-            ProgramHeader_writePRNAME(p.program, opts.prefix)
+            ProgramHeader_writePRNAME(p.program.getHeader(), opts.prefix)
 
             for (let i = 0; i < p.keygroups.length; i++) {
-                const kg = p.keygroups[i]
+                const kg = p.keygroups[i].getHeader()
                 const spec = keygroupSpec[i]
                 KeygroupHeader_writeLONOTE(kg, 60 + i)
                 KeygroupHeader_writeHINOTE(kg, 60 + i)

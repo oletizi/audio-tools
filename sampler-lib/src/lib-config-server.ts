@@ -6,7 +6,7 @@ import {objectFromFile} from "@/lib-io";
 import {pad} from "@/lib-core";
 import {mkdir} from "@/lib-fs-server"
 
-const DEFAULT_DATA_DIR: string = path.join(process.env.HOME ? process.env.HOME : "/", '.akai-sampler')
+const DEFAULT_DATA_DIR: string = path.join(process.env.HOME ? process.env.HOME : "/", '.audiotools')
 const out: ProcessOutput = newServerOutput(false)
 
 export interface ServerConfig {
