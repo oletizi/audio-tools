@@ -52,7 +52,7 @@
     "yaml": "^2.7.0"
   },
   "dependencies": {
-    "@oletizi/sampler-lib": "^1.0.9",
+    "@oletizi/sampler-lib": "^1.0.11",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
     "midi": "^2.0.0"
