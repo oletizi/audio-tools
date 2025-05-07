@@ -1,8 +1,7 @@
-import {NextRequest, NextResponse} from "next/server";
-import {getSessionData, getSessionId} from "@/lib-session";
+import {NextRequest, NextResponse} from 'next/server.js';
+import {getSessionData, getSessionId} from '@/lib-session.js';
 import {newServerConfig} from "@oletizi/sampler-lib"
 import path from "path";
-import {newSampleFromBuffer} from "@/model/sample"; // TODO: export newSampleFromBuffer() from @oletizi/sampler-devices
 import fs from "fs/promises";
 
 export async function GET(request: NextRequest, {params}: { params: Promise<{ path: string[] }> }) {

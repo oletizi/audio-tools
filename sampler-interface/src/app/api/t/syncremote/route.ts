@@ -1,14 +1,7 @@
-import {NextRequest, NextResponse} from "next/server";
-import {getSessionData, getSessionId} from "@/lib/lib-session";
-import path from "path";
-import {newServerConfig} from "@/lib/config-server";
-import {chop} from "@/lib/lib-translate-s3k";
-import {akaiFormat, newAkaiToolsConfig, readAkaiDisk, remoteSync} from "@/akaitools/akaitools";
-import fs from "fs/promises";
-import {AkaiToolsConfig} from "@/model/akai";
-import {syncRemote} from "@/lib/client-translator";
+import {NextRequest, NextResponse} from 'next/server.js';
+import {newAkaiToolsConfig, remoteSync} from '@oletizi/sampler-devices'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
     try {
         const result = await remoteSync(await newAkaiToolsConfig())
         if (result.errors.length > 0) {
