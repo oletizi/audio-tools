@@ -1,5 +1,5 @@
 import {hello, description} from '@oletizi/sampler-translate'
-import {newAkaiToolsConfig} from '@oletizi/sampler-devices/s3k'
+import {newAkaiToolsConfig} from '@oletizi/sampler-devices'
 import {pad} from '@oletizi/sampler-lib'
 import {expect} from "chai";
 
